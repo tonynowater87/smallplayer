@@ -9,16 +9,63 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.tonynowater.smallplayer.MainActivity">
+    tools:context="com.tonynowater.smallplayer.activity.MainActivity">
 
-    <TextView
-        android:text="Hello world!"
+    <Button
+        android:text="播放"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="88dp"
-        android:layout_marginStart="88dp"
+        android:id="@+id/buttonPlay"
+        android:layout_below="@+id/textView"
+        android:layout_toLeftOf="@+id/buttonStop"
+        android:layout_toStartOf="@+id/buttonStop"
+        android:layout_marginRight="19dp"
+        android:layout_marginEnd="19dp"/>
+
+    <Button
+        android:text="停止"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonStop"
+        android:layout_alignBaseline="@+id/buttonPlay"
+        android:layout_alignBottom="@+id/buttonPlay"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:text="準備中"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewStatus"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/buttonStop"
+        android:layout_alignEnd="@+id/buttonStop"/>
+
+    <TextView
+        android:text="歌曲名稱:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/textView"
-        android:layout_alignParentTop="true"/>
+        android:layout_below="@+id/textView2"
+        android:layout_alignLeft="@+id/buttonPlay"
+        android:layout_alignStart="@+id/buttonPlay"/>
+
+    <TextView
+        android:text="狀態:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/textView"
+        android:layout_alignStart="@+id/textView"/>
+
+    <TextView
+        android:text="歌曲"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewSongName"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_above="@+id/buttonPlay"
+        />
+
+
 </RelativeLayout>
