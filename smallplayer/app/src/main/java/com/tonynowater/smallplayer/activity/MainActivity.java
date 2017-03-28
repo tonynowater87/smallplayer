@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvSongName = (TextView) findViewById(R.id.textViewSongName);
-        tvSongStatus = (TextView) findViewById(R.id.textViewStatus);
+        tvSongName = (TextView) findViewById(R.id.textViewSongNameValue);
+        tvSongStatus = (TextView) findViewById(R.id.textViewStatusValue);
         Button buttonPlay = (Button) findViewById(R.id.buttonPlay);
         Button buttonStop = (Button) findViewById(R.id.buttonStop);
 
