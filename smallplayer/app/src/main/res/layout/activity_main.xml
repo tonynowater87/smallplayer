@@ -1,65 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context="com.tonynowater.smallplayer.activity.MainActivity">
+<layout>
 
-    <Button
-        android:text="播放"
-        android:layout_width="wrap_content"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_main"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonPlay"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        tools:layout_editor_absoluteY="0dp"/>
+        tools:context="com.tonynowater.smallplayer.activity.MainActivity">
 
-    <Button
-        android:text="停止"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonStop"
-        app:layout_constraintLeft_toRightOf="@+id/buttonPlay"
-        tools:layout_editor_absoluteY="0dp"/>
+        <Button
+            android:id="@+id/buttonPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放"/>
 
-    <TextView
-        android:text="狀態:"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewStatusTitle"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.01"
-        app:layout_constraintTop_toBottomOf="@+id/buttonPlay"/>
+        <Button
+            android:id="@+id/buttonStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止"
+            android:layout_toRightOf="@+id/buttonPlay"/>
 
-    <TextView
-        android:text="準備中"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewStatusValue"
-        app:layout_constraintTop_toBottomOf="@+id/buttonStop"
-        app:layout_constraintLeft_toRightOf="@+id/textViewStatusTitle"/>
+        <TextView
+            android:id="@+id/textViewStatusTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="狀態:"
+            android:layout_below="@+id/buttonPlay"/>
 
-    <TextView
-        android:text="歌曲名稱:"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewSongNameTitle"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.01"
-        app:layout_constraintTop_toBottomOf="@+id/textViewStatusTitle"/>
+        <TextView
+            android:id="@+id/textViewStatusValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="準備中"
+            android:layout_below="@+id/buttonPlay"
+            android:layout_toRightOf="@+id/textViewStatusTitle"/>
 
-    <TextView
-        android:text="歌曲"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewSongNameValue"
-        app:layout_constraintTop_toBottomOf="@+id/textViewStatusValue"
-        app:layout_constraintLeft_toRightOf="@+id/textViewSongNameTitle"/>
+        <TextView
+            android:id="@+id/textViewSongNameTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="歌曲名稱:"
+            android:layout_below="@+id/textViewStatusTitle"/>
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/textViewSongNameValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="歌曲"
+            android:layout_below="@+id/textViewStatusTitle"
+            android:layout_toRightOf="@+id/textViewSongNameTitle"/>
+
+        <FrameLayout
+            android:id="@+id/framelayout_mainactivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewSongNameTitle">
+
+        </FrameLayout>
+
+    </RelativeLayout>
+</layout>

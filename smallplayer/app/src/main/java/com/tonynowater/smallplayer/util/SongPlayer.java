@@ -7,7 +7,6 @@ import java.io.IOException;
 /**
  * Created by tonynowater on 2017/3/23.
  */
-
 public class SongPlayer implements MediaPlayer.OnPreparedListener
 {
     private MediaPlayer mPlayer = null;
@@ -21,12 +20,9 @@ public class SongPlayer implements MediaPlayer.OnPreparedListener
 
     public void prepareForStart(String source)
     {
-        initialPlayer();
-
         try
         {
-            mPlayer.setDataSource(source);
-            mPlayer.prepare();
+            initialPlayer(source);
         }
         catch (IOException e)
         {
@@ -35,12 +31,14 @@ public class SongPlayer implements MediaPlayer.OnPreparedListener
         }
     }
 
-    private void initialPlayer()
+    private void initialPlayer(String source) throws IOException
     {
         if (mPlayer == null)
         {
             mPlayer = new MediaPlayer();
             mPlayer.setOnPreparedListener(this);
+            mPlayer.setDataSource(source);
+            mPlayer.prepare();
         }
     }
 
@@ -84,6 +82,9 @@ public class SongPlayer implements MediaPlayer.OnPreparedListener
         }
     }
 
+    /**
+     * @return 目前播放器的狀態
+     */
     public int getmPlayerState()
     {
         return mPlayerState;
