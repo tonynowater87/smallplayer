@@ -63,6 +63,7 @@ public class SongPlayer implements MediaPlayer.OnPreparedListener
         {
             mPlayer.stop();
             mPlayerState = PlayerState.INIT;
+            mPlayer = null;
         }
     }
 

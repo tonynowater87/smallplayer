@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistfragmentBinding;
+import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
  * Created by tonyliao on 2017/4/27.
@@ -35,7 +36,7 @@ public class SongListFragment extends android.support.v4.app.Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        SongListAdapter songListAdapter = new SongListAdapter(getActivity().getApplicationContext());
+        SongListAdapter songListAdapter = new SongListAdapter(getActivity().getApplicationContext(), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(),LinearLayoutManager.VERTICAL,false);
         mBinding.recyclerviewSonglistfragment.setLayoutManager(layoutManager);
         mBinding.recyclerviewSonglistfragment.setAdapter(songListAdapter);

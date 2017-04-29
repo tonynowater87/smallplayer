@@ -11,6 +11,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.dto.Song;
 import com.tonynowater.smallplayer.util.MediaUtils;
+import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.List;
 
@@ -20,14 +21,17 @@ import java.util.List;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongListAdapterViewHolder> {
 
-    List<Song> mSongList;
-    public SongListAdapter(Context context) {
+    private List<Song> mSongList;
+    private OnClickSomething<Song> mOnClickSongListener;
+
+    public SongListAdapter(Context context, OnClickSomething mOnClickSongListener) {
         mSongList = MediaUtils.getAudioList(context);
+        this.mOnClickSongListener = mOnClickSongListener;
     }
 
     @Override
     public SongListAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new SongListAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null));
+        return new SongListAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null), mOnClickSongListener, mSongList);
     }
 
     @Override
@@ -40,17 +44,27 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongLi
         return mSongList.size();
     }
 
-    public static class SongListAdapterViewHolder extends RecyclerView.ViewHolder {
+    public static class SongListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private LayoutSonglistadapterListitemBinding mBinding;
+        private OnClickSomething mOnClickSongListener;
+        private List<Song> mSongList;
 
-        public SongListAdapterViewHolder(View itemView) {
+        public SongListAdapterViewHolder(View itemView, OnClickSomething mOnClickSongListener, List<Song> mSongList) {
             super(itemView);
             mBinding = DataBindingUtil.bind(itemView);
+            this.mOnClickSongListener = mOnClickSongListener;
+            this.mSongList = mSongList;
+            mBinding.tvSonglistadapter.setOnClickListener(this);
         }
 
         public LayoutSonglistadapterListitemBinding getBinding() {
             return mBinding;
+        }
+
+        @Override
+        public void onClick(View v) {
+            mOnClickSongListener.onClick(mSongList.get(getAdapterPosition()));
         }
     }
 }

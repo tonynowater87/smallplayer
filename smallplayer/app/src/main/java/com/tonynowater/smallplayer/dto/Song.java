@@ -168,4 +168,9 @@ public class Song
     {
         this.mData = mData;
     }
+
+    @Override
+    public String toString() {
+        return mAlbum + "\t" + mArtist + "\t" + mTitle;
+    }
 }

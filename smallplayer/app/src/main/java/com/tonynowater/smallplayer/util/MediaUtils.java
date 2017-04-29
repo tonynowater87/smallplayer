@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.tonynowater.smallplayer.dto.Album;
 import com.tonynowater.smallplayer.dto.Song;
 
 import java.util.ArrayList;
@@ -14,8 +15,7 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/3/23.
  */
-public class MediaUtils
-{
+public class MediaUtils {
     public static final String[] AUDIO_COLUMNS = new String[]{
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,//歌名
@@ -32,46 +32,55 @@ public class MediaUtils
             MediaStore.Audio.Media.DATA,//檔案路徑
     };
 
-    /** 取得手機裡的音樂檔案列表 */
-    public static List<Song> getAudioList(Context context)
-    {
-        ContentResolver resolver = context.getContentResolver();
-        Cursor cursor = resolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                AUDIO_COLUMNS,
-                MediaStore.Audio.Media.IS_MUSIC + "=" + 1,
-                null,
-                null);
+    public static final String[] ALBUM_COLUMNS = new String[]{
+            MediaStore.Audio.Albums._ID,
+            MediaStore.Audio.Albums.ALBUM,
+            MediaStore.Audio.Albums.ALBUM_KEY,
+            MediaStore.Audio.Albums.ALBUM_ART,
+            MediaStore.Audio.Albums.ARTIST,
+            MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+            MediaStore.Audio.Albums.FIRST_YEAR,
+            MediaStore.Audio.Albums.LAST_YEAR,
+    };
+
+    /**
+     * 取得手機裡的音樂檔案列表
+     */
+    public static List<Song> getAudioList(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                , AUDIO_COLUMNS
+                , MediaStore.Audio.Media.IS_MUSIC + "=" + 1
+                , null
+                , null);
 
         return getAudioList(cursor);
     }
 
-    private static List<Song> getAudioList(Cursor cursor)
-    {
+    /**
+     * 取得手機裡的音樂檔案列表
+     */
+    private static List<Song> getAudioList(Cursor cursor) {
         List<Song> songList = new ArrayList<>();
         Bundle bundle;
-        if (cursor.getCount() > 0)
-        {
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
-            {
+        if (cursor.getCount() > 0) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 bundle = new Bundle();
                 String sColumn;
                 int iColumnIndex;
                 int iField;
-                for (int i = 0; i < AUDIO_COLUMNS.length; i++)
-                {
+                for (int i = 0; i < AUDIO_COLUMNS.length; i++) {
                     sColumn = AUDIO_COLUMNS[i];
                     iColumnIndex = cursor.getColumnIndex(sColumn);
                     iField = cursor.getType(iColumnIndex);
-                    switch (iField)
-                    {
+                    switch (iField) {
                         case Cursor.FIELD_TYPE_INTEGER:
                             System.out.println("[" + sColumn + "] cursor = FIELD_TYPE_INTEGER [" + cursor.getInt(iColumnIndex) + "]");
-                            bundle.putInt(sColumn,cursor.getInt(iColumnIndex));
+                            bundle.putInt(sColumn, cursor.getInt(iColumnIndex));
                             break;
                         case Cursor.FIELD_TYPE_STRING:
                             System.out.println("[" + sColumn + "] cursor = FIELD_TYPE_STRING [" + cursor.getString(iColumnIndex) + "]");
-                            bundle.putString(sColumn,cursor.getString(iColumnIndex));
+                            bundle.putString(sColumn, cursor.getString(iColumnIndex));
                             break;
                         case Cursor.FIELD_TYPE_NULL:
                             System.out.println("[" + sColumn + "] cursor = [ FIELD_TYPE_NULL ]");
@@ -84,17 +93,46 @@ public class MediaUtils
         }
 
         cursor.close();
-        logSongList(songList);
+        new Logger<Song>().log(songList);
         return songList;
     }
 
-    private static void logSongList(List<Song> songList)
-    {
-        System.out.println("logSongList");
-        for (int i = 0; i < songList.size(); i++)
-        {
-//            System.out.println("songList = [" + songList.get(i).getmData() + "]");//這個log會缺有些歌..
-            System.out.println("songList = [" + songList.get(i).getmDisplayName() + "]");
+    public static List<Album> getAlbumList(Context context) {
+        List<Album> albumList = new ArrayList<>();
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                , ALBUM_COLUMNS
+                , null
+                , null
+                , null);
+        Bundle bundle;
+        if (cursor.getCount() > 0) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast() ; cursor.moveToNext()) {
+                bundle = new Bundle();
+                for (int i = 0; i < ALBUM_COLUMNS.length; i++) {
+                    String sColumn = ALBUM_COLUMNS[i];
+                    int iColumn = cursor.getColumnIndex(sColumn);
+                    switch (cursor.getType(iColumn)) {
+                        case Cursor.FIELD_TYPE_STRING:
+                            bundle.putString(sColumn,cursor.getString(iColumn));
+                            break;
+                        case Cursor.FIELD_TYPE_INTEGER:
+                            bundle.putInt(sColumn,cursor.getInt(iColumn));
+                            break;
+                        case Cursor.FIELD_TYPE_FLOAT:
+                            bundle.putFloat(sColumn,cursor.getFloat(iColumn));
+                            break;
+                        case Cursor.FIELD_TYPE_BLOB:
+                            break;
+                        case Cursor.FIELD_TYPE_NULL:
+                            break;
+                    }
+                }
+                albumList.add(new Album(bundle));
+            }
         }
+
+        return albumList;
     }
+
 }

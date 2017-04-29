@@ -7,12 +7,18 @@ import android.view.View;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
+import com.tonynowater.smallplayer.dto.Song;
+import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.PlayerState;
 import com.tonynowater.smallplayer.util.SongPlayer;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements OnClickSomething<Song>
 {
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private SongPlayer mSongPlayer;
+    private ActivityMainBinding mBinding;
+    private String mSongPath;
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener()
     {
@@ -25,34 +31,30 @@ public class MainActivity extends AppCompatActivity
                     if(mSongPlayer.getmPlayerState() == PlayerState.INIT)
                     {
                         mSongPlayer.prepareForStart(mSongPath);
-                        mActivityMainBinding.textViewStatusValue.setText("播放中");
+                        mBinding.textViewStatusValue.setText(R.string.play_state_playing);
                     }
                     else if(mSongPlayer.getmPlayerState() == PlayerState.PAUSE)
                     {
                         mSongPlayer.startPlayer();
-                        mActivityMainBinding.textViewStatusValue.setText("播放中");
+                        mBinding.textViewStatusValue.setText(R.string.play_state_playing);
                     }
                     break;
                 case R.id.buttonStop:
                     mSongPlayer.pause();
-                    mActivityMainBinding.textViewStatusValue.setText("已暫停");
+                    mBinding.textViewStatusValue.setText(R.string.play_state_pause);
                     break;
             }
         }
     };
 
-    private SongPlayer mSongPlayer;
-    private ActivityMainBinding mActivityMainBinding;
-    private String mSongPath;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        mActivityMainBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
 
-        mActivityMainBinding.buttonPlay.setOnClickListener(mOnClickListener);
-        mActivityMainBinding.buttonStop.setOnClickListener(mOnClickListener);
+        mBinding.buttonPlay.setOnClickListener(mOnClickListener);
+        mBinding.buttonStop.setOnClickListener(mOnClickListener);
 
         mSongPlayer = new SongPlayer();
 
@@ -66,5 +68,16 @@ public class MainActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
+    }
+
+    @Override
+    public void onClick(Song song) {
+        if (mSongPlayer.getmPlayerState() == PlayerState.PLAY) {
+            mSongPlayer.stopPlayer();
+            mBinding.textViewStatusValue.setText(R.string.play_state_stop);
+        }
+
+        mSongPath = song.getmData();
+        mBinding.textViewSongNameValue.setText(song.getmTitle());
     }
 }
