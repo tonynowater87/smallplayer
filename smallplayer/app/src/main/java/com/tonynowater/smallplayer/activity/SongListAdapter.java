@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.dto.Song;
@@ -43,9 +44,9 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongLi
         holder.getBinding().tvSongTitleSonglistadapter.setText(mSongList.get(position).getmTitle());
         holder.getBinding().tvDurationSonglistadapter.setText(mSongList.get(position).getFormatDuration());
         if (!TextUtils.isEmpty(mSongList.get(position).getmAlbumObj().getmAlbumArt())) {
-            holder.getBinding().ivSonglistadapter.setImageURI(Uri.fromFile(new File(mSongList.get(position).getmAlbumObj().getmAlbumArt())));
+            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(Uri.fromFile(new File(mSongList.get(position).getmAlbumObj().getmAlbumArt()))).into(holder.getBinding().ivSonglistadapter);
         } else {
-            holder.getBinding().ivSonglistadapter.setImageResource(R.mipmap.ic_launcher);
+            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
         }
     }
 
