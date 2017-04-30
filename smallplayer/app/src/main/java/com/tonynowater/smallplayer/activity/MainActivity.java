@@ -30,18 +30,15 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
                 case R.id.buttonPlay:
                     if(mSongPlayer.getmPlayerState() == PlayerState.INIT)
                     {
-                        mSongPlayer.prepareForStart(mSongPath);
-                        mBinding.textViewStatusValue.setText(R.string.play_state_playing);
+                        prepareSongPlayer();
                     }
                     else if(mSongPlayer.getmPlayerState() == PlayerState.PAUSE)
                     {
-                        mSongPlayer.startPlayer();
-                        mBinding.textViewStatusValue.setText(R.string.play_state_playing);
+                        resumePlayer();
                     }
                     break;
                 case R.id.buttonStop:
-                    mSongPlayer.pause();
-                    mBinding.textViewStatusValue.setText(R.string.play_state_pause);
+                    pausePlayer();
                     break;
             }
         }
@@ -72,12 +69,24 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
 
     @Override
     public void onClick(Song song) {
-        if (mSongPlayer.getmPlayerState() == PlayerState.PLAY) {
-            mSongPlayer.stopPlayer();
-            mBinding.textViewStatusValue.setText(R.string.play_state_stop);
-        }
-
         mSongPath = song.getmData();
         mBinding.textViewSongNameValue.setText(song.getmTitle());
+
+        prepareSongPlayer();
+    }
+
+    private void prepareSongPlayer() {
+        mSongPlayer.prepareForStart(mSongPath);
+        mBinding.textViewStatusValue.setText(R.string.play_state_playing);
+    }
+
+    private void pausePlayer() {
+        mSongPlayer.pause();
+        mBinding.textViewStatusValue.setText(R.string.play_state_pause);
+    }
+
+    private void resumePlayer() {
+        mSongPlayer.startPlayer();
+        mBinding.textViewStatusValue.setText(R.string.play_state_playing);
     }
 }

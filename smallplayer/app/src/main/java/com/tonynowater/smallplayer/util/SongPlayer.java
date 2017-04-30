@@ -7,77 +7,67 @@ import java.io.IOException;
 /**
  * Created by tonynowater on 2017/3/23.
  */
-public class SongPlayer implements MediaPlayer.OnPreparedListener
-{
+public class SongPlayer implements MediaPlayer.OnPreparedListener {
     private MediaPlayer mPlayer = null;
     private int mPlayerState = PlayerState.INIT;
 
 
-    public SongPlayer()
-    {
+    public SongPlayer() {
 
     }
 
-    public void prepareForStart(String source)
-    {
-        try
-        {
+    public void prepareForStart(String source) {
+        try {
             initialPlayer(source);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             uninitialPlayer();
         }
     }
 
-    private void initialPlayer(String source) throws IOException
-    {
-        if (mPlayer == null)
-        {
+    private void initialPlayer(String source) throws IOException {
+        if (mPlayer == null) {
             mPlayer = new MediaPlayer();
+            mPlayer.setOnPreparedListener(this);
+            mPlayer.setDataSource(source);
+            mPlayer.prepare();
+        } else {
+            mPlayer.reset();
             mPlayer.setOnPreparedListener(this);
             mPlayer.setDataSource(source);
             mPlayer.prepare();
         }
     }
 
-    private void uninitialPlayer()
-    {
-        if (mPlayer != null)
-        {
+    private void uninitialPlayer() {
+        if (mPlayer != null) {
             mPlayer.release();
             mPlayer = null;
         }
     }
 
-    public void startPlayer()
-    {
+    public void startPlayer() {
         mPlayer.start();
         mPlayerState = PlayerState.PLAY;
     }
 
-    public void stopPlayer()
-    {
-        if (mPlayer != null)
-        {
+    public void stopPlayer() {
+        if (mPlayer != null) {
             mPlayer.stop();
             mPlayerState = PlayerState.INIT;
+            mPlayer.release();
             mPlayer = null;
         }
     }
 
 
     @Override
-    public void onPrepared(MediaPlayer mp)
-    {
+    public void onPrepared(MediaPlayer mp) {
         startPlayer();
     }
 
-    public void pause()
-    {
-        if (mPlayer != null)
-        {
+    public void pause() {
+        if (mPlayer != null) {
             mPlayer.pause();
             mPlayerState = PlayerState.PAUSE;
         }
@@ -86,8 +76,7 @@ public class SongPlayer implements MediaPlayer.OnPreparedListener
     /**
      * @return 目前播放器的狀態
      */
-    public int getmPlayerState()
-    {
+    public int getmPlayerState() {
         return mPlayerState;
     }
 }
