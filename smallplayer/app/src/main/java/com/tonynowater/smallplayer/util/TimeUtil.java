@@ -7,7 +7,7 @@ package com.tonynowater.smallplayer.util;
 public class TimeUtil {
     private static final String TAG = TimeUtil.class.getSimpleName();
 
-    private TimeUtil () {};
+    private TimeUtil () {}
 
     public static String formatSongDuration (int songDuration) {
         songDuration /= 1000;

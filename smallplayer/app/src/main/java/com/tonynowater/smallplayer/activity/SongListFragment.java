@@ -39,7 +39,7 @@ public class SongListFragment extends android.support.v4.app.Fragment {
         SongListAdapter songListAdapter = new SongListAdapter(getActivity().getApplicationContext(), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(),LinearLayoutManager.VERTICAL,false);
         mBinding.recyclerviewSonglistfragment.setLayoutManager(layoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),DividerItemDecoration.HORIZONTAL);
+        SongListAdapterDecorator dividerItemDecoration = new SongListAdapterDecorator(getContext());
         mBinding.recyclerviewSonglistfragment.addItemDecoration(dividerItemDecoration);
         mBinding.recyclerviewSonglistfragment.setAdapter(songListAdapter);
     }
