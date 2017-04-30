@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 
 import com.tonynowater.smallplayer.dto.Album;
 import com.tonynowater.smallplayer.dto.Song;
+import com.tonynowtaer87.myutil.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

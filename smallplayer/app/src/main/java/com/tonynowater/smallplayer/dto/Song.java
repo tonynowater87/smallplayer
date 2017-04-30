@@ -3,7 +3,7 @@ package com.tonynowater.smallplayer.dto;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import com.tonynowater.smallplayer.util.TimeUtil;
+import com.tonynowtaer87.myutil.TimeUtil;
 
 /**
  * Created by tonynowater on 2017/3/23.

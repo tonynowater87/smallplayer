@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.util;
+package com.tonynowtaer87.myutil;
 
 /**
  * Created by tonyliao on 2017/4/30.

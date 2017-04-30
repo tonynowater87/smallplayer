@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.util;
+package com.tonynowtaer87.myutil;
 
 import android.util.Log;
 
