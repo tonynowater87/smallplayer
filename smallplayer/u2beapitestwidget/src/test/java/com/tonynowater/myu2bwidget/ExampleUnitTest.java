@@ -1,4 +1,4 @@
-package com.tonynowater.myyoutubeapiwidget;
+package com.tonynowater.myu2bwidget;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.tonynowater.myyoutubeapiwidget;
+package com.tonynowater.myu2bwidget;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
