@@ -22,6 +22,7 @@ public class MediaUtils {
             MediaStore.Audio.Media.ARTIST,//歌手
             MediaStore.Audio.Media.COMPOSER,//編曲
             MediaStore.Audio.Media.ALBUM,//專輯
+            MediaStore.Audio.Media.ALBUM_ID,//專輯ID
             MediaStore.Audio.Media.DISPLAY_NAME,//顯示名稱即檔名
             MediaStore.Audio.Media.DURATION,//歌長(ms)
             MediaStore.Audio.Media.SIZE,//大小(bytes)
@@ -100,7 +101,7 @@ public class MediaUtils {
     public static List<Album> getAlbumList(Context context) {
         List<Album> albumList = new ArrayList<>();
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
                 , ALBUM_COLUMNS
                 , null
                 , null

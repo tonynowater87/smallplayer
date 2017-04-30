@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.dto;
 
 import android.os.Bundle;
-import android.provider.MediaStore;
 
 import com.tonynowater.smallplayer.util.MediaUtils;
 

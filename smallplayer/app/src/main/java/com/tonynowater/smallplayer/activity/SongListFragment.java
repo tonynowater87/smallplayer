@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +17,6 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 /**
  * Created by tonyliao on 2017/4/27.
  */
-
 public class SongListFragment extends android.support.v4.app.Fragment {
     private static final String TAG = SongListFragment.class.getSimpleName();
     private LayoutSonglistfragmentBinding mBinding;
@@ -39,6 +39,8 @@ public class SongListFragment extends android.support.v4.app.Fragment {
         SongListAdapter songListAdapter = new SongListAdapter(getActivity().getApplicationContext(), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(),LinearLayoutManager.VERTICAL,false);
         mBinding.recyclerviewSonglistfragment.setLayoutManager(layoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),DividerItemDecoration.HORIZONTAL);
+        mBinding.recyclerviewSonglistfragment.addItemDecoration(dividerItemDecoration);
         mBinding.recyclerviewSonglistfragment.setAdapter(songListAdapter);
     }
 }

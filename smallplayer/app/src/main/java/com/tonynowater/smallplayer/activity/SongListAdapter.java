@@ -2,7 +2,9 @@ package com.tonynowater.smallplayer.activity;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +12,10 @@ import android.view.ViewGroup;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.dto.Song;
-import com.tonynowater.smallplayer.util.MediaUtils;
 import com.tonynowater.smallplayer.util.OnClickSomething;
+import com.tonynowater.smallplayer.util.SongPlayManager;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -25,7 +28,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongLi
     private OnClickSomething<Song> mOnClickSongListener;
 
     public SongListAdapter(Context context, OnClickSomething mOnClickSongListener) {
-        mSongList = MediaUtils.getAudioList(context);
+        mSongList = SongPlayManager.getInstance(context).getSongList();
         this.mOnClickSongListener = mOnClickSongListener;
     }
 
@@ -36,7 +39,14 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongLi
 
     @Override
     public void onBindViewHolder(SongListAdapterViewHolder holder, int position) {
-        holder.getBinding().tvSonglistadapter.setText(mSongList.get(position).getmDisplayName());
+        holder.getBinding().tvSongArtistSonglistadapter.setText(mSongList.get(position).getmArtist());
+        holder.getBinding().tvSongTitleSonglistadapter.setText(mSongList.get(position).getmTitle());
+        holder.getBinding().tvDurationSonglistadapter.setText(mSongList.get(position).getFormatDuration());
+        if (!TextUtils.isEmpty(mSongList.get(position).getmAlbumObj().getmAlbumArt())) {
+            holder.getBinding().ivSonglistadapter.setImageURI(Uri.fromFile(new File(mSongList.get(position).getmAlbumObj().getmAlbumArt())));
+        } else {
+            holder.getBinding().ivSonglistadapter.setImageResource(R.mipmap.ic_launcher);
+        }
     }
 
     @Override
@@ -55,7 +65,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongLi
             mBinding = DataBindingUtil.bind(itemView);
             this.mOnClickSongListener = mOnClickSongListener;
             this.mSongList = mSongList;
-            mBinding.tvSonglistadapter.setOnClickListener(this);
+            mBinding.rlRootSonglistadapter.setOnClickListener(this);
         }
 
         public LayoutSonglistadapterListitemBinding getBinding() {

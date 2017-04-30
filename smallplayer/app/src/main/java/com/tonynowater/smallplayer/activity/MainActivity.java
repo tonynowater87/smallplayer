@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     @Override
     public void onClick(Song song) {
         mSongPath = song.getmData();
+
         mBinding.textViewSongNameValue.setText(song.getmTitle());
 
         prepareSongPlayer();
