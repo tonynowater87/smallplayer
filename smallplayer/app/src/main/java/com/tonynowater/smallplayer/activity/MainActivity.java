@@ -8,14 +8,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.tonynowater.myyoutubeapi.Playable;
+import com.tonynowater.myyoutubeapi.U2BVideoDTO;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
 import com.tonynowater.smallplayer.dto.Song;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.PlayerState;
 import com.tonynowater.smallplayer.util.SongPlayer;
+import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
-public class MainActivity extends AppCompatActivity implements OnClickSomething<Song>
+public class MainActivity extends AppCompatActivity implements OnClickSomething<Playable>
 {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -88,12 +91,23 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     }
 
     @Override
-    public void onClick(Song song) {
-        mSongPath = song.getmData();
+    public void onClick(Playable playable) {
 
-        mBinding.textViewSongNameValue.setText(song.getmTitle());
-
-        prepareSongPlayer();
+        if (playable instanceof Song) {
+            mSongPath = ((Song)playable).getmData();
+            mBinding.textViewSongNameValue.setText(((Song)playable).getmTitle());
+            prepareSongPlayer();
+        } else {
+            final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean)playable);
+            YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
+                @Override
+                public void getU2BUrl(String url) {
+                    mSongPath = url;
+                    mBinding.textViewSongNameValue.setText(u2bVideoItem.getSnippet().getTitle());
+                    prepareSongPlayer();
+                }
+            });
+        }
     }
 
     private void prepareSongPlayer() {

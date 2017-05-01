@@ -100,7 +100,7 @@ public class U2BVideoDTO {
         }
     }
 
-    public static class ItemsBean {
+    public static class ItemsBean implements Playable {
         /**
          * kind : youtube#searchResult
          * etag : "m2yskBQFythfE4irbTIeOgYYfBU/t1_TdQR_I1p8lifuPbrQOyZqFoo"

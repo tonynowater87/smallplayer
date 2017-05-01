@@ -3,12 +3,13 @@ package com.tonynowater.smallplayer.dto;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.tonynowater.myyoutubeapi.Playable;
 import com.tonynowtaer87.myutil.TimeUtil;
 
 /**
  * Created by tonynowater on 2017/3/23.
  */
-public class Song
+public class Song implements Playable
 {
     private int mId;
     private int mDuration;

@@ -8,4 +8,5 @@
     <string name="u2b_query_hint">輸入要搜尋的關鍵字</string>
     <string name="u2b_query_failure">搜尋發生錯誤</string>
     <string name="seaching">搜尋中...</string>
+    <string name="u2b_downloading">讀取Youtube音樂中...</string>
 </resources>
