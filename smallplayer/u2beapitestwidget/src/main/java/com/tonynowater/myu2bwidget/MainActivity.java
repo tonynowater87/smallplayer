@@ -8,11 +8,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.tonynowater.myu2bwidget.databinding.ActivityMainBinding;
 import com.tonynowater.myyoutubeapi.U2BApi;
+import com.tonynowater.myyoutubeapi.U2BVideoDTO;
 
 import java.io.IOException;
 
@@ -28,7 +30,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onResponse(Response response) throws IOException {
-            Log.d(TAG, "onResponse: " + response.toString());
+            Gson gson = new Gson();
+            if (response.isSuccessful()) {
+                Log.d(TAG, "onResponse body: " + response.body().string());
+                U2BVideoDTO u2BVideoDTO = gson.fromJson(response.body().toString(), U2BVideoDTO.class);
+                u2BVideoDTO.getItems().get(0).getId();
+            }
         }
     };
 
