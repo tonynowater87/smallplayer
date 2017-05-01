@@ -3,4 +3,9 @@
     <string name="play_state_stop">已停止</string>
     <string name="play_state_pause">已暫停</string>
     <string name="play_state_playing">播放中</string>
+    <string name="local_music">本地音樂</string>
+    <string name="u2b_music">搜尋音樂</string>
+    <string name="u2b_query_hint">輸入要搜尋的關鍵字</string>
+    <string name="u2b_query_failure">搜尋發生錯誤</string>
+    <string name="seaching">搜尋中...</string>
 </resources>

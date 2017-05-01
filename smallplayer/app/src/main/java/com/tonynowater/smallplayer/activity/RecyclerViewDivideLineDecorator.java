@@ -10,12 +10,12 @@ import android.view.View;
 /**
  * Created by tonyliao on 2017/4/30.
  */
-public class SongListAdapterDecorator extends RecyclerView.ItemDecoration {
+public class RecyclerViewDivideLineDecorator extends RecyclerView.ItemDecoration {
 
     private static final int[] ATTRS = new int[]{android.R.attr.listDivider};
     private Drawable mDividerDrawable;
 
-    SongListAdapterDecorator(Context context) {
+    RecyclerViewDivideLineDecorator(Context context) {
         final TypedArray styledAttributes = context.obtainStyledAttributes(ATTRS);
         mDividerDrawable = styledAttributes.getDrawable(0);
         styledAttributes.recycle();

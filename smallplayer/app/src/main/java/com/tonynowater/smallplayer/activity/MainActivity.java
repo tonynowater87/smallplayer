@@ -2,7 +2,10 @@ package com.tonynowater.smallplayer.activity;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.tonynowater.smallplayer.R;
@@ -43,22 +46,39 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
             }
         }
     };
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+            switch (item.getItemId()) {
+                case R.id.local_music_bottom_navigation_view:
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.framelayout_mainactivity,SongListFragment.newInstance(),SongListFragment.class.getSimpleName())
+                            .commit();
+                    break;
+                case R.id.u2b_search_bottom_navigation_view:
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.framelayout_mainactivity,U2BSearchFragment.newInstance(),U2BSearchFragment.class.getSimpleName())
+                            .commit();
+                    break;
+            }
+
+            return true;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
-
         mBinding.buttonPlay.setOnClickListener(mOnClickListener);
         mBinding.buttonStop.setOnClickListener(mOnClickListener);
-
+        mBinding.bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationSelectedListener);
+        mBinding.bottomNavigationView.setSelectedItemId(R.id.local_music_bottom_navigation_view);
         mSongPlayer = new SongPlayer();
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.framelayout_mainactivity,SongListFragment.newInstance(),SongListFragment.class.getSimpleName())
-                .commit();
     }
 
     @Override

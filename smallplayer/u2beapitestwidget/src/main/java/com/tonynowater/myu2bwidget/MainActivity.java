@@ -32,8 +32,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onResponse(Response response) throws IOException {
             Gson gson = new Gson();
             if (response.isSuccessful()) {
-                Log.d(TAG, "onResponse body: " + response.body().string());
-                U2BVideoDTO u2BVideoDTO = gson.fromJson(response.body().toString(), U2BVideoDTO.class);
+                String sBody = response.body().string();
+                Log.d(TAG, "onResponse body: " + sBody);
+                U2BVideoDTO u2BVideoDTO = gson.fromJson(sBody, U2BVideoDTO.class);
                 u2BVideoDTO.getItems().get(0).getId();
             }
         }
