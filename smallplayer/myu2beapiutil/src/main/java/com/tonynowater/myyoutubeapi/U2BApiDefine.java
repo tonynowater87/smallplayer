@@ -9,5 +9,5 @@ public class U2BApiDefine {
 
     public static final String U2B_API_URL = "https://content.googleapis.com/youtube/v3/search?part=snippet&key=" + API_KEY;
     public static final String U2B_EXTRACT_VIDEO_URL = "http://youtube.com/watch?v=%s";
-    public static final String U2B_API_SUGGESTION_URL = "http://suggestqueries.google.com/complete/search?q=%s&client=firefox&ds=yt&hl=tw";
+    public static final String U2B_API_SUGGESTION_URL = "http://suggestqueries.google.com/complete/search?q=%s&client=firefox&ds=yt&hl=zh";
 }

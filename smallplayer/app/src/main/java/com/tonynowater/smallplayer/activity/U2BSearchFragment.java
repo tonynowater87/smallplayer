@@ -78,10 +78,11 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
                         @Override
                         public void onResponse(final Response response) throws IOException {
                             if (response.isSuccessful()) {
+                                final String sResponse = new String(response.body().bytes());
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        initialU2BSuggest(U2BApiUtil.getSuggestionStringList(response));
+                                        initialU2BSuggest(U2BApiUtil.getSuggestionStringList(sResponse));
                                     }
                                 });
                             }

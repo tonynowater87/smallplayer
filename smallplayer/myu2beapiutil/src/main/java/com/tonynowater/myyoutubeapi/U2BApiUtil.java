@@ -17,19 +17,15 @@ public class U2BApiUtil {
     private U2BApiUtil() {
     }
 
-    public static List<String> getSuggestionStringList(Response response) {
+    public static List<String> getSuggestionStringList(String response) {
 
         List<String> list = new ArrayList<>();
         try {
-            String s = new String(response.body().bytes());
-            JSONArray jsonArray = new JSONArray(s);
+            JSONArray jsonArray = new JSONArray(response);
             JSONArray arraySuggestions = jsonArray.getJSONArray(1);
             for (int i = 0; i < arraySuggestions.length(); i++) {
                 list.add(arraySuggestions.getString(i));
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
