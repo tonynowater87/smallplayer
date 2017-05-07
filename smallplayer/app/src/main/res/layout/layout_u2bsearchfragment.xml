@@ -30,10 +30,17 @@
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_suggestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_query_u2b_field"
+            android:visibility="gone"/>
+
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_u2bsearchfragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ll_query_u2b_field"/>
+            android:layout_below="@+id/recyclerview_suggestion"/>
 
     </RelativeLayout>
 

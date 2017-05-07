@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 
@@ -13,6 +15,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.tonynowater.myyoutubeapi.U2BApi;
+import com.tonynowater.myyoutubeapi.U2BApiUtil;
 import com.tonynowater.myyoutubeapi.U2BVideoDTO;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseFragment;
@@ -20,11 +23,12 @@ import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
- * Created by tonyliao on 2017/5/1.
+ * Created by tonynowater on 2017/5/1.
  */
-public class U2BSearchFragment extends BaseFragment <LayoutU2bsearchfragmentBinding> implements View.OnClickListener {
+public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBinding> implements View.OnClickListener {
     private static final String TAG = U2BSearchFragment.class.getSimpleName();
 
     private Callback mCallBack = new Callback() {
@@ -51,7 +55,52 @@ public class U2BSearchFragment extends BaseFragment <LayoutU2bsearchfragmentBind
             }
         }
     };
+
+    private TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            if (!TextUtils.isEmpty(s) && s.length() > 2) {
+
+                if (!mIsRequesting) {
+                    mIsRequesting = true;
+                    U2BApi.newInstance().queryU2BSUGGESTION(s.toString(), new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            mBinding.recyclerviewSuggestion.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onResponse(final Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        initialU2BSuggest(U2BApiUtil.getSuggestionStringList(response));
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            } else {
+                mBinding.recyclerviewSuggestion.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
     private U2BSearchFragmentAdapter mSongListAdapter;
+    private boolean mIsRequesting = false;
 
     public static U2BSearchFragment newInstance() {
         return new U2BSearchFragment();
@@ -66,8 +115,25 @@ public class U2BSearchFragment extends BaseFragment <LayoutU2bsearchfragmentBind
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mBinding.btnQuerySubmit.setOnClickListener(this);
-        mSongListAdapter = new U2BSearchFragmentAdapter(getActivity().getApplicationContext(), (OnClickSomething) getActivity());
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(),LinearLayoutManager.VERTICAL,false);
+        mBinding.etQueryU2b.addTextChangedListener(mTextWatcher);
+        initialU2BViewSearch();
+
+    }
+
+    private void initialU2BSuggest(List<String> suggests) {
+        U2BSuggestAdapter suggestAdapter = new U2BSuggestAdapter(suggests);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        mBinding.recyclerviewSuggestion.setLayoutManager(layoutManager);
+        RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
+        mBinding.recyclerviewSuggestion.addItemDecoration(dividerItemDecoration);
+        mBinding.recyclerviewSuggestion.setAdapter(suggestAdapter);
+        mBinding.recyclerviewSuggestion.setVisibility(View.VISIBLE);
+        mIsRequesting = false;
+    }
+
+    private void initialU2BViewSearch() {
+        mSongListAdapter = new U2BSearchFragmentAdapter((OnClickSomething) getActivity());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mBinding.recyclerviewU2bsearchfragment.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerviewU2bsearchfragment.addItemDecoration(dividerItemDecoration);
@@ -82,6 +148,5 @@ public class U2BSearchFragment extends BaseFragment <LayoutU2bsearchfragmentBind
             mToastUtil.showToast(getString(R.string.seaching));
             U2BApi.newInstance().queryU2BVideo(sInput, mCallBack);
         }
-
     }
 }

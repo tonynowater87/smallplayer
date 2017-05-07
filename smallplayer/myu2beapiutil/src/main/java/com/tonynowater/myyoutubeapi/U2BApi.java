@@ -1,5 +1,7 @@
 package com.tonynowater.myyoutubeapi;
 
+import android.util.Log;
+
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -58,6 +60,18 @@ public class U2BApi {
         Request request = new Request.Builder()
                 .get()
                 .url(String.format(U2BApiDefine.U2B_API_URL + "&q=%s&maxResults=%d&regionCode=TW&type=channel", keyword, QUERY_MAX_RESULT))
+                .build();
+
+        mOkHttp.newCall(request).enqueue(callback);
+    }
+
+    public void queryU2BSUGGESTION(String keyword, Callback callback) {
+
+        Log.d(TAG, "queryU2BSUGGESTION: " + String.format(U2BApiDefine.U2B_API_SUGGESTION_URL, keyword));
+
+        Request request = new Request.Builder()
+                .get()
+                .url(String.format(U2BApiDefine.U2B_API_SUGGESTION_URL, keyword))
                 .build();
 
         mOkHttp.newCall(request).enqueue(callback);

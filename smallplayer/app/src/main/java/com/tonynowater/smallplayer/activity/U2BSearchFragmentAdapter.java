@@ -1,6 +1,5 @@
 package com.tonynowater.smallplayer.activity;
 
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -27,7 +26,7 @@ public class U2BSearchFragmentAdapter extends RecyclerView.Adapter<U2BSearchFrag
     private List<U2BVideoDTO.ItemsBean> mSongList;
     private OnClickSomething<Song> mOnClickSongListener;
 
-    public U2BSearchFragmentAdapter(Context context, OnClickSomething mOnClickSongListener) {
+    public U2BSearchFragmentAdapter(OnClickSomething mOnClickSongListener) {
         mSongList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
     }
