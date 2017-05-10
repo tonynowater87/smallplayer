@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/5/1.
  */
-public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBinding> implements View.OnClickListener {
+public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBinding> implements View.OnClickListener, OnClickSomething<String> {
     private static final String TAG = U2BSearchFragment.class.getSimpleName();
 
     private Callback mCallBack = new Callback() {
@@ -122,7 +122,7 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
     }
 
     private void initialU2BSuggest(List<String> suggests) {
-        U2BSuggestAdapter suggestAdapter = new U2BSuggestAdapter(suggests);
+        U2BSuggestAdapter suggestAdapter = new U2BSuggestAdapter(suggests, this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mBinding.recyclerviewSuggestion.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
@@ -146,8 +146,14 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
         String sInput = mBinding.etQueryU2b.getText().toString();
 
         if (!TextUtils.isEmpty(sInput)) {
-            mToastUtil.showToast(getString(R.string.seaching));
             U2BApi.newInstance().queryU2BVideo(sInput, mCallBack);
+            mBinding.etQueryU2b.setText("");
         }
+    }
+
+    @Override
+    public void onClick(String s) {
+        mBinding.etQueryU2b.setText("");
+        U2BApi.newInstance().queryU2BVideo(s, mCallBack);
     }
 }

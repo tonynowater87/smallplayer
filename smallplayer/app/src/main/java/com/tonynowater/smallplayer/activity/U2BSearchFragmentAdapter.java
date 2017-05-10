@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.activity;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,25 +23,25 @@ import java.util.List;
  */
 
 public class U2BSearchFragmentAdapter extends RecyclerView.Adapter<U2BSearchFragmentAdapter.U2BSearchFragmentAdapterViewHolder> {
-
-    private List<U2BVideoDTO.ItemsBean> mSongList;
+    private static final String TAG = U2BSearchFragmentAdapter.class.getSimpleName();
+    private List<U2BVideoDTO.ItemsBean> mU2BVideoList;
     private OnClickSomething<Song> mOnClickSongListener;
 
     public U2BSearchFragmentAdapter(OnClickSomething mOnClickSongListener) {
-        mSongList = new ArrayList<>();
+        mU2BVideoList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
     }
 
     @Override
     public U2BSearchFragmentAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new U2BSearchFragmentAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null), mOnClickSongListener, mSongList);
+        return new U2BSearchFragmentAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null), mOnClickSongListener, mU2BVideoList);
     }
 
     @Override
     public void onBindViewHolder(U2BSearchFragmentAdapterViewHolder holder, int position) {
-        holder.getBinding().tvSongArtistSonglistadapter.setText(mSongList.get(position).getSnippet().getTitle());
-        holder.getBinding().tvSongTitleSonglistadapter.setText(mSongList.get(position).getSnippet().getDescription());
-        String sUrl = mSongList.get(position).getSnippet().getThumbnails().getDefaultX().getUrl();
+        holder.getBinding().tvSongArtistSonglistadapter.setText(mU2BVideoList.get(position).getSnippet().getTitle());
+        holder.getBinding().tvSongTitleSonglistadapter.setText(mU2BVideoList.get(position).getSnippet().getDescription());
+        String sUrl = mU2BVideoList.get(position).getSnippet().getThumbnails().getDefaultX().getUrl();
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);
         } else {
@@ -50,20 +51,20 @@ public class U2BSearchFragmentAdapter extends RecyclerView.Adapter<U2BSearchFrag
 
     @Override
     public int getItemCount() {
-        return mSongList.size();
+        return mU2BVideoList.size();
     }
 
     public static class U2BSearchFragmentAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private LayoutSonglistadapterListitemBinding mBinding;
         private OnClickSomething mOnClickSongListener;
-        private List<U2BVideoDTO.ItemsBean> mSongList;
+        private List<U2BVideoDTO.ItemsBean> mU2BVideoList;
 
-        public U2BSearchFragmentAdapterViewHolder(View itemView, OnClickSomething mOnClickSongListener, List<U2BVideoDTO.ItemsBean> mSongList) {
+        public U2BSearchFragmentAdapterViewHolder(View itemView, OnClickSomething mOnClickSongListener, List<U2BVideoDTO.ItemsBean> mU2BVideoList) {
             super(itemView);
             mBinding = DataBindingUtil.bind(itemView);
             this.mOnClickSongListener = mOnClickSongListener;
-            this.mSongList = mSongList;
+            this.mU2BVideoList = mU2BVideoList;
             mBinding.rlRootSonglistadapter.setOnClickListener(this);
         }
 
@@ -73,12 +74,13 @@ public class U2BSearchFragmentAdapter extends RecyclerView.Adapter<U2BSearchFrag
 
         @Override
         public void onClick(View v) {
-            mOnClickSongListener.onClick(mSongList.get(getAdapterPosition()));
+            Log.d(TAG, "onClick: " + mU2BVideoList.get(getAdapterPosition()).getSnippet().getTitle());
+            mOnClickSongListener.onClick(mU2BVideoList.get(getAdapterPosition()));
         }
     }
 
     public void setDataSource (List<U2BVideoDTO.ItemsBean> dataSource) {
-        mSongList = new ArrayList<>(dataSource);
+        mU2BVideoList = new ArrayList<>(dataSource);
     }
 }
 
