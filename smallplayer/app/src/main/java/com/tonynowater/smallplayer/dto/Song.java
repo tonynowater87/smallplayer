@@ -1,9 +1,11 @@
 package com.tonynowater.smallplayer.dto;
 
+import android.media.MediaMetadata;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.tonynowater.myyoutubeapi.Playable;
+import com.tonynowater.smallplayer.service.MusicProvider;
 import com.tonynowtaer87.myutil.TimeUtil;
 
 /**
@@ -116,5 +118,18 @@ public class Song implements Playable
 
     public String getmAlbum() {
         return mAlbum;
+    }
+
+    public MediaMetadata genMediaMetadata() {
+
+        return new MediaMetadata.Builder()
+                .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, String.valueOf(mId))
+                .putString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE, mData)
+                .putString(MediaMetadata.METADATA_KEY_ALBUM, mAlbum)
+                .putString(MediaMetadata.METADATA_KEY_ARTIST, mArtist)
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, mDuration)
+                .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
+                .putString(MediaMetadata.METADATA_KEY_TITLE, mTitle)
+                .build();
     }
 }

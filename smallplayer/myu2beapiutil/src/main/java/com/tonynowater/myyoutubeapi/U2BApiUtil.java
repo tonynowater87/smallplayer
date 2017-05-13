@@ -1,11 +1,8 @@
 package com.tonynowater.myyoutubeapi;
 
-import com.squareup.okhttp.Response;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

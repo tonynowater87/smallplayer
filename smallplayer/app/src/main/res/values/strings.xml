@@ -9,4 +9,6 @@
     <string name="u2b_query_failure">搜尋發生錯誤</string>
     <string name="seaching">搜尋中...</string>
     <string name="u2b_downloading">讀取Youtube音樂中...</string>
+    <string name="play_state_previous">上一首</string>
+    <string name="play_state_next">下一首</string>
 </resources>
