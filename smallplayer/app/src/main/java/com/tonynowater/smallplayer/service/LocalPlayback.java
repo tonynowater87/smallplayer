@@ -2,10 +2,10 @@ package com.tonynowater.smallplayer.service;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.media.MediaMetadata;
 import android.media.MediaPlayer;
-import android.media.session.PlaybackState;
 import android.net.wifi.WifiManager;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import java.io.IOException;
@@ -27,15 +27,18 @@ public class LocalPlayback implements Playback
     private AudioManager mAudioManager;
     private int mState;
     private int mCurrentPosition;
+    private int mSongTrackPosition;
     private MediaPlayer mMediaPlayer;
     private MusicProvider mMusicProvider;
+    private PlaybackCallback mPlaybackCallback;
 
-    public LocalPlayback(Context mContext, MusicProvider mMusicProvider) {
+    public LocalPlayback(Context mContext, MusicProvider mMusicProvider, PlaybackCallback mPlaybackCallback) {
         this.mContext = mContext;
         this.mMusicProvider = mMusicProvider;
+        this.mPlaybackCallback = mPlaybackCallback;
+        mSongTrackPosition = 0;
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        mWifiLock = ((WifiManager) mContext.getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+        mWifiLock = ((WifiManager) mContext.getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     }
 
     @Override
@@ -51,6 +54,11 @@ public class LocalPlayback implements Playback
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "onCompletion:");
+        mSongTrackPosition++;
+        if (mSongTrackPosition >= mMusicProvider.getPlayListSize()) {
+            mSongTrackPosition = 0;
+        }
+        play();
     }
 
     @Override
@@ -62,9 +70,8 @@ public class LocalPlayback implements Playback
     @Override
     public void onPrepared(MediaPlayer mp) {
         Log.d(TAG, "onPrepared:");
-        mState = PlaybackState.STATE_PLAYING;
+        mState = PlaybackStateCompat.STATE_PLAYING;
         mMediaPlayer.start();
-
     }
 
     @Override
@@ -80,17 +87,17 @@ public class LocalPlayback implements Playback
     @Override
     public int getState() {
         Log.d(TAG, "getState:" + mState);
-        return 0;
+        return mState;
     }
 
     @Override
     public boolean isPlaying() {
-        return false;
+        return mMediaPlayer == null ? false : mMediaPlayer.isPlaying();
     }
 
     @Override
     public int getCurrentStreamPosition() {
-        return 0;
+        return mMediaPlayer != null ? mMediaPlayer.getCurrentPosition() : mCurrentPosition;
     }
 
     @Override
@@ -104,48 +111,62 @@ public class LocalPlayback implements Playback
     }
 
     @Override
-    public void play(MediaMetadata mediaMetadata) {
-        Log.d(TAG, "play:" + mediaMetadata.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE));
+    public void play() {
+        Log.d(TAG, "play size : " + mMusicProvider.getPlayListSize());
+        Log.d(TAG, "play position : " + mSongTrackPosition);
         createMediaPlayerIfNeeded();
-        String source = mediaMetadata.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE);
+        MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(mSongTrackPosition);
+        if (mediaMetadataCompat == null) {
+            Log.d(TAG, "no list to play:");
+            stop(true);
+            return;
+        }
+
+        Log.d(TAG, "play: " + mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+
+        String source = mediaMetadataCompat.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE);
         try {
-            mState = PlaybackState.STATE_BUFFERING;
+            mPlaybackCallback.onPlaybackStateChanged(mediaMetadataCompat);
             mMediaPlayer.setDataSource(source);
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e(TAG, "play: " + e.toString() );
         }
     }
 
     private void createMediaPlayerIfNeeded() {
         if (mMediaPlayer == null) {
+            Log.d(TAG, "createMediaPlayerIfNeeded: initial");
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setOnCompletionListener(this);
             mMediaPlayer.setOnBufferingUpdateListener(this);
             mMediaPlayer.setOnBufferingUpdateListener(this);
         } else {
+            Log.d(TAG, "createMediaPlayerIfNeeded: reset");
             mMediaPlayer.reset();
         }
     }
 
     @Override
     public void pause() {
-        if (mState == PlaybackState.STATE_PLAYING) {
+        if (mState == PlaybackStateCompat.STATE_PLAYING) {
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentPosition = mMediaPlayer.getCurrentPosition();
             }
         }
 
-        mState = PlaybackState.STATE_PAUSED;
+        mState = PlaybackStateCompat.STATE_PAUSED;
+        mPlaybackCallback.onPlaybackStateChanged(null);
     }
 
 
     @Override
     public void stop(boolean notifyListeners) {
         Log.d(TAG, "stop:" + notifyListeners);
-        mState = PlaybackState.STATE_STOPPED;
+        mState = PlaybackStateCompat.STATE_STOPPED;
         releaseResource();
     }
 

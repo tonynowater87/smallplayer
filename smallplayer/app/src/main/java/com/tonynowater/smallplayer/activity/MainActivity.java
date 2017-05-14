@@ -1,15 +1,18 @@
 package com.tonynowater.smallplayer.activity;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.media.browse.MediaBrowser;
-import android.media.session.MediaController;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,10 +32,34 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
 
     private ActivityMainBinding mBinding;
     private String mSongPath;
-    private MediaBrowser mMediaBrowserCompat;
-    private MediaController mediaControllerCompat;
+    private PlaybackStateCompat mPlaybackStateCompat;
+    private MediaBrowserCompat mMediaBrowserCompat;
+    private MediaControllerCompat mMediaControllerCompat;
+    private MediaControllerCompat.TransportControls mTransportControls;
+    private MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
+        @Override
+        public void onSessionDestroyed() {
+            Log.d(TAG, "onSessionDestroyed: ");
+        }
 
-    private MediaBrowserCompat.ConnectionCallback mConnectionCallback = new MediaBrowserCompat.ConnectionCallback(){
+        @Override
+        public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            Log.d(TAG, "onPlaybackStateChanged: " + state);
+            if (state == null) {
+                return;
+            }
+
+            mPlaybackStateCompat = state;
+            MainActivity.this.onPlaybackStateChange(state);
+        }
+
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            Log.d(TAG, "onMetadataChanged: ");
+        }
+    };
+
+    private MediaBrowserCompat.ConnectionCallback mConnectionCallback = new MediaBrowserCompat.ConnectionCallback() {
         @Override
         public void onConnected() {
             Log.d(TAG, "onConnected: " + mMediaBrowserCompat.getSessionToken());
@@ -41,32 +68,112 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
                 throw new IllegalArgumentException("No session token");
             }
 
-
-
+            try {
+                mMediaControllerCompat = new MediaControllerCompat(MainActivity.this, mMediaBrowserCompat.getSessionToken());
+                mTransportControls = mMediaControllerCompat.getTransportControls();
+                mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);
+                MediaControllerCompat.setMediaController(MainActivity.this, mMediaControllerCompat);
+                mPlaybackStateCompat = mMediaControllerCompat.getPlaybackState();
+                onPlaybackStateChange(mPlaybackStateCompat);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                Log.e(TAG, "onConnected: " + e.toString());
+            }
         }
 
         @Override
         public void onConnectionFailed() {
             super.onConnectionFailed();
+            Log.d(TAG, "onConnectionFailed: ");
         }
 
         @Override
         public void onConnectionSuspended() {
             super.onConnectionSuspended();
+            Log.d(TAG, "onConnectionSuspended: ");
         }
     };
+
+    /**
+     * 更新播放的狀態
+     * @param mPlaybackStateCompat
+     */
+    private void onPlaybackStateChange(PlaybackStateCompat mPlaybackStateCompat) {
+        Log.d(TAG, "onPlaybackStateChange : " + mPlaybackStateCompat);
+
+        if (mPlaybackStateCompat == null) {
+            return;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        int state = mPlaybackStateCompat.getState();
+        boolean enablePlay = false;
+        switch (state) {
+            case PlaybackStateCompat.STATE_NONE:
+                stringBuilder.append("STATE_NONE");
+                enablePlay = true;
+                break;
+            case PlaybackStateCompat.STATE_PLAYING:
+                stringBuilder.append(getString(R.string.play_state_playing));
+                enablePlay = false;
+                break;
+            case PlaybackStateCompat.STATE_PAUSED:
+                stringBuilder.append(getString(R.string.play_state_pause));
+                enablePlay = true;
+                break;
+            default:
+                stringBuilder.append(state);
+                break;
+        }
+
+        Log.d(TAG, "onPlaybackStateChange: " + stringBuilder.toString());
+
+        mBinding.buttonPlay.setEnabled(enablePlay);
+    }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            long state = mPlaybackStateCompat != null ? mPlaybackStateCompat.getState() : PlaybackStateCompat.STATE_NONE;
+
             switch (v.getId()) {
                 case R.id.buttonPlay:
+                    // TODO: 2017/5/14
+                    if (state == PlaybackStateCompat.STATE_NONE
+                     || state == PlaybackStateCompat.STATE_STOPPED
+                     || state == PlaybackStateCompat.STATE_PAUSED) {
+                        play();
+                    } else {
+                        pause();
+                    }
                     break;
                 case R.id.buttonStop:
+                    // TODO: 2017/5/14
+                    stop();
                     break;
             }
         }
     };
+
+    private void pause() {
+        if (mTransportControls != null) {
+            mTransportControls.stop();
+        }
+    }
+
+    private void stop() {
+        if (mTransportControls != null) {
+            mTransportControls.stop();
+        }
+    }
+
+    private void play() {
+        if (mTransportControls != null) {
+            mTransportControls.play();
+        }
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -84,14 +191,14 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         mBinding.bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationSelectedListener);
         mBinding.bottomNavigationView.setSelectedItemId(R.id.local_music_bottom_navigation_view);
 
-        //mMediaBrowserCompat = new MediaBrowserCompat(this,new ComponentName(this, PlayMusicService.class), mConnectionCallback, null);
-
+        mMediaBrowserCompat = new MediaBrowserCompat(this, new ComponentName(this, PlayMusicService.class), mConnectionCallback, null);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (mMediaBrowserCompat != null) {
+            Log.d(TAG, "onResume: connect");
             mMediaBrowserCompat.connect();
         }
     }
@@ -99,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     @Override
     protected void onPause() {
         if (mMediaBrowserCompat != null) {
+            Log.d(TAG, "onPause: disconnect");
             mMediaBrowserCompat.disconnect();
         }
         super.onPause();
@@ -110,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         if (playable instanceof Song) {
             mSongPath = ((Song) playable).getmData();
             mBinding.textViewSongNameValue.setText(((Song) playable).getmTitle());
+            sendMetaDataToService(((Song) playable).getMediaMetadata());
         } else {
             final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) playable);
             YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
@@ -120,6 +229,18 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
                 }
             });
         }
+    }
+
+    /**
+     * 將播放資料傳至Service
+     * @param mediaMetadata
+     */
+    private void sendMetaDataToService(MediaMetadataCompat mediaMetadata) {
+        Log.d(TAG, "sendMetaDataToService: " + mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        Intent it = new Intent(this,PlayMusicService.class);
+        it.setAction(PlayMusicService.ACTION_ADD_NEW_MUSIC);
+        it.putExtra(PlayMusicService.BUNDLE_KEY_MEDIAMETADATA, mediaMetadata);
+        startService(it);
     }
 
     /**

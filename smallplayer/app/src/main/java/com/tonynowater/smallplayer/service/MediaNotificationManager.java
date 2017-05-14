@@ -22,6 +22,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.MainActivity;
 
 /**
+ * 處理通知類別
  * Created by tonyliao on 2017/5/13.
  */
 public class MediaNotificationManager extends BroadcastReceiver {
@@ -44,16 +45,25 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private MediaControllerCompat.Callback mMediaControllerCallback = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            super.onPlaybackStateChanged(state);
+            Log.d(TAG, "onPlaybackStateChanged: " + state);
+
+            if (state.getState() == PlaybackStateCompat.STATE_PLAYING
+              ||state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+                Notification notification = createNofification();
+                if (notification != null) {
+                    Log.d(TAG, "onPlaybackStateChanged: refresh notification");
+                    mNotificationManager.notify(NOTIFICATION_ID, notification);
+                }
+            }
         }
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
-            super.onMetadataChanged(metadata);
+            Log.d(TAG, "onMetadataChanged: " + metadata);
         }
         @Override
         public void onSessionDestroyed() {
-            super.onSessionDestroyed();
+            Log.d(TAG, "onSessionDestroyed: ");
         }
     };
 
@@ -119,8 +129,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
             intentFilter.addAction(ACTION_NEXT);
             mPlayMusicService.registerReceiver(this, intentFilter);
             // The notification must be updated after setting started to true
-            mPlayMusicService.startForeground(NOTIFICATION_ID, createNofification());
-            mStarted = true;
+            Notification notification = createNofification();
+            if (notification != null) {
+                mPlayMusicService.startForeground(NOTIFICATION_ID, createNofification());
+                mStarted = true;
+            } else {
+                Log.w(TAG, "startNotification: notification null");
+            }
         }
     }
 
@@ -157,9 +172,33 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
                 .setContentText(mediaDescription.getSubtitle());
-        //TODO Notification 通知加到一半
+        setNotificationPlayState(builder);
 
-        return null;
+        return builder.build();
+    }
+
+    private void setNotificationPlayState(NotificationCompat.Builder builder) {
+        Log.d(TAG, "setNotificationPlayState: " + mPlaybackState);
+        if (mPlaybackState == null || !mStarted) {
+            Log.d(TAG, "setNotificationPlayState: cancel notification");
+            return;
+        }
+
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING && mPlaybackState.getPosition() > 0) {
+            long playTime = (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000;
+            Log.d(TAG, "setNotificationPlayState , position : " + playTime  + " seconds.");
+            builder.setWhen(playTime)
+                    .setShowWhen(true)
+                    .setUsesChronometer(true);
+        } else {
+            Log.d(TAG, "setNotificationPlayState: position 0");
+            builder.setWhen(0)
+                    .setShowWhen(false)
+                    .setUsesChronometer(false);
+        }
+
+        // Make sure that the notification can be dismissed by the user when we are not playing:
+        builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
     }
 
     private PendingIntent createContentIntent() {
@@ -187,6 +226,25 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        //處理通知的點擊事件
+        String action = intent.getAction();
+        Log.d(TAG, "onReceive: " + action);
+        switch (action) {
+            case ACTION_PLAY:
+                mTransportControls.play();
+                break;
+            case ACTION_PAUSE:
+                mTransportControls.pause();
+                break;
+            case ACTION_NEXT:
+                mTransportControls.skipToNext();
+                break;
+            case ACTION_PREVIOUS:
+                mTransportControls.skipToPrevious();
+                break;
+            default:
+                Log.d(TAG, "onReceive: unknow " + action);
+        }
 
     }
 }

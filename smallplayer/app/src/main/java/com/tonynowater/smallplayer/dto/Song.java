@@ -1,8 +1,8 @@
 package com.tonynowater.smallplayer.dto;
 
-import android.media.MediaMetadata;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.media.MediaMetadataCompat;
 
 import com.tonynowater.myyoutubeapi.Playable;
 import com.tonynowater.smallplayer.service.MusicProvider;
@@ -120,16 +120,16 @@ public class Song implements Playable
         return mAlbum;
     }
 
-    public MediaMetadata genMediaMetadata() {
+    public MediaMetadataCompat getMediaMetadata() {
 
-        return new MediaMetadata.Builder()
-                .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, String.valueOf(mId))
+        return new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, String.valueOf(mId))
                 .putString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE, mData)
-                .putString(MediaMetadata.METADATA_KEY_ALBUM, mAlbum)
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, mArtist)
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, mDuration)
-                .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
-                .putString(MediaMetadata.METADATA_KEY_TITLE, mTitle)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mAlbum)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mArtist)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mDuration)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mTitle)
                 .build();
     }
 }

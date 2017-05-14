@@ -1,9 +1,8 @@
 package com.tonynowater.smallplayer.service;
 
-import android.media.MediaMetadata;
+import android.support.v4.media.MediaMetadataCompat;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.ArrayList;
 
 /**
  * Created by tonyliao on 2017/5/12.
@@ -12,8 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
-
-    private ConcurrentMap<String, MediaMetadata> mCurrentMusicPlayList;
+    private ArrayList<MediaMetadataCompat> mMusicPlayList;
     private volatile State mCurrentState = State.NON_INITIALIZED;
 
     enum State {
@@ -25,14 +23,26 @@ public class MusicProvider {
     }
 
     public MusicProvider() {
-        mCurrentMusicPlayList = new ConcurrentHashMap<>();
+        mMusicPlayList = new ArrayList<>();
     }
 
     public boolean isInitialized() {
         return mCurrentState == State.INITIALIZED;
     }
 
-    public void putNewMusic(String id, MediaMetadata mediaMetadata) {
-        mCurrentMusicPlayList.put(id, mediaMetadata);
+    public void putNewMusic(MediaMetadataCompat mediaMetadata) {
+        mMusicPlayList.add(mediaMetadata);
+    }
+
+    public MediaMetadataCompat getPlayList(int index) {
+        return index > mMusicPlayList.size() ? null : mMusicPlayList.get(index);
+    }
+
+    public int getPlayListSize() {
+        return mMusicPlayList.size();
+    }
+
+    public boolean isPlayListAvailable () {
+        return mMusicPlayList.size() > 0;
     }
 }

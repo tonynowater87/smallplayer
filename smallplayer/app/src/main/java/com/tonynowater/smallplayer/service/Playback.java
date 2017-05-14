@@ -67,9 +67,9 @@ public interface Playback {
     void updateLastKnownStreamPosition();
 
     /**
-     * @param mediaMetadata to play
+     * play music
      */
-    void play(MediaMetadata mediaMetadata);
+    void play();
 
     /**
      * Pause the current playing item
