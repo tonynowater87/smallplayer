@@ -30,4 +30,38 @@ public class U2BApiUtil {
         return list;
     }
 
+    public static int formateU2BDurationToMilionSecond(String duration) {
+        try {
+            duration = duration.replace("PT","");
+            int hour = 0;
+            int hourIndex = duration.indexOf("H");
+            if (hourIndex != -1) {
+                hour = Integer.parseInt(duration.substring(0, hourIndex));
+            }
+            int minute = 0;
+            int minuteIndex = duration.indexOf("M");
+            if (minuteIndex != -1) {
+                minute = Integer.parseInt(duration.substring(hourIndex+1, minuteIndex));
+            }
+            int second = 0;
+            int secondIndex = duration.indexOf("S");
+            if (secondIndex != -1) {
+                second = Integer.parseInt(duration.substring(minuteIndex+1, secondIndex));
+            }
+            return (hour * 60 * 60 + minute * 60 + second) * 1000;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    public static String formateU2BDurationToString(int duration) {
+        int seconds = duration / 1000 % 60 ;
+        int minutes = (duration / (1000*60)) % 60;
+        int hours   = (duration / (1000*60*60)) % 24;
+        if (hours > 0) {
+            return hours + ":" + minutes + ":" + seconds;
+        } else {
+            return minutes + ":" + seconds;
+        }
+    }
 }

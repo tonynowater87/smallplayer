@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.tonynowater.myyoutubeapi.U2BApiUtil;
 import com.tonynowater.myyoutubeapi.U2BVideoDTO;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
@@ -41,6 +42,7 @@ public class U2BSearchFragmentAdapter extends RecyclerView.Adapter<U2BSearchFrag
     public void onBindViewHolder(U2BSearchFragmentAdapterViewHolder holder, int position) {
         holder.getBinding().tvSongArtistSonglistadapter.setText(mU2BVideoList.get(position).getSnippet().getTitle());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mU2BVideoList.get(position).getSnippet().getDescription());
+        holder.getBinding().tvDurationSonglistadapter.setText(U2BApiUtil.formateU2BDurationToString(mU2BVideoList.get(position).getVideoDuration()));
         String sUrl = mU2BVideoList.get(position).getSnippet().getThumbnails().getDefaultX().getUrl();
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);

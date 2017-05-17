@@ -17,9 +17,13 @@ public class U2BApi {
 
     public static final int TIMEOUT = 10;
     public static final int QUERY_MAX_RESULT = 25;
+    private static final String video =  "video";
+    private static final String playlist = "playlist";
+    private static final String channel = "channel";
 
     private static U2BApi mInstance = null;
     private OkHttpClient mOkHttp;
+
 
     private U2BApi() {
         mOkHttp = new OkHttpClient();
@@ -39,7 +43,7 @@ public class U2BApi {
 
         Request request = new Request.Builder()
                 .get()
-                .url(String.format(U2BApiDefine.U2B_API_URL + "&q=%s&maxResults=%d&regionCode=TW&type=video", keyword, QUERY_MAX_RESULT))
+                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video))
                 .build();
 
         mOkHttp.newCall(request).enqueue(callback);
@@ -49,7 +53,7 @@ public class U2BApi {
 
         Request request = new Request.Builder()
                 .get()
-                .url(String.format(U2BApiDefine.U2B_API_URL + "&q=%s&maxResults=%d&regionCode=TW&type=playlist", keyword, QUERY_MAX_RESULT))
+                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, playlist))
                 .build();
 
         mOkHttp.newCall(request).enqueue(callback);
@@ -59,7 +63,7 @@ public class U2BApi {
 
         Request request = new Request.Builder()
                 .get()
-                .url(String.format(U2BApiDefine.U2B_API_URL + "&q=%s&maxResults=%d&regionCode=TW&type=channel", keyword, QUERY_MAX_RESULT))
+                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, channel))
                 .build();
 
         mOkHttp.newCall(request).enqueue(callback);
@@ -72,6 +76,18 @@ public class U2BApi {
         Request request = new Request.Builder()
                 .get()
                 .url(String.format(U2BApiDefine.U2B_API_SUGGESTION_URL, keyword))
+                .build();
+
+        mOkHttp.newCall(request).enqueue(callback);
+    }
+
+    public void queryU2BVedioDuration(String videoid, Callback callback) {
+
+        Log.d(TAG, "queryU2BSUGGESTION: " + String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL, videoid, QUERY_MAX_RESULT));
+
+        Request request = new Request.Builder()
+                .get()
+                .url(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL, videoid, QUERY_MAX_RESULT))
                 .build();
 
         mOkHttp.newCall(request).enqueue(callback);

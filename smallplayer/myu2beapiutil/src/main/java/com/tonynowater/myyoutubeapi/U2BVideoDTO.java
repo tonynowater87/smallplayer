@@ -1,5 +1,7 @@
 package com.tonynowater.myyoutubeapi;
 
+import android.support.v4.media.MediaMetadataCompat;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -107,11 +109,11 @@ public class U2BVideoDTO {
          * id : {"kind":"youtube#video","videoId":"osnuIq1eLTk"}
          * snippet : {"publishedAt":"2013-11-10T01:58:05.000Z","channelId":"UCM6Zft-lFfWD2PmmOflgYPw","title":"5566歌曲大串燒","description":"歌曲播放順序名稱為以下： 1.我難過2愛情漫遊3.無所謂4.一光年5.神話6.哇沙米7.Without your love 8.跟他拼9.Easy come easy go 10.綻放11.For you 12. One...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/osnuIq1eLTk/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/osnuIq1eLTk/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/osnuIq1eLTk/hqdefault.jpg","width":480,"height":360}},"channelTitle":"s1990413","liveBroadcastContent":"none"}
          */
-
         private String kind;
         private String etag;
         private IdBean id;
         private SnippetBean snippet;
+        private int durationToMilionSecond;
 
         public String getKind() {
             return kind;
@@ -144,6 +146,28 @@ public class U2BVideoDTO {
         public void setSnippet(SnippetBean snippet) {
             this.snippet = snippet;
         }
+
+        public void addVideoDuration(int durationToMilionSecond) {
+            this.durationToMilionSecond = durationToMilionSecond;
+        }
+
+        public int getVideoDuration() {
+            return durationToMilionSecond;
+        }
+
+        //TODO
+//        public MediaMetadataCompat getMediaMetadata() {
+//
+//            return new MediaMetadataCompat.Builder()
+//                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
+//                    .putString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE, mData)
+//                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mAlbum)
+//                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mArtist)
+//                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mDuration)
+//                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
+//                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mTitle)
+//                    .build();
+//        }
 
         public static class IdBean {
             /**
