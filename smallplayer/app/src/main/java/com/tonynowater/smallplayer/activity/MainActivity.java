@@ -19,8 +19,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.tonynowater.myyoutubeapi.Playable;
-import com.tonynowater.myyoutubeapi.U2BVideoDTO;
+import com.tonynowater.smallplayer.u2b.Playable;
+import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
 import com.tonynowater.smallplayer.dto.Song;

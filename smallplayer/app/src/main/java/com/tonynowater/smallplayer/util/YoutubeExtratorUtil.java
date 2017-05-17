@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.tonynowater.myyoutubeapi.U2BApiDefine;
+import com.tonynowater.smallplayer.u2b.U2BApiDefine;
 
 import at.huber.youtubeExtractor.VideoMeta;
 import at.huber.youtubeExtractor.YouTubeExtractor;

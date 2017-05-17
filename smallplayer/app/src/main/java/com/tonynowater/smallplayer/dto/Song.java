@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaMetadataCompat;
 
-import com.tonynowater.myyoutubeapi.Playable;
+import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.service.MusicProvider;
 import com.tonynowtaer87.myutil.TimeUtil;
 

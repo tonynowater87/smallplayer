@@ -1,1 +1,1 @@
-include ':app', ':myutil', ':myu2beapiutil', ':u2beapitestwidget'
+include ':app', ':myutil'
