@@ -32,11 +32,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     private MusicProvider mMusicProvider;
     private MediaNotificationManager mMediaNotificationManager;
     private LocalPlayback mLocalPlayback;
-    private PlaybackCallback mPlaybackCallback = new PlaybackCallback() {
+    private Playback.Callback mPlaybackCallback = new Playback.Callback() {
         @Override
         public void onCompletion() {
             Log.d(TAG, "onCompletion: ");
-            updateMetadata(mMusicProvider.getPlayList(mLocalPlayback.getCurrentSongPosition()));
+            skipToNext();
         }
 
         @Override
@@ -52,6 +52,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     // 表示Service是否已start過了
     private boolean mServiceStarted;
+    private int mSongTrackPosition = 0;
 
     public PlayMusicService() {
         mMusicProvider = new MusicProvider();
@@ -187,6 +188,28 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             Log.d(TAG, "onStop:");
             handleStopRequest();
         }
+
+        @Override
+        public void onSkipToNext() {
+            skipToNext();
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            mSongTrackPosition--;
+            if (mSongTrackPosition < 0) {
+                mSongTrackPosition = 0;
+            }
+            handlePlayRequest();
+        }
+    }
+
+    private void skipToNext() {
+        mSongTrackPosition++;
+        if (mSongTrackPosition >= mMusicProvider.getPlayListSize()) {
+            mSongTrackPosition = 0;
+        }
+        handlePlayRequest();
     }
 
     private void handlePauseRequest() {
@@ -214,8 +237,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             mMediaSessionCompat.setActive(true);
         }
 
-        mLocalPlayback.play();
-        updateMetadata(mMusicProvider.getPlayList(mLocalPlayback.getCurrentSongPosition()));
+        mLocalPlayback.play(mSongTrackPosition);
+        updateMetadata(mMusicProvider.getPlayList(mSongTrackPosition));
     }
 
     /**

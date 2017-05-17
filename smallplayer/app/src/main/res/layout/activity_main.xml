@@ -12,14 +12,28 @@
             android:id="@+id/buttonPlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="播放"/>
+            android:text="@string/button_string_play"/>
 
         <Button
             android:id="@+id/buttonStop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="停止"
+            android:text="@string/button_string_pause"
             android:layout_toRightOf="@+id/buttonPlay"/>
+
+        <Button
+            android:id="@+id/buttonNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_string_next"
+            android:layout_toRightOf="@+id/buttonStop"/>
+
+        <Button
+            android:id="@+id/buttonPrevious"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_string_previous"
+            android:layout_toRightOf="@+id/buttonNext"/>
 
         <TextView
             android:id="@+id/textViewStatusTitle"

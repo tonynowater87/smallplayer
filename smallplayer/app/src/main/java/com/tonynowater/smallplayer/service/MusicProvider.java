@@ -7,7 +7,6 @@ import java.util.ArrayList;
 /**
  * Created by tonyliao on 2017/5/12.
  */
-
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";

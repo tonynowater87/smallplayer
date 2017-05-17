@@ -15,8 +15,6 @@
  */
 package com.tonynowater.smallplayer.service;
 
-import android.media.MediaMetadata;
-
 /**
  * Interface representing either Local or Remote Playback. The {@link PlayMusicService} works
  * directly with an instance of the Playback object to make the various calls such as
@@ -69,7 +67,7 @@ public interface Playback {
     /**
      * play music
      */
-    void play();
+    void play(int trackPosition);
 
     /**
      * Pause the current playing item
@@ -81,47 +79,12 @@ public interface Playback {
      */
     void seekTo(int position);
 
-    /**
-     * Set the current mediaId. This is only used when switching from one
-     * playback to another.
-     *
-     * @param mediaId to be set as the current.
-     */
-    void setCurrentMediaId(String mediaId);
-
-    /**
-     *
-     * @return the current media Id being processed in any state or null.
-     */
-    String getCurrentMediaId();
-
-    int getCurrentSongPosition();
-
     interface Callback {
-        /**
-         * On current music completed.
-         */
+
         void onCompletion();
-        /**
-         * on Playback status changed
-         * Implementations can use this callback to update
-         * playback state on the media sessions.
-         */
-        void onPlaybackStatusChanged(int state);
 
-        /**
-         * @param error to be added to the PlaybackState
-         */
+        void onPlaybackStateChanged();
+
         void onError(String error);
-
-        /**
-         * @param mediaId being currently played
-         */
-        void setCurrentMediaId(String mediaId);
     }
-
-    /**
-     * @param callback to be called
-     */
-    void setCallback(Callback callback);
 }

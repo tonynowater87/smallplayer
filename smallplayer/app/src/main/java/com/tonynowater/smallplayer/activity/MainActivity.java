@@ -153,9 +153,27 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
                 case R.id.buttonStop:
                     stop();
                     break;
+                case R.id.buttonNext:
+                    skipToNext();
+                    break;
+                case R.id.buttonPrevious:
+                    skipToPrevious();
+                    break;
             }
         }
     };
+
+    private void skipToNext() {
+        if (mTransportControls != null) {
+            mTransportControls.skipToNext();
+        }
+    }
+
+    private void skipToPrevious() {
+        if (mTransportControls != null) {
+            mTransportControls.skipToPrevious();
+        }
+    }
 
     private void pause() {
         if (mTransportControls != null) {
@@ -189,6 +207,8 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mBinding.buttonPlay.setOnClickListener(mOnClickListener);
         mBinding.buttonStop.setOnClickListener(mOnClickListener);
+        mBinding.buttonNext.setOnClickListener(mOnClickListener);
+        mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
         mBinding.bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationSelectedListener);
         mBinding.bottomNavigationView.setSelectedItemId(R.id.local_music_bottom_navigation_view);
 
