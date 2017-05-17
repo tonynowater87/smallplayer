@@ -46,7 +46,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             Log.d(TAG, "onPlaybackStateChanged: " + state);
-
+            mPlaybackState = state;
+            
             if (state.getState() == PlaybackStateCompat.STATE_PLAYING
               ||state.getState() == PlaybackStateCompat.STATE_PAUSED) {
                 Notification notification = createNofification();
@@ -54,18 +55,37 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     Log.d(TAG, "onPlaybackStateChanged: refresh notification");
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
                 }
+            } else {
+                stopNotification();
             }
         }
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             Log.d(TAG, "onMetadataChanged: " + metadata);
+            mMediaMetadata = metadata;
+            Notification notification = createNofification();
+            if (notification != null) {
+                mNotificationManager.notify(NOTIFICATION_ID, notification);
+            }
         }
         @Override
         public void onSessionDestroyed() {
             Log.d(TAG, "onSessionDestroyed: ");
+            updateSessionToken();
         }
     };
+
+    private void stopNotification() {
+        Log.d(TAG, "stopNotification:" + mStarted);
+        if (mStarted) {
+            mStarted = false;
+            mMediaController.unregisterCallback(mMediaControllerCallback);
+            mNotificationManager.cancel(NOTIFICATION_ID);
+            mPlayMusicService.unregisterReceiver(this);
+            mPlayMusicService.stopForeground(true);
+        }
+    }
 
     private PendingIntent mPlayIntent;
     private PendingIntent mPauseIntent;
@@ -131,6 +151,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // The notification must be updated after setting started to true
             Notification notification = createNofification();
             if (notification != null) {
+                mMediaController.registerCallback(mMediaControllerCallback);
                 mPlayMusicService.startForeground(NOTIFICATION_ID, createNofification());
                 mStarted = true;
             } else {
@@ -184,9 +205,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
             return;
         }
 
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING && mPlaybackState.getPosition() > 0) {
-            long playTime = (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000;
-            Log.d(TAG, "setNotificationPlayState , position : " + playTime  + " seconds.");
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING && mPlaybackState.getPosition() >= 0) {
+            long playTime = System.currentTimeMillis() - mPlaybackState.getPosition();
+            Log.d(TAG, "setNotificationPlayState , position : " + playTime / 1000 + " seconds.");
             builder.setWhen(playTime)
                     .setShowWhen(true)
                     .setUsesChronometer(true);

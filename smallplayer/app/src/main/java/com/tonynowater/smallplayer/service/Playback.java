@@ -95,6 +95,8 @@ public interface Playback {
      */
     String getCurrentMediaId();
 
+    int getCurrentSongPosition();
+
     interface Callback {
         /**
          * On current music completed.

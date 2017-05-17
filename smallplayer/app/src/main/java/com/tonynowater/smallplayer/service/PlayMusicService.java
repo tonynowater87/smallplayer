@@ -2,7 +2,7 @@ package com.tonynowater.smallplayer.service;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.tonynowater.smallplayer.BuildConfig;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class PlayMusicService extends MediaBrowserServiceCompat {
@@ -24,7 +25,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String ACTION_ADD_NEW_MUSIC = "ACTION_ADD_NEW_MUSIC";
     public static final String BUNDLE_KEY_MEDIAMETADATA = "BUNDLE_KEY_MEDIAMETADATA";
     private static final String ROOT_ID_TEST = "ROOT_ID_TEST";
-
+    private static final int STOP_DELAY = 30000;
+    private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
     private MediaSessionCompat mMediaSessionCompat;
     private PlaybackStateCompat.Builder mPlaybackStateCompatBuilder;
     private MusicProvider mMusicProvider;
@@ -34,11 +36,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         @Override
         public void onCompletion() {
             Log.d(TAG, "onCompletion: ");
+            updateMetadata(mMusicProvider.getPlayList(mLocalPlayback.getCurrentSongPosition()));
         }
 
         @Override
-        public void onPlaybackStateChanged(MediaMetadataCompat mediaMetadataCompat) {
-            updateMetadata(mediaMetadataCompat);
+        public void onPlaybackStateChanged() {
             updatePlaybackState(null);
         }
 
@@ -59,7 +61,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public void onCreate() {
         super.onCreate();
 
-        mLocalPlayback = new LocalPlayback(getApplicationContext(),mMusicProvider, mPlaybackCallback);
+        mLocalPlayback = new LocalPlayback(this, mMusicProvider, mPlaybackCallback);
 
         mMediaSessionCompat = new MediaSessionCompat(getApplicationContext(), TAG);
         // Enable callbacks from MediaButtons and TransportControls
@@ -78,6 +80,16 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         mMediaNotificationManager = new MediaNotificationManager(this);
         updatePlaybackState(null);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy:");
+        updatePlaybackState(null);
+        stopSelf();
+        mServiceStarted = false;
+        mMediaSessionCompat.release();
+        super.onDestroy();
     }
 
     /** 更新播放狀態至Notification */
@@ -122,7 +134,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // TODO: 2017/5/14 播放第一首歌後，在加入第二首時會當機
         if (intent != null) {
             String action = intent.getAction();
             if (TextUtils.equals(action, ACTION_ADD_NEW_MUSIC)) {
@@ -133,13 +144,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         }
 
         return START_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        // 沒用到
-       return super.onBind(intent);
     }
 
     @Nullable
@@ -166,7 +170,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPlay() {
-            Log.d(TAG, "onPlay:");
+            Log.d(TAG, "onPlay:"+mMusicProvider.isPlayListAvailable());
             if (mMusicProvider.isPlayListAvailable()) {
                 handlePlayRequest();
             }
@@ -181,12 +185,19 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         @Override
         public void onStop() {
             Log.d(TAG, "onStop:");
+            handleStopRequest();
         }
     }
 
     private void handlePauseRequest() {
         Log.d(TAG, "handlePauseRequest: " + mLocalPlayback.getState());
         mLocalPlayback.pause();
+    }
+
+    private void handleStopRequest() {
+        Log.d(TAG, "handleStopRequest: " + mLocalPlayback.getState());
+        mLocalPlayback.stop(true);
+        mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
     }
 
     private void handlePlayRequest() {
@@ -204,6 +215,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         }
 
         mLocalPlayback.play();
+        updateMetadata(mMusicProvider.getPlayList(mLocalPlayback.getCurrentSongPosition()));
     }
 
     /**
@@ -219,5 +231,30 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         Log.d(TAG, "updateMetadata: " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mMediaSessionCompat.setMetadata(metadata);
+    }
+
+    /**
+     * A simple handler that stops the service if playback is not active (playing)
+     */
+    private static class DelayedStopHandler extends android.os.Handler {
+        private final WeakReference<PlayMusicService> mWeakReference;
+
+        private DelayedStopHandler(PlayMusicService playMusicService) {
+            mWeakReference = new WeakReference<>(playMusicService);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            PlayMusicService playMusicService = mWeakReference.get();
+            if (playMusicService != null && playMusicService.mLocalPlayback != null) {
+                if (playMusicService.mLocalPlayback.isPlaying()) {
+                    Log.d(TAG, "handleMessage: mLocalPlayback.isPlaying");
+                    return;
+                }
+                Log.w(TAG, "Stopping service with delay handler.");
+                playMusicService.stopSelf();
+                playMusicService.mServiceStarted = false;
+            }
+        }
     }
 }

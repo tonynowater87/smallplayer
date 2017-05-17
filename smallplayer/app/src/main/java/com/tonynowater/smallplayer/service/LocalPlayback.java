@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.service;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.PlaybackState;
 import android.net.wifi.WifiManager;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -22,7 +23,7 @@ public class LocalPlayback implements Playback
         , MediaPlayer.OnBufferingUpdateListener {
 
     private static final String TAG = LocalPlayback.class.getSimpleName();
-    private Context mContext;
+    private PlayMusicService mPlayMusicService;
     private WifiManager.WifiLock mWifiLock;
     private AudioManager mAudioManager;
     private int mState;
@@ -32,13 +33,13 @@ public class LocalPlayback implements Playback
     private MusicProvider mMusicProvider;
     private PlaybackCallback mPlaybackCallback;
 
-    public LocalPlayback(Context mContext, MusicProvider mMusicProvider, PlaybackCallback mPlaybackCallback) {
-        this.mContext = mContext;
+    public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, PlaybackCallback mPlaybackCallback) {
+        this.mPlayMusicService = mPlayMusicService;
         this.mMusicProvider = mMusicProvider;
         this.mPlaybackCallback = mPlaybackCallback;
         mSongTrackPosition = 0;
-        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        mWifiLock = ((WifiManager) mContext.getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+        mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
+        mWifiLock = ((WifiManager) mPlayMusicService.getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     }
 
     @Override
@@ -59,6 +60,7 @@ public class LocalPlayback implements Playback
             mSongTrackPosition = 0;
         }
         play();
+        mPlaybackCallback.onCompletion();
     }
 
     @Override
@@ -69,14 +71,18 @@ public class LocalPlayback implements Playback
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Log.d(TAG, "onPrepared:");
         mState = PlaybackStateCompat.STATE_PLAYING;
+        Log.d(TAG, "onPrepared:" + mState);
         mMediaPlayer.start();
+        mPlaybackCallback.onPlaybackStateChanged();
     }
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
         Log.d(TAG, "onSeekComplete:");
+        mState = PlaybackState.STATE_PLAYING;
+        mMediaPlayer.start();
+        mPlaybackCallback.onPlaybackStateChanged();
     }
 
     @Override
@@ -112,39 +118,39 @@ public class LocalPlayback implements Playback
 
     @Override
     public void play() {
-        Log.d(TAG, "play size : " + mMusicProvider.getPlayListSize());
-        Log.d(TAG, "play position : " + mSongTrackPosition);
-        createMediaPlayerIfNeeded();
-        MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(mSongTrackPosition);
-        if (mediaMetadataCompat == null) {
-            Log.d(TAG, "no list to play:");
-            stop(true);
+        if (mCurrentPosition != 0) {
+            Log.d(TAG, "pause and play position : " + mCurrentPosition);
+            mMediaPlayer.seekTo(mCurrentPosition);
             return;
         }
 
-        Log.d(TAG, "play: " + mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
 
+        createMediaPlayerIfNeeded();
+        mCurrentPosition = 0;
+        MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(mSongTrackPosition);
         String source = mediaMetadataCompat.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE);
         try {
-            mPlaybackCallback.onPlaybackStateChanged(mediaMetadataCompat);
+            Log.d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),mSongTrackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(source);
             mMediaPlayer.prepareAsync();
+            mPlaybackCallback.onPlaybackStateChanged();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "play: " + e.toString() );
+            Log.e(TAG, "play error: " + e.toString() );
         }
     }
 
     private void createMediaPlayerIfNeeded() {
+        Log.d(TAG, "createMediaPlayerIfNeeded. needed? " + (mMediaPlayer==null));
         if (mMediaPlayer == null) {
-            Log.d(TAG, "createMediaPlayerIfNeeded: initial");
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setOnCompletionListener(this);
             mMediaPlayer.setOnBufferingUpdateListener(this);
-            mMediaPlayer.setOnBufferingUpdateListener(this);
+            mMediaPlayer.setOnSeekCompleteListener(this);
+            mMediaPlayer.setOnErrorListener(this);
         } else {
-            Log.d(TAG, "createMediaPlayerIfNeeded: reset");
             mMediaPlayer.reset();
         }
     }
@@ -159,7 +165,7 @@ public class LocalPlayback implements Playback
         }
 
         mState = PlaybackStateCompat.STATE_PAUSED;
-        mPlaybackCallback.onPlaybackStateChanged(null);
+        mPlaybackCallback.onPlaybackStateChanged();
     }
 
 
@@ -167,6 +173,12 @@ public class LocalPlayback implements Playback
     public void stop(boolean notifyListeners) {
         Log.d(TAG, "stop:" + notifyListeners);
         mState = PlaybackStateCompat.STATE_STOPPED;
+        if (notifyListeners) {
+            mPlaybackCallback.onPlaybackStateChanged();
+        }
+
+        mCurrentPosition = 0;
+        mSongTrackPosition = 0;
         releaseResource();
     }
 
@@ -191,6 +203,11 @@ public class LocalPlayback implements Playback
     @Override
     public String getCurrentMediaId() {
         return null;
+    }
+
+    @Override
+    public int getCurrentSongPosition() {
+        return mSongTrackPosition;
     }
 
     @Override

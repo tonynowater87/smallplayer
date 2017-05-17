@@ -14,6 +14,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding mBinding;
-    private String mSongPath;
     private PlaybackStateCompat mPlaybackStateCompat;
     private MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             Log.d(TAG, "onMetadataChanged: ");
+            mBinding.textViewSongNameValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         }
     };
 
@@ -121,14 +122,18 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
                 stringBuilder.append(getString(R.string.play_state_pause));
                 enablePlay = true;
                 break;
+            case PlaybackStateCompat.STATE_STOPPED:
+                stringBuilder.append(getString(R.string.play_state_stop));
+                enablePlay = true;
+                break;
             default:
                 stringBuilder.append(state);
                 break;
         }
 
         Log.d(TAG, "onPlaybackStateChange: " + stringBuilder.toString());
-
-        mBinding.buttonPlay.setEnabled(enablePlay);
+        mBinding.textViewStatusValue.setText(stringBuilder.toString());
+        mBinding.buttonPlay.setText(enablePlay ? getString(R.string.button_string_play) : getString(R.string.button_string_pause));
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -139,17 +144,13 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
 
             switch (v.getId()) {
                 case R.id.buttonPlay:
-                    // TODO: 2017/5/14
-                    if (state == PlaybackStateCompat.STATE_NONE
-                     || state == PlaybackStateCompat.STATE_STOPPED
-                     || state == PlaybackStateCompat.STATE_PAUSED) {
+                    if (TextUtils.equals(mBinding.buttonPlay.getText().toString(),getString(R.string.button_string_play))) {
                         play();
-                    } else {
+                    } else if (TextUtils.equals(mBinding.buttonPlay.getText().toString(),getString(R.string.button_string_pause))) {
                         pause();
                     }
                     break;
                 case R.id.buttonStop:
-                    // TODO: 2017/5/14
                     stop();
                     break;
             }
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
 
     private void pause() {
         if (mTransportControls != null) {
-            mTransportControls.stop();
+            mTransportControls.pause();
         }
     }
 
@@ -216,15 +217,12 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     public void onClick(Playable playable) {
 
         if (playable instanceof Song) {
-            mSongPath = ((Song) playable).getmData();
-            mBinding.textViewSongNameValue.setText(((Song) playable).getmTitle());
             sendMetaDataToService(((Song) playable).getMediaMetadata());
         } else {
             final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) playable);
             YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
                 @Override
                 public void getU2BUrl(String url) {
-                    mSongPath = url;
                     mBinding.textViewSongNameValue.setText(u2bVideoItem.getSnippet().getTitle());
                 }
             });

@@ -12,22 +12,9 @@ public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
-    private volatile State mCurrentState = State.NON_INITIALIZED;
-
-    enum State {
-        NON_INITIALIZED, INITIALIZING, INITIALIZED;
-    }
-
-    public interface CallBack {
-        void onMusicReady(boolean sucess);
-    }
 
     public MusicProvider() {
         mMusicPlayList = new ArrayList<>();
-    }
-
-    public boolean isInitialized() {
-        return mCurrentState == State.INITIALIZED;
     }
 
     public void putNewMusic(MediaMetadataCompat mediaMetadata) {
