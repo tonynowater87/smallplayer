@@ -54,10 +54,10 @@ public class U2BApiUtil {
         }
     }
 
-    public static String formateU2BDurationToString(int duration) {
-        int seconds = duration / 1000 % 60 ;
-        int minutes = (duration / (1000*60)) % 60;
-        int hours   = (duration / (1000*60*60)) % 24;
+    public static String formateU2BDurationToString(long duration) {
+        int seconds = (int) (duration / 1000 % 60);
+        int minutes = (int) ((duration / (1000*60)) % 60);
+        int hours   = (int) ((duration / (1000*60*60)) % 24);
         if (hours > 0) {
             return hours + ":" + minutes + ":" + seconds;
         } else {

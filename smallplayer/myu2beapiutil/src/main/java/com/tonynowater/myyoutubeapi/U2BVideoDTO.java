@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 public class U2BVideoDTO {
-
+    public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
     /**
      * kind : youtube#searchListResponse
      * etag : "m2yskBQFythfE4irbTIeOgYYfBU/aMtXHLU4A4_KtHTySjAgoPqFYQQ"
@@ -114,6 +114,7 @@ public class U2BVideoDTO {
         private IdBean id;
         private SnippetBean snippet;
         private int durationToMilionSecond;
+        private String url;
 
         public String getKind() {
             return kind;
@@ -151,23 +152,30 @@ public class U2BVideoDTO {
             this.durationToMilionSecond = durationToMilionSecond;
         }
 
-        public int getVideoDuration() {
+        public long getVideoDuration() {
             return durationToMilionSecond;
         }
 
         //TODO
-//        public MediaMetadataCompat getMediaMetadata() {
-//
-//            return new MediaMetadataCompat.Builder()
-//                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
-//                    .putString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE, mData)
-//                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mAlbum)
-//                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mArtist)
-//                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mDuration)
-//                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
-//                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mTitle)
-//                    .build();
-//        }
+        public MediaMetadataCompat getMediaMetadata() {
+            return new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
+                    .putString("VIDEO_ID", getId().getVideoId())
+                    .putString(CUSTOM_METADATA_TRACK_SOURCE, getUrl())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
+                    .build();
+        }
+
+        public void setDataSource(String url) {
+            this.url = url;
+        }
+
+        public String getUrl() {
+            return url;
+        }
 
         public static class IdBean {
             /**

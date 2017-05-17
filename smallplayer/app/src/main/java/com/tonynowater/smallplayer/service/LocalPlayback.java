@@ -47,11 +47,6 @@ public class LocalPlayback implements Playback
     }
 
     @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        Log.d(TAG, "onBufferingUpdate: " + percent);
-    }
-
-    @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "onCompletion:");
         mPlaybackCallback.onCompletion();
@@ -69,6 +64,15 @@ public class LocalPlayback implements Playback
         Log.d(TAG, "onPrepared:" + mState);
         mMediaPlayer.start();
         mPlaybackCallback.onPlaybackStateChanged();
+    }
+
+    @Override
+    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+        Log.d(TAG, "onBufferingUpdate: " + percent);
+        if (percent == 100) {
+            mMediaPlayer.start();
+            mPlaybackCallback.onPlaybackStateChanged();
+        }
     }
 
     @Override

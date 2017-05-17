@@ -243,7 +243,8 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
             YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
                 @Override
                 public void getU2BUrl(String url) {
-                    mBinding.textViewSongNameValue.setText(u2bVideoItem.getSnippet().getTitle());
+                    u2bVideoItem.setDataSource(url);
+                    sendMetaDataToService(u2bVideoItem.getMediaMetadata());
                 }
             });
         }
