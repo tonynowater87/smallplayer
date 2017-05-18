@@ -198,7 +198,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         public void onSkipToPrevious() {
             mSongTrackPosition--;
             if (mSongTrackPosition < 0) {
-                mSongTrackPosition = 0;
+                mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
             }
             handlePlayRequest();
         }

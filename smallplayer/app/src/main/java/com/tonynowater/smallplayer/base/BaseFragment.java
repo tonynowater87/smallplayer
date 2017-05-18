@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.base;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
@@ -34,4 +35,6 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     }
 
     protected abstract int getResourceId();
+
+    public abstract CharSequence getPageTitle(Context context);
 }

@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -155,6 +156,11 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
     @Override
     protected int getResourceId() {
         return R.layout.layout_u2bsearchfragment;
+    }
+
+    @Override
+    public CharSequence getPageTitle(Context context) {
+        return context.getString(R.string.u2b_music);
     }
 
     @Override

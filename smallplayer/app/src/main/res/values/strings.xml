@@ -8,8 +8,8 @@
     <string name="button_string_play">播放</string>>
     <string name="button_string_pause">暫停</string>>
     <string name="button_string_stop">停止</string>>
-    <string name="button_string_next">上一首</string>>
-    <string name="button_string_previous">下一首</string>>
+    <string name="button_string_next">下一首</string>>
+    <string name="button_string_previous">上一首</string>>
 
     <string name="local_music">本地音樂</string>
     <string name="u2b_music">搜尋音樂</string>

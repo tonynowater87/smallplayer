@@ -5,81 +5,133 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         tools:context="com.tonynowater.smallplayer.activity.MainActivity">
 
-        <Button
-            android:id="@+id/buttonPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_string_play"/>
-
-        <Button
-            android:id="@+id/buttonStop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_string_pause"
-            android:layout_toRightOf="@+id/buttonPlay"/>
-
-        <Button
-            android:id="@+id/buttonNext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_string_next"
-            android:layout_toRightOf="@+id/buttonStop"/>
-
-        <Button
-            android:id="@+id/buttonPrevious"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_string_previous"
-            android:layout_toRightOf="@+id/buttonNext"/>
-
-        <TextView
-            android:id="@+id/textViewStatusTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="狀態:"
-            android:layout_below="@+id/buttonPlay"/>
-
-        <TextView
-            android:id="@+id/textViewStatusValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="準備中"
-            android:layout_below="@+id/buttonPlay"
-            android:layout_toRightOf="@+id/textViewStatusTitle"/>
-
-        <TextView
-            android:id="@+id/textViewSongNameTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="歌曲名稱:"
-            android:layout_below="@+id/textViewStatusTitle"/>
-
-        <TextView
-            android:id="@+id/textViewSongNameValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="歌曲"
-            android:layout_below="@+id/textViewStatusTitle"
-            android:layout_toRightOf="@+id/textViewSongNameTitle"/>
-
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/bottom_navigation_view"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/bottom_navigation_view_height"
-            android:layout_alignParentBottom="true"
-            app:menu="@menu/navigation_items" />
-
-        <FrameLayout
-            android:id="@+id/framelayout_mainactivity"
+        <RelativeLayout
+            android:id="@+id/rl_bottom_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textViewSongNameTitle"
-            android:layout_above="@+id/bottom_navigation_view">
+            android:background="@color/colorPrimaryDark"
+            android:minHeight="?android:attr/actionBarSize"
+            android:layout_alignParentBottom="true">
 
-        </FrameLayout>
+            <ImageView
+                android:id="@+id/imageview_thumb"
+                android:layout_width="?android:attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                android:scaleType="centerCrop"/>
+
+            <LinearLayout
+                android:id="@+id/ll_media_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentRight="true">
+
+                <ImageButton
+                    android:id="@+id/buttonPrevious"
+                    android:layout_width="@dimen/media_button_size"
+                    android:layout_height="match_parent"
+                    android:src="@android:drawable/ic_media_previous" />
+
+                <ImageButton
+                    android:id="@+id/buttonPlay"
+                    android:layout_width="@dimen/media_button_size"
+                    android:layout_height="match_parent"
+                    android:src="@android:drawable/ic_media_play"
+                    android:layout_toRightOf="@+id/buttonPrevious"/>
+
+                <ImageButton
+                    android:id="@+id/buttonStop"
+                    android:layout_width="@dimen/media_button_size"
+                    android:layout_height="match_parent"
+                    android:src="@android:drawable/presence_offline"
+                    android:layout_toRightOf="@+id/buttonPlay"/>
+
+                <ImageButton
+                    android:id="@+id/buttonNext"
+                    android:layout_width="@dimen/media_button_size"
+                    android:layout_height="match_parent"
+                    android:src="@android:drawable/ic_media_next"
+                    android:layout_toRightOf="@+id/buttonStop"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/imageview_thumb"
+                android:layout_toLeftOf="@+id/ll_media_buttons"
+                android:orientation="vertical"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin">
+
+                <TextView
+                    android:id="@+id/textViewSongNameValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="歌名"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@android:color/white"/>
+
+                <TextView
+                    android:id="@+id/textViewSongArtistValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="歌手"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:textColor="@android:color/darker_gray"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/coordinator_layout_main_activity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/rl_bottom_field">
+
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/appbar_layout_main_activity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar_main_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:actionBarSize"
+                    app:layout_scrollFlags="scroll|enterAlways|snap"
+                    app:titleTextColor="@android:color/white">
+
+                </android.support.v7.widget.Toolbar>
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tab_layout_main_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:tabMode="scrollable"
+                    app:tabSelectedTextColor="@android:color/white"
+                    app:tabTextColor="@android:color/darker_gray">
+
+                </android.support.design.widget.TabLayout>
+                
+            </android.support.design.widget.AppBarLayout>
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        </android.support.design.widget.CoordinatorLayout>
 
     </RelativeLayout>
+
 </layout>

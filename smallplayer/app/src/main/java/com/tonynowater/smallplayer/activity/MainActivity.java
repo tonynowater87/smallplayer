@@ -8,23 +8,27 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
-import com.tonynowater.smallplayer.u2b.Playable;
-import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
 import com.tonynowater.smallplayer.dto.Song;
 import com.tonynowater.smallplayer.service.PlayMusicService;
+import com.tonynowater.smallplayer.u2b.Playable;
+import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding mBinding;
+    private BaseFragment[] mBaseFragments;
     private PlaybackStateCompat mPlaybackStateCompat;
     private MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             Log.d(TAG, "onMetadataChanged: ");
             mBinding.textViewSongNameValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+            mBinding.textViewSongArtistValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
         }
     };
 
@@ -132,8 +138,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         }
 
         Log.d(TAG, "onPlaybackStateChange: " + stringBuilder.toString());
-        mBinding.textViewStatusValue.setText(stringBuilder.toString());
-        mBinding.buttonPlay.setText(enablePlay ? getString(R.string.button_string_play) : getString(R.string.button_string_pause));
+        mBinding.buttonPlay.setImageDrawable(enablePlay ? getDrawable(android.R.drawable.ic_media_play) : getDrawable(android.R.drawable.ic_media_pause));
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -144,9 +149,11 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
 
             switch (v.getId()) {
                 case R.id.buttonPlay:
-                    if (TextUtils.equals(mBinding.buttonPlay.getText().toString(),getString(R.string.button_string_play))) {
+                    if (state == PlaybackStateCompat.STATE_PAUSED
+                      ||state == PlaybackStateCompat.STATE_STOPPED
+                      ||state == PlaybackStateCompat.STATE_NONE) {
                         play();
-                    } else if (TextUtils.equals(mBinding.buttonPlay.getText().toString(),getString(R.string.button_string_pause))) {
+                    } else if (state == PlaybackStateCompat.STATE_PLAYING) {
                         pause();
                     }
                     break;
@@ -177,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
 
     private void pause() {
         if (mTransportControls != null) {
+            mBinding.buttonPlay.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
             mTransportControls.pause();
         }
     }
@@ -189,17 +197,10 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
 
     private void play() {
         if (mTransportControls != null) {
+            mBinding.buttonPlay.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
             mTransportControls.play();
         }
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            changeFragment(item.getItemId());
-            return true;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,10 +210,17 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         mBinding.buttonStop.setOnClickListener(mOnClickListener);
         mBinding.buttonNext.setOnClickListener(mOnClickListener);
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
-        mBinding.bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationSelectedListener);
-        mBinding.bottomNavigationView.setSelectedItemId(R.id.local_music_bottom_navigation_view);
-
         mMediaBrowserCompat = new MediaBrowserCompat(this, new ComponentName(this, PlayMusicService.class), mConnectionCallback, null);
+        setSupportActionBar(mBinding.toolbarMainActivity);
+        initialViewPager();
+    }
+
+    private void initialViewPager() {
+        mBaseFragments = new BaseFragment[2];
+        mBaseFragments[0] = new SongListFragment();
+        mBaseFragments[1] = new U2BSearchFragment();
+        mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
+        mBinding.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);
     }
 
     @Override
@@ -262,47 +270,76 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         startService(it);
     }
 
-    /**
-     * BottomView切換Fragment
-     *
-     * @param itemId buttomView項目ID
-     */
-    private void changeFragment(int itemId) {
+//    /**
+//     * BottomView切換Fragment
+//     *
+//     * @param itemId buttomView項目ID
+//     */
+//    private void changeFragment(int itemId) {
+//
+//        Fragment fragmentSongList = getSupportFragmentManager().findFragmentByTag(SongListFragment.class.getSimpleName());
+//        Fragment fragmentU2BSearch = getSupportFragmentManager().findFragmentByTag(U2BSearchFragment.class.getSimpleName());
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//
+//        switch (itemId) {
+//            case R.id.local_music_bottom_navigation_view:
+//
+//                if (fragmentSongList != null && fragmentSongList.isHidden()) {
+//                    transaction.show(fragmentSongList);
+//                } else {
+//                    transaction.add(R.id.framelayout_mainactivity, SongListFragment.newInstance(), SongListFragment.class.getSimpleName());
+//                }
+//
+//                if (fragmentU2BSearch != null && fragmentU2BSearch.isVisible()) {
+//                    transaction.hide(fragmentU2BSearch);
+//                }
+//
+//                break;
+//            case R.id.u2b_search_bottom_navigation_view:
+//                fragmentU2BSearch = getSupportFragmentManager().findFragmentByTag(U2BSearchFragment.class.getSimpleName());
+//                if (fragmentU2BSearch != null && fragmentU2BSearch.isHidden()) {
+//                    transaction.show(fragmentU2BSearch);
+//                } else {
+//                    transaction.add(R.id.framelayout_mainactivity, U2BSearchFragment.newInstance(), U2BSearchFragment.class.getSimpleName());
+//                }
+//
+//                if (fragmentSongList != null && fragmentSongList.isVisible()) {
+//                    transaction.hide(fragmentSongList);
+//                }
+//
+//                break;
+//        }
+//
+//        transaction.commit();
+//    }
 
-        Fragment fragmentSongList = getSupportFragmentManager().findFragmentByTag(SongListFragment.class.getSimpleName());
-        Fragment fragmentU2BSearch = getSupportFragmentManager().findFragmentByTag(U2BSearchFragment.class.getSimpleName());
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    private class MyViewPagerAdapter extends FragmentStatePagerAdapter {
 
-        switch (itemId) {
-            case R.id.local_music_bottom_navigation_view:
-
-                if (fragmentSongList != null && fragmentSongList.isHidden()) {
-                    transaction.show(fragmentSongList);
-                } else {
-                    transaction.add(R.id.framelayout_mainactivity, SongListFragment.newInstance(), SongListFragment.class.getSimpleName());
-                }
-
-                if (fragmentU2BSearch != null && fragmentU2BSearch.isVisible()) {
-                    transaction.hide(fragmentU2BSearch);
-                }
-
-                break;
-            case R.id.u2b_search_bottom_navigation_view:
-                fragmentU2BSearch = getSupportFragmentManager().findFragmentByTag(U2BSearchFragment.class.getSimpleName());
-                if (fragmentU2BSearch != null && fragmentU2BSearch.isHidden()) {
-                    transaction.show(fragmentU2BSearch);
-                } else {
-                    transaction.add(R.id.framelayout_mainactivity, U2BSearchFragment.newInstance(), U2BSearchFragment.class.getSimpleName());
-                }
-
-                if (fragmentSongList != null && fragmentSongList.isVisible()) {
-                    transaction.hide(fragmentSongList);
-                }
-
-                break;
+        public MyViewPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
-        transaction.commit();
-    }
+        @Override
+        public Fragment getItem(int position) {
+            return mBaseFragments[position];
+        }
 
+        @Override
+        public int getCount() {
+            return mBaseFragments.length;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            BaseFragment fragment = (BaseFragment)super.instantiateItem(container, position);
+            mBaseFragments[position] = fragment;
+            return fragment;
+
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mBaseFragments[position].getPageTitle(MainActivity.this);
+        }
+    }
 }
