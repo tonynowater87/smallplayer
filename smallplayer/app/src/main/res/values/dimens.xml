@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="bottom_navigation_view_height">56dp</dimen>
     <dimen name="media_button_size">45dp</dimen>
+    <dimen name="progress_bar_height">2dp</dimen>
 </resources>

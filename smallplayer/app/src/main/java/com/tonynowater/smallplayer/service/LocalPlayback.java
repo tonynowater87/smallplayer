@@ -29,6 +29,7 @@ public class LocalPlayback implements Playback
     private int mState;
     private int mCurrentPosition;
     private int mCurrentTrackPosition;
+    private int mSongDuration = 0;
     private MediaPlayer mMediaPlayer;
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
@@ -38,7 +39,7 @@ public class LocalPlayback implements Playback
         this.mMusicProvider = mMusicProvider;
         this.mPlaybackCallback = mPlaybackCallback;
         mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
-        mWifiLock = ((WifiManager) mPlayMusicService.getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+        mWifiLock = ((WifiManager) mPlayMusicService.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     }
 
     @Override
@@ -105,6 +106,11 @@ public class LocalPlayback implements Playback
     }
 
     @Override
+    public int getCurrentDuration() {
+        return mSongDuration;
+    }
+
+    @Override
     public void setCurrentStreamPosition(int pos) {
 
     }
@@ -135,6 +141,7 @@ public class LocalPlayback implements Playback
             Log.d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
             mCurrentTrackPosition = trackPosition;
             mCurrentPosition = 0;
+            mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(source);
             mMediaPlayer.prepareAsync();

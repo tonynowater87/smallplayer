@@ -4,21 +4,18 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -36,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding mBinding;
-    private BaseFragment[] mBaseFragments;
+    private BaseFragment[] mBaseFragments = new BaseFragment[]{new SongListFragment(), new U2BSearchFragment()};
     private PlaybackStateCompat mPlaybackStateCompat;
     private MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
@@ -54,8 +51,20 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
                 return;
             }
 
+            int duration = state.getExtras() == null ? 0 : state.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION);
             mPlaybackStateCompat = state;
             MainActivity.this.onPlaybackStateChange(state);
+
+            Log.d(TAG, "onPlaybackStateChanged: position " + state.getPosition());
+            Log.d(TAG, "onPlaybackStateChanged: duration " + duration );
+
+            if (duration != 0) {
+                if (mBinding.progressBar.getmMax() != duration) {
+                    mBinding.progressBar.setmMax(state.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
+                }
+
+                mBinding.progressBar.setmProgress((int) state.getPosition());
+            }
         }
 
         @Override
@@ -173,12 +182,14 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     private void skipToNext() {
         if (mTransportControls != null) {
             mTransportControls.skipToNext();
+            initialUpdateProgressHandler();
         }
     }
 
     private void skipToPrevious() {
         if (mTransportControls != null) {
             mTransportControls.skipToPrevious();
+            initialUpdateProgressHandler();
         }
     }
 
@@ -193,14 +204,47 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         if (mTransportControls != null) {
             mTransportControls.stop();
         }
+
+        uninitialUpdateProgressHandler();
+    }
+
+    private void uninitialUpdateProgressHandler() {
+        if (mHandlerThread != null) {
+            mHandler.removeCallbacks(mRunnable);
+            mHandlerThread.quitSafely();
+            mHandlerThread.interrupt();
+            mHandlerThread = null;
+        }
     }
 
     private void play() {
         if (mTransportControls != null) {
             mBinding.buttonPlay.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
             mTransportControls.play();
+            initialUpdateProgressHandler();
         }
     }
+
+    private void initialUpdateProgressHandler() {
+        if (mHandlerThread == null) {
+            mHandlerThread = new HandlerThread(TAG);
+            mHandlerThread.start();
+            mHandler = new Handler(mHandlerThread.getLooper());
+        }
+
+        mHandler.post(mRunnable);
+    }
+
+    public static final int DELAY_TIME = 1000;
+    private HandlerThread mHandlerThread;
+    private Handler mHandler;
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mTransportControls.sendCustomAction(PlayMusicService.ACTION_UPDATE_MUSIC_POSITION, null);
+            mHandler.postDelayed(mRunnable, DELAY_TIME);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,9 +260,6 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     }
 
     private void initialViewPager() {
-        mBaseFragments = new BaseFragment[2];
-        mBaseFragments[0] = new SongListFragment();
-        mBaseFragments[1] = new U2BSearchFragment();
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
         mBinding.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);
     }
@@ -269,49 +310,6 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
         it.putExtra(PlayMusicService.BUNDLE_KEY_MEDIAMETADATA, mediaMetadata);
         startService(it);
     }
-
-//    /**
-//     * BottomView切換Fragment
-//     *
-//     * @param itemId buttomView項目ID
-//     */
-//    private void changeFragment(int itemId) {
-//
-//        Fragment fragmentSongList = getSupportFragmentManager().findFragmentByTag(SongListFragment.class.getSimpleName());
-//        Fragment fragmentU2BSearch = getSupportFragmentManager().findFragmentByTag(U2BSearchFragment.class.getSimpleName());
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//
-//        switch (itemId) {
-//            case R.id.local_music_bottom_navigation_view:
-//
-//                if (fragmentSongList != null && fragmentSongList.isHidden()) {
-//                    transaction.show(fragmentSongList);
-//                } else {
-//                    transaction.add(R.id.framelayout_mainactivity, SongListFragment.newInstance(), SongListFragment.class.getSimpleName());
-//                }
-//
-//                if (fragmentU2BSearch != null && fragmentU2BSearch.isVisible()) {
-//                    transaction.hide(fragmentU2BSearch);
-//                }
-//
-//                break;
-//            case R.id.u2b_search_bottom_navigation_view:
-//                fragmentU2BSearch = getSupportFragmentManager().findFragmentByTag(U2BSearchFragment.class.getSimpleName());
-//                if (fragmentU2BSearch != null && fragmentU2BSearch.isHidden()) {
-//                    transaction.show(fragmentU2BSearch);
-//                } else {
-//                    transaction.add(R.id.framelayout_mainactivity, U2BSearchFragment.newInstance(), U2BSearchFragment.class.getSimpleName());
-//                }
-//
-//                if (fragmentSongList != null && fragmentSongList.isVisible()) {
-//                    transaction.hide(fragmentSongList);
-//                }
-//
-//                break;
-//        }
-//
-//        transaction.commit();
-//    }
 
     private class MyViewPagerAdapter extends FragmentStatePagerAdapter {
 

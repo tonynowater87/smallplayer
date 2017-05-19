@@ -23,7 +23,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private static final String TAG = PlayMusicService.class.getSimpleName();
     public static final String ACTION_ADD_NEW_MUSIC = "ACTION_ADD_NEW_MUSIC";
+    public static final String ACTION_UPDATE_MUSIC_POSITION = "ACTION_UPDATE_MUSIC_POSITION";
     public static final String BUNDLE_KEY_MEDIAMETADATA = "BUNDLE_KEY_MEDIAMETADATA";
+    public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     private static final String ROOT_ID_TEST = "ROOT_ID_TEST";
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
@@ -111,7 +113,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         }
 
         stateBuilder.setState(state,position,1.0f, SystemClock.elapsedRealtime());
-
+        Bundle bundle = new Bundle();
+        bundle.putInt(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());
+        stateBuilder.setExtras(bundle);
         mMediaSessionCompat.setPlaybackState(stateBuilder.build());
 
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
@@ -202,6 +206,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             }
             handlePlayRequest();
         }
+
+        @Override
+        public void onCustomAction(String action, Bundle extras) {
+            if (action.equals(ACTION_UPDATE_MUSIC_POSITION)) {
+                updatePlaybackState(null);
+            }
+        }
     }
 
     private void skipToNext() {
@@ -220,6 +231,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     private void handleStopRequest() {
         Log.d(TAG, "handleStopRequest: " + mLocalPlayback.getState());
         mLocalPlayback.stop(true);
+        updatePlaybackState(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
     }
 

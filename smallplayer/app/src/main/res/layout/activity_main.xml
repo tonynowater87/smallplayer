@@ -90,6 +90,14 @@
 
             </LinearLayout>
 
+            <com.tonynowater.smallplayer.view.ProgressView
+                android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/progress_bar_height"
+                android:layout_toRightOf="@+id/imageview_thumb"
+                android:layout_alignTop="@+id/imageview_thumb"
+                android:background="@color/colorPrimaryDark"/>
+
         </RelativeLayout>
 
         <android.support.design.widget.CoordinatorLayout
