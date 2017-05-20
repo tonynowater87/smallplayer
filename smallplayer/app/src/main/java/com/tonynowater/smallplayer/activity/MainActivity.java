@@ -20,6 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.fragment.songlist.SongListFragment;
+import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
+import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchFragment;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
 import com.tonynowater.smallplayer.dto.Song;
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding mBinding;
-    private BaseFragment[] mBaseFragments = new BaseFragment[]{new SongListFragment(), new U2BSearchFragment()};
+    private BaseFragment[] mBaseFragments;
     private PlaybackStateCompat mPlaybackStateCompat;
     private MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
@@ -260,6 +263,10 @@ public class MainActivity extends AppCompatActivity implements OnClickSomething<
     }
 
     private void initialViewPager() {
+        mBaseFragments = new BaseFragment[]{SongListFragment.newInstance()
+                ,U2BSearchFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
+                ,U2BSearchFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
+                ,U2BSearchFragment.newInstance(getString(R.string.viewpager_title_u2b_search_channel), EnumU2BSearchType.CHANNEL)};
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
         mBinding.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);
     }

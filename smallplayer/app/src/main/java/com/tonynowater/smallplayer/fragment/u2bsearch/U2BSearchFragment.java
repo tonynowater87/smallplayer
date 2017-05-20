@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.activity;
+package com.tonynowater.smallplayer.fragment.u2bsearch;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,24 +15,30 @@ import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.tonynowater.smallplayer.u2b.U2BApi;
-import com.tonynowater.smallplayer.u2b.U2BApiUtil;
-import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
-import com.tonynowater.smallplayer.u2b.U2BVideoDuration;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseFragment;
+import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
+import com.tonynowater.smallplayer.u2b.U2BApi;
+import com.tonynowater.smallplayer.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.u2b.U2BPlayListDTO;
+import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
+import com.tonynowater.smallplayer.u2b.U2BVideoDuration;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType.VIDEO;
+
 /**
  * Created by tonynowater on 2017/5/1.
  */
 public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBinding> implements View.OnClickListener, OnClickSomething<String> {
     private static final String TAG = U2BSearchFragment.class.getSimpleName();
+    private static final String BUNDLE_KEY_TITLE = "BUNDLE_KEY_TITLE";
+    private static final String BUNDLE_KEY_SEARCH_TYPE = "BUNDLE_KEY_SEARCH_TYPE";
 
     private U2BVideoDTO mU2BVideoDTO;
 
@@ -48,26 +54,45 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
             if (response.isSuccessful()) {
                 String sResponse = response.body().string();
                 Log.d(TAG, "onResponse body: " + sResponse);
-                mU2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
 
-                StringBuilder sVideoIds = new StringBuilder();
-                for (int i = 0; i < mU2BVideoDTO.getItems().size(); i++) {
-                    sVideoIds.append(mU2BVideoDTO.getItems().get(i).getId().getVideoId());
-                    if (i < mU2BVideoDTO.getItems().size() - 1) {
-                        sVideoIds.append(",");
-                    }
+                switch (mEnumU2BSearchType) {
+                    case VIDEO:
+                        initialVideoList(sResponse);
+                        break;
+                    case PLAYLIST:
+                        // TODO: 2017/5/20
+                        U2BPlayListDTO u2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
+                        mSongListAdapter.setDataSource(u2BPlayListDTO.getItems());
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSongListAdapter.notifyDataSetChanged();
+                            }
+                        });
+                        break;
+                    case CHANNEL:
+                        break;
                 }
-
-                U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(),mDurationSearchCallback);
             }
+        }
+
+        private void initialVideoList(String sResponse) {
+            mU2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
+            StringBuilder sVideoIds = new StringBuilder();
+            for (int i = 0; i < mU2BVideoDTO.getItems().size(); i++) {
+                sVideoIds.append(mU2BVideoDTO.getItems().get(i).getId().getVideoId());
+                if (i < mU2BVideoDTO.getItems().size() - 1) {
+                    sVideoIds.append(",");
+                }
+            }
+            U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
         }
     };
 
+
     private Callback mDurationSearchCallback = new Callback() {
         @Override
-        public void onFailure(Request request, IOException e) {
-
-        }
+        public void onFailure(Request request, IOException e) {}
 
         @Override
         public void onResponse(Response response) throws IOException {
@@ -146,11 +171,17 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
         }
     };
 
-    private U2BSearchFragmentAdapter mSongListAdapter;
+    private BaseU2BFragmentAdapter mSongListAdapter;
     private boolean mIsRequesting = false;
+    private EnumU2BSearchType mEnumU2BSearchType;
 
-    public static U2BSearchFragment newInstance() {
-        return new U2BSearchFragment();
+    public static U2BSearchFragment newInstance(String sTitle, EnumU2BSearchType u2BSearchType) {
+        U2BSearchFragment fragment = new U2BSearchFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(BUNDLE_KEY_TITLE, sTitle);
+        bundle.putSerializable(BUNDLE_KEY_SEARCH_TYPE, u2BSearchType);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
@@ -160,15 +191,16 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
 
     @Override
     public CharSequence getPageTitle(Context context) {
-        return context.getString(R.string.u2b_music);
+        return getArguments().getString(BUNDLE_KEY_TITLE);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mEnumU2BSearchType = (EnumU2BSearchType) getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE);
         mBinding.btnQuerySubmit.setOnClickListener(this);
         mBinding.etQueryU2b.addTextChangedListener(mTextWatcher);
-        initialU2BViewSearch();
+        initialU2BSearchAdapter();
 
     }
 
@@ -183,8 +215,19 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
         mIsRequesting = false;
     }
 
-    private void initialU2BViewSearch() {
-        mSongListAdapter = new U2BSearchFragmentAdapter((OnClickSomething) getActivity());
+    private void initialU2BSearchAdapter() {
+        switch (mEnumU2BSearchType) {
+            case VIDEO:
+                mSongListAdapter = new U2BSearchFragmentAdapter((OnClickSomething) getActivity());
+                break;
+            case PLAYLIST:
+                mSongListAdapter = new U2BSearchPlayListFragmentAdapter((OnClickSomething) getActivity());
+                break;
+            case CHANNEL:
+                // TODO: 2017/5/20 not finished
+                mSongListAdapter = new U2BSearchFragmentAdapter((OnClickSomething) getActivity());
+                break;
+        }
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mBinding.recyclerviewU2bsearchfragment.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
@@ -192,19 +235,32 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
         mBinding.recyclerviewU2bsearchfragment.setAdapter(mSongListAdapter);
     }
 
+    /** 點擊確定 */
     @Override
     public void onClick(View v) {
-        String sInput = mBinding.etQueryU2b.getText().toString();
-
-        if (!TextUtils.isEmpty(sInput)) {
-            U2BApi.newInstance().queryU2BVideo(sInput, mViedoSearchCallback);
-            mBinding.etQueryU2b.setText("");
-        }
+        searchU2B(mBinding.etQueryU2b.getText().toString());
     }
 
+    /** 點擊關鍵字 */
     @Override
     public void onClick(String s) {
-        mBinding.etQueryU2b.setText("");
-        U2BApi.newInstance().queryU2BVideo(s, mViedoSearchCallback);
+        searchU2B(s);
+    }
+
+    private void searchU2B(String sInput) {
+        if (!TextUtils.isEmpty(sInput)) {
+            if (getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE) == VIDEO) {
+                Log.d(TAG, "onClick: search video" );
+                U2BApi.newInstance().queryU2BVideo(sInput, mViedoSearchCallback);
+            } else if (getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE) == EnumU2BSearchType.PLAYLIST) {
+                Log.d(TAG, "onClick: search playlist" );
+                U2BApi.newInstance().queryU2BPlayList(sInput, mViedoSearchCallback);
+            } else if (getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE) == EnumU2BSearchType.CHANNEL) {
+                Log.d(TAG, "onClick: search channel" );
+                U2BApi.newInstance().queryU2BChannel(sInput, mViedoSearchCallback);
+            }
+
+            mBinding.etQueryU2b.setText("");
+        }
     }
 }

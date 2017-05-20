@@ -21,7 +21,7 @@ public class MusicProvider {
     }
 
     public MediaMetadataCompat getPlayList(int index) {
-        return index > mMusicPlayList.size() ? null : mMusicPlayList.get(index);
+        return index > mMusicPlayList.size() && mMusicPlayList.size() != 0 ? null : mMusicPlayList.get(index);
     }
 
     public int getPlayListSize() {

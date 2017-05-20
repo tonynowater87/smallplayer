@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.activity;
+package com.tonynowater.smallplayer.fragment.songlist;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.activity;
+package com.tonynowater.smallplayer.fragment.u2bsearch;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;

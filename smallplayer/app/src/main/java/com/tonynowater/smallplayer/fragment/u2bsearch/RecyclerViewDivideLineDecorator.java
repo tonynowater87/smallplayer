@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.activity;
+package com.tonynowater.smallplayer.fragment.u2bsearch;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -15,7 +15,7 @@ public class RecyclerViewDivideLineDecorator extends RecyclerView.ItemDecoration
     private static final int[] ATTRS = new int[]{android.R.attr.listDivider};
     private Drawable mDividerDrawable;
 
-    RecyclerViewDivideLineDecorator(Context context) {
+    public RecyclerViewDivideLineDecorator(Context context) {
         final TypedArray styledAttributes = context.obtainStyledAttributes(ATTRS);
         mDividerDrawable = styledAttributes.getDrawable(0);
         styledAttributes.recycle();

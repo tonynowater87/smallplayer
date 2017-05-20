@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.activity;
+package com.tonynowater.smallplayer.fragment.songlist;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistfragmentBinding;
 import com.tonynowater.smallplayer.util.OnClickSomething;
@@ -39,6 +40,6 @@ public class SongListFragment extends BaseFragment <LayoutSonglistfragmentBindin
 
     @Override
     public CharSequence getPageTitle(Context context) {
-        return context.getString(R.string.local_music);
+        return context.getString(R.string.viewpager_title_local_music);
     }
 }

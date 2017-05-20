@@ -30,7 +30,7 @@
             </intent-filter>
         </service>
 
-
+        <activity android:name=".activity.PlayListActivity"></activity>
     </application>
 
 </manifest>
