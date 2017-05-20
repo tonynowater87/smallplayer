@@ -6,7 +6,7 @@ import java.util.List;
  * Created by tonyliao on 2017/5/17.
  */
 
-public class U2BVideoDuration {
+public class U2BVideoDurationDTO {
 
     /**
      * kind : youtube#videoListResponse

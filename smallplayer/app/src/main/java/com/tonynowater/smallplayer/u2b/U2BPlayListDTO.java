@@ -111,7 +111,7 @@ public class U2BPlayListDTO {
         }
     }
 
-    public static class ItemsBean {
+    public static class ItemsBean implements Playable{
         /**
          * kind : youtube#searchResult
          * etag : "m2yskBQFythfE4irbTIeOgYYfBU/hSMlrNuOGzVDP7Eg34Ipb8f5R8s"

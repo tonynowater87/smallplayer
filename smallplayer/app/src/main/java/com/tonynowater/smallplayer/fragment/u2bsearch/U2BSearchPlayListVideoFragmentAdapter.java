@@ -14,35 +14,37 @@ import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.dto.Song;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
-import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
+import com.tonynowater.smallplayer.u2b.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.List;
 
 /**
- * Created by tonyliao on 2017/5/1.
+ * Created by tonynowater on 2017/5/21.
  */
-public class U2BSearchFragmentAdapter extends BaseU2BFragmentAdapter<U2BVideoDTO.ItemsBean,U2BSearchFragmentAdapter.U2BSearchFragmentAdapterViewHolder> {
-    private static final String TAG = U2BSearchFragmentAdapter.class.getSimpleName();
 
-    public U2BSearchFragmentAdapter(OnClickSomething<Song> mOnClickSongListener) {
+public class U2BSearchPlayListVideoFragmentAdapter extends BaseU2BFragmentAdapter<U2bPlayListVideoDTO.ItemsBean, U2BSearchPlayListVideoFragmentAdapter.U2BSearchFragmentAdapterViewHolder> {
+    private static final String TAG = U2BSearchPlayListVideoFragmentAdapter.class.getSimpleName();
+
+    public U2BSearchPlayListVideoFragmentAdapter(OnClickSomething<Song> mOnClickSongListener) {
         super(mOnClickSongListener);
     }
 
-    public U2BSearchFragmentAdapter(List<U2BVideoDTO.ItemsBean> mU2BVideoList, OnClickSomething<Song> mOnClickSongListener) {
+    public U2BSearchPlayListVideoFragmentAdapter(List<U2bPlayListVideoDTO.ItemsBean> mU2BVideoList, OnClickSomething<Song> mOnClickSongListener) {
         super(mU2BVideoList, mOnClickSongListener);
     }
 
     @Override
-    public U2BSearchFragmentAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new U2BSearchFragmentAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null), mOnClickSongListener, mDataList);
+    public U2BSearchPlayListVideoFragmentAdapter.U2BSearchFragmentAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new U2BSearchPlayListVideoFragmentAdapter.U2BSearchFragmentAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem, null), mOnClickSongListener, mDataList);
     }
 
     @Override
-    public void onBindViewHolder(U2BSearchFragmentAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(U2BSearchPlayListVideoFragmentAdapter.U2BSearchFragmentAdapterViewHolder holder, int position) {
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescription());
         holder.getBinding().tvDurationSonglistadapter.setText(U2BApiUtil.formateU2BDurationToString(mDataList.get(position).getVideoDuration()));
+        // TODO: 2017/5/21 這裡疑似會當機
         String sUrl = mDataList.get(position).getSnippet().getThumbnails().getDefaultX().getUrl();
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);
@@ -51,13 +53,13 @@ public class U2BSearchFragmentAdapter extends BaseU2BFragmentAdapter<U2BVideoDTO
         }
     }
 
-    public static class U2BSearchFragmentAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class U2BSearchFragmentAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private LayoutSonglistadapterListitemBinding mBinding;
         private OnClickSomething mOnClickSongListener;
-        private List<U2BVideoDTO.ItemsBean> mU2BVideoList;
+        private List<U2bPlayListVideoDTO.ItemsBean> mU2BVideoList;
 
-        public U2BSearchFragmentAdapterViewHolder(View itemView, OnClickSomething mOnClickSongListener, List<U2BVideoDTO.ItemsBean> mU2BVideoList) {
+        public U2BSearchFragmentAdapterViewHolder(View itemView, OnClickSomething mOnClickSongListener, List<U2bPlayListVideoDTO.ItemsBean> mU2BVideoList) {
             super(itemView);
             mBinding = DataBindingUtil.bind(itemView);
             this.mOnClickSongListener = mOnClickSongListener;

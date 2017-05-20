@@ -89,7 +89,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         }
     }
 
-
+    // TODO: 2017/5/21 not attached to Activity 滑掉APP時會出現此錯誤
     /**
      * 更新播放的狀態
      * @param state

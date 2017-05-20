@@ -1,12 +1,16 @@
 package com.tonynowater.smallplayer.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
@@ -18,11 +22,11 @@ import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.u2b.Playable;
+import com.tonynowater.smallplayer.u2b.U2BPlayListDTO;
 import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
-import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements OnClickSomething<Playable> {
+public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
 
@@ -44,7 +48,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSupportActionBar(mBinding.toolbarMainActivity);
+        setSupportActionBar((Toolbar) mBinding.coordinatorLayoutMainActivity.findViewById(R.id.toolbar_main_activity));
         initialViewPager();
     }
 
@@ -59,7 +63,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
                 , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
                 , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_channel), EnumU2BSearchType.CHANNEL)};
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
-        mBinding.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);
+        mBinding.coordinatorLayoutMainActivity.findViewById(R.id.tab_layout_main_activity).setVisibility(View.VISIBLE);
+        ((TabLayout)mBinding.coordinatorLayoutMainActivity.findViewById(R.id.tab_layout_main_activity)).setupWithViewPager(mBinding.viewpager);
     }
 
     @Override
@@ -67,7 +72,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
         if (playable instanceof Song) {
             sendMetaDataToService(((Song) playable).getMediaMetadata());
-        } else {
+        } else if (playable instanceof U2BVideoDTO.ItemsBean) {
             final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) playable);
             YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
                 @Override
@@ -76,6 +81,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
                     sendMetaDataToService(u2bVideoItem.getMediaMetadata());
                 }
             });
+        } else if (playable instanceof U2BPlayListDTO.ItemsBean) {
+            U2BPlayListDTO.ItemsBean u2bVideoItem = ((U2BPlayListDTO.ItemsBean) playable);
+            Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getId().getPlaylistId());
+            startActivity(intent);
         }
     }
 

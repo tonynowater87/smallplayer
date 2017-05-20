@@ -20,7 +20,7 @@ import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
- * Created by tonynowate on 2017/5/20.
+ * Created by tonynowater on 2017/5/20.
  */
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity implements OnClickSomething<Playable> {
     private static final String TAG = BaseActivity.class.getSimpleName();

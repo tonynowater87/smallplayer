@@ -148,7 +148,7 @@ public class U2BVideoDTO {
             this.snippet = snippet;
         }
 
-        public void addVideoDuration(int durationToMilionSecond) {
+        public void setVideoDuration(int durationToMilionSecond) {
             this.durationToMilionSecond = durationToMilionSecond;
         }
 
