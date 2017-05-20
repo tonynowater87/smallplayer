@@ -7,18 +7,18 @@ import android.support.v7.widget.RecyclerView;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
-import com.tonynowater.smallplayer.base.BaseFragment;
+import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistfragmentBinding;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
  * Created by tonyliao on 2017/4/27.
  */
-public class SongListFragment extends BaseFragment <LayoutSonglistfragmentBinding> {
-    private static final String TAG = SongListFragment.class.getSimpleName();
+public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSonglistfragmentBinding> {
+    private static final String TAG = SongListViewPagerFragment.class.getSimpleName();
 
-    public static SongListFragment newInstance() {
-        return new SongListFragment();
+    public static SongListViewPagerFragment newInstance() {
+        return new SongListViewPagerFragment();
     }
 
     @Override

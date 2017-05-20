@@ -16,7 +16,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseFragment;
+import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
 import com.tonynowater.smallplayer.u2b.U2BApi;
@@ -35,8 +35,8 @@ import static com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType.V
 /**
  * Created by tonynowater on 2017/5/1.
  */
-public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBinding> implements View.OnClickListener, OnClickSomething<String> {
-    private static final String TAG = U2BSearchFragment.class.getSimpleName();
+public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements View.OnClickListener, OnClickSomething<String> {
+    private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
     private static final String BUNDLE_KEY_TITLE = "BUNDLE_KEY_TITLE";
     private static final String BUNDLE_KEY_SEARCH_TYPE = "BUNDLE_KEY_SEARCH_TYPE";
 
@@ -175,8 +175,8 @@ public class U2BSearchFragment extends BaseFragment<LayoutU2bsearchfragmentBindi
     private boolean mIsRequesting = false;
     private EnumU2BSearchType mEnumU2BSearchType;
 
-    public static U2BSearchFragment newInstance(String sTitle, EnumU2BSearchType u2BSearchType) {
-        U2BSearchFragment fragment = new U2BSearchFragment();
+    public static U2BSearchViewPagerFragment newInstance(String sTitle, EnumU2BSearchType u2BSearchType) {
+        U2BSearchViewPagerFragment fragment = new U2BSearchViewPagerFragment();
         Bundle bundle = new Bundle();
         bundle.putString(BUNDLE_KEY_TITLE, sTitle);
         bundle.putSerializable(BUNDLE_KEY_SEARCH_TYPE, u2BSearchType);

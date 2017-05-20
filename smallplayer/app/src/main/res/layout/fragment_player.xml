@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rl_bottom_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        android:minHeight="?android:attr/actionBarSize">
+
+        <ImageView
+            android:id="@+id/imageview_thumb"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/ll_media_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/buttonPrevious"
+                android:layout_width="@dimen/media_button_size"
+                android:layout_height="match_parent"
+                android:src="@android:drawable/ic_media_previous" />
+
+            <ImageButton
+                android:id="@+id/buttonPlay"
+                android:layout_width="@dimen/media_button_size"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/buttonPrevious"
+                android:src="@android:drawable/ic_media_play" />
+
+            <ImageButton
+                android:id="@+id/buttonStop"
+                android:layout_width="@dimen/media_button_size"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/buttonPlay"
+                android:src="@android:drawable/presence_offline" />
+
+            <ImageButton
+                android:id="@+id/buttonNext"
+                android:layout_width="@dimen/media_button_size"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/buttonStop"
+                android:src="@android:drawable/ic_media_next" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_toLeftOf="@+id/ll_media_buttons"
+            android:layout_toRightOf="@+id/imageview_thumb"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewSongNameValue"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="歌名"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/textViewSongArtistValue"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="歌手"
+                android:textColor="@android:color/darker_gray" />
+
+        </LinearLayout>
+
+        <com.tonynowater.smallplayer.view.ProgressView
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/progress_bar_height"
+            android:layout_alignTop="@+id/imageview_thumb"
+            android:layout_toRightOf="@+id/imageview_thumb"
+            android:background="@color/colorPrimaryDark" />
+
+    </RelativeLayout>
+
+</layout>
