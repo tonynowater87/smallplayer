@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
@@ -8,13 +9,14 @@ import android.util.Log;
 import android.view.View;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
 
 /**
- * 播放
+ * 畫面底部的播放Fragment
  * Created by tonynowater on 2017/5/20.
  */
 public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
@@ -47,6 +49,9 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                 case R.id.buttonPrevious:
                     skipToPrevious();
                     break;
+                case R.id.ll_song_info_fragment_player:
+                    startActivity(new Intent(getActivity(), FullScreenPlayerActivity.class));
+                    break;
             }
         }
     };
@@ -59,6 +64,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         mBinding.buttonStop.setOnClickListener(mOnClickListener);
         mBinding.buttonNext.setOnClickListener(mOnClickListener);
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
+        mBinding.llSongInfoFragmentPlayer.setOnClickListener(mOnClickListener);
     }
 
     @Override
@@ -108,15 +114,15 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                 enablePlay = true;
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
-                stringBuilder.append(getString(R.string.play_state_playing));
+                stringBuilder.append(getActivity().getApplicationContext().getString(R.string.play_state_playing));
                 enablePlay = false;
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-                stringBuilder.append(getString(R.string.play_state_pause));
+                stringBuilder.append(getActivity().getApplicationContext().getString(R.string.play_state_pause));
                 enablePlay = true;
                 break;
             case PlaybackStateCompat.STATE_STOPPED:
-                stringBuilder.append(getString(R.string.play_state_stop));
+                stringBuilder.append(getActivity().getApplicationContext().getString(R.string.play_state_stop));
                 enablePlay = true;
                 break;
             default:

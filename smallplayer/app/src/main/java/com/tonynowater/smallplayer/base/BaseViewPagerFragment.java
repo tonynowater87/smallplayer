@@ -15,7 +15,6 @@ import com.tonynowtaer87.myutil.ToastUtil;
 /**
  * Created by tonyliao on 2017/5/1.
  */
-
 public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends Fragment {
 
     protected T mBinding;

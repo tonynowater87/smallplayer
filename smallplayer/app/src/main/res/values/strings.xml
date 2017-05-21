@@ -20,5 +20,6 @@
     <string name="viewpager_title_local_music">本地音樂</string>
     <string name="viewpager_title_u2b_search_video">搜尋音樂</string>
     <string name="viewpager_title_u2b_search_channel">搜尋頻道</string>
+    <string name="default_start_time">00:00</string>
 
 </resources>

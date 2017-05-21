@@ -5,4 +5,5 @@
     <dimen name="bottom_navigation_view_height">56dp</dimen>
     <dimen name="media_button_size">45dp</dimen>
     <dimen name="progress_bar_height">3dp</dimen>
+    <dimen name="full_screen_player_activity_seekbar_field_height">48dp</dimen>
 </resources>

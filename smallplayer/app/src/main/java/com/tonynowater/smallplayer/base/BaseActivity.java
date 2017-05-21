@@ -18,6 +18,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.util.OnClickSomething;
+import com.tonynowater.smallplayer.view.PlayerFragment;
 
 /**
  * Created by tonynowater on 2017/5/20.
@@ -26,7 +27,6 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     private static final String TAG = BaseActivity.class.getSimpleName();
     protected T mBinding;
     protected MediaControllerCompat.TransportControls mTransportControls;
-    private BaseFragment mPlayerFragment;
     private PlaybackStateCompat mPlaybackStateCompat;
     private MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
@@ -71,14 +71,13 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
             try {
                 mMediaControllerCompat = new MediaControllerCompat(BaseActivity.this, mMediaBrowserCompat.getSessionToken());
-                MediaControllerCompat.setMediaController(BaseActivity.this, mMediaControllerCompat);//設定後，在Fragment可以用MediaControllerCompat.getMediaController取得
-                mPlayerFragment.onConnected();//手動觸發PlayerFragment的連線
                 mTransportControls = mMediaControllerCompat.getTransportControls();
                 mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);
                 MediaControllerCompat.setMediaController(BaseActivity.this, mMediaControllerCompat);
                 mPlaybackStateCompat = mMediaControllerCompat.getPlaybackState();
                 onPlaybackStateChanged(mPlaybackStateCompat);
                 onMetadataChanged(mMediaControllerCompat.getMetadata());
+                connectPlayerFragment();
             } catch (RemoteException e) {
                 e.printStackTrace();
                 Log.e(TAG, "updateState: " + e.toString());
@@ -98,6 +97,15 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         }
     };
 
+    private void connectPlayerFragment() {
+        MediaControllerCompat.setMediaController(BaseActivity.this, mMediaControllerCompat);//設定後，在Fragment可以用MediaControllerCompat.getMediaController取得
+        PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.bottom_player_fragment);
+        if (playerFragment != null) {
+            Log.d(TAG, "connectPlayerFragment: ");
+            playerFragment.onConnected();//手動觸發PlayerFragment的連線
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,8 +118,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     @Override
     protected void onStart() {
         super.onStart();
-        mPlayerFragment = (BaseFragment) getSupportFragmentManager().findFragmentById(R.id.bottom_player_fragment);
-        if (mMediaBrowserCompat != null && mPlayerFragment != null) {
+        if (mMediaBrowserCompat != null) {
             Log.d(TAG, "onStart: connect");
             mMediaBrowserCompat.connect();
         }

@@ -30,7 +30,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".activity.PlayListActivity"></activity>
+        <activity android:name=".activity.PlayListActivity" />
+        <activity android:name=".activity.FullScreenPlayerActivity"></activity>
     </application>
 
 </manifest>
