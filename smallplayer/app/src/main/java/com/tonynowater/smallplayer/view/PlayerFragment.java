@@ -15,7 +15,7 @@ import com.tonynowater.smallplayer.service.PlayMusicService;
 
 /**
  * 播放
- * Created by tonynowate on 2017/5/20.
+ * Created by tonynowater on 2017/5/20.
  */
 public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
     private static final String TAG = PlayerFragment.class.getSimpleName();
@@ -89,7 +89,6 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         }
     }
 
-    // TODO: 2017/5/21 not attached to Activity 滑掉APP時會出現此錯誤
     /**
      * 更新播放的狀態
      * @param state
@@ -126,7 +125,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         }
 
         Log.d(TAG, "updateState: " + stringBuilder.toString());
-        mBinding.buttonPlay.setImageDrawable(enablePlay ? getActivity().getDrawable(android.R.drawable.ic_media_play) : getActivity().getDrawable(android.R.drawable.ic_media_pause));
+        mBinding.buttonPlay.setImageDrawable(enablePlay ? getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_play) : getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_pause));
     }
 
     @Override
@@ -147,12 +146,12 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
     @Override
     protected void pause() {
         super.pause();
-        mBinding.buttonPlay.setImageDrawable(getActivity().getDrawable(android.R.drawable.ic_media_play));
+        mBinding.buttonPlay.setImageDrawable(getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_play));
     }
 
     @Override
     protected void play() {
         super.play();
-        mBinding.buttonPlay.setImageDrawable(getActivity().getDrawable(android.R.drawable.ic_media_pause));
+        mBinding.buttonPlay.setImageDrawable(getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_pause));
     }
 }

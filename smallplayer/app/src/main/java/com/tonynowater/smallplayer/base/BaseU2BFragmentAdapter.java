@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tony10532 on 2017/5/20.
+ * Created by tonynowater on 2017/5/20.
  */
-public class BaseU2BFragmentAdapter<K, T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter <T>{
+public class BaseU2BFragmentAdapter<K, T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter <T> {
 
     protected List<K> mDataList;
     protected OnClickSomething<Song> mOnClickSongListener;
