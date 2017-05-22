@@ -98,14 +98,14 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     protected void skipToNext() {
         if (mTransportControls != null) {
             mTransportControls.skipToNext();
-            initialUpdateProgressHandler();
+//            initialUpdateProgressHandler();
         }
     }
 
     protected void skipToPrevious() {
         if (mTransportControls != null) {
             mTransportControls.skipToPrevious();
-            initialUpdateProgressHandler();
+//            initialUpdateProgressHandler();
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
             mTransportControls.stop();
         }
 
-        uninitialUpdateProgressHandler();
+//        uninitialUpdateProgressHandler();
     }
 
     private void uninitialUpdateProgressHandler() {
@@ -135,7 +135,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     protected void play() {
         if (mTransportControls != null) {
             mTransportControls.play();
-            initialUpdateProgressHandler();
+//            initialUpdateProgressHandler();
         }
     }
 

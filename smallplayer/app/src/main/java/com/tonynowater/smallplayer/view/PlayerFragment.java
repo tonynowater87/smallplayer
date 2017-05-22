@@ -115,15 +115,15 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                 enablePlay = true;
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
-                stringBuilder.append(getActivity().getApplicationContext().getString(R.string.play_state_playing));
+                stringBuilder.append(getContext().getString(R.string.play_state_playing));
                 enablePlay = false;
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-                stringBuilder.append(getActivity().getApplicationContext().getString(R.string.play_state_pause));
+                stringBuilder.append(getContext().getString(R.string.play_state_pause));
                 enablePlay = true;
                 break;
             case PlaybackStateCompat.STATE_STOPPED:
-                stringBuilder.append(getActivity().getApplicationContext().getString(R.string.play_state_stop));
+                stringBuilder.append(getContext().getString(R.string.play_state_stop));
                 enablePlay = true;
                 break;
             default:
@@ -132,7 +132,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         }
 
         Log.d(TAG, "updateState: " + stringBuilder.toString());
-        mBinding.buttonPlay.setImageDrawable(enablePlay ? getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_play) : getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_pause));
+        mBinding.buttonPlay.setImageDrawable(enablePlay ? getContext().getDrawable(android.R.drawable.ic_media_play) : getContext().getDrawable(android.R.drawable.ic_media_pause));
     }
 
     @Override
@@ -154,12 +154,12 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
     @Override
     protected void pause() {
         super.pause();
-        mBinding.buttonPlay.setImageDrawable(getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_play));
+        mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
     }
 
     @Override
     protected void play() {
         super.play();
-        mBinding.buttonPlay.setImageDrawable(getActivity().getApplicationContext().getDrawable(android.R.drawable.ic_media_pause));
+        mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_pause));
     }
 }

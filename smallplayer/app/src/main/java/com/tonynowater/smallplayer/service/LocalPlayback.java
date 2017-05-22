@@ -70,10 +70,10 @@ public class LocalPlayback implements Playback
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         Log.d(TAG, "onBufferingUpdate: " + percent);
-        if (percent == 100) {
-            mMediaPlayer.start();
-            mPlaybackCallback.onPlaybackStateChanged();
-        }
+//        if (percent == 100) {
+//            mMediaPlayer.start();
+//            mPlaybackCallback.onPlaybackStateChanged();
+//        }
     }
 
     @Override
@@ -130,6 +130,7 @@ public class LocalPlayback implements Playback
 
         if (mCurrentPosition != 0) {
             Log.d(TAG, "pause and play position : " + trackPosition);
+            mState = PlaybackStateCompat.STATE_BUFFERING;
             mMediaPlayer.seekTo(mCurrentPosition);
             return;
         }
@@ -142,6 +143,7 @@ public class LocalPlayback implements Playback
             mCurrentTrackPosition = trackPosition;
             mCurrentPosition = 0;
             mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+            mState = PlaybackStateCompat.STATE_BUFFERING;
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(source);
             mMediaPlayer.prepareAsync();
@@ -202,6 +204,10 @@ public class LocalPlayback implements Playback
 
     @Override
     public void seekTo(int position) {
-
+        if (mMediaPlayer != null) {
+            mState = PlaybackStateCompat.STATE_BUFFERING;
+            mMediaPlayer.seekTo(position);
+            mPlaybackCallback.onPlaybackStateChanged();
+        }
     }
 }

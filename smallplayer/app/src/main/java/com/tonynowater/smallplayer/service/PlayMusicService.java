@@ -213,6 +213,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 updatePlaybackState(null);
             }
         }
+
+        @Override
+        public void onSeekTo(long pos) {
+            Log.d(TAG, "onSeekTo: " + pos);
+            mLocalPlayback.seekTo((int) pos);
+        }
     }
 
     private void skipToNext() {

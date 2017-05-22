@@ -59,9 +59,9 @@ public class U2BApiUtil {
         int minutes = (int) ((duration / (1000*60)) % 60);
         int hours   = (int) ((duration / (1000*60*60)) % 24);
         if (hours > 0) {
-            return hours + ":" + minutes + ":" + seconds;
+            return hours + ":" + minutes + ":" + (seconds <= 9 ? "0" + seconds : seconds);
         } else {
-            return minutes + ":" + seconds;
+            return minutes + ":" + (seconds <= 9 ? "0" + seconds : seconds);
         }
     }
 }
