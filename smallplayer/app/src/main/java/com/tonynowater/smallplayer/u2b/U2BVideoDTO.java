@@ -161,11 +161,12 @@ public class U2BVideoDTO {
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
                     .putString("VIDEO_ID", getId().getVideoId())
-                    .putString(CUSTOM_METADATA_TRACK_SOURCE, getUrl())
+                    .putString(CUSTOM_METADATA_TRACK_SOURCE, getDataSource())
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getSnippet().getThumbnails().getHigh().getUrl())
                     .build();
         }
 
@@ -173,7 +174,7 @@ public class U2BVideoDTO {
             this.url = url;
         }
 
-        public String getUrl() {
+        public String getDataSource() {
             return url;
         }
 

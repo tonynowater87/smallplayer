@@ -16,7 +16,7 @@ import com.tonynowater.smallplayer.service.ResourceHelper;
 public class ProgressView extends View {
 
     private Paint mPaint = null;
-    private int mProgress = 1;
+    private int mProgress = 0;
     private int mMax = 100;
 
     public ProgressView(Context context) {

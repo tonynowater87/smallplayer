@@ -43,7 +43,7 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSupportActionBar((Toolbar) mBinding.coordinatorLayoutMainActivity.findViewById(R.id.toolbar_main_activity));
+        setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
         U2BSearchViewPagerFragment u2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO, getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID));
         getSupportFragmentManager().beginTransaction().replace(R.id.content_playlist_video_activity, u2BSearchViewPagerFragment).commit();
     }

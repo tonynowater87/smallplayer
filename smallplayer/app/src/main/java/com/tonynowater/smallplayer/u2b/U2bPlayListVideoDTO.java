@@ -148,6 +148,7 @@ public class U2bPlayListVideoDTO {
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getSnippet().getThumbnails().getStandard().getUrl())// TODO: 2017/5/22 若查回沒URL會當機
                     .build();
         }
 

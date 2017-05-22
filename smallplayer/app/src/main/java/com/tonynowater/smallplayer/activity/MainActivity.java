@@ -48,7 +48,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSupportActionBar((Toolbar) mBinding.coordinatorLayoutMainActivity.findViewById(R.id.toolbar_main_activity));
+        setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
         initialViewPager();
     }
 
@@ -63,8 +63,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
                 , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_channel), EnumU2BSearchType.CHANNEL)};
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
-        mBinding.coordinatorLayoutMainActivity.findViewById(R.id.tab_layout_main_activity).setVisibility(View.VISIBLE);
-        ((TabLayout)mBinding.coordinatorLayoutMainActivity.findViewById(R.id.tab_layout_main_activity)).setupWithViewPager(mBinding.viewpager);
+        mBinding.toolbar.tabLayoutMainActivity.setVisibility(View.VISIBLE);
+        mBinding.toolbar.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);
     }
 
     @Override
