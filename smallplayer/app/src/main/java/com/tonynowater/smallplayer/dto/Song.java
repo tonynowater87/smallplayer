@@ -130,6 +130,7 @@ public class Song implements Playable
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mDuration)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mTitle)
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, mAlbumObj.getmAlbum())
                 .build();
     }
 }

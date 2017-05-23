@@ -10,7 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tonynowtaer87.myutil.ToastUtil;
+import com.tonynowater.smallplayer.MyApplication;
+import com.tonynowater.smallplayer.util.ToastUtil;
 
 /**
  * Created by tonyliao on 2017/5/1.
@@ -23,7 +24,7 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends F
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mToastUtil = ToastUtil.newInstance(getContext());
+        mToastUtil = ToastUtil.newInstance();
     }
 
     @Nullable

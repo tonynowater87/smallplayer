@@ -8,6 +8,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
@@ -22,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPlayerBinding> {
+public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPlayerBinding> implements View.OnClickListener{
     private static final String TAG = FullScreenPlayerActivity.class.getSimpleName();
     private static final long INITIAL_DELAY = 100;
     private static final long UPDATE_PERIOD = 1000;
@@ -44,22 +45,25 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
+                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
                 scheduledSeekUpdate();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
+                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
+                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
+                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
                 stopSeekbarUpdate();
                 break;
             default:
                 Log.d(TAG, "updatePlaybackState: unhandle state " + state.getState());
         }
-
     }
 
     @Override
@@ -73,13 +77,16 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
             return;
         }
         Log.d(TAG, "onMetadataChanged: ");
-        updateDuration(metadata);
-        Glide.with(getApplicationContext()).load(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)).into((ImageView) mBinding.rlRootActivityFullScreenPlayer.findViewById(R.id.imageview_background_activity_full_screen_player));
+        updateUI(metadata);
     }
 
-    private void updateDuration(MediaMetadataCompat metadata) {
+    private void updateUI(MediaMetadataCompat metadata) {
         mBinding.tvEndTextActivityFullScreenPlayer.setText(U2BApiUtil.formateU2BDurationToString(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+        mBinding.tvTitleActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        mBinding.tvArtistActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        mBinding.tvAlbumDescriptionActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION));
+        Glide.with(getApplicationContext()).load(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)).into((ImageView) mBinding.rlRootActivityFullScreenPlayer.findViewById(R.id.imageview_background_activity_full_screen_player));
     }
 
     private SeekBar.OnSeekBarChangeListener mOnSeekChangedListener = new SeekBar.OnSeekBarChangeListener() {
@@ -120,6 +127,9 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
         mBinding.seekbarActivityFullScreenPlayer.setOnSeekBarChangeListener(mOnSeekChangedListener);
+        mBinding.ivPreviousActivityFullScreenPlayer.setOnClickListener(this);
+        mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
+        mBinding.ivNextActivityFullScreenPlayer.setOnClickListener(this);
     }
 
     @Override
@@ -161,5 +171,30 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         }
 
         mBinding.seekbarActivityFullScreenPlayer.setProgress((int) currentPosition);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_previous_activity_full_screen_player:
+                mTransportControls.skipToPrevious();
+                break;
+            case R.id.iv_play_pause__activity_full_screen_player:
+                onPressPlayButton();
+                break;
+            case R.id.iv_next_activity_full_screen_player:
+                mTransportControls.skipToNext();
+                break;
+        }
+    }
+
+    private void onPressPlayButton() {
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
+            mTransportControls.pause();
+        } else {
+            mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
+            mTransportControls.play();
+        }
     }
 }

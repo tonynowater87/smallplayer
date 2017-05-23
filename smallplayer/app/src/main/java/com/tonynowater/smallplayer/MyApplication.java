@@ -2,6 +2,7 @@ package com.tonynowater.smallplayer;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -11,9 +12,16 @@ import android.util.Log;
 
 public class MyApplication extends Application {
     private static final String TAG = MyApplication.class.getSimpleName();
+    private static Context mContext;
+
+    public static Context getContext() {
+        return mContext;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = getApplicationContext();
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -50,6 +58,5 @@ public class MyApplication extends Application {
                 Log.d(TAG, "onActivityDestroyed: " + activity.getClass().getSimpleName());
             }
         });
-
     }
 }
