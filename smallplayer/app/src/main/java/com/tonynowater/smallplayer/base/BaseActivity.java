@@ -6,12 +6,14 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.R;
@@ -19,6 +21,8 @@ import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.view.PlayerFragment;
+
+import java.util.List;
 
 /**
  * Created by tonynowater on 2017/5/20.
@@ -59,6 +63,39 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
     protected abstract void onMetadataChanged(MediaMetadataCompat metadata);
 
+    protected abstract void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children);
+
+    protected abstract void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children, Bundle options);
+
+    /** 若畫面端要訂閱資料需覆寫 */
+    protected String getSubscribeID() {
+        return "";
+    }
+
+    private MediaBrowserCompat.SubscriptionCallback mSubScriptionCallBack = new MediaBrowserCompat.SubscriptionCallback() {
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            super.onChildrenLoaded(parentId, children);
+            BaseActivity.this.onChildrenLoaded(children);
+        }
+
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children, @NonNull Bundle options) {
+            super.onChildrenLoaded(parentId, children, options);
+            BaseActivity.this.onChildrenLoaded(children, options);
+        }
+
+        @Override
+        public void onError(@NonNull String parentId) {
+            super.onError(parentId);
+        }
+
+        @Override
+        public void onError(@NonNull String parentId, @NonNull Bundle options) {
+            super.onError(parentId, options);
+        }
+    };
+
     private MediaBrowserCompat.ConnectionCallback mConnectionCallback = new MediaBrowserCompat.ConnectionCallback() {
         @Override
         public void onConnected() {
@@ -70,6 +107,9 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
             }
 
             try {
+                if (!TextUtils.isEmpty(getSubscribeID())) {
+                    mMediaBrowserCompat.subscribe(getSubscribeID(), mSubScriptionCallBack);
+                }
                 mMediaControllerCompat = new MediaControllerCompat(BaseActivity.this, mMediaBrowserCompat.getSessionToken());
                 mTransportControls = mMediaControllerCompat.getTransportControls();
                 mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);

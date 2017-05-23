@@ -113,7 +113,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@android:drawable/ic_menu_zoom" />
+                    android:src="@android:drawable/ic_menu_sort_by_size" />
 
                 <ImageView
                     android:id="@+id/iv_previous_activity_full_screen_player"

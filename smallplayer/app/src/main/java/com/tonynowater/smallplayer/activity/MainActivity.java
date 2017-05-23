@@ -2,13 +2,12 @@ package com.tonynowater.smallplayer.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,8 @@ import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.u2b.U2BPlayListDTO;
 import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
+
+import java.util.List;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -46,6 +47,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
+    protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
+
+    }
+
+    @Override
+    protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children, Bundle options) {
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
@@ -60,8 +71,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private void initialViewPager() {
         mBaseViewPagerFragments = new BaseViewPagerFragment[]{SongListViewPagerFragment.newInstance()
                 , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
-                , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
-                , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_channel), EnumU2BSearchType.CHANNEL)};
+                , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)};
+        // TODO: 2017/5/23 查頻道暫時先封住
+        //, U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_channel), EnumU2BSearchType.CHANNEL)};
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
         mBinding.toolbar.tabLayoutMainActivity.setVisibility(View.VISIBLE);
         mBinding.toolbar.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);

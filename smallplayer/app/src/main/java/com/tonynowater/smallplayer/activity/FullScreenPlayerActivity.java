@@ -4,11 +4,11 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
@@ -29,7 +29,8 @@ import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -41,6 +42,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     private static final long UPDATE_PERIOD = 1000;
     private Handler mHandler = new Handler();
     private PlaybackStateCompat mLastPlaybackState;
+    private List<String> mCurrentPlayList = new ArrayList<>();
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -89,6 +91,25 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         }
         Log.d(TAG, "onMetadataChanged: ");
         updateUI(metadata);
+    }
+
+    @Override
+    protected String getSubscribeID() {
+        return PlayMusicService.GET_CURRENT_PLAY_LIST_ID;
+    }
+
+    @Override
+    protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
+        mCurrentPlayList.clear();
+        for (int i = 0; i < children.size(); i++) {
+            Log.d(TAG, "onChildrenLoaded: " + children.get(i).getDescription().getTitle());
+            mCurrentPlayList.add(children.get(i).getDescription().getTitle().toString());
+        }
+    }
+
+    @Override
+    protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children, Bundle options) {
+
     }
 
     private void updateUI(MediaMetadataCompat metadata) {
@@ -142,6 +163,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivNextActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivEqActivityFullScreenPlayer.setOnClickListener(this);
+        mBinding.ivModeActivityFullScreenPlayer.setOnClickListener(this);
     }
 
     @Override
@@ -200,7 +222,26 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
             case R.id.iv_eq_activity_full_screen_player:
                 showEqList();
                 break;
+            case R.id.iv_mode_activity_full_screen_player:
+                showCurrentPlayList();
+                break;
         }
+    }
+
+    private void showCurrentPlayList() {
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        ListView listView = new ListView(this);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MyApplication.getContext(), android.R.layout.simple_list_item_1, mCurrentPlayList);
+        listView.setBackgroundColor(Color.BLACK);
+        listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                bottomSheetDialog.dismiss();
+            }
+        });
+        bottomSheetDialog.setContentView(listView);
+        bottomSheetDialog.show();
     }
 
     private void showEqList() {
@@ -230,7 +271,6 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
             }
         });
 
-        bottomSheetDialog.setTitle(R.string.equlizer_title);
         bottomSheetDialog.setContentView(listView);
         bottomSheetDialog.show();
     }

@@ -27,6 +27,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String BUNDLE_KEY_MEDIAMETADATA = "BUNDLE_KEY_MEDIAMETADATA";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
+    public static final String GET_CURRENT_PLAY_LIST_ID = "GET_CURRENT_PLAY_LIST_ID";
     private static final String ROOT_ID_TEST = "ROOT_ID_TEST";
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
@@ -170,6 +171,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         Log.d(TAG, "onLoadChildren: " + parentId);
         // 目前沒用到, 在畫面端subcribe後，回傳項目回畫面
+        if (TextUtils.equals(parentId, GET_CURRENT_PLAY_LIST_ID)) {
+            result.sendResult(mMusicProvider.getMediaItemList());
+        }
     }
 
     private final class MySessionCall extends MediaSessionCompat.Callback {
