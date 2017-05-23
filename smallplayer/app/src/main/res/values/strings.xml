@@ -21,5 +21,7 @@
     <string name="viewpager_title_u2b_search_video">搜尋音樂</string>
     <string name="viewpager_title_u2b_search_channel">搜尋頻道</string>
     <string name="default_start_time">00:00</string>
+    <string name="equlizer_title">等化器</string>
+    <string name="equlizer_set_finish_toast">等化器設定成%s</string>
 
 </resources>

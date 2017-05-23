@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.service;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.Equalizer;
 import android.media.session.PlaybackState;
 import android.net.wifi.WifiManager;
 import android.support.v4.media.MediaMetadataCompat;
@@ -33,6 +34,7 @@ public class LocalPlayback implements Playback
     private MediaPlayer mMediaPlayer;
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
+    private Equalizer mEqualizer;
 
     public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
@@ -163,6 +165,9 @@ public class LocalPlayback implements Playback
             mMediaPlayer.setOnBufferingUpdateListener(this);
             mMediaPlayer.setOnSeekCompleteListener(this);
             mMediaPlayer.setOnErrorListener(this);
+            mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
+            mEqualizer.setEnabled(true);
+
         } else {
             mMediaPlayer.reset();
         }
@@ -199,6 +204,7 @@ public class LocalPlayback implements Playback
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
+            mEqualizer.release();
         }
     }
 
@@ -209,5 +215,74 @@ public class LocalPlayback implements Playback
             mMediaPlayer.seekTo(position);
             mPlaybackCallback.onPlaybackStateChanged();
         }
+    }
+
+    @Override
+    public void setEqualizer(EqualizerType preset) {
+        switch (preset) {
+            case STANDARD:
+                mEqualizer.setBandLevel((short) 0, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 1, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 2, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 3, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 4, provideBandLevel(0));
+                break;
+            case CLASSICAL:
+                mEqualizer.setBandLevel((short) 0, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 1, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 2, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 3, provideBandLevel(-7.2));
+                mEqualizer.setBandLevel((short) 4, provideBandLevel(-9.6));
+                break;
+            case DANCE:
+                mEqualizer.setBandLevel((short) 0, provideBandLevel(7.2));
+                mEqualizer.setBandLevel((short) 1, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 2, provideBandLevel(-5.6));
+                mEqualizer.setBandLevel((short) 3, provideBandLevel(-7.2));
+                mEqualizer.setBandLevel((short) 4, provideBandLevel(0));
+                break;
+            case POP:
+                mEqualizer.setBandLevel((short) 0, provideBandLevel(4.8));
+                mEqualizer.setBandLevel((short) 1, provideBandLevel(8.0));
+                mEqualizer.setBandLevel((short) 2, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 3, provideBandLevel(-2.4));
+                mEqualizer.setBandLevel((short) 4, provideBandLevel(-1.6));
+                break;
+            case ROCK:
+                mEqualizer.setBandLevel((short) 0, provideBandLevel(4.8));
+                mEqualizer.setBandLevel((short) 1, provideBandLevel(-8.0));
+                mEqualizer.setBandLevel((short) 2, provideBandLevel(4.0));
+                mEqualizer.setBandLevel((short) 3, provideBandLevel(11.2));
+                mEqualizer.setBandLevel((short) 4, provideBandLevel(11.2));
+                break;
+            case OPERA:
+                mEqualizer.setBandLevel((short) 0, provideBandLevel(-9.6));
+                mEqualizer.setBandLevel((short) 1, provideBandLevel(-4.0));
+                mEqualizer.setBandLevel((short) 2, provideBandLevel(11.2));
+                mEqualizer.setBandLevel((short) 3, provideBandLevel(13.0));
+                mEqualizer.setBandLevel((short) 4, provideBandLevel(13.8));
+                break;
+            case JAZZ:
+                mEqualizer.setBandLevel((short) 0, provideBandLevel(0));
+                mEqualizer.setBandLevel((short) 1, provideBandLevel(5.6));
+                mEqualizer.setBandLevel((short) 2, provideBandLevel(5.6));
+                mEqualizer.setBandLevel((short) 3, provideBandLevel(2.4));
+                mEqualizer.setBandLevel((short) 4, provideBandLevel(2.4));
+                break;
+        }
+    }
+
+    private short provideBandLevel(double dB) {
+        final short minLevel = mEqualizer.getBandLevelRange()[0];
+        final short maxLevel = mEqualizer.getBandLevelRange()[1];
+        dB *= 100;
+        if (dB > maxLevel) {
+            return maxLevel;
+        }
+
+        if (dB < minLevel) {
+            return minLevel;
+        }
+        return (short) dB;
     }
 }

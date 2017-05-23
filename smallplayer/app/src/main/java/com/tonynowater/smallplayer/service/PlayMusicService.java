@@ -23,9 +23,10 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private static final String TAG = PlayMusicService.class.getSimpleName();
     public static final String ACTION_ADD_NEW_MUSIC = "ACTION_ADD_NEW_MUSIC";
-    public static final String ACTION_UPDATE_MUSIC_POSITION = "ACTION_UPDATE_MUSIC_POSITION";
+    public static final String ACTION_CHANGE_EQUALIZER_TYPE = "ACTION_CHANGE_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_MEDIAMETADATA = "BUNDLE_KEY_MEDIAMETADATA";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
+    public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     private static final String ROOT_ID_TEST = "ROOT_ID_TEST";
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
@@ -209,8 +210,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onCustomAction(String action, Bundle extras) {
-            if (action.equals(ACTION_UPDATE_MUSIC_POSITION)) {
-                updatePlaybackState(null);
+            Log.d(TAG, "onCustomAction: " + action);
+            if (action.equals(ACTION_CHANGE_EQUALIZER_TYPE)) {
+                mLocalPlayback.setEqualizer((EqualizerType) extras.getSerializable(BUNDLE_KEY_EQUALIZER_TYPE));
             }
         }
 
@@ -261,7 +263,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     /**
      * 開始播放音樂後更新Session的metadata
-     * @param metadata
+     * @param metadata 更新音樂資料通知畫面{@link android.support.v4.media.session.MediaControllerCompat.Callback#onMetadataChanged(MediaMetadataCompat)}
      */
     private void updateMetadata(MediaMetadataCompat metadata) {
 

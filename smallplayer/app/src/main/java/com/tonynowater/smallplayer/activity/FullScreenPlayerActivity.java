@@ -1,23 +1,35 @@
 package com.tonynowater.smallplayer.activity;
 
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.Snackbar;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
+import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
+import com.tonynowater.smallplayer.service.EqualizerType;
+import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
 
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,7 +45,6 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
         Log.d(TAG, "onPlaybackStateChanged: ");
-
         updatePlaybackState(state);
     }
 
@@ -130,6 +141,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         mBinding.ivPreviousActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivNextActivityFullScreenPlayer.setOnClickListener(this);
+        mBinding.ivEqActivityFullScreenPlayer.setOnClickListener(this);
     }
 
     @Override
@@ -185,7 +197,42 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
             case R.id.iv_next_activity_full_screen_player:
                 mTransportControls.skipToNext();
                 break;
+            case R.id.iv_eq_activity_full_screen_player:
+                showEqList();
+                break;
         }
+    }
+
+    private void showEqList() {
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        ListView listView = new ListView(this);
+        final EqualizerType[] types = EqualizerType.values();
+        final String[] names = new String[types.length];
+        for (int i = 0; i < types.length; i++) {
+            names[i] = types[i].name();
+        }
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MyApplication.getContext(), android.R.layout.simple_list_item_1, names);
+        listView.setBackgroundColor(Color.BLACK);
+        listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
+                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
+                bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        Snackbar.make(mBinding.rlRootActivityFullScreenPlayer, String.format(getString(R.string.equlizer_set_finish_toast), names[position]),Snackbar.LENGTH_SHORT).show();
+                    }
+                });
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetDialog.setTitle(R.string.equlizer_title);
+        bottomSheetDialog.setContentView(listView);
+        bottomSheetDialog.show();
     }
 
     private void onPressPlayButton() {
