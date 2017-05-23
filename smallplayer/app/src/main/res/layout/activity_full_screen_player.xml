@@ -65,16 +65,7 @@
 
             </LinearLayout>
 
-            <fragment
-                android:id="@+id/bottom_player_fragment"
-                android:name="com.tonynowater.smallplayer.view.PlayerFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                android:minHeight="?android:attr/actionBarSize" />
-
         </LinearLayout>
-
 
     </RelativeLayout>
 

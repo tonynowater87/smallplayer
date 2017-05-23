@@ -18,23 +18,13 @@ import android.view.ViewGroup;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
 /**
- * Created by tonynowate on 2017/5/20.
+ * Created by tonynowater on 2017/5/20.
  */
 public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     private static final String TAG = BaseFragment.class.getSimpleName();
     protected T mBinding;
-    public static final int DELAY_TIME = 1000;//歌曲位置更新時間
-    private HandlerThread mHandlerThread;
-    private Handler mHandler;
     private MediaControllerCompat.TransportControls mTransportControls;
-    private Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            //送自定事件請求歌曲位置
-            mTransportControls.sendCustomAction(PlayMusicService.ACTION_UPDATE_MUSIC_POSITION, null);
-            mHandler.postDelayed(mRunnable, DELAY_TIME);
-        }
-    };
+
 
     private MediaControllerCompat.Callback mMediaControllerCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -98,14 +88,12 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     protected void skipToNext() {
         if (mTransportControls != null) {
             mTransportControls.skipToNext();
-//            initialUpdateProgressHandler();
         }
     }
 
     protected void skipToPrevious() {
         if (mTransportControls != null) {
             mTransportControls.skipToPrevious();
-//            initialUpdateProgressHandler();
         }
     }
 
@@ -119,33 +107,11 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
         if (mTransportControls != null) {
             mTransportControls.stop();
         }
-
-//        uninitialUpdateProgressHandler();
-    }
-
-    private void uninitialUpdateProgressHandler() {
-        if (mHandlerThread != null) {
-            mHandler.removeCallbacks(mRunnable);
-            mHandlerThread.quitSafely();
-            mHandlerThread.interrupt();
-            mHandlerThread = null;
-        }
     }
 
     protected void play() {
         if (mTransportControls != null) {
             mTransportControls.play();
-//            initialUpdateProgressHandler();
         }
-    }
-
-    private void initialUpdateProgressHandler() {
-        if (mHandlerThread == null) {
-            mHandlerThread = new HandlerThread(TAG);
-            mHandlerThread.start();
-            mHandler = new Handler(mHandlerThread.getLooper());
-        }
-
-        mHandler.post(mRunnable);
     }
 }

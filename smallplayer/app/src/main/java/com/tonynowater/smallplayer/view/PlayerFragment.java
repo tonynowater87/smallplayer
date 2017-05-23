@@ -2,6 +2,8 @@ package com.tonynowater.smallplayer.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -15,6 +17,11 @@ import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * 畫面底部的播放Fragment
@@ -23,7 +30,18 @@ import com.tonynowater.smallplayer.service.PlayMusicService;
 public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
     private static final String TAG = PlayerFragment.class.getSimpleName();
 
+    private static final long INITIAL_DELAY = 100;
+    private static final long UPDATE_PERIOD = 1000;
     private PlaybackStateCompat mPlaybackStateCompat;
+    private Handler mHandler = new Handler();
+    private ScheduledExecutorService mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> mScheduledFuture;
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateProgress();
+        }
+    };
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -79,21 +97,8 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         if (state == null) {
             return;
         }
-
-        int duration = state.getExtras() == null ? 0 : state.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION);
         mPlaybackStateCompat = state;
         PlayerFragment.this.updateState(state);
-
-        Log.d(TAG, "onPlaybackStateChanged: position " + state.getPosition());
-        Log.d(TAG, "onPlaybackStateChanged: duration " + duration );
-
-        if (duration != 0) {
-            if (mBinding.progressBar.getmMax() != duration) {
-                mBinding.progressBar.setmMax(state.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
-            }
-
-            mBinding.progressBar.setmProgress((int) state.getPosition());
-        }
     }
 
     /**
@@ -113,6 +118,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
             case PlaybackStateCompat.STATE_NONE:
                 stringBuilder.append("STATE_NONE");
                 enablePlay = true;
+                startScheduledUpdateProgress();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
                 stringBuilder.append(getContext().getString(R.string.play_state_playing));
@@ -133,6 +139,39 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
 
         Log.d(TAG, "updateState: " + stringBuilder.toString());
         mBinding.buttonPlay.setImageDrawable(enablePlay ? getContext().getDrawable(android.R.drawable.ic_media_play) : getContext().getDrawable(android.R.drawable.ic_media_pause));
+
+        int duration = mPlaybackStateCompat.getExtras() == null ? 0 : mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION);
+        if (duration != 0) {
+            if (mBinding.progressBar.getmMax() != duration) {
+                mBinding.progressBar.setmMax(mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
+            }
+        }
+    }
+
+    private void startScheduledUpdateProgress() {
+        stopScheduledUpdateProgress();
+        if (!mScheduledExecutorService.isShutdown()) {
+            mScheduledFuture = mScheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    mHandler.post(mRunnable);
+                }
+            }, INITIAL_DELAY, UPDATE_PERIOD, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopScheduledUpdateProgress() {
+        if (mScheduledFuture != null) {
+            mScheduledFuture.cancel(false);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mScheduledExecutorService != null) {
+            mScheduledExecutorService.shutdown();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -161,5 +200,20 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
     protected void play() {
         super.play();
         mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_pause));
+    }
+
+    private void updateProgress() {
+
+        if (mPlaybackStateCompat == null) {
+            return;
+        }
+
+        long currentTime = mPlaybackStateCompat.getPosition();
+        if (mPlaybackStateCompat.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            long deltaTime = SystemClock.elapsedRealtime() - mPlaybackStateCompat.getLastPositionUpdateTime();
+            currentTime += (int) deltaTime * mPlaybackStateCompat.getPlaybackSpeed();
+        }
+        
+        mBinding.progressBar.setmProgress((int) currentTime);
     }
 }
