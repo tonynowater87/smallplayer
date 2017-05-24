@@ -183,6 +183,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             Log.d(TAG, "onPlay:"+mMusicProvider.isPlayListAvailable());
             if (mMusicProvider.isPlayListAvailable()) {
                 handlePlayRequest();
+            } else {
+                updatePlaybackState(null);
             }
         }
 
@@ -200,11 +202,18 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSkipToNext() {
+            if (!mMusicProvider.isPlayListAvailable()) {
+                return;
+            }
             skipToNext();
         }
 
         @Override
         public void onSkipToPrevious() {
+            if (!mMusicProvider.isPlayListAvailable()) {
+                return;
+            }
+
             mSongTrackPosition--;
             if (mSongTrackPosition < 0) {
                 mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;

@@ -27,7 +27,7 @@ public class LocalPlayback implements Playback
     private PlayMusicService mPlayMusicService;
     private WifiManager.WifiLock mWifiLock;
     private AudioManager mAudioManager;
-    private int mState;
+    private int mState = PlaybackStateCompat.STATE_NONE;
     private int mCurrentPosition;
     private int mCurrentTrackPosition;
     private int mSongDuration = 0;
