@@ -152,7 +152,7 @@ public class LocalPlayback implements Playback
             mPlaybackCallback.onPlaybackStateChanged();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "play error: " + e.toString() );
+            Log.e(TAG, "play error: " + e.toString() );// TODO: 2017/5/24 錯誤事件需要接到畫面處理
         }
     }
 
