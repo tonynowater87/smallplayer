@@ -38,7 +38,7 @@ public class YoutubeExtratorUtil {
                     }
                 } else {
 
-                    Log.e(TAG, "onExtractionComplete: " + "Get StreamUrl failed id= " + videoMeta.getVideoId());
+                    Log.e(TAG, "onExtractionComplete: Get StreamUrl failed");
                     callBack.getU2BUrl("");
                 }
             }

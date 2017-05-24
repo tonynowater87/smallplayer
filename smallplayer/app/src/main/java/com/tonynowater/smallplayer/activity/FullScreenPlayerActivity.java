@@ -40,6 +40,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     private static final String TAG = FullScreenPlayerActivity.class.getSimpleName();
     private static final long INITIAL_DELAY = 100;
     private static final long UPDATE_PERIOD = 1000;
+    private static final int DEFAULT_PROGRESS = 0;
     private Handler mHandler = new Handler();
     private PlaybackStateCompat mLastPlaybackState;
     private List<String> mCurrentPlayList = new ArrayList<>();
@@ -71,7 +72,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
+                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.stat_notify_sync));
                 stopSeekbarUpdate();
                 break;
             default:
@@ -237,6 +238,10 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                Bundle bundle = new Bundle();
+                bundle.putInt(PlayMusicService.BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION, position);
+                mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST, bundle);
+                mBinding.seekbarActivityFullScreenPlayer.setProgress(DEFAULT_PROGRESS);
                 bottomSheetDialog.dismiss();
             }
         });

@@ -113,33 +113,28 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
             return;
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
-        boolean enablePlay = false;
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_NONE:
-                stringBuilder.append("STATE_NONE");
-                enablePlay = true;
+                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
                 startScheduledUpdateProgress();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
-                stringBuilder.append(getContext().getString(R.string.play_state_playing));
-                enablePlay = false;
+                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_pause));
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-                stringBuilder.append(getContext().getString(R.string.play_state_pause));
-                enablePlay = true;
+                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
                 break;
             case PlaybackStateCompat.STATE_STOPPED:
-                stringBuilder.append(getContext().getString(R.string.play_state_stop));
-                enablePlay = true;
+                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
+                break;
+            case PlaybackStateCompat.STATE_BUFFERING:
+                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.stat_notify_sync));
                 break;
             default:
-                stringBuilder.append(state);
                 break;
         }
 
-        Log.d(TAG, "updateState: " + stringBuilder.toString());
-        mBinding.buttonPlay.setImageDrawable(enablePlay ? getContext().getDrawable(android.R.drawable.ic_media_play) : getContext().getDrawable(android.R.drawable.ic_media_pause));
+        Log.d(TAG, "updateState: " + state.getState());
 
         int duration = mPlaybackStateCompat.getExtras() == null ? 0 : mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION);
         if (duration != 0) {

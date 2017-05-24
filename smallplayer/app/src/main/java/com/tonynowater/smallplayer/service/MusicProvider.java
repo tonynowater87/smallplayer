@@ -38,15 +38,15 @@ public class MusicProvider {
     public List<MediaBrowserCompat.MediaItem> getMediaItemList() {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
         for (int i = 0; i < mMusicPlayList.size(); i++) {
-            mediaItems.add(createMediaItem(mMusicPlayList.get(i)));
+            mediaItems.add(createMediaItem(i,mMusicPlayList.get(i)));
         }
         return mediaItems;
     }
 
-    private MediaBrowserCompat.MediaItem createMediaItem(MediaMetadataCompat mediaMetadataCompat) {
+    private MediaBrowserCompat.MediaItem createMediaItem(int idIsPosition, MediaMetadataCompat mediaMetadataCompat) {
 
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
+                .setMediaId(String.valueOf(idIsPosition))
                 .setTitle(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
                 .setSubtitle(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION))
                 .build();
