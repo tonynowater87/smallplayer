@@ -37,4 +37,6 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends F
     protected abstract int getResourceId();
 
     public abstract CharSequence getPageTitle(Context context);
+
+    public abstract void queryBySearchView(String query);
 }

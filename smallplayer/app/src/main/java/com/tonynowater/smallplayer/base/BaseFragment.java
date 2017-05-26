@@ -62,11 +62,11 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 
     @Override
     public void onStop() {
-        super.onStop();
         MediaControllerCompat mediaControllerCompat = MediaControllerCompat.getMediaController(getActivity());
         if (mediaControllerCompat != null) {
             mediaControllerCompat.unregisterCallback(mMediaControllerCallback);
         }
+        super.onStop();
     }
 
     public void onConnected() {

@@ -23,3 +23,12 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    espressoVer = '2.2.2'
+    androidSupLibVer = '25.3.1'
+    okhttpVer = '2.4.0'
+    gsonVer = '2.3.1'
+    constraintlayoutVer = '1.0.2'
+    materialsearchviewVer = '1.4.0'
+}

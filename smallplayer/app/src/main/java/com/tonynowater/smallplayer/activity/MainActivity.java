@@ -1,17 +1,30 @@
 package com.tonynowater.smallplayer.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.database.MatrixCursor;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
@@ -21,15 +34,25 @@ import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.u2b.Playable;
+import com.tonynowater.smallplayer.u2b.U2BApi;
+import com.tonynowater.smallplayer.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.u2b.U2BPlayListDTO;
 import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static android.support.v4.widget.CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
+    private int mCurrentViewPagerPosition = 0;
+    private SimpleCursorAdapter simpleCursorAdapter;
+    private List<String> suggestions;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -64,6 +87,97 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG, "onQueryTextChange: " + newText);
+                if (!TextUtils.isEmpty(newText)) {
+                    if (mBaseViewPagerFragments[mCurrentViewPagerPosition] instanceof U2BSearchViewPagerFragment) {
+                        U2BApi.newInstance().queryU2BSUGGESTION(newText, new Callback() {
+                            @Override
+                            public void onFailure(Request request, IOException e) {
+                                Log.d(TAG, "onFailure: " + e.toString());
+                            }
+
+                            @Override
+                            public void onResponse(final Response response) throws IOException {
+                                if (response.isSuccessful()) {
+                                    final String sResponse = new String(response.body().bytes());
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            suggestions =U2BApiUtil.getSuggestionStringList(sResponse);
+                                            initialSearchViewSuggestAdapter(suggestions);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                } else {
+                   initialSearchViewSuggestAdapter(new ArrayList<String>());//清空搜尋建議
+                }
+                return false;
+            }
+
+            private void initialSearchViewSuggestAdapter(List<String> suggestionStringList) {
+                String [] columns = new String[] {BaseColumns._ID, "suggestion"};
+                MatrixCursor matrixCursor = new MatrixCursor(columns);
+                String[] from = new String[] {"suggestion"};
+                int[] to = new int[] {R.id.tv_layout_u2bsuggestion_adapter_list_item};
+
+                for (int i = 0; i < suggestionStringList.size(); i++) {
+                    matrixCursor.addRow(new Object[] {i, suggestionStringList.get(i)});
+                }
+
+                simpleCursorAdapter = new SimpleCursorAdapter(getApplicationContext()
+                        , R.layout.layout_u2bsuggestion_adapter_list_item
+                        , matrixCursor
+                        , from
+                        , to
+                        ,FLAG_REGISTER_CONTENT_OBSERVER);
+                searchView.setSuggestionsAdapter(simpleCursorAdapter);
+            }
+        });
+
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                if (MiscellaneousUtil.isListOK(suggestions)) {
+                    mBaseViewPagerFragments[mCurrentViewPagerPosition].queryBySearchView(suggestions.get(position));
+                }
+                return true;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);//一定要先setIntent才能收到
+        if (TextUtils.equals(getIntent().getAction(),Intent.ACTION_SEARCH)) {
+            Log.d(TAG, "onNewIntent: " + getIntent().getStringExtra(SearchManager.QUERY));
+            mBaseViewPagerFragments[mCurrentViewPagerPosition].queryBySearchView(getIntent().getStringExtra(SearchManager.QUERY));
+        }
+    }
+
+    @Override
     protected int getLayoutResource() {
         return R.layout.activity_main;
     }
@@ -75,6 +189,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         // TODO: 2017/5/23 查頻道暫時先封住
         //, U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_channel), EnumU2BSearchType.CHANNEL)};
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
+        mBinding.viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d(TAG, "onPageSelected: " + position);
+                mCurrentViewPagerPosition = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         mBinding.toolbar.tabLayoutMainActivity.setVisibility(View.VISIBLE);
         mBinding.toolbar.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);
     }

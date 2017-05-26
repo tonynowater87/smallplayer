@@ -10,4 +10,21 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <!-- ToolBar Style -->
+    <style name="AppTheme.Toolbar" parent="AppTheme">
+        <!--指定SearchView的Style-->
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
+    </style>
+
+    <!-- SearchView的Style -->
+    <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+        <!--SearchView的按鈕-->
+        <!--<item name="searchIcon">@android:drawable/ic_btn_speak_now</item>-->
+        <!--指定取消的icon-->
+        <!--<item name="closeIcon">@android:drawable/ic_menu_sort_by_size</item>-->
+        <!--SearchView的整個背景色-->
+        <!--<item name="queryBackground">@color/colorAccent</item>-->
+        <!--搜尋的提示字-->
+        <item name="queryHint">@string/search_view_hint</item>
+    </style>
 </resources>

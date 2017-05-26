@@ -5,11 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
@@ -29,12 +26,11 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by tonynowater on 2017/5/1.
  */
-public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements View.OnClickListener, OnClickSomething<String> {
+public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
     private static final String BUNDLE_KEY_TITLE = "BUNDLE_KEY_TITLE";
     private static final String BUNDLE_KEY_SEARCH_TYPE = "BUNDLE_KEY_SEARCH_TYPE";
@@ -175,50 +171,6 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         }
     };
 
-    private TextWatcher mTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            if (!TextUtils.isEmpty(s) && s.length() > 0) {
-
-                if (!mIsRequesting) {
-                    mIsRequesting = true;
-                    U2BApi.newInstance().queryU2BSUGGESTION(s.toString(), new Callback() {
-                        @Override
-                        public void onFailure(Request request, IOException e) {
-                            mBinding.recyclerviewSuggestion.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onResponse(final Response response) throws IOException {
-                            if (response.isSuccessful()) {
-                                final String sResponse = new String(response.body().bytes());
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        initialU2BSuggest(U2BApiUtil.getSuggestionStringList(sResponse));
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            } else {
-                mBinding.recyclerviewSuggestion.setVisibility(View.GONE);
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
-
     private BaseU2BFragmentAdapter mSongListAdapter;
     private boolean mIsRequesting = false;
     private EnumU2BSearchType mEnumU2BSearchType;
@@ -252,26 +204,38 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mEnumU2BSearchType = (EnumU2BSearchType) getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE);
-        mBinding.btnQuerySubmit.setOnClickListener(this);
-        mBinding.etQueryU2b.addTextChangedListener(mTextWatcher);
-        initialU2BSearchAdapter();
-        if (mEnumU2BSearchType == EnumU2BSearchType.PLAYLISTVIDEO) {
-            searchU2B(getArguments().getString(BUNDLE_KEY_PLAYLISTID));
+    public void queryBySearchView(String query) {
+        if (!TextUtils.isEmpty(query)) {
+
+            switch (mEnumU2BSearchType) {
+                case VIDEO:
+                    Log.d(TAG, "queryBySearchView: search video" );
+                    U2BApi.newInstance().queryU2BVideo(query, mViedoSearchCallback);
+                    break;
+                case PLAYLIST:
+                    Log.d(TAG, "queryBySearchView: search playlist" );
+                    U2BApi.newInstance().queryU2BPlayList(query, mViedoSearchCallback);
+                    break;
+                case PLAYLISTVIDEO:
+                    Log.d(TAG, "queryBySearchView: search playlistvideo" );
+                    U2BApi.newInstance().queryU2BPlayListVideo(query, mViedoSearchCallback);
+                    break;
+                case CHANNEL:
+                    Log.d(TAG, "queryBySearchView: search channel" );
+                    U2BApi.newInstance().queryU2BChannel(query, mViedoSearchCallback);
+                    break;
+            }
         }
     }
 
-    private void initialU2BSuggest(List<String> suggests) {
-        U2BSuggestAdapter suggestAdapter = new U2BSuggestAdapter(suggests, this);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        mBinding.recyclerviewSuggestion.setLayoutManager(layoutManager);
-        RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
-        mBinding.recyclerviewSuggestion.addItemDecoration(dividerItemDecoration);
-        mBinding.recyclerviewSuggestion.setAdapter(suggestAdapter);
-        mBinding.recyclerviewSuggestion.setVisibility(View.VISIBLE);
-        mIsRequesting = false;
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mEnumU2BSearchType = (EnumU2BSearchType) getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE);
+        initialU2BSearchAdapter();
+        if (mEnumU2BSearchType == EnumU2BSearchType.PLAYLISTVIDEO) {
+            queryBySearchView(getArguments().getString(BUNDLE_KEY_PLAYLISTID));
+        }
     }
 
     private void initialU2BSearchAdapter() {
@@ -295,42 +259,5 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerviewU2bsearchfragment.addItemDecoration(dividerItemDecoration);
         mBinding.recyclerviewU2bsearchfragment.setAdapter(mSongListAdapter);
-    }
-
-    /** 點擊確定 */
-    @Override
-    public void onClick(View v) {
-        searchU2B(mBinding.etQueryU2b.getText().toString());
-    }
-
-    /** 點擊關鍵字 */
-    @Override
-    public void onClick(String s) {
-        searchU2B(s);
-    }
-
-    private void searchU2B(String sInput) {
-        if (!TextUtils.isEmpty(sInput)) {
-
-            switch (mEnumU2BSearchType) {
-                case VIDEO:
-                    Log.d(TAG, "onClick: search video" );
-                    U2BApi.newInstance().queryU2BVideo(sInput, mViedoSearchCallback);
-                    break;
-                case PLAYLIST:
-                    Log.d(TAG, "onClick: search playlist" );
-                    U2BApi.newInstance().queryU2BPlayList(sInput, mViedoSearchCallback);
-                    break;
-                case PLAYLISTVIDEO:
-                    Log.d(TAG, "onClick: search playlistvideo" );
-                    U2BApi.newInstance().queryU2BPlayListVideo(sInput, mViedoSearchCallback);
-                    break;
-                case CHANNEL:
-                    Log.d(TAG, "onClick: search channel" );
-                    U2BApi.newInstance().queryU2BChannel(sInput, mViedoSearchCallback);
-                    break;
-            }
-            mBinding.etQueryU2b.setText("");
-        }
     }
 }

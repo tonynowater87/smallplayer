@@ -36,11 +36,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.android.support:appcompat-v7:' + rootProject.androidSupLibVer
+    compile 'com.android.support:design:' + rootProject.androidSupLibVer
+    compile 'com.squareup.okhttp:okhttp:' + rootProject.okhttpVer
+    compile 'com.google.code.gson:gson:' + rootProject.gsonVer
     compile project(':myutil')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
+    compile 'com.miguelcatalan:materialsearchview:' + rootProject.materialsearchviewVer
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/activity_main"
@@ -26,9 +27,11 @@
                 android:id="@+id/toolbar"
                 layout="@layout/layout_toolbar" />
 
+            <!-- framelayout要加layout_behavior，否則裡面的內容在一開始沒滑動時，就會被toolbar蓋到 -->
             <FrameLayout android:id="@+id/content_playlist_video_activity"
                 android:layout_height="match_parent"
-                android:layout_width="match_parent"/>
+                android:layout_width="wrap_content"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         </android.support.design.widget.CoordinatorLayout>
 
