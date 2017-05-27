@@ -7,5 +7,6 @@
         android:orderInCategory="100"
         android:title="@string/search_hint"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always"/>
+        app:showAsAction="always|collapseActionView"/>
+    <!-- showAsAction設定collapseActionView，才會出現←箭頭 -->
 </menu>
