@@ -219,6 +219,10 @@ public class LocalPlayback implements Playback
 
     @Override
     public void setEqualizer(EqualizerType preset) {
+        if (!isPlaying()) {
+            Log.d(TAG, "setEqualizer: not playing can't setEqalizer");
+            return;
+        }
         switch (preset) {
             case STANDARD:
                 mEqualizer.setBandLevel((short) 0, provideBandLevel(0));

@@ -128,7 +128,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                 mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.stat_notify_sync));
+                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(R.drawable.ic_refresh_white));
                 break;
             default:
                 break;

@@ -113,7 +113,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@android:drawable/ic_menu_sort_by_size" />
+                    android:src="@drawable/ic_queue_music_white" />
 
                 <ImageView
                     android:id="@+id/iv_previous_activity_full_screen_player"
@@ -145,7 +145,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@android:drawable/ic_menu_info_details" />
+                    android:src="@drawable/ic_settings_applications_white" />
 
             </LinearLayout>
 

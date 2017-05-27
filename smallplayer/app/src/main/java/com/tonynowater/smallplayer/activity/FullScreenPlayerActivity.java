@@ -14,6 +14,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -72,7 +74,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.stat_notify_sync));
+                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(R.drawable.ic_refresh_white));
                 stopSeekbarUpdate();
                 break;
             default:
@@ -157,8 +159,12 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        //設置不要顯示SystemStatusBar
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
+        mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);
         mBinding.seekbarActivityFullScreenPlayer.setOnSeekBarChangeListener(mOnSeekChangedListener);
         mBinding.ivPreviousActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
@@ -255,7 +261,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         final EqualizerType[] types = EqualizerType.values();
         final String[] names = new String[types.length];
         for (int i = 0; i < types.length; i++) {
-            names[i] = types[i].name();
+            names[i] = types[i].getValue();
         }
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MyApplication.getContext(), android.R.layout.simple_list_item_1, names);
         listView.setBackgroundColor(Color.BLACK);
