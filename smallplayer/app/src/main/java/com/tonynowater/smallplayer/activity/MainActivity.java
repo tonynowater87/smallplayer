@@ -1,11 +1,15 @@
 package com.tonynowater.smallplayer.activity;
 
 import android.app.SearchManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -33,6 +37,7 @@ import com.tonynowater.smallplayer.dto.Song;
 import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
+import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.u2b.U2BApi;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
@@ -53,6 +58,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private int mCurrentViewPagerPosition = 0;
     private SimpleCursorAdapter simpleCursorAdapter;
     private List<String> suggestions;
+    private SearchRecentSuggestions searchRecentSuggestions;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -90,12 +96,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     public boolean onCreateOptionsMenu(Menu menu) {
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        searchRecentSuggestions = new SearchRecentSuggestions(getApplicationContext(), GoogleSearchSuggestionProvider.AUTHORITY, GoogleSearchSuggestionProvider.MODE);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                Log.d(TAG, "onQueryTextSubmit: " + query);
+                return false;//return false才能讓search執行預設搜尋 => 從onNewIntent處理Query的字串
             }
 
             @Override
@@ -116,6 +124,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            Log.d(TAG, "suggesion response: " + sResponse);
                                             suggestions =U2BApiUtil.getSuggestionStringList(sResponse);
                                             initialSearchViewSuggestAdapter(suggestions);
                                         }
@@ -125,9 +134,36 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         });
                     }
                 } else {
-                   initialSearchViewSuggestAdapter(new ArrayList<String>());//清空搜尋建議
+                    suggestions = getRecentSearchList(10);
+                   initialSearchViewSuggestAdapter(suggestions);//改顯示歷史搜尋紀錄
                 }
                 return false;
+            }
+
+            /** 取得SearchView的最近搜尋紀錄 */
+            private List<String> getRecentSearchList(int limit) {
+                Uri.Builder uriBuilder = new Uri.Builder()
+                        .scheme(ContentResolver.SCHEME_CONTENT)
+                        .authority(GoogleSearchSuggestionProvider.AUTHORITY);
+
+                uriBuilder.appendPath(SearchManager.SUGGEST_URI_PATH_QUERY);
+
+                String[] selArgs = new String[] { null };
+
+                if (limit > 0) {
+                    uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT, String.valueOf(limit));
+                }
+
+                Uri uri = uriBuilder.build();
+
+                Cursor cursor = getContentResolver().query(uri, null, null, selArgs, null);
+
+                List<String> listRecentSearch = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    listRecentSearch.add(cursor.getString(SearchRecentSuggestions.QUERIES_PROJECTION_DISPLAY1_INDEX));
+                }
+
+                return listRecentSearch;
             }
 
             private void initialSearchViewSuggestAdapter(List<String> suggestionStringList) {
@@ -159,11 +195,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             @Override
             public boolean onSuggestionClick(int position) {
                 if (MiscellaneousUtil.isListOK(suggestions)) {
-                    mBaseViewPagerFragments[mCurrentViewPagerPosition].queryBySearchView(suggestions.get(position));
+                    searchRecentSuggestions.saveRecentQuery(suggestions.get(position), null);//儲存最近搜尋紀錄
+                    searchView.setQuery(suggestions.get(position),true);
                 }
                 return true;
             }
         });
+
         return true;
     }
 
@@ -172,8 +210,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         super.onNewIntent(intent);
         setIntent(intent);//一定要先setIntent才能收到
         if (TextUtils.equals(getIntent().getAction(),Intent.ACTION_SEARCH)) {
-            Log.d(TAG, "onNewIntent: " + getIntent().getStringExtra(SearchManager.QUERY));
-            mBaseViewPagerFragments[mCurrentViewPagerPosition].queryBySearchView(getIntent().getStringExtra(SearchManager.QUERY));
+            String query = getIntent().getStringExtra(SearchManager.QUERY);
+            Log.d(TAG, "onNewIntent: " + query);
+            searchRecentSuggestions.saveRecentQuery(query, null);//儲存最近搜尋紀錄
+            mBaseViewPagerFragments[mCurrentViewPagerPosition].queryBySearchView(query);
         }
     }
 

@@ -26,6 +26,8 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
         </activity>
+        <activity android:name=".activity.PlayListActivity" />
+        <activity android:name=".activity.FullScreenPlayerActivity"></activity>
 
         <service
             android:name=".service.PlayMusicService"
@@ -35,9 +37,11 @@
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
-
-        <activity android:name=".activity.PlayListActivity" />
-        <activity android:name=".activity.FullScreenPlayerActivity"></activity>
+        
+        <provider
+            android:authorities="com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider"
+            android:name=".module.GoogleSearchSuggestionProvider" />
+        
     </application>
 
 </manifest>
