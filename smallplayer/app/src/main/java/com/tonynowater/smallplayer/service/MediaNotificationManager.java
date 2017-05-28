@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.RemoteException;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -203,12 +202,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
                         , getAlbumArt(mMediaMetadata, builder)))
                 .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
                         , getAlbumArt(mMediaMetadata, builder)));
         setNotificationPlayState(builder);
 
@@ -242,12 +239,17 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     /** @return 自訂通知的Layout */
-    private RemoteViews getRemoteViews(int layoutId, String title, String artist, boolean isPlay, Bitmap art) {
+    private RemoteViews getRemoteViews(int layoutId, String title, String artist, Bitmap art) {
         RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
-        remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            remoteViews.setImageViewResource(R.id.notification_image_view_play, R.drawable.ic_refresh_white);
+        } else {
+            boolean isPlay = mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING;
+            remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+        }
         remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
         remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
         return remoteViews;
@@ -334,12 +336,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 builder.setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
                         , icon))
                         .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
                                 , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                                 , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                                , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
                                 , bitmap));
                 mNotificationManager.notify(NOTIFICATION_ID, builder.build());
             }
