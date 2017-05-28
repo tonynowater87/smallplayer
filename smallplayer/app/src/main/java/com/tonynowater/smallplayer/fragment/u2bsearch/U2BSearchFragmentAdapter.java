@@ -14,6 +14,7 @@ import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.dto.Song;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.u2b.U2BPlayListDTO;
 import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
@@ -29,10 +30,6 @@ public class U2BSearchFragmentAdapter extends BaseU2BFragmentAdapter<U2BVideoDTO
         super(mOnClickSongListener);
     }
 
-    public U2BSearchFragmentAdapter(List<U2BVideoDTO.ItemsBean> mU2BVideoList, OnClickSomething<Song> mOnClickSongListener) {
-        super(mU2BVideoList, mOnClickSongListener);
-    }
-
     @Override
     public U2BSearchFragmentAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new U2BSearchFragmentAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null), mOnClickSongListener, mDataList);
@@ -43,7 +40,11 @@ public class U2BSearchFragmentAdapter extends BaseU2BFragmentAdapter<U2BVideoDTO
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescription());
         holder.getBinding().tvDurationSonglistadapter.setText(U2BApiUtil.formateU2BDurationToString(mDataList.get(position).getVideoDuration()));
-        String sUrl = mDataList.get(position).getSnippet().getThumbnails().getDefaultX().getUrl();
+        U2BVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
+        String sUrl = null;
+        if (thumbnailsBean != null) {
+            sUrl = thumbnailsBean.getDefaultX().getUrl();
+        }
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);
         } else {

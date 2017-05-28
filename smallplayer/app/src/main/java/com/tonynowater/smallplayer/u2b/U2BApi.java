@@ -39,22 +39,48 @@ public class U2BApi {
         return mInstance;
     }
 
-    public void queryU2BVideo(String keyword, Callback callback) {
+    /** 搜尋下一頁U2B的影片 */
+    public void queryU2BVideo(String keyword, String pageToken, Callback callback) {
 
         Request request = new Request.Builder()
                 .get()
-                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video))
+                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video, pageToken))
                 .build();
 
         Log.d(TAG, "queryU2BVideo: " + request.urlString());
         mOkHttp.newCall(request).enqueue(callback);
     }
 
+    /** 搜尋第一頁U2B的影片 */
+    public void queryU2BVideo(String keyword, Callback callback) {
+
+        Request request = new Request.Builder()
+                .get()
+                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video, ""))
+                .build();
+
+        Log.d(TAG, "queryU2BVideo: " + request.urlString());
+        mOkHttp.newCall(request).enqueue(callback);
+    }
+
+    /** 搜尋下一頁U2B的播放清單 */
+    public void queryU2BPlayList(String keyword, String pageToken, Callback callback) {
+
+        Request request = new Request.Builder()
+                .get()
+                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, playlist, pageToken))
+                .build();
+
+        Log.d(TAG, "queryU2BPlayList: " + request.urlString());
+        mOkHttp.newCall(request).enqueue(callback);
+    }
+
+    /** 搜尋第一頁U2B的播放清單 */
     public void queryU2BPlayList(String keyword, Callback callback) {
 
         Request request = new Request.Builder()
                 .get()
-                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, playlist))
+                .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, playlist, ""))
                 .build();
 
         Log.d(TAG, "queryU2BPlayList: " + request.urlString());

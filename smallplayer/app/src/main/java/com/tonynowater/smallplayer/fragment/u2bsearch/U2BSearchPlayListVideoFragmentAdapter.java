@@ -30,10 +30,6 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BaseU2BFragmentAdapte
         super(mOnClickSongListener);
     }
 
-    public U2BSearchPlayListVideoFragmentAdapter(List<U2bPlayListVideoDTO.ItemsBean> mU2BVideoList, OnClickSomething<Song> mOnClickSongListener) {
-        super(mU2BVideoList, mOnClickSongListener);
-    }
-
     @Override
     public U2BSearchPlayListVideoFragmentAdapter.U2BSearchFragmentAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new U2BSearchPlayListVideoFragmentAdapter.U2BSearchFragmentAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem, null), mOnClickSongListener, mDataList);
@@ -44,8 +40,12 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BaseU2BFragmentAdapte
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescription());
         holder.getBinding().tvDurationSonglistadapter.setText(U2BApiUtil.formateU2BDurationToString(mDataList.get(position).getVideoDuration()));
-        // TODO: 2017/5/21 這裡疑似會當機
-        String sUrl = mDataList.get(position).getSnippet().getThumbnails().getDefaultX().getUrl();
+        U2bPlayListVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
+        String sUrl = null;
+        if (thumbnailsBean != null) {
+            //防呆，因為thumbnailsBean有可能為空
+            sUrl = thumbnailsBean.getDefaultX().getUrl();
+        }
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);
         } else {

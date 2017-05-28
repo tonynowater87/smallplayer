@@ -104,7 +104,7 @@ public class U2bPlayListVideoDTO {
         private String id;
         private SnippetBean snippet;
         private String url;
-        private int durationToMilionSecond;
+        private int durationToMilionSecond = -1;
 
         public String getKind() {
             return kind;

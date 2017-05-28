@@ -26,6 +26,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by tonynowater on 2017/5/1.
@@ -37,6 +38,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     public static final String BUNDLE_KEY_PLAYLISTID = "BUNDLE_KEY_PLAYLISTID";
 
     private U2BVideoDTO mU2BVideoDTO;
+    private U2BPlayListDTO mU2BPlayListDTO;
     private U2bPlayListVideoDTO mU2bPlayListVideoDTO;
 
     private Callback mViedoSearchCallback = new Callback() {
@@ -57,14 +59,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                         initialVideoList(sResponse);
                         break;
                     case PLAYLIST:
-                        U2BPlayListDTO u2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
-                        mSongListAdapter.setDataSource(u2BPlayListDTO.getItems());
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSongListAdapter.notifyDataSetChanged();
-                            }
-                        });
+                        initialPlayListDTO(sResponse);
                         break;
                     case PLAYLISTVIDEO:
                         initialPlayListVideoList(sResponse);
@@ -73,6 +68,24 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                         break;
                 }
             }
+        }
+
+        private void initialPlayListDTO(String sResponse) {
+            if (mU2BPlayListDTO == null) {
+                mU2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
+            } else {
+                U2BPlayListDTO u2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
+                mU2BPlayListDTO.setNextPageToken(u2BPlayListDTO.getNextPageToken());
+                mU2BPlayListDTO.getItems().addAll(mU2BPlayListDTO.getItems().size(), u2BPlayListDTO.getItems());
+            }
+
+            mSongListAdapter.setDataSource(mU2BPlayListDTO.getItems());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSongListAdapter.notifyDataSetChanged();
+                }
+            });
         }
 
         private void initialPlayListVideoList(String sResponse) {
@@ -88,15 +101,28 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         }
 
         private void initialVideoList(String sResponse) {
-            mU2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
+            StringBuilder sVideoIds;
+            if (mU2BVideoDTO == null) {
+                mU2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
+                sVideoIds = getQueryDurationVideoIds(mU2BVideoDTO.getItems());
+            } else {
+                U2BVideoDTO u2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
+                mU2BVideoDTO.setNextPageToken(u2BVideoDTO.getNextPageToken());
+                mU2BVideoDTO.getItems().addAll(mU2BVideoDTO.getItems().size(), u2BVideoDTO.getItems());
+                sVideoIds = getQueryDurationVideoIds(u2BVideoDTO.getItems());
+            }
+            U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
+        }
+
+        private StringBuilder getQueryDurationVideoIds(List<U2BVideoDTO.ItemsBean> items) {
             StringBuilder sVideoIds = new StringBuilder();
-            for (int i = 0; i < mU2BVideoDTO.getItems().size(); i++) {
-                sVideoIds.append(mU2BVideoDTO.getItems().get(i).getId().getVideoId());
-                if (i < mU2BVideoDTO.getItems().size() - 1) {
+            for (int i = 0; i < items.size(); i++) {
+                sVideoIds.append(items.get(i).getId().getVideoId());
+                if (i < items.size() - 1) {
                     sVideoIds.append(",");
                 }
             }
-            U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
+            return sVideoIds;
         }
     };
 
@@ -116,7 +142,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     case VIDEO:
                         HashMap<String, U2BVideoDTO.ItemsBean> hashMap = new HashMap<>();
                         for (U2BVideoDTO.ItemsBean item : mU2BVideoDTO.getItems()) {
-                            hashMap.put(item.getId().getVideoId(), item);
+                            if (item.getVideoDuration() == -1) {
+                                //沒Duration的才放
+                                hashMap.put(item.getId().getVideoId(), item);
+                            }
                         }
 
                         U2BVideoDTO.ItemsBean itemVideo;
@@ -133,13 +162,17 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                             @Override
                             public void run() {
                                 mSongListAdapter.notifyDataSetChanged();
+                                isLoad = false;
                             }
                         });
                         break;
                     case PLAYLISTVIDEO:
                         HashMap<String, U2bPlayListVideoDTO.ItemsBean> hashMap2 = new HashMap<>();
                         for (U2bPlayListVideoDTO.ItemsBean item : mU2bPlayListVideoDTO.getItems()) {
-                            hashMap2.put(item.getSnippet().getResourceId().getVideoId(), item);
+                            if (item.getVideoDuration() == -1) {
+                                //沒Duration的才放
+                                hashMap2.put(item.getSnippet().getResourceId().getVideoId(), item);
+                            }
                         }
 
                         U2bPlayListVideoDTO.ItemsBean itemVideo2;
@@ -172,8 +205,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     };
 
     private BaseU2BFragmentAdapter mSongListAdapter;
-    private boolean mIsRequesting = false;
     private EnumU2BSearchType mEnumU2BSearchType;
+    private int lastCompletelyVisibleItemPosition;
+    private boolean isLoad = false;
+    private String mQuery;
 
     public static U2BSearchViewPagerFragment newInstance(String sTitle, EnumU2BSearchType u2BSearchType) {
         U2BSearchViewPagerFragment fragment = new U2BSearchViewPagerFragment();
@@ -206,18 +241,21 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     @Override
     public void queryBySearchView(String query) {
         if (!TextUtils.isEmpty(query)) {
-
+            mQuery = query;
             switch (mEnumU2BSearchType) {
                 case VIDEO:
                     Log.d(TAG, "queryBySearchView: search video" );
+                    mU2BVideoDTO = null;
                     U2BApi.newInstance().queryU2BVideo(query, mViedoSearchCallback);
                     break;
                 case PLAYLIST:
                     Log.d(TAG, "queryBySearchView: search playlist" );
+                    mU2BPlayListDTO = null;
                     U2BApi.newInstance().queryU2BPlayList(query, mViedoSearchCallback);
                     break;
                 case PLAYLISTVIDEO:
                     Log.d(TAG, "queryBySearchView: search playlistvideo" );
+                    mU2bPlayListVideoDTO = null;
                     U2BApi.newInstance().queryU2BPlayListVideo(query, mViedoSearchCallback);
                     break;
                 case CHANNEL:
@@ -254,10 +292,41 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 mSongListAdapter = new U2BSearchFragmentAdapter((OnClickSomething) getActivity());
                 break;
         }
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mBinding.recyclerviewU2bsearchfragment.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerviewU2bsearchfragment.addItemDecoration(dividerItemDecoration);
         mBinding.recyclerviewU2bsearchfragment.setAdapter(mSongListAdapter);
+        mBinding.recyclerviewU2bsearchfragment.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                Log.d(TAG, "onScrollStateChanged: " + newState);
+                super.onScrollStateChanged(recyclerView, newState);
+                //滑到底的時候做加載
+                if (lastCompletelyVisibleItemPosition + 1 == mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (!isLoad) {
+                        switch (mEnumU2BSearchType) {
+                            case VIDEO:
+                                U2BApi.newInstance().queryU2BVideo(mQuery, mU2BVideoDTO.getNextPageToken(), mViedoSearchCallback);
+                                isLoad = true;
+                                break;
+                            case PLAYLIST:
+                                U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BPlayListDTO.getNextPageToken(), mViedoSearchCallback);
+                                isLoad = true;
+                                break;
+                            default:
+                                Log.d(TAG, "onScrollStateChanged : DoNothing " + mEnumU2BSearchType.name());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                lastCompletelyVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                Log.d(TAG, "onScrolled: " + lastCompletelyVisibleItemPosition);
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 }

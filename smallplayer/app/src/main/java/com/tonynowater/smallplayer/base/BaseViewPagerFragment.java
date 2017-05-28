@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.util.ToastUtil;
 
 /**

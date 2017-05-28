@@ -14,6 +14,7 @@ import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.dto.Song;
 import com.tonynowater.smallplayer.u2b.U2BPlayListDTO;
+import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.List;
@@ -29,10 +30,6 @@ public class U2BSearchPlayListFragmentAdapter extends BaseU2BFragmentAdapter<U2B
         super(mOnClickSongListener);
     }
 
-    public U2BSearchPlayListFragmentAdapter(List<U2BPlayListDTO.ItemsBean> mU2BVideoList, OnClickSomething<Song> mOnClickSongListener) {
-        super(mU2BVideoList, mOnClickSongListener);
-    }
-
     @Override
     public U2BSearchPlayListFragmentAdapter.U2BSearchFragmentAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new U2BSearchPlayListFragmentAdapter.U2BSearchFragmentAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null), mOnClickSongListener, mDataList);
@@ -42,7 +39,12 @@ public class U2BSearchPlayListFragmentAdapter extends BaseU2BFragmentAdapter<U2B
     public void onBindViewHolder(U2BSearchPlayListFragmentAdapter.U2BSearchFragmentAdapterViewHolder holder, int position) {
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescription());
-        String sUrl = mDataList.get(position).getSnippet().getThumbnails().getDefaultX().getUrl();
+        U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
+        String sUrl = null;
+        if (thumbnailsBean != null) {
+            //防呆，因為thumbnailsBean有可能為空
+            sUrl = thumbnailsBean.getDefaultX().getUrl();
+        }
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);
         } else {
