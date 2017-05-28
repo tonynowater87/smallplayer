@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.media.session.PlaybackState;
 import android.os.RemoteException;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -17,6 +16,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.MainActivity;
@@ -192,10 +192,30 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setUsesChronometer(true)//TODO
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
-                .setContentText(mediaDescription.getSubtitle());
+                .setContentText(mediaDescription.getSubtitle())
+                .setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
+                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING))
+                .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
+                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING));
         setNotificationPlayState(builder);
 
         return builder.build();
+    }
+
+    /** @return 自訂通知的Layout */
+    private RemoteViews getRemoteViews(int layoutId, String title, String artist, boolean isPlay) {
+        RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
+        remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+        remoteViews.setImageViewResource(R.id.notification_image_icon, R.mipmap.ic_launcher);
+        remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
+        return remoteViews;
     }
 
     private void setNotificationPlayState(NotificationCompat.Builder builder) {

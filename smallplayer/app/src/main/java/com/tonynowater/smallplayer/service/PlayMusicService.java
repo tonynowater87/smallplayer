@@ -184,7 +184,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         public void onPlay() {
             Log.d(TAG, "onPlay:"+mMusicProvider.isPlayListAvailable());
             if (mMusicProvider.isPlayListAvailable()) {
-                handlePlayRequest();
+                if (!mLocalPlayback.isPlaying()) {
+                    handlePlayRequest();
+                } else {
+                    handlePauseRequest();
+                }
             } else {
                 updatePlaybackState(null);
             }

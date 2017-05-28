@@ -120,6 +120,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
                 mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_pause));
+                startScheduledUpdateProgress();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_play));
