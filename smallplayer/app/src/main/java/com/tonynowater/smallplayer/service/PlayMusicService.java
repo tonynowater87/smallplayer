@@ -76,8 +76,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
 
         // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
-        mPlaybackStateCompatBuilder = new PlaybackStateCompat.Builder()
-                .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE);
+        mPlaybackStateCompatBuilder = new PlaybackStateCompat.Builder().setActions(getAvailableAction());
         mMediaSessionCompat.setPlaybackState(mPlaybackStateCompatBuilder.build());
 
         // MySessionCallback() has methods that handle callbacks from a media controller
@@ -128,11 +127,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     }
 
     /**
-     * @return 可用的播放動作Action
+     * @return 設定Notification通知可用的播放動作
      */
     private long getAvailableAction() {
-
-        long actions = PlaybackStateCompat.ACTION_PLAY;
+        long actions = PlaybackStateCompat.ACTION_PLAY
+                | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                | PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
 
         if (mLocalPlayback.isPlaying()) {
             actions |= PlaybackStateCompat.ACTION_PAUSE;

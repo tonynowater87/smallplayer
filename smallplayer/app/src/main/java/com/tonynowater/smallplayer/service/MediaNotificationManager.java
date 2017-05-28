@@ -169,7 +169,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService);
         int playPauseButtonPosition = 0;
 
-        if ((mPlaybackState.getActions() & PlaybackState.ACTION_SKIP_TO_PREVIOUS) != 0) {
+        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
             builder.addAction(android.R.drawable.ic_media_previous, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
             // If there is a "skip to previous" button, the play/pause button will
             // be the second one. We need to keep track of it, because the MediaStyle notification
@@ -179,7 +179,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
         updatePlayPauseAction(builder);
         // If skip to next action is enabled
-        if ((mPlaybackState.getActions() & PlaybackState.ACTION_SKIP_TO_NEXT) != 0) {
+        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
             builder.addAction(android.R.drawable.ic_media_next, mPlayMusicService.getString(R.string.play_state_next), mNextIntent);
         }
 
