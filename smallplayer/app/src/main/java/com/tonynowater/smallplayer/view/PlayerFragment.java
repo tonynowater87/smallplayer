@@ -138,7 +138,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         Log.d(TAG, "updateState: " + state.getState());
 
         int duration = mPlaybackStateCompat.getExtras() == null ? 0 : mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION);
-        if (duration != 0) {
+        if (duration != 0) {// TODO: 2017/5/28 這邊切換到PlayListVideoActivity的時候Duration會是0
             if (mBinding.progressBar.getmMax() != duration) {
                 mBinding.progressBar.setmMax(mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
             }

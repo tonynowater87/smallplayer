@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.widget.Toolbar;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
@@ -13,7 +12,7 @@ import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.u2b.Playable;
-import com.tonynowater.smallplayer.u2b.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.util.List;

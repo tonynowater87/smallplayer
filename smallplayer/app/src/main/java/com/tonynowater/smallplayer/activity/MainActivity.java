@@ -41,8 +41,8 @@ import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.u2b.U2BApi;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
-import com.tonynowater.smallplayer.u2b.U2BPlayListDTO;
-import com.tonynowater.smallplayer.u2b.U2BVideoDTO;
+import com.tonynowater.smallplayer.dto.U2BPlayListDTO;
+import com.tonynowater.smallplayer.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 

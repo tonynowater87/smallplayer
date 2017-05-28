@@ -1,6 +1,7 @@
-package com.tonynowater.smallplayer.u2b;
+package com.tonynowater.smallplayer.dto;
 
 import com.google.gson.annotations.SerializedName;
+import com.tonynowater.smallplayer.u2b.Playable;
 
 import java.util.List;
 
@@ -144,7 +145,7 @@ public class U2BPlayListDTO {
         }
     }
 
-    public static class ItemsBean implements Playable{
+    public static class ItemsBean implements Playable {
         /**
          * kind : youtube#searchResult
          * etag : "m2yskBQFythfE4irbTIeOgYYfBU/hSMlrNuOGzVDP7Eg34Ipb8f5R8s"

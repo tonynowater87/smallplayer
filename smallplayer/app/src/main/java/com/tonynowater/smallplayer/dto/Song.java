@@ -5,7 +5,6 @@ import android.provider.MediaStore;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.tonynowater.smallplayer.u2b.Playable;
-import com.tonynowater.smallplayer.service.MusicProvider;
 import com.tonynowtaer87.myutil.TimeUtil;
 
 /**
@@ -124,13 +123,14 @@ public class Song implements Playable
 
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, String.valueOf(mId))
-                .putString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE, mData)
+                .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, mData)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mAlbum)
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mArtist)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mDuration)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mTitle)
                 .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, mAlbumObj.getmAlbum())
+                .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISLOCAL)
                 .build();
     }
 }

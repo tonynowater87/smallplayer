@@ -7,7 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.RemoteException;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -15,11 +18,14 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.MainActivity;
+import com.tonynowater.smallplayer.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.util.AlbumArtCache;
 
 /**
  * 處理通知類別
@@ -47,9 +53,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             Log.d(TAG, "onPlaybackStateChanged: " + state);
             mPlaybackState = state;
-            
+
             if (state.getState() == PlaybackStateCompat.STATE_PLAYING
-              ||state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+                    || state.getState() == PlaybackStateCompat.STATE_PAUSED
+                    || state.getState() == PlaybackStateCompat.STATE_BUFFERING) {
                 Notification notification = createNofification();
                 if (notification != null) {
                     Log.d(TAG, "onPlaybackStateChanged: refresh notification");
@@ -187,8 +194,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         builder.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(new int[]{playPauseButtonPosition}).setMediaSession(mToken))
                 .setColor(mNotificationColor)
-                .setSmallIcon(R.mipmap.ic_launcher)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setUsesChronometer(true)//TODO
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
@@ -196,24 +203,52 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING))
+                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+                        , getAlbumArt(mMediaMetadata, builder)))
                 .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING));
+                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+                        , getAlbumArt(mMediaMetadata, builder)));
         setNotificationPlayState(builder);
 
         return builder.build();
     }
 
+    private Bitmap getAlbumArt(MediaMetadataCompat mMediaMetadata, NotificationCompat.Builder builder) {
+        String fetchArtUrl = mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+
+        boolean isLocal = TextUtils.equals(MetaDataCustomKeyDefine.ISLOCAL,mMediaMetadata.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL));
+        Bitmap bitmap = null;
+
+        if (!TextUtils.isEmpty(fetchArtUrl)) {
+
+            if (isLocal) {
+                bitmap = BitmapFactory.decodeFile(fetchArtUrl);
+            } else {
+
+                bitmap = AlbumArtCache.getInstance().getIconImage(fetchArtUrl);
+                if (bitmap == null) {
+
+                    bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
+                            R.mipmap.ic_launcher);
+                }
+
+                fetchBitmapFromURLAsync(fetchArtUrl, builder);
+            }
+        }
+
+        return bitmap;
+    }
+
     /** @return 自訂通知的Layout */
-    private RemoteViews getRemoteViews(int layoutId, String title, String artist, boolean isPlay) {
+    private RemoteViews getRemoteViews(int layoutId, String title, String artist, boolean isPlay, Bitmap art) {
         RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
         remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
-        remoteViews.setImageViewResource(R.id.notification_image_icon, R.mipmap.ic_launcher);
+        remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
         remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
         return remoteViews;
     }
@@ -286,6 +321,28 @@ public class MediaNotificationManager extends BroadcastReceiver {
             default:
                 Log.d(TAG, "onReceive: unknow " + action);
         }
+    }
 
+    // TODO: 2017/5/28
+    private void fetchBitmapFromURLAsync(final String bitmapUrl,
+                                         final NotificationCompat.Builder builder) {
+        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+            @Override
+            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
+                // 更新通知的icon
+                Log.d(TAG, "fetchBitmapFromURLAsync: set bitmap to " + artUrl);
+                builder.setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
+                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                        , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+                        , icon))
+                        .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
+                                , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+                                , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                                , mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+                                , bitmap));
+                mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+            }
+        });
     }
 }

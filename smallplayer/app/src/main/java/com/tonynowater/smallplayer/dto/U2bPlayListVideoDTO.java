@@ -1,9 +1,10 @@
-package com.tonynowater.smallplayer.u2b;
+package com.tonynowater.smallplayer.dto;
 
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
+import com.tonynowater.smallplayer.u2b.Playable;
 
 import java.util.List;
 
@@ -12,7 +13,6 @@ import java.util.List;
  */
 public class U2bPlayListVideoDTO {
     private static final String TAG = U2bPlayListVideoDTO.class.getSimpleName();
-    public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";// TODO: 2017/5/21  
     /**
      * kind : youtube#playlistItemListResponse
      * etag : "m2yskBQFythfE4irbTIeOgYYfBU/ogt0jI-0Jd-n2JF1CPuASjKgM3Q"
@@ -93,7 +93,7 @@ public class U2bPlayListVideoDTO {
         }
     }
 
-    public static class ItemsBean implements Playable{
+    public static class ItemsBean implements Playable {
         /**
          * kind : youtube#playlistItem
          * etag : "m2yskBQFythfE4irbTIeOgYYfBU/b1Shpo8koxznnj7QFapNrFSG0Ng"
@@ -152,12 +152,13 @@ public class U2bPlayListVideoDTO {
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId())
                     .putString("VIDEO_ID", getSnippet().getResourceId().getVideoId())// TODO: 2017/5/21
-                    .putString(CUSTOM_METADATA_TRACK_SOURCE, getUrl())
+                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getUrl())
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, sArtUrl)
+                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISNOTLOCAL)
                     .build();
         }
 

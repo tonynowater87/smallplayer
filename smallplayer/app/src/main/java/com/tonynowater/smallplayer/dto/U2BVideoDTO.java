@@ -1,19 +1,18 @@
-package com.tonynowater.smallplayer.u2b;
+package com.tonynowater.smallplayer.dto;
 
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
+import com.tonynowater.smallplayer.u2b.Playable;
 
 import java.util.List;
 
 /**
  * Created by tonyliao on 2017/5/1.
  */
-
 public class U2BVideoDTO {
     private static final String TAG = U2BVideoDTO.class.getSimpleName();
-    public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
 //    {
 //        "kind": "youtube#searchListResponse",
 //            "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/NFTVKzDKaU_PcJd2pR2QpKF0yCE\"",
@@ -203,13 +202,13 @@ public class U2BVideoDTO {
             }
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
-                    .putString("VIDEO_ID", getId().getVideoId())
-                    .putString(CUSTOM_METADATA_TRACK_SOURCE, getDataSource())
+                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getDataSource())
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, sArtUrl)
+                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISNOTLOCAL)
                     .build();
         }
 

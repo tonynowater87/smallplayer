@@ -10,6 +10,8 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.tonynowater.smallplayer.dto.MetaDataCustomKeyDefine;
+
 import java.io.IOException;
 
 /**
@@ -139,7 +141,7 @@ public class LocalPlayback implements Playback
 
         createMediaPlayerIfNeeded();
         MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
-        String source = mediaMetadataCompat.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE);
+        String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
         try {
             Log.d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
             mCurrentTrackPosition = trackPosition;

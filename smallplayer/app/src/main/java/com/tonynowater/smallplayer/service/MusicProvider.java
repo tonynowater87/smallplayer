@@ -12,7 +12,6 @@ import java.util.List;
  */
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
-    public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
 
     public MusicProvider() {
