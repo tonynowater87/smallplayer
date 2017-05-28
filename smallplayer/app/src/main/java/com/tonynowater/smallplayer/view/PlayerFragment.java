@@ -115,20 +115,20 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
 
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_NONE:
-                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
+                mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_play));
                 startScheduledUpdateProgress();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
-                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_pause));
+                mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_pause));
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
+                mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_play));
                 break;
             case PlaybackStateCompat.STATE_STOPPED:
-                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(android.R.drawable.ic_media_play));
+                mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_play));
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-                mBinding.buttonPlay.setImageDrawable(getContext().getDrawable(R.drawable.ic_refresh_white));
+                mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(R.drawable.ic_refresh_white));
                 break;
             default:
                 break;

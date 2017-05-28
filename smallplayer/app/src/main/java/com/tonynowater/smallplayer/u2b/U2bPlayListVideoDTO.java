@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.u2b;
 
 import android.support.v4.media.MediaMetadataCompat;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * Created by tonynowater on 2017/5/21.
  */
 public class U2bPlayListVideoDTO {
+    private static final String TAG = U2bPlayListVideoDTO.class.getSimpleName();
     public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";// TODO: 2017/5/21  
     /**
      * kind : youtube#playlistItemListResponse
@@ -140,6 +142,13 @@ public class U2bPlayListVideoDTO {
 
         //TODO
         public MediaMetadataCompat getMediaMetadata() {
+
+            String sArtUrl = "";
+            try {
+                sArtUrl = getSnippet().getThumbnails().getStandard().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
+            } catch (Exception e) {
+                Log.e(TAG, "getMediaMetadata: null url");
+            }
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId())
                     .putString("VIDEO_ID", getSnippet().getResourceId().getVideoId())// TODO: 2017/5/21
@@ -148,7 +157,7 @@ public class U2bPlayListVideoDTO {
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getSnippet().getThumbnails().getStandard().getUrl())// TODO: 2017/5/22 若查回沒URL會當機
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, sArtUrl)
                     .build();
         }
 
