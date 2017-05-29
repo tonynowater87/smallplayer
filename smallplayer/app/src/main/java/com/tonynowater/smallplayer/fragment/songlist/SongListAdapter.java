@@ -1,81 +1,49 @@
 package com.tonynowater.smallplayer.fragment.songlist;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SongPlayManager;
 
 import java.io.File;
-import java.util.List;
 
 /**
+ * 本地音樂Adapter
  * Created by tonyliao on 2017/4/27.
  */
-
-public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongListAdapterViewHolder> {
-
-    private List<Song> mSongList;
-    private OnClickSomething<Song> mOnClickSongListener;
+public class SongListAdapter extends BaseU2BFragmentAdapter<Song, LayoutSonglistadapterListitemBinding> {
 
     public SongListAdapter(Context context, OnClickSomething mOnClickSongListener) {
-        mSongList = SongPlayManager.getInstance(context).getSongList();
-        this.mOnClickSongListener = mOnClickSongListener;
+        super(mOnClickSongListener);
+        mDataList = SongPlayManager.getInstance(context).getSongList();
     }
 
     @Override
-    public SongListAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new SongListAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_songlistadapter_listitem,null), mOnClickSongListener, mSongList);
+    protected int getItemResourceId() {
+        return R.layout.layout_songlistadapter_listitem;
     }
 
     @Override
-    public void onBindViewHolder(SongListAdapterViewHolder holder, int position) {
-        holder.getBinding().tvSongArtistSonglistadapter.setText(mSongList.get(position).getmArtist());
-        holder.getBinding().tvSongTitleSonglistadapter.setText(mSongList.get(position).getmTitle());
-        holder.getBinding().tvDurationSonglistadapter.setText(mSongList.get(position).getFormatDuration());
-        if (!TextUtils.isEmpty(mSongList.get(position).getmAlbumObj().getmAlbumArt())) {
-            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(Uri.fromFile(new File(mSongList.get(position).getmAlbumObj().getmAlbumArt()))).into(holder.getBinding().ivSonglistadapter);
+    protected boolean isFootviewVisible() {
+        return false;
+    }
+
+    @Override
+    protected void onBindItem(BaseViewHolder holder, int position) {
+        holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getmArtist());
+        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getmTitle());
+        holder.getBinding().tvDurationSonglistadapter.setText(mDataList.get(position).getFormatDuration());
+        if (!TextUtils.isEmpty(mDataList.get(position).getmAlbumObj().getmAlbumArt())) {
+            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(Uri.fromFile(new File(mDataList.get(position).getmAlbumObj().getmAlbumArt()))).into(holder.getBinding().ivSonglistadapter);
         } else {
             Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mSongList.size();
-    }
-
-    public static class SongListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        private LayoutSonglistadapterListitemBinding mBinding;
-        private OnClickSomething mOnClickSongListener;
-        private List<Song> mSongList;
-
-        public SongListAdapterViewHolder(View itemView, OnClickSomething mOnClickSongListener, List<Song> mSongList) {
-            super(itemView);
-            mBinding = DataBindingUtil.bind(itemView);
-            this.mOnClickSongListener = mOnClickSongListener;
-            this.mSongList = mSongList;
-            mBinding.rlRootSonglistadapter.setOnClickListener(this);
-        }
-
-        public LayoutSonglistadapterListitemBinding getBinding() {
-            return mBinding;
-        }
-
-        @Override
-        public void onClick(View v) {
-            mOnClickSongListener.onClick(mSongList.get(getAdapterPosition()));
         }
     }
 }
