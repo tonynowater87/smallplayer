@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.dto;
+package com.tonynowater.smallplayer.module.dto;
 
 /**
  * Created by tonynowater on 2017/5/28.

@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.dto;
+package com.tonynowater.smallplayer.module.dto;
 
 import java.util.List;
 

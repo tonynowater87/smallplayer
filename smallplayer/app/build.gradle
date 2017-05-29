@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 25
@@ -41,7 +41,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:' + rootProject.okhttpVer
     compile 'com.google.code.gson:gson:' + rootProject.gsonVer
     compile project(':myutil')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
     compile 'com.miguelcatalan:materialsearchview:' + rootProject.materialsearchviewVer
 }

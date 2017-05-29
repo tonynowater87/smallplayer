@@ -12,7 +12,7 @@ import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.u2b.Playable;
-import com.tonynowater.smallplayer.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.util.List;

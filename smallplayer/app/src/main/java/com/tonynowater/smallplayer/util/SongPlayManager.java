@@ -2,8 +2,8 @@ package com.tonynowater.smallplayer.util;
 
 import android.content.Context;
 
-import com.tonynowater.smallplayer.dto.Album;
-import com.tonynowater.smallplayer.dto.Song;
+import com.tonynowater.smallplayer.module.dto.Album;
+import com.tonynowater.smallplayer.module.dto.Song;
 
 import java.util.List;
 

@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import com.tonynowater.smallplayer.dto.Album;
-import com.tonynowater.smallplayer.dto.Song;
+import com.tonynowater.smallplayer.module.dto.Album;
+import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowtaer87.myutil.Logger;
 
 import java.util.ArrayList;

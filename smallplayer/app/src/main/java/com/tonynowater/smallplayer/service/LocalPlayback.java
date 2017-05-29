@@ -10,11 +10,13 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.tonynowater.smallplayer.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 
 import java.io.IOException;
 
 /**
+ * // TODO: 2017/5/29 獲取音樂權限待實做
+ * // TODO: 2017/5/29 綁定Wifi待實做
  * Created by tonyliao on 2017/5/12.
  */
 public class LocalPlayback implements Playback

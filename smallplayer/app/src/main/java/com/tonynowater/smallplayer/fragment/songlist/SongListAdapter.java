@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
-import com.tonynowater.smallplayer.dto.Song;
+import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SongPlayManager;
 

@@ -7,7 +7,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.u2b.Playable;
-import com.tonynowater.smallplayer.dto.U2BPlayListDTO;
+import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**

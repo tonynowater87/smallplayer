@@ -22,5 +22,6 @@
     <string name="default_start_time">00:00</string>
     <string name="equlizer_set_finish_toast">等化器設定成%s</string>
     <string name="search_view_hint">請輸入要搜尋的內容...</string>
+    <string name="menu_playlist">編輯播放清單</string>
 
 </resources>

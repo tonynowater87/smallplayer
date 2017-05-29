@@ -23,7 +23,7 @@ import android.widget.RemoteViews;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.MainActivity;
-import com.tonynowater.smallplayer.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
 
 /**

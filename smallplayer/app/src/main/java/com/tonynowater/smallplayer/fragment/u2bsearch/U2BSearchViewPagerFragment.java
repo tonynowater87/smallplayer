@@ -18,10 +18,10 @@ import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
 import com.tonynowater.smallplayer.u2b.U2BApi;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
-import com.tonynowater.smallplayer.dto.U2BPlayListDTO;
-import com.tonynowater.smallplayer.dto.U2BVideoDTO;
-import com.tonynowater.smallplayer.dto.U2BVideoDurationDTO;
-import com.tonynowater.smallplayer.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
+import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
+import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;

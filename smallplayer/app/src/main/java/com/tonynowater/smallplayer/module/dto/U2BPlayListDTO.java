@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.dto;
+package com.tonynowater.smallplayer.module.dto;
 
 import com.google.gson.annotations.SerializedName;
 import com.tonynowater.smallplayer.u2b.Playable;

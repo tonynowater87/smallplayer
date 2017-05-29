@@ -13,6 +13,8 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -164,7 +166,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
-        mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);
+        //mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);
         mBinding.seekbarActivityFullScreenPlayer.setOnSeekBarChangeListener(mOnSeekChangedListener);
         mBinding.ivPreviousActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
@@ -294,5 +296,12 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
             mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
             mTransportControls.play();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0,0,0,getString(R.string.menu_playlist));
+
+        return super.onCreateOptionsMenu(menu);
     }
 }
