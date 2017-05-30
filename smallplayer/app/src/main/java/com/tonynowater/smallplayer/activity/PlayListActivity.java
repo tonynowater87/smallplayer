@@ -70,7 +70,7 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     final U2bPlayListVideoDTO.ItemsBean u2bPlayListVideoItem = ((U2bPlayListVideoDTO.ItemsBean) object);
-                    YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bPlayListVideoItem.getSnippet().getResourceId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
+                    new YoutubeExtratorUtil(getApplicationContext(), u2bPlayListVideoItem.getSnippet().getResourceId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
                         @Override
                         public void getU2BUrl(String url) {
                             u2bPlayListVideoItem.setDataSource(url);
@@ -80,7 +80,7 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                                 DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem);
                             }
                         }
-                    });
+                    }).execute();
                 }
             });
         }

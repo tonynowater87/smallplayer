@@ -271,7 +271,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) object);
-                    YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
+                    new YoutubeExtratorUtil(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
                         @Override
                         public void getU2BUrl(String url) {
                             u2bVideoItem.setDataSource(url);
@@ -281,7 +281,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                 DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem);
                             }
                         }
-                    });
+                    }).execute();
                 }
             });
         } else if (object instanceof U2BPlayListDTO.ItemsBean) {
