@@ -173,14 +173,14 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     }
 
     /**
-     * 將播放資料傳至Service
-     * @param mediaMetadata
+     * 將要播放的列表位置傳至Service
+     * @param playListPosition
      */
-    protected void sendMetaDataToService(MediaMetadataCompat mediaMetadata) {
-        Log.d(TAG, "sendMetaDataToService: " + mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+    protected void sendMetaDataToService(int playListPosition) {
+        Log.d(TAG, "sendMetaDataToService: " + playListPosition);
         Intent it = new Intent(this,PlayMusicService.class);
-        it.setAction(PlayMusicService.ACTION_ADD_NEW_MUSIC);
-        it.putExtra(PlayMusicService.BUNDLE_KEY_MEDIAMETADATA, mediaMetadata);
+        it.setAction(PlayMusicService.PLAY_PLAYLIST);
+        it.putExtra(PlayMusicService.BUNDLE_KEY_PLAYLIST_POSITION, playListPosition);
         startService(it);
     }
 

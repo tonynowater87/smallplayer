@@ -22,10 +22,10 @@ import java.util.List;
 public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private static final String TAG = PlayMusicService.class.getSimpleName();
-    public static final String ACTION_ADD_NEW_MUSIC = "ACTION_ADD_NEW_MUSIC";
+    public static final String PLAY_PLAYLIST = "PLAY_PLAYLIST";
     public static final String ACTION_CHANGE_EQUALIZER_TYPE = "ACTION_CHANGE_EQUALIZER_TYPE";
     public static final String ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST = "ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST";
-    public static final String BUNDLE_KEY_MEDIAMETADATA = "BUNDLE_KEY_MEDIAMETADATA";
+    public static final String BUNDLE_KEY_PLAYLIST_POSITION = "BUNDLE_KEY_PLAYLIST_POSITION";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION = "BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION";
@@ -145,10 +145,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             String action = intent.getAction();
-            if (TextUtils.equals(action, ACTION_ADD_NEW_MUSIC)) {
-                MediaMetadataCompat mediaMetadata = intent.getParcelableExtra(BUNDLE_KEY_MEDIAMETADATA);
-                mMusicProvider.putNewMusic(mediaMetadata);
-                updatePlaybackState(null);
+            if (TextUtils.equals(action, PLAY_PLAYLIST)) {
+                int position = intent.getIntExtra(BUNDLE_KEY_PLAYLIST_POSITION,0);
+                mMusicProvider.queryDBPlayList(position);
+                mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+                handlePlayRequest();
             }
         }
 

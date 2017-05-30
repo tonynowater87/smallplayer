@@ -15,6 +15,8 @@ public class PlayFolder extends RealmObject {
     @PrimaryKey
     private int id;
 
+    private int currentPlayListId = 0;
+
     private RealmList<PlayListDTO> playList = new RealmList<>();
 
     public RealmList<PlayListDTO> getPlayList() {
@@ -31,5 +33,13 @@ public class PlayFolder extends RealmObject {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getCurrentPlayListId() {
+        return currentPlayListId;
+    }
+
+    public void setCurrentPlayListId(int currentPlayListId) {
+        this.currentPlayListId = currentPlayListId;
     }
 }

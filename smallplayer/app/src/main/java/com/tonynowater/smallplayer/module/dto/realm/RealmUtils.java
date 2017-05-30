@@ -36,6 +36,46 @@ public class RealmUtils {
         }
     }
 
+    /**
+     * @param id 播放清單的id
+     * @return 播放清單裡的歌曲
+     */
+    public static List<PlayListSongDTO> queryPlayListSongByListId(int id) {
+        PlayListDTO playListDTO = Realm.getDefaultInstance().where(PlayListDTO.class).equalTo("id", id).findFirst();
+        if (playListDTO != null) {
+            return playListDTO.getPlayListSong();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /** @return 目前播放的PlayListID */
+    public static int queryCurrentPlayListID() {
+        Realm realm = Realm.getDefaultInstance();
+        PlayFolder playFolder = realm.where(PlayFolder.class).equalTo("id", 0).findFirst();
+        if (playFolder != null) {
+            return playFolder.getCurrentPlayListId();
+        } else {
+            return 0;
+        }
+    }
+
+    /** @return 目前播放的PlayListID */
+    public static void setCurrentPlayListID(final int id) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                PlayFolder playFolder = realm.where(PlayFolder.class).equalTo("id", 0).findFirst();
+                if (playFolder != null) {
+                    playFolder.setCurrentPlayListId(id);
+                } else {
+                    playFolder.setCurrentPlayListId(0);
+                }
+            }
+        });
+    }
+
     /** 初始化播放清單的根目錄 */
     public static PlayFolder initalPlayFolder() {
         Realm realm = Realm.getDefaultInstance();
@@ -69,7 +109,7 @@ public class RealmUtils {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                PlayListDTO playListDTO = queryPlayList(id);
+                PlayListDTO playListDTO = queryPlayList(id);//檢查是否有歌單
                 PlayListSongDTO playListSongDTO = queryPlayListSong(playListSong);
                 playListDTO.getPlayListSong().add(playListSongDTO);
             }
@@ -85,7 +125,11 @@ public class RealmUtils {
         if (playListDTO != null) {
             playListDTO = realm.copyToRealmOrUpdate(playListDTO);
         } else {
+            //加入一組預設歌單
+            PlayFolder playFolder = initalPlayFolder();
             playListDTO = realm.createObject(PlayListDTO.class, getNextKey(PlayListDTO.class));
+            playListDTO.setPlayListName("預設歌單");
+            playFolder.getPlayList().add(playListDTO);
         }
 
         return playListDTO;

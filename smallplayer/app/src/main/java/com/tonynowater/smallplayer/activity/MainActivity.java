@@ -41,6 +41,7 @@ import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.u2b.U2BApi;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -260,7 +261,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     Song song = ((Song) object);
                     if (i == 0) {
-                        sendMetaDataToService(song.getMediaMetadata());
+                        RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), song.getPlayListSongDTO());
+                        sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
                     } else {
                         DialogUtil.showSelectPlaylistDialog(MainActivity.this, song);
                     }
@@ -276,7 +278,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         public void getU2BUrl(String url) {
                             u2bVideoItem.setDataSource(url);
                             if (i == 0) {
-                                sendMetaDataToService(u2bVideoItem.getMediaMetadata());
+                                RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongDTO());
+                                sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
                             } else {
                                 DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem);
                             }

@@ -17,6 +17,7 @@ import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
 import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
 import com.tonynowater.smallplayer.module.dto.realm.PlayListDTO;
 import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
@@ -98,7 +99,8 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
 
         } else if (object instanceof PlayListSongDTO){
             PlayListSongDTO playListSongDTO = (PlayListSongDTO) object;
-            sendMetaDataToService(playListSongDTO.getMediaMetadata());
+            RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), playListSongDTO);
+            sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
         }
     }
 

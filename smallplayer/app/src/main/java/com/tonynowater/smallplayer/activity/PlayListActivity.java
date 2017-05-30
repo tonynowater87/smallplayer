@@ -14,6 +14,7 @@ import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
@@ -75,7 +76,8 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                         public void getU2BUrl(String url) {
                             u2bPlayListVideoItem.setDataSource(url);
                             if (i == 0) {
-                                sendMetaDataToService(u2bPlayListVideoItem.getMediaMetadata());
+                                RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongDTO());
+                                sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
                             } else {
                                 DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem);
                             }

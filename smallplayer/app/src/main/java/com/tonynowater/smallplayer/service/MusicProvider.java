@@ -4,8 +4,14 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
 
 /**
  * Created by tonyliao on 2017/5/12.
@@ -15,11 +21,18 @@ public class MusicProvider {
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
 
     public MusicProvider() {
+        //預設先載入第0組的播放清單
         mMusicPlayList = new ArrayList<>();
+        queryDBPlayList(0);
     }
 
-    public void putNewMusic(MediaMetadataCompat mediaMetadata) {
-        mMusicPlayList.add(mediaMetadata);
+    /** 切換歌單 */
+    public void queryDBPlayList(int position) {
+        mMusicPlayList.clear();
+        List<PlayListSongDTO> playListSongDTO = RealmUtils.queryPlayListSongByListId(position);
+        for (int i = 0; i < playListSongDTO.size(); i++) {
+            mMusicPlayList.add(playListSongDTO.get(i).getMediaMetadata());
+        }
     }
 
     public MediaMetadataCompat getPlayList(int index) {
