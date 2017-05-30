@@ -1,5 +1,7 @@
 package com.tonynowater.smallplayer.module.dto.realm;
 
+import com.tonynowater.smallplayer.u2b.Playable;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -9,7 +11,7 @@ import io.realm.annotations.Required;
  * 播放清單
  * Created by tonynowater on 2017/5/29.
  */
-public class PlayListDTO extends RealmObject {
+public class PlayListDTO extends RealmObject implements Playable{
 
     @PrimaryKey
     private int id;

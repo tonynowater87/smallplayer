@@ -23,5 +23,8 @@
     <string name="equlizer_set_finish_toast">等化器設定成%s</string>
     <string name="search_view_hint">請輸入要搜尋的內容...</string>
     <string name="menu_playlist">編輯播放清單</string>
+    <string name="add_playlist">新增播放清單</string>
+    <string name="add_play_list_dialog_hint">我的歌單</string>
+    <string name="add_play_list_dialog_title">新增歌單</string>
 
 </resources>

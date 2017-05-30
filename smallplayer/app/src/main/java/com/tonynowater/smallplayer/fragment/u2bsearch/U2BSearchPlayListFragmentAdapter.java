@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
+import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
@@ -14,7 +14,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
  * Created by tony10532 on 2017/5/20.
  */
 
-public class U2BSearchPlayListFragmentAdapter extends BaseU2BFragmentAdapter<U2BPlayListDTO.ItemsBean, LayoutSonglistadapterListitemBinding> {
+public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapter<U2BPlayListDTO.ItemsBean, LayoutSonglistadapterListitemBinding> {
     private static final String TAG = U2BSearchPlayListFragmentAdapter.class.getSimpleName();
 
     public U2BSearchPlayListFragmentAdapter(OnClickSomething<Playable> mOnClickSongListener) {

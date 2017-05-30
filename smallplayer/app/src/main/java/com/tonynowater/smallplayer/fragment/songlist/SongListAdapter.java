@@ -6,7 +6,7 @@ import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
+import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.util.OnClickSomething;
@@ -18,7 +18,7 @@ import java.io.File;
  * 本地音樂Adapter
  * Created by tonyliao on 2017/4/27.
  */
-public class SongListAdapter extends BaseU2BFragmentAdapter<Song, LayoutSonglistadapterListitemBinding> {
+public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSonglistadapterListitemBinding> {
 
     public SongListAdapter(Context context, OnClickSomething mOnClickSongListener) {
         super(mOnClickSongListener);

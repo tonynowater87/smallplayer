@@ -13,7 +13,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseU2BFragmentAdapter;
+import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
 import com.tonynowater.smallplayer.u2b.U2BApi;
@@ -204,7 +204,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         }
     };
 
-    private BaseU2BFragmentAdapter mSongListAdapter;
+    private BasePlayableFragmentAdapter mSongListAdapter;
     private EnumU2BSearchType mEnumU2BSearchType;
     private int lastCompletelyVisibleItemPosition;
     private boolean isLoad = false;

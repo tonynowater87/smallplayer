@@ -14,10 +14,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -301,7 +299,17 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0,0,0,getString(R.string.menu_playlist));
-
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case 0:
+                EditPlayListActivity.startActivity(this);
+                break;
+        }
+
+        return true;
     }
 }

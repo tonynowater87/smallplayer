@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/5/20.
  */
-public abstract class BaseU2BFragmentAdapter<K extends Playable, T extends ViewDataBinding> extends RecyclerView.Adapter<BaseU2BFragmentAdapter.BaseViewHolder>{
+public abstract class BasePlayableFragmentAdapter<K extends Playable, T extends ViewDataBinding> extends RecyclerView.Adapter<BasePlayableFragmentAdapter.BaseViewHolder>{
 
     protected static final int NORMAL_VIEWTYPE = 1;
     protected static final int FOOTER_VIEWTYPE = 2;
@@ -25,13 +25,13 @@ public abstract class BaseU2BFragmentAdapter<K extends Playable, T extends ViewD
     protected List<K> mDataList;
     protected OnClickSomething<Playable> mOnClickSongListener;
 
-    protected BaseU2BFragmentAdapter(OnClickSomething<Playable> mOnClickSongListener) {
+    protected BasePlayableFragmentAdapter(OnClickSomething<Playable> mOnClickSongListener) {
         this.mDataList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
     }
 
     @Override
-    public BaseU2BFragmentAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BasePlayableFragmentAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         final BaseViewHolder baseViewHolder;
         switch (viewType) {
@@ -61,7 +61,7 @@ public abstract class BaseU2BFragmentAdapter<K extends Playable, T extends ViewD
     protected abstract int getItemResourceId();
 
     @Override
-    public void onBindViewHolder(BaseU2BFragmentAdapter.BaseViewHolder holder, int position) {
+    public void onBindViewHolder(BasePlayableFragmentAdapter.BaseViewHolder holder, int position) {
         if (getItemViewType(position) == NORMAL_VIEWTYPE) {
             onBindItem(holder, position);
         }

@@ -42,5 +42,5 @@ dependencies {
     compile 'com.google.code.gson:gson:' + rootProject.gsonVer
     compile project(':myutil')
     compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
-    compile 'com.miguelcatalan:materialsearchview:' + rootProject.materialsearchviewVer
+    compile 'com.afollestad.material-dialogs:core:' + rootProject.materialdialogVer
 }
