@@ -15,7 +15,7 @@ import io.realm.Realm;
 
 public class EditPlayListAdapter extends BasePlayableFragmentAdapter<PlayListSongDTO, LayoutEditPlayListItemBinding> {
 
-    protected EditPlayListAdapter(OnClickSomething<Playable> mOnClickSongListener) {
+    protected EditPlayListAdapter(OnClickSomething<PlayListSongDTO> mOnClickSongListener) {
         super(mOnClickSongListener);
         Realm.getDefaultInstance().where(PlayListSongDTO.class).findAll();
     }

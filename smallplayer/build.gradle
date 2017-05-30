@@ -29,4 +29,5 @@ ext {
     gsonVer = '2.3.1'
     constraintlayoutVer = '1.0.2'
     materialsearchviewVer = '1.4.0'
+    materialdialogVer = '0.9.4.5'
 }

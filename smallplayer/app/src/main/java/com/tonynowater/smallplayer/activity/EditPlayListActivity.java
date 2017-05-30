@@ -3,25 +3,26 @@ package com.tonynowater.smallplayer.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
-import com.tonynowater.smallplayer.fragment.locallist.ShowPlayListAdapter;
-import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
-import com.tonynowater.smallplayer.u2b.Playable;
+import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
+import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
+import com.tonynowater.smallplayer.module.dto.realm.PlayListDTO;
+import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
 import com.tonynowater.smallplayer.util.DialogUtil;
-import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.List;
 
 public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBinding> {
+    private static final String TAG = EditPlayListActivity.class.getSimpleName();
 
     public static void startActivity(Activity activity) {
         Intent intent = new Intent(activity, EditPlayListActivity.class);
@@ -57,16 +58,10 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        RecyclerViewDivideLineDecorator recyclerViewDivideLineDecorator = new RecyclerViewDivideLineDecorator(getApplicationContext());
-        mBinding.recyclerview.setLayoutManager(linearLayoutManager);
-        mBinding.recyclerview.addItemDecoration(recyclerViewDivideLineDecorator);
-        mBinding.recyclerview.setAdapter(new ShowPlayListAdapter(new OnClickSomething<Playable>() {
-            @Override
-            public void onClick(Playable playable) {
-
-            }
-        }));
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, EditPlayListFragment.newInstance(EnumEditListType.PlayList))
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -90,5 +85,30 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
         }
 
         return true;
+    }
+
+    @Override
+    public void onClick(Object object) {
+        if (object instanceof PlayListDTO) {
+            PlayListDTO playListDTO = (PlayListDTO) object;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content, EditPlayListFragment.newInstance(playListDTO.getId(),EnumEditListType.PlayListSongs))
+                    .addToBackStack(null)
+                    .commit();
+
+        } else if (object instanceof PlayListSongDTO){
+            PlayListSongDTO playListSongDTO = (PlayListSongDTO) object;
+            sendMetaDataToService(playListSongDTO.getMediaMetadata());
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() == 0) {
+            this.finish();
+        } else {
+            fm.popBackStack();
+        }
     }
 }

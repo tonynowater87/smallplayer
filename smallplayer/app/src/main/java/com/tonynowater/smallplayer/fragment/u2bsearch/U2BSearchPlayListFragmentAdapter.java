@@ -6,7 +6,6 @@ import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
-import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
@@ -17,7 +16,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapter<U2BPlayListDTO.ItemsBean, LayoutSonglistadapterListitemBinding> {
     private static final String TAG = U2BSearchPlayListFragmentAdapter.class.getSimpleName();
 
-    public U2BSearchPlayListFragmentAdapter(OnClickSomething<Playable> mOnClickSongListener) {
+    public U2BSearchPlayListFragmentAdapter(OnClickSomething<U2BPlayListDTO.ItemsBean> mOnClickSongListener) {
         super(mOnClickSongListener);
     }
 

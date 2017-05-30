@@ -18,7 +18,6 @@ import android.util.Log;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.service.PlayMusicService;
-import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.view.PlayerFragment;
 
@@ -27,7 +26,7 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/5/20.
  */
-public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity implements OnClickSomething<Playable> {
+public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity implements OnClickSomething {
     private static final String TAG = BaseActivity.class.getSimpleName();
     protected T mBinding;
     protected MediaControllerCompat.TransportControls mTransportControls;
@@ -186,7 +185,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     }
 
     @Override
-    public void onClick(Playable playable) {
+    public void onClick(Object o) {
 
     }
 }

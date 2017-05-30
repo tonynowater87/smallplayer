@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.ArrayList;
@@ -17,15 +16,15 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/5/20.
  */
-public abstract class BasePlayableFragmentAdapter<K extends Playable, T extends ViewDataBinding> extends RecyclerView.Adapter<BasePlayableFragmentAdapter.BaseViewHolder>{
+public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> extends RecyclerView.Adapter<BasePlayableFragmentAdapter.BaseViewHolder>{
 
     protected static final int NORMAL_VIEWTYPE = 1;
     protected static final int FOOTER_VIEWTYPE = 2;
 
     protected List<K> mDataList;
-    protected OnClickSomething<Playable> mOnClickSongListener;
+    protected OnClickSomething<K> mOnClickSongListener;
 
-    protected BasePlayableFragmentAdapter(OnClickSomething<Playable> mOnClickSongListener) {
+    protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener) {
         this.mDataList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
     }

@@ -18,7 +18,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentAdapter<U2bPlayListVideoDTO.ItemsBean, LayoutSonglistadapterListitemBinding> {
     private static final String TAG = U2BSearchPlayListVideoFragmentAdapter.class.getSimpleName();
 
-    public U2BSearchPlayListVideoFragmentAdapter(OnClickSomething<Playable> mOnClickSongListener) {
+    public U2BSearchPlayListVideoFragmentAdapter(OnClickSomething<U2bPlayListVideoDTO.ItemsBean> mOnClickSongListener) {
         super(mOnClickSongListener);
     }
 

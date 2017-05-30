@@ -5,20 +5,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.view.View;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
-import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.util.List;
 
 /**
- * 顯示Youtube搜尋歌曲清單Activity
+ * 顯示Youtube搜尋專輯裡的歌曲清單Activity
  */
 public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
 
@@ -61,14 +63,24 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
     }
 
     @Override
-    public void onClick(Playable playable) {
-        if (playable instanceof U2bPlayListVideoDTO.ItemsBean) {
-            final U2bPlayListVideoDTO.ItemsBean u2bVideoItem = ((U2bPlayListVideoDTO.ItemsBean) playable);
-            YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bVideoItem.getSnippet().getResourceId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
+    public void onClick(final Object object) {
+        if (object instanceof U2bPlayListVideoDTO.ItemsBean) {
+
+            DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
                 @Override
-                public void getU2BUrl(String url) {
-                    u2bVideoItem.setDataSource(url);
-                    sendMetaDataToService(u2bVideoItem.getMediaMetadata());
+                public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
+                    final U2bPlayListVideoDTO.ItemsBean u2bPlayListVideoItem = ((U2bPlayListVideoDTO.ItemsBean) object);
+                    YoutubeExtratorUtil.extratYoutube(getApplicationContext(), u2bPlayListVideoItem.getSnippet().getResourceId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
+                        @Override
+                        public void getU2BUrl(String url) {
+                            u2bPlayListVideoItem.setDataSource(url);
+                            if (i == 0) {
+                                sendMetaDataToService(u2bPlayListVideoItem.getMediaMetadata());
+                            } else {
+                                DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem);
+                            }
+                        }
+                    });
                 }
             });
         }

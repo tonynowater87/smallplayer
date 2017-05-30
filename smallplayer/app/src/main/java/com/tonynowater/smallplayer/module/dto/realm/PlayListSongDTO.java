@@ -1,6 +1,8 @@
 package com.tonynowater.smallplayer.module.dto.realm;
 
-import com.tonynowater.smallplayer.u2b.Playable;
+import android.support.v4.media.MediaMetadataCompat;
+
+import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -10,7 +12,7 @@ import io.realm.annotations.Required;
  * 播放清單裡的歌曲
  * Created by tonynowater on 2017/5/29.
  */
-public class PlayListSongDTO extends RealmObject implements Playable{
+public class PlayListSongDTO extends RealmObject {
 
     @PrimaryKey
     private int id;
@@ -25,6 +27,8 @@ public class PlayListSongDTO extends RealmObject implements Playable{
     private String albumArtUri;
 
     private int duration;
+
+    private String isLocal;
 
     public int getId() {
         return id;
@@ -72,5 +76,26 @@ public class PlayListSongDTO extends RealmObject implements Playable{
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getIsLocal() {
+        return isLocal;
+    }
+
+    public void setIsLocal(String local) {
+        isLocal = local;
+    }
+
+    public MediaMetadataCompat getMediaMetadata() {
+        return new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, String.valueOf(getId()))
+                .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getSource())
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getArtist())
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getTitle())
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDuration())
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getTitle())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri())
+                .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, getIsLocal())
+                .build();
     }
 }

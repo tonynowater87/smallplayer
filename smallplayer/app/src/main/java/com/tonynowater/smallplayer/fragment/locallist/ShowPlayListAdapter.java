@@ -7,7 +7,6 @@ import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListAdapterBinding;
 import com.tonynowater.smallplayer.module.dto.realm.PlayFolder;
 import com.tonynowater.smallplayer.module.dto.realm.PlayListDTO;
-import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import io.realm.Realm;
@@ -18,7 +17,7 @@ import io.realm.Realm;
 public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListDTO, LayoutShowPlayListAdapterBinding>{
     private static final String TAG = ShowPlayListAdapter.class.getSimpleName();
 
-    public ShowPlayListAdapter(OnClickSomething<Playable> mOnClickSongListener) {
+    public ShowPlayListAdapter(OnClickSomething<PlayListDTO> mOnClickSongListener) {
         super(mOnClickSongListener);
         PlayFolder playFolder = Realm.getDefaultInstance().where(PlayFolder.class).equalTo("id", 0).findFirst();
         if (playFolder != null) {

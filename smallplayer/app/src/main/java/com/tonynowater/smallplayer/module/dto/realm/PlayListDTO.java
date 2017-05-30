@@ -11,7 +11,7 @@ import io.realm.annotations.Required;
  * 播放清單
  * Created by tonynowater on 2017/5/29.
  */
-public class PlayListDTO extends RealmObject implements Playable{
+public class PlayListDTO extends RealmObject {
 
     @PrimaryKey
     private int id;
@@ -43,5 +43,10 @@ public class PlayListDTO extends RealmObject implements Playable{
 
     public void setPlayListSong(RealmList<PlayListSongDTO> playListSong) {
         this.playListSong = playListSong;
+    }
+
+    @Override
+    public String toString() {
+        return playListName;
     }
 }

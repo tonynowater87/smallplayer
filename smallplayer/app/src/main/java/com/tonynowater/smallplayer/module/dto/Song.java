@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
 import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowtaer87.myutil.TimeUtil;
 
@@ -132,5 +133,17 @@ public class Song implements Playable
                 .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, mAlbumObj.getmAlbum())
                 .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISLOCAL)
                 .build();
+    }
+
+    public PlayListSongDTO getPlayListSongDTO() {
+        PlayListSongDTO playListSongDTO = new PlayListSongDTO();
+        playListSongDTO.setId(mId);
+        playListSongDTO.setSource(mData);
+        playListSongDTO.setArtist(mArtist);
+        playListSongDTO.setTitle(mTitle);
+        playListSongDTO.setDuration(mDuration);
+        playListSongDTO.setAlbumArtUri(mAlbumObj.getmAlbumArt());
+        playListSongDTO.setIsLocal(MetaDataCustomKeyDefine.ISLOCAL);
+        return playListSongDTO;
     }
 }
