@@ -38,7 +38,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private static final String ACTION_PAUSE = "com.tonynowater.smallplayer.pause";
     private static final String ACTION_NEXT = "com.tonynowater.smallplayer.next";
     private static final String ACTION_PREVIOUS = "com.tonynowater.smallplayer.previous";
-
+    private static final String ACTION_STOP = "com.tonynowater.smallplayer.sop";
 
     private PlayMusicService mPlayMusicService;
     private NotificationManager mNotificationManager;
@@ -97,6 +97,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private PendingIntent mPauseIntent;
     private PendingIntent mNextIntent;
     private PendingIntent mPreviousIntent;
+    private PendingIntent mStopIntent;
 
     private boolean mStarted = false;
     private int mNotificationColor;
@@ -113,6 +114,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mPauseIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_PAUSE).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mNextIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_NEXT).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mPreviousIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_PREVIOUS).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
+        mStopIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_STOP).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Cancel all notifications to handle the case where the Service was killed and
         // restarted by the system.
@@ -153,6 +155,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             intentFilter.addAction(ACTION_PAUSE);
             intentFilter.addAction(ACTION_PREVIOUS);
             intentFilter.addAction(ACTION_NEXT);
+            intentFilter.addAction(ACTION_STOP);
             mPlayMusicService.registerReceiver(this, intentFilter);
             // The notification must be updated after setting started to true
             Notification notification = createNofification();
@@ -244,6 +247,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
             remoteViews.setImageViewResource(R.id.notification_image_view_play, R.drawable.ic_refresh_white);
         } else {
@@ -319,6 +323,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 break;
             case ACTION_PREVIOUS:
                 mTransportControls.skipToPrevious();
+                break;
+            case ACTION_STOP:
+                mTransportControls.stop();
                 break;
             default:
                 Log.d(TAG, "onReceive: unknow " + action);
