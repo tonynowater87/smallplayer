@@ -37,18 +37,18 @@
                 android:src="@android:drawable/ic_media_play" />
 
             <ImageButton
-                android:id="@+id/buttonStop"
-                android:layout_width="@dimen/media_button_size"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/buttonPlay"
-                android:src="@drawable/ic_stop_white" />
-
-            <ImageButton
                 android:id="@+id/buttonNext"
                 android:layout_width="@dimen/media_button_size"
                 android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/buttonStop"
+                android:layout_toRightOf="@+id/buttonPlay"
                 android:src="@android:drawable/ic_media_next" />
+
+            <ImageButton
+                android:id="@+id/buttonAction"
+                android:layout_width="@dimen/media_button_size"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/buttonNext"
+                android:src="@drawable/ic_queue_music_white" />
 
         </LinearLayout>
 

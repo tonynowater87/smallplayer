@@ -176,7 +176,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
      * 將要播放的列表位置傳至Service
      * @param playListPosition
      */
-    protected void sendMetaDataToService(int playListPosition) {
+    public void sendMetaDataToService(int playListPosition) {
         Log.d(TAG, "sendMetaDataToService: " + playListPosition);
         Intent it = new Intent(this,PlayMusicService.class);
         it.setAction(PlayMusicService.PLAY_PLAYLIST);

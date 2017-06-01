@@ -14,9 +14,11 @@ import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
+import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
 import com.tonynowater.smallplayer.service.PlayMusicService;
+import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -60,14 +62,14 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                         pause();
                     }
                     break;
-                case R.id.buttonStop:
-                    stop();
-                    break;
                 case R.id.buttonNext:
                     skipToNext();
                     break;
                 case R.id.buttonPrevious:
                     skipToPrevious();
+                    break;
+                case R.id.buttonAction:
+                    DialogUtil.showChangePlayListDialog((BaseActivity) getActivity());
                     break;
                 case R.id.ll_song_info_fragment_player:
                     startActivity(new Intent(getActivity(), FullScreenPlayerActivity.class));
@@ -81,9 +83,9 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         super.onActivityCreated(savedInstanceState);
         Log.d(TAG, "onActivityCreated: ");
         mBinding.buttonPlay.setOnClickListener(mOnClickListener);
-        mBinding.buttonStop.setOnClickListener(mOnClickListener);
         mBinding.buttonNext.setOnClickListener(mOnClickListener);
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
+        mBinding.buttonAction.setOnClickListener(mOnClickListener);
         mBinding.llSongInfoFragmentPlayer.setOnClickListener(mOnClickListener);
     }
 

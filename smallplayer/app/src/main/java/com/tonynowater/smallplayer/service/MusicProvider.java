@@ -27,7 +27,7 @@ public class MusicProvider {
     public void queryDBPlayList(int position) {
         mMusicPlayList.clear();
         RealmUtils realmUtils = new RealmUtils();
-        List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListId(position);
+        List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListIdSortByPosition(position);
         for (int i = 0; i < playListSongEntities.size(); i++) {
             mMusicPlayList.add(playListSongEntities.get(i).getMediaMetadata());
         }

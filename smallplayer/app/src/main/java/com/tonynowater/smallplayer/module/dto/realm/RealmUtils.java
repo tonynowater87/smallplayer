@@ -71,11 +71,16 @@ public class RealmUtils implements Closeable{
         return playFolderDAO.queryAll().get(0).getCurrentPlayListId();
     }
 
+    /** @return 現正播放的PlayListPosition */
+    public int queryCurrentPlayListPosition() {
+        return playListDAO.getQuery().equalTo(PlayListDAO.COLUMN_ID, playFolderDAO.queryAll().get(0).getCurrentPlayListId()).findFirst().getPosition();
+    }
+
     /** 更新現正播放的PlayListID */
     public int setCurrentPlayListID(final int playListID) {
-        PlayFolderEntity playFolderEntity = playFolderDAO.queryAll().get(0);
+        PlayFolderEntity playFolderEntity = playFolderDAO.copyFromReal(playFolderDAO.queryAll().get(0));
         playFolderEntity.setCurrentPlayListId(playListID);
-        return playFolderDAO.insert(playFolderEntity);
+        return playFolderDAO.update(playFolderEntity);
     }
 
     /** 新增播放清單 */
