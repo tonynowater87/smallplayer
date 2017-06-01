@@ -5,9 +5,11 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseFragment;
+import com.tonynowater.smallplayer.base.CustomItemTouchHelperCallback;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListFragmentBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.util.OnClickSomething;
@@ -76,21 +78,29 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
      * 播放清單裡歌曲的Adapter
      */
     private void initialPlayListSongAdapter() {
+        ShowPlayListSongAdapter adapter = new ShowPlayListSongAdapter(getArguments().getInt(BUNDLE_KEY_POSITION), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
-        mBinding.recyclerview.setAdapter(new ShowPlayListSongAdapter(getArguments().getInt(BUNDLE_KEY_POSITION), (OnClickSomething) getActivity()));
+        mBinding.recyclerview.setAdapter(adapter);
+        CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(adapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(mBinding.recyclerview);
     }
 
     /**
      * 播放清單的Adapter
      */
     private void initialPlayListAdapter() {
+        ShowPlayListAdapter adapter = new ShowPlayListAdapter((OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
-        mBinding.recyclerview.setAdapter(new ShowPlayListAdapter((OnClickSomething) getActivity()));
+        mBinding.recyclerview.setAdapter(adapter);
+        CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(adapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(mBinding.recyclerview);
     }
 }

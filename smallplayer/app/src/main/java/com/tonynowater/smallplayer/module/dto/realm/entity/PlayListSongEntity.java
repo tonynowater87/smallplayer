@@ -19,6 +19,8 @@ public class PlayListSongEntity extends RealmObject {
 
     private int listId;
 
+    private int position;
+
     @Required
     private String source;
 
@@ -107,5 +109,13 @@ public class PlayListSongEntity extends RealmObject {
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri())
                 .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, getIsLocal())
                 .build();
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }

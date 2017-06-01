@@ -15,8 +15,12 @@ public class PlayListEntity extends RealmObject {
 
     private int folderId;
 
+    private int position;
+
     @Required
     private String playListName;
+
+    private boolean deletable = true;
 
     public int getId() {
         return id;
@@ -45,5 +49,21 @@ public class PlayListEntity extends RealmObject {
     @Override
     public String toString() {
         return playListName;
+    }
+
+    public boolean isDeletable() {
+        return deletable;
+    }
+
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }

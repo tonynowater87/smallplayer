@@ -18,6 +18,7 @@ import io.realm.RealmResults;
  */
 public abstract class BaseDAO<T extends RealmObject> implements Closeable{
     private static final String TAG = BaseDAO.class.getSimpleName();
+    public static final int DEFAULT_ID = 0;
 
     public static final String COLUMN_ID = "id";
 
@@ -64,7 +65,7 @@ public abstract class BaseDAO<T extends RealmObject> implements Closeable{
      * @param params
      * @return
      */
-    public List<T> query(Map<String, Object> params) {
+    public List<T> queryForCopy(Map<String, Object> params) {
         RealmQuery<T> query = getQuery();
         for (String key : params.keySet()) {
             Object value = params.get(key);
@@ -102,14 +103,56 @@ public abstract class BaseDAO<T extends RealmObject> implements Closeable{
     }
 
     /**
+     * 查詢加參數
+     * @param params
+     * @return
+     */
+    public List<T> queryNotCopy(Map<String, Object> params) {
+        RealmQuery<T> query = getQuery();
+        for (String key : params.keySet()) {
+            Object value = params.get(key);
+            if (value instanceof String) {
+                query = query.equalTo(key, (String) value);
+                continue;
+            } else if (value instanceof Integer) {
+                query = query.equalTo(key, (Integer) value);
+                continue;
+            } else if (value instanceof Long) {
+                query = query.equalTo(key, (Long) value);
+                continue;
+            } else if (value instanceof Float) {
+                query = query.equalTo(key, (Float) value);
+                continue;
+            } else if (value instanceof Double) {
+                query = query.equalTo(key, (Double) value);
+                continue;
+            } else if (value instanceof Byte) {
+                query = query.equalTo(key, (Byte) value);
+                continue;
+            } else if (value instanceof Short) {
+                query = query.equalTo(key, (Short) value);
+                continue;
+            } else if (value instanceof Boolean) {
+                query = query.equalTo(key, (Boolean) value);
+                continue;
+            } else if (value instanceof Date) {
+                query = query.equalTo(key, (Date) value);
+                continue;
+            }
+        }
+
+        return query.findAll();
+    }
+
+    /**
      * @param realmResults
      * @return 查詢的結果複制一份
      */
-    protected List<T> copyFromRealm(RealmResults<T> realmResults){
+    public List<T> copyFromRealm(RealmResults<T> realmResults){
         return realm.copyFromRealm(realmResults);
     }
 
-    protected T copyFromReal(T realmObject) {
+    public T copyFromReal(T realmObject) {
         return realm.copyFromRealm(realmObject);
     }
 
@@ -134,7 +177,7 @@ public abstract class BaseDAO<T extends RealmObject> implements Closeable{
 
         if (realm.where(clazz).max(COLUMN_ID) == null) {
             Log.d(TAG, "getNextKey: null" );
-            return 0;
+            return DEFAULT_ID;
         } else {
             int id = realm.where(clazz).max(COLUMN_ID).intValue() + 1;
             Log.d(TAG, "getNextKey:" + id );

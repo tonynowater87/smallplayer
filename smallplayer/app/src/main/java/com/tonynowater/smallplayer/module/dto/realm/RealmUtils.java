@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.module.dto.realm;
 
+import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayFolderDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
@@ -11,6 +12,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.Sort;
 
 /**
  * Created by tonynowater on 2017/5/30.
@@ -32,8 +36,15 @@ public class RealmUtils implements Closeable{
     /** @return 所有的播放清單 */
     public List<PlayListEntity> queryAllPlayList() {
         HashMap<String, Object> params = new HashMap<>();
-        params.put(PlayListDAO.COLUMN_FOLDER_ID, 0);
-        return playListDAO.query(params);
+        params.put(PlayListDAO.COLUMN_FOLDER_ID, BaseDAO.DEFAULT_ID);
+        return playListDAO.queryForCopy(params);
+    }
+
+    /** @return 所有的播放清單依Position排序 */
+    public List<PlayListEntity> queryAllPlayListSortByPosition() {
+        return playListDAO.copyFromRealm(playListDAO.getQuery()
+                .equalTo(PlayListDAO.COLUMN_FOLDER_ID, BaseDAO.DEFAULT_ID)
+                .findAllSorted(PlayListDAO.COLUMN_POSITION, Sort.ASCENDING));
     }
 
     /**
@@ -43,7 +54,17 @@ public class RealmUtils implements Closeable{
     public List<PlayListSongEntity> queryPlayListSongByListId(int listID) {
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListSongDAO.COLUMN_LIST_ID, listID);
-        return playListSongDAO.query(params);
+        return playListSongDAO.queryForCopy(params);
+    }
+
+    /**
+     * @param listID 播放清單的id
+     * @return 播放清單裡的歌曲依Postition排序
+     */
+    public List<PlayListSongEntity> queryPlayListSongByListIdSortByPosition(int listID) {
+        return playListSongDAO.copyFromRealm(playListSongDAO.getQuery()
+                        .equalTo(PlayListSongDAO.COLUMN_LIST_ID, listID)
+                        .findAllSorted(PlayListSongDAO.COLUMN_POSITION, Sort.ASCENDING));
     }
 
     /** @return 現正播放的PlayListID */
@@ -61,7 +82,7 @@ public class RealmUtils implements Closeable{
     /** 新增播放清單 */
     public void addNewPlayList(final String playListName) {
         PlayListEntity playListEntity = new PlayListEntity();
-        playListEntity.setFolderId(0);
+        playListEntity.setFolderId(BaseDAO.DEFAULT_ID);
         playListEntity.setPlayListName(playListName);
         playListDAO.insert(playListEntity);
     }
@@ -70,6 +91,71 @@ public class RealmUtils implements Closeable{
     public void addSongToPlayList(final int playlistID, final PlayListSongEntity playListSong) {
         playListSong.setListId(playlistID);
         playListSongDAO.insert(playListSong);
+    }
+
+    /**
+     * 從播放清單刪除一首歌曲
+     * @param playlistID
+     * @param playListSong
+     */
+    public void deleteSongFromPlayList(int playlistID, PlayListSongEntity playListSong) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(PlayListSongDAO.COLUMN_LIST_ID, playlistID);
+        params.put(PlayListSongDAO.COLUMN_ID, playListSong.getId());
+        playListSongDAO.queryNotCopy(params).get(0).deleteFromRealm();
+        realm.commitTransaction();
+    }
+
+    /**
+     * 刪除播放清單
+     * @param playListEntity
+     */
+    public void deletePlayList(PlayListEntity playListEntity) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(PlayListSongDAO.COLUMN_LIST_ID, playListEntity.getId());
+        List<PlayListSongEntity> playListSongEntities = playListSongDAO.queryNotCopy(params);
+        for (PlayListSongEntity entity : playListSongEntities) {
+            entity.deleteFromRealm();
+        }
+
+        HashMap<String, Object> params2 = new HashMap<>();
+        params.put(PlayListDAO.COLUMN_ID, playListEntity.getId());
+        params.put(PlayListDAO.COLUMN_FOLDER_ID, playListEntity.getFolderId());
+        params.put(PlayListDAO.COLUMN_PLAY_LIST_NAME, playListEntity.getPlayListName());
+        List<PlayListEntity> playListEntities = playListDAO.queryNotCopy(params2);
+        playListEntities.get(0).deleteFromRealm();
+
+        realm.commitTransaction();
+    }
+
+    /**
+     * 更新播放清單的位置
+     * @param from
+     * @param to
+     */
+    public void updatePlayListPosition(PlayListEntity from, PlayListEntity to) {
+        int fromPosition = from.getPosition();
+        from.setPosition(to.getPosition());
+        to.setPosition(fromPosition);
+        playListDAO.update(from);
+        playListDAO.update(to);
+    }
+
+    /**
+     * 更新播放歌曲的位置
+     * @param from
+     * @param to
+     */
+    public void updatePlayListSongPosition(PlayListSongEntity from, PlayListSongEntity to) {
+        int fromPosition = from.getPosition();
+        from.setPosition(to.getPosition());
+        to.setPosition(fromPosition);
+        playListSongDAO.update(from);
+        playListSongDAO.update(to);
     }
 
     @Override
@@ -90,6 +176,7 @@ public class RealmUtils implements Closeable{
             PlayFolderEntity playFolderEntity = new PlayFolderEntity();
             PlayListEntity playListEntity = new PlayListEntity();
             playListEntity.setPlayListName(DEFAULT_PLAY_LIST_NAME);
+            playListEntity.setDeletable(false);//預設歌單不可刪除
             playListEntity.setFolderId(playFolderDAO.insert(playFolderEntity));
             playListDAO.insert(playListEntity);
         }

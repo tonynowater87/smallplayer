@@ -16,17 +16,10 @@ import java.util.List;
  * Created by tonynowater on 2017/5/30.
  */
 public class DialogUtil {
-    public static void showAddPlayListDialog(Context context) {
-        final RealmUtils realmUtils = new RealmUtils();
+    public static void showAddPlayListDialog(Context context, MaterialDialog.InputCallback callback) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
         builder.title(R.string.add_play_list_dialog_title);
-        builder.input(context.getString(R.string.add_play_list_dialog_hint), "", false, new MaterialDialog.InputCallback() {
-            @Override
-            public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
-                realmUtils.addNewPlayList(charSequence.toString());
-                realmUtils.close();
-            }
-        });
+        builder.input(context.getString(R.string.add_play_list_dialog_hint), "", false, callback);
         builder.show();
     }
 

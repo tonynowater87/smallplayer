@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -10,6 +11,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
@@ -59,9 +61,12 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
+        replaceShowPlayListFragment();
+    }
+
+    private void replaceShowPlayListFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content, EditPlayListFragment.newInstance(EnumEditListType.PlayList))
-                .addToBackStack(null)
                 .commit();
     }
 
@@ -79,9 +84,16 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // TODO: 2017/5/29 需要可以自訂新增歌單
             case 0:
-                DialogUtil.showAddPlayListDialog(this);
+                DialogUtil.showAddPlayListDialog(this, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
+                        RealmUtils realmUtils = new RealmUtils();
+                        realmUtils.addNewPlayList(charSequence.toString());
+                        realmUtils.close();
+                        replaceShowPlayListFragment();
+                    }
+                });
                 break;
         }
 
@@ -98,11 +110,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                     .commit();
 
         } else if (object instanceof PlayListSongEntity){
-            PlayListSongEntity playListSongEntity = (PlayListSongEntity) object;
-            RealmUtils realmUtils = new RealmUtils();
-            realmUtils.addSongToPlayList(playListSongEntity.getListId(), playListSongEntity);
-            sendMetaDataToService(realmUtils.queryCurrentPlayListID());
-            realmUtils.close();
+
         }
     }
 

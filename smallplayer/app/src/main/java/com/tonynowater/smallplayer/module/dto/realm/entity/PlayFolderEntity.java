@@ -1,5 +1,7 @@
 package com.tonynowater.smallplayer.module.dto.realm.entity;
 
+import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -10,7 +12,7 @@ public class PlayFolderEntity extends RealmObject {
     @PrimaryKey
     private int id;
 
-    private int currentPlayListId = 0;
+    private int currentPlayListId = BaseDAO.DEFAULT_ID;
 
     public int getId() {
         return id;

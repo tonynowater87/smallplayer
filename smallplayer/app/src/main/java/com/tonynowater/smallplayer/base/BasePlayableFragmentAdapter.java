@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.ArrayList;
@@ -23,8 +24,10 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     protected List<K> mDataList;
     protected OnClickSomething<K> mOnClickSongListener;
+    protected RealmUtils realmUtils;
 
     protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener) {
+        realmUtils = new RealmUtils();
         this.mDataList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
     }

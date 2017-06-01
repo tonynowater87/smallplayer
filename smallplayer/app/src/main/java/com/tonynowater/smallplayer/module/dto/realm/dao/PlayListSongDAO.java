@@ -9,6 +9,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 public class PlayListSongDAO extends BaseDAO<PlayListSongEntity> {
 
     public static final String COLUMN_LIST_ID = "listId";
+    public static final String COLUMN_POSITION = "position";
 
     public PlayListSongDAO() {
         super(PlayListSongEntity.class);
@@ -19,6 +20,7 @@ public class PlayListSongDAO extends BaseDAO<PlayListSongEntity> {
      */
     public int insert(PlayListSongEntity playListSongEntity) {
         playListSongEntity.setId(getNextKey());
+        playListSongEntity.setPosition(playListSongEntity.getId());
         inserOrUpdate(playListSongEntity);
         return playListSongEntity.getId();
     }
