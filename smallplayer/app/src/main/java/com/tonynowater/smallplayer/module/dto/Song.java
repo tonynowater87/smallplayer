@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaMetadataCompat;
 
-import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.u2b.Playable;
 import com.tonynowtaer87.myutil.TimeUtil;
 
@@ -120,6 +120,7 @@ public class Song implements Playable
         return mAlbum;
     }
 
+    @Override
     public MediaMetadataCompat getMediaMetadata() {
 
         return new MediaMetadataCompat.Builder()
@@ -135,15 +136,16 @@ public class Song implements Playable
                 .build();
     }
 
-    public PlayListSongDTO getPlayListSongDTO() {
-        PlayListSongDTO playListSongDTO = new PlayListSongDTO();
-        playListSongDTO.setId(mId);
-        playListSongDTO.setSource(mData);
-        playListSongDTO.setArtist(mArtist);
-        playListSongDTO.setTitle(mTitle);
-        playListSongDTO.setDuration(mDuration);
-        playListSongDTO.setAlbumArtUri(mAlbumObj.getmAlbumArt());
-        playListSongDTO.setIsLocal(MetaDataCustomKeyDefine.ISLOCAL);
-        return playListSongDTO;
+    @Override
+    public PlayListSongEntity getPlayListSongEntity() {
+        PlayListSongEntity playListSongEntity = new PlayListSongEntity();
+        playListSongEntity.setId(mId);
+        playListSongEntity.setSource(mData);
+        playListSongEntity.setArtist(mArtist);
+        playListSongEntity.setTitle(mTitle);
+        playListSongEntity.setDuration(mDuration);
+        playListSongEntity.setAlbumArtUri(mAlbumObj.getmAlbumArt());
+        playListSongEntity.setIsLocal(MetaDataCustomKeyDefine.ISLOCAL);
+        return playListSongEntity;
     }
 }

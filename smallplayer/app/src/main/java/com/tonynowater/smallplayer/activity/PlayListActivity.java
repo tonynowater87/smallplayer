@@ -76,8 +76,10 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                         public void getU2BUrl(String url) {
                             u2bPlayListVideoItem.setDataSource(url);
                             if (i == 0) {
-                                RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongDTO());
-                                sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
+                                RealmUtils realmUtils = new RealmUtils();
+                                realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongEntity());
+                                sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                                realmUtils.close();
                             } else {
                                 DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem);
                             }

@@ -5,24 +5,19 @@ import android.util.Log;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBinding;
-import com.tonynowater.smallplayer.module.dto.realm.PlayListDTO;
-import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.OnClickSomething;
-
-import io.realm.Realm;
 
 /**
  * Created by tonynowater on 2017/5/30.
  */
 
-public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayListSongDTO, LayoutShowPlayListSongAdapterBinding> {
+public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutShowPlayListSongAdapterBinding> {
     private static final String TAG = ShowPlayListSongAdapter.class.getSimpleName();
-    public ShowPlayListSongAdapter(int id, OnClickSomething<PlayListSongDTO> mOnClickSongListener) {
+    public ShowPlayListSongAdapter(int id, OnClickSomething<PlayListSongEntity> mOnClickSongListener) {
         super(mOnClickSongListener);
-        PlayListDTO playListDTO = Realm.getDefaultInstance().where(PlayListDTO.class).equalTo("id", id).findFirst();
-        if (playListDTO != null) {
-            mDataList = playListDTO.getPlayListSong();
-        }
+        mDataList = new RealmUtils().queryPlayListSongByListId(id);
     }
 
     @Override

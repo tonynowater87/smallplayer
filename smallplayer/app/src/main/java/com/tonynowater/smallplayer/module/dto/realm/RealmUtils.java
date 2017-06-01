@@ -1,153 +1,97 @@
 package com.tonynowater.smallplayer.module.dto.realm;
 
-import android.util.Log;
+import com.tonynowater.smallplayer.module.dto.realm.dao.PlayFolderDAO;
+import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListDAO;
+import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayFolderEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 
-import java.util.ArrayList;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-
-import io.realm.Realm;
 
 /**
  * Created by tonynowater on 2017/5/30.
  */
-public class RealmUtils {
+public class RealmUtils implements Closeable{
     private static final String TAG = RealmUtils.class.getSimpleName();
+    private static final String DEFAULT_PLAY_LIST_NAME = "預設歌單";
+    private PlayFolderDAO playFolderDAO;
+    private PlayListDAO playListDAO;
+    private PlayListSongDAO playListSongDAO;
 
-    private static int getNextKey(Class realmObject) {
-        Realm realm = Realm.getDefaultInstance();
-        if (realm.where(realmObject).max("id") == null) {
-            Log.d(TAG, "getNextKey: null" );
-            return 0;
-        } else {
-            int id = realm.where(realmObject).max("id").intValue() + 1;
-            Log.d(TAG, "getNextKey:" + id );
-            return id;
-        }
+    public RealmUtils() {
+        playFolderDAO = new PlayFolderDAO();
+        playListDAO = new PlayListDAO();
+        playListSongDAO = new PlayListSongDAO();
+        initialData();
     }
 
     /** @return 所有的播放清單 */
-    public static List<PlayListDTO> queryAllPlayList() {
-        Realm realm = Realm.getDefaultInstance();
-        PlayFolder playFolder = realm.where(PlayFolder.class).equalTo("id", 0).findFirst();
-        if (playFolder != null) {
-            return playFolder.getPlayList();
-        } else {
-            return new ArrayList<>();
-        }
+    public List<PlayListEntity> queryAllPlayList() {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(PlayListDAO.COLUMN_FOLDER_ID, 0);
+        return playListDAO.query(params);
     }
 
     /**
-     * @param id 播放清單的id
+     * @param listID 播放清單的id
      * @return 播放清單裡的歌曲
      */
-    public static List<PlayListSongDTO> queryPlayListSongByListId(int id) {
-        PlayListDTO playListDTO = Realm.getDefaultInstance().where(PlayListDTO.class).equalTo("id", id).findFirst();
-        if (playListDTO != null) {
-            return playListDTO.getPlayListSong();
-        } else {
-            return new ArrayList<>();
-        }
+    public List<PlayListSongEntity> queryPlayListSongByListId(int listID) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(PlayListSongDAO.COLUMN_LIST_ID, listID);
+        return playListSongDAO.query(params);
     }
 
-    /** @return 目前播放的PlayListID */
-    public static int queryCurrentPlayListID() {
-        Realm realm = Realm.getDefaultInstance();
-        PlayFolder playFolder = realm.where(PlayFolder.class).equalTo("id", 0).findFirst();
-        if (playFolder != null) {
-            return playFolder.getCurrentPlayListId();
-        } else {
-            return 0;
-        }
+    /** @return 現正播放的PlayListID */
+    public int queryCurrentPlayListID() {
+        return playFolderDAO.queryAll().get(0).getCurrentPlayListId();
     }
 
-    /** @return 目前播放的PlayListID */
-    public static void setCurrentPlayListID(final int id) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                PlayFolder playFolder = realm.where(PlayFolder.class).equalTo("id", 0).findFirst();
-                if (playFolder != null) {
-                    playFolder.setCurrentPlayListId(id);
-                } else {
-                    playFolder.setCurrentPlayListId(0);
-                }
-            }
-        });
-    }
-
-    /** 初始化播放清單的根目錄 */
-    public static PlayFolder initalPlayFolder() {
-        Realm realm = Realm.getDefaultInstance();
-        PlayFolder playFolder = realm.where(PlayFolder.class).equalTo("id", 0).findFirst();
-        if (playFolder != null) {
-            playFolder = realm.copyToRealmOrUpdate(playFolder);
-        } else {
-            playFolder = realm.createObject(PlayFolder.class, getNextKey(PlayFolder.class));
-        }
-
-        return playFolder;
+    /** 更新現正播放的PlayListID */
+    public int setCurrentPlayListID(final int playListID) {
+        PlayFolderEntity playFolderEntity = playFolderDAO.queryAll().get(0);
+        playFolderEntity.setCurrentPlayListId(playListID);
+        return playFolderDAO.insert(playFolderEntity);
     }
 
     /** 新增播放清單 */
-    public static void addNewPlayList(final String playListName) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                PlayFolder playFolder = initalPlayFolder();
-                PlayListDTO playListDTO = realm.createObject(PlayListDTO.class, getNextKey(PlayListDTO.class));
-                playListDTO.setPlayListName(playListName);
-                playFolder.getPlayList().add(playListDTO);
-            }
-        });
+    public void addNewPlayList(final String playListName) {
+        PlayListEntity playListEntity = new PlayListEntity();
+        playListEntity.setFolderId(0);
+        playListEntity.setPlayListName(playListName);
+        playListDAO.insert(playListEntity);
     }
 
     /** 新增歌曲至播放清單 */
-    public static void addSongToPlayList(final int id, final PlayListSongDTO playListSong) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                PlayListDTO playListDTO = queryPlayList(id);//檢查是否有歌單
-                PlayListSongDTO playListSongDTO = queryPlayListSong(playListSong);
-                playListDTO.getPlayListSong().add(playListSongDTO);
-            }
-        });
+    public void addSongToPlayList(final int playlistID, final PlayListSongEntity playListSong) {
+        playListSong.setListId(playlistID);
+        playListSongDAO.insert(playListSong);
     }
 
-    /**
-     * 用id查詢是否PlayListDTO存在
-     */
-    private static PlayListDTO queryPlayList(int id) {
-        Realm realm = Realm.getDefaultInstance();
-        PlayListDTO playListDTO = realm.where(PlayListDTO.class).equalTo("id", id).findFirst();
-        if (playListDTO != null) {
-            playListDTO = realm.copyToRealmOrUpdate(playListDTO);
-        } else {
-            //加入一組預設歌單
-            PlayFolder playFolder = initalPlayFolder();
-            playListDTO = realm.createObject(PlayListDTO.class, getNextKey(PlayListDTO.class));
-            playListDTO.setPlayListName("預設歌單");
-            playFolder.getPlayList().add(playListDTO);
+    @Override
+    public void close() {
+        try {
+            playListDAO.close();
+            playFolderDAO.close();
+            playListSongDAO.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        return playListDTO;
     }
 
-    /**
-     * 用id查詢是否PlayListSongDTO存在
-     */
-    private static PlayListSongDTO queryPlayListSong(PlayListSongDTO playListSong) {
-        Realm realm = Realm.getDefaultInstance();
-        PlayListSongDTO playListSongDTO = realm.where(PlayListSongDTO.class).equalTo("id", playListSong.getId()).findFirst();
-        if (playListSongDTO != null) {
-            //若已存在時call copyToRealm會出錯, 所以改用copyToRealmOrUpdate
-            playListSongDTO = realm.copyToRealmOrUpdate(playListSongDTO);
-        } else {
-            playListSongDTO = realm.copyToRealm(playListSong);
+    /** 初始化預設歌單 */
+    private void initialData() {
+        List<PlayFolderEntity> playFolderEntities = playFolderDAO.queryAll();
+        if (playFolderEntities == null || playFolderEntities.size() == 0) {
+            PlayFolderEntity playFolderEntity = new PlayFolderEntity();
+            PlayListEntity playListEntity = new PlayListEntity();
+            playListEntity.setPlayListName(DEFAULT_PLAY_LIST_NAME);
+            playListEntity.setFolderId(playFolderDAO.insert(playFolderEntity));
+            playListDAO.insert(playListEntity);
         }
-
-        return playListSongDTO;
     }
 }

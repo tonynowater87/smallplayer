@@ -4,14 +4,11 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
-import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
 
 /**
  * Created by tonyliao on 2017/5/12.
@@ -29,10 +26,12 @@ public class MusicProvider {
     /** 切換歌單 */
     public void queryDBPlayList(int position) {
         mMusicPlayList.clear();
-        List<PlayListSongDTO> playListSongDTO = RealmUtils.queryPlayListSongByListId(position);
-        for (int i = 0; i < playListSongDTO.size(); i++) {
-            mMusicPlayList.add(playListSongDTO.get(i).getMediaMetadata());
+        RealmUtils realmUtils = new RealmUtils();
+        List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListId(position);
+        for (int i = 0; i < playListSongEntities.size(); i++) {
+            mMusicPlayList.add(playListSongEntities.get(i).getMediaMetadata());
         }
+        realmUtils.close();
     }
 
     public MediaMetadataCompat getPlayList(int index) {

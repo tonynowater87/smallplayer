@@ -4,7 +4,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
-import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.u2b.Playable;
 
 import java.util.List;
@@ -164,22 +164,22 @@ public class U2bPlayListVideoDTO {
         }
 
         @Override
-        public PlayListSongDTO getPlayListSongDTO() {
+        public PlayListSongEntity getPlayListSongEntity() {
             String sArtUrl = "";
             try {
                 sArtUrl = getSnippet().getThumbnails().getHigh().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
             } catch (Exception e) {
                 Log.e(TAG, "getMediaMetadata: null url");
             }
-            PlayListSongDTO playListSongDTO = new PlayListSongDTO();
-            playListSongDTO.setId((int) getVideoDuration());
-            playListSongDTO.setSource(getUrl());
-            playListSongDTO.setArtist(getSnippet().getTitle());
-            playListSongDTO.setTitle(getSnippet().getTitle());
-            playListSongDTO.setDuration((int) getVideoDuration());
-            playListSongDTO.setAlbumArtUri(sArtUrl);
-            playListSongDTO.setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
-            return playListSongDTO;
+            PlayListSongEntity playListSongEntity = new PlayListSongEntity();
+            playListSongEntity.setId((int) getVideoDuration());
+            playListSongEntity.setSource(getUrl());
+            playListSongEntity.setArtist(getSnippet().getTitle());
+            playListSongEntity.setTitle(getSnippet().getTitle());
+            playListSongEntity.setDuration((int) getVideoDuration());
+            playListSongEntity.setAlbumArtUri(sArtUrl);
+            playListSongEntity.setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
+            return playListSongEntity;
         }
 
         public void setDataSource(String url) {

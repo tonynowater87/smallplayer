@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.module.dto.realm;
+package com.tonynowater.smallplayer.module.dto.realm.entity;
 
 import android.support.v4.media.MediaMetadataCompat;
 
@@ -9,13 +9,15 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
- * 播放清單裡的歌曲
- * Created by tonynowater on 2017/5/29.
+ * Created by tonynowater on 2017/5/31.
  */
-public class PlayListSongDTO extends RealmObject {
+
+public class PlayListSongEntity extends RealmObject {
 
     @PrimaryKey
     private int id;
+
+    private int listId;
 
     @Required
     private String source;
@@ -84,6 +86,14 @@ public class PlayListSongDTO extends RealmObject {
 
     public void setIsLocal(String local) {
         isLocal = local;
+    }
+
+    public int getListId() {
+        return listId;
+    }
+
+    public void setListId(int listId) {
+        this.listId = listId;
     }
 
     public MediaMetadataCompat getMediaMetadata() {

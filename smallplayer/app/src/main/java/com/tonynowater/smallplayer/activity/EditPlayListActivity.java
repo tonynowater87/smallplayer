@@ -15,9 +15,9 @@ import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
 import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
 import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
-import com.tonynowater.smallplayer.module.dto.realm.PlayListDTO;
-import com.tonynowater.smallplayer.module.dto.realm.PlayListSongDTO;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
@@ -90,17 +90,19 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
 
     @Override
     public void onClick(Object object) {
-        if (object instanceof PlayListDTO) {
-            PlayListDTO playListDTO = (PlayListDTO) object;
+        if (object instanceof PlayListEntity) {
+            PlayListEntity playListEntity = (PlayListEntity) object;
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content, EditPlayListFragment.newInstance(playListDTO.getId(),EnumEditListType.PlayListSongs))
+                    .replace(R.id.content, EditPlayListFragment.newInstance(playListEntity.getId(),EnumEditListType.PlayListSongs))
                     .addToBackStack(null)
                     .commit();
 
-        } else if (object instanceof PlayListSongDTO){
-            PlayListSongDTO playListSongDTO = (PlayListSongDTO) object;
-            RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), playListSongDTO);
-            sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
+        } else if (object instanceof PlayListSongEntity){
+            PlayListSongEntity playListSongEntity = (PlayListSongEntity) object;
+            RealmUtils realmUtils = new RealmUtils();
+            realmUtils.addSongToPlayList(playListSongEntity.getListId(), playListSongEntity);
+            sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+            realmUtils.close();
         }
     }
 

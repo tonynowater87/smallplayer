@@ -1,25 +1,22 @@
-package com.tonynowater.smallplayer.module.dto.realm;
+package com.tonynowater.smallplayer.module.dto.realm.entity;
 
-import com.tonynowater.smallplayer.u2b.Playable;
-
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
- * 播放清單
- * Created by tonynowater on 2017/5/29.
+ * Created by tonynowater on 2017/5/31.
  */
-public class PlayListDTO extends RealmObject {
+
+public class PlayListEntity extends RealmObject {
 
     @PrimaryKey
     private int id;
 
+    private int folderId;
+
     @Required
     private String playListName;
-
-    private RealmList<PlayListSongDTO> playListSong;
 
     public int getId() {
         return id;
@@ -37,12 +34,12 @@ public class PlayListDTO extends RealmObject {
         this.playListName = playListName;
     }
 
-    public RealmList<PlayListSongDTO> getPlayListSong() {
-        return playListSong;
+    public int getFolderId() {
+        return folderId;
     }
 
-    public void setPlayListSong(RealmList<PlayListSongDTO> playListSong) {
-        this.playListSong = playListSong;
+    public void setFolderId(int folderId) {
+        this.folderId = folderId;
     }
 
     @Override

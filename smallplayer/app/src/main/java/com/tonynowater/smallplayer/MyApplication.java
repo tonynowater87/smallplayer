@@ -3,6 +3,8 @@ package com.tonynowater.smallplayer;
 import android.app.Application;
 import android.content.Context;
 
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -22,11 +24,18 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+        initalRealm();
+    }
+
+    private void initalRealm() {
         //初始化Ream設定
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().name("smallplayer.ream")
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
+
+        RealmUtils realmUtils = new RealmUtils();
+        realmUtils.close();
     }
 }

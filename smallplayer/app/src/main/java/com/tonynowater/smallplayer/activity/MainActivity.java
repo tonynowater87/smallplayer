@@ -255,17 +255,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     public void onClick(final Object object) {
         // TODO: 2017/5/30 這邊要在簡化
+        final RealmUtils realmUtils = new RealmUtils();
         if (object instanceof Song) {
             DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     Song song = ((Song) object);
                     if (i == 0) {
-                        RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), song.getPlayListSongDTO());
-                        sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
+                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
+                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
                     } else {
                         DialogUtil.showSelectPlaylistDialog(MainActivity.this, song);
                     }
+                    realmUtils.close();
                 }
             });
         } else if (object instanceof U2BVideoDTO.ItemsBean) {
@@ -278,11 +280,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         public void getU2BUrl(String url) {
                             u2bVideoItem.setDataSource(url);
                             if (i == 0) {
-                                RealmUtils.addSongToPlayList(RealmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongDTO());
-                                sendMetaDataToService(RealmUtils.queryCurrentPlayListID());
+                                realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
+                                sendMetaDataToService(realmUtils.queryCurrentPlayListID());
                             } else {
                                 DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem);
                             }
+                            realmUtils.close();
                         }
                     }).execute();
                 }
