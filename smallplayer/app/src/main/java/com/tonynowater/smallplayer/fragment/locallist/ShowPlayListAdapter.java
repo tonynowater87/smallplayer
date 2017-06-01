@@ -38,7 +38,6 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
 
     @Override
     public void onDismiss(int position) {
-        // TODO: 2017/6/1 歌單刪除有問題...
         PlayListEntity playListEntity = mDataList.get(position);
         if (playListEntity.isDeletable()) {
             realmUtils.deletePlayList(playListEntity);

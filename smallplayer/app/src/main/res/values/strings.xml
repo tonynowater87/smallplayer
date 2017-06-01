@@ -26,6 +26,7 @@
     <string name="add_playlist">新增播放清單</string>
     <string name="add_play_list_dialog_hint">我的歌單</string>
     <string name="add_play_list_dialog_title">新增歌單</string>
+    <string name="menu_edit_title">編輯</string>
 
     <string-array name="action_list">
         <item>播放</item>

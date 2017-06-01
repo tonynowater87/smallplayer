@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.Realm;
 import io.realm.Sort;
 
 /**
@@ -95,17 +94,10 @@ public class RealmUtils implements Closeable{
 
     /**
      * 從播放清單刪除一首歌曲
-     * @param playlistID
      * @param playListSong
      */
-    public void deleteSongFromPlayList(int playlistID, PlayListSongEntity playListSong) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        HashMap<String, Object> params = new HashMap<>();
-        params.put(PlayListSongDAO.COLUMN_LIST_ID, playlistID);
-        params.put(PlayListSongDAO.COLUMN_ID, playListSong.getId());
-        playListSongDAO.queryNotCopy(params).get(0).deleteFromRealm();
-        realm.commitTransaction();
+    public void deleteSongFromPlayList(PlayListSongEntity playListSong) {
+        playListSongDAO.delete(playListSong);
     }
 
     /**
@@ -113,23 +105,13 @@ public class RealmUtils implements Closeable{
      * @param playListEntity
      */
     public void deletePlayList(PlayListEntity playListEntity) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListSongDAO.COLUMN_LIST_ID, playListEntity.getId());
         List<PlayListSongEntity> playListSongEntities = playListSongDAO.queryNotCopy(params);
         for (PlayListSongEntity entity : playListSongEntities) {
-            entity.deleteFromRealm();
+            playListSongDAO.delete(entity);
         }
-
-        HashMap<String, Object> params2 = new HashMap<>();
-        params.put(PlayListDAO.COLUMN_ID, playListEntity.getId());
-        params.put(PlayListDAO.COLUMN_FOLDER_ID, playListEntity.getFolderId());
-        params.put(PlayListDAO.COLUMN_PLAY_LIST_NAME, playListEntity.getPlayListName());
-        List<PlayListEntity> playListEntities = playListDAO.queryNotCopy(params2);
-        playListEntities.get(0).deleteFromRealm();
-
-        realm.commitTransaction();
+        playListDAO.delete(playListEntity);
     }
 
     /**

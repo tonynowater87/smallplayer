@@ -23,6 +23,7 @@ import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -205,6 +206,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         });
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_edit:
+                EditPlayListActivity.startActivity(this);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

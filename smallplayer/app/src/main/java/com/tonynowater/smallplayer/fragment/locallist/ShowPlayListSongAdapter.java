@@ -42,7 +42,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
 
     @Override
     public void onDismiss(int position) {
-        realmUtils.deleteSongFromPlayList(mDataList.get(position).getListId(), mDataList.get(position));
+        realmUtils.deleteSongFromPlayList(mDataList.get(position));
         mDataList = new RealmUtils().queryPlayListSongByListIdSortByPosition(playListId);
         notifyDataSetChanged();
     }

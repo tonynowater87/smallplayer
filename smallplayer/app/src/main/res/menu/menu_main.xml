@@ -9,4 +9,12 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always|collapseActionView"/>
     <!-- showAsAction設定collapseActionView，才會出現←箭頭 -->
+
+    <item
+        android:id="@+id/menu_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:orderInCategory="200"
+        app:showAsAction="always"
+        android:title="@string/menu_edit_title" />
+
 </menu>
