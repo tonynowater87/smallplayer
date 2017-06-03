@@ -60,6 +60,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     // 表示Service是否已start過了
     private boolean mServiceStarted;
     private int mSongTrackPosition = 0;
+    private int mCurrentPlayListId;
 
     public PlayMusicService() {
         mMusicProvider = new MusicProvider();
@@ -156,16 +157,22 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         if (intent != null) {
             String action = intent.getAction();
             if (TextUtils.equals(action, PLAY_PLAYLIST)) {
-                int position = intent.getIntExtra(BUNDLE_KEY_PLAYLIST_POSITION,0);
-                mMusicProvider.queryDBPlayList(position);
+                int playlistPosition = intent.getIntExtra(BUNDLE_KEY_PLAYLIST_POSITION,0);
+                mMusicProvider.queryDBPlayList(playlistPosition);
                 if (mMusicProvider.getPlayListSize() == 0) {
                     //切換到沒歌曲的歌單要停止播放
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, true);
                     handleStopRequest(bundle);
                 } else {
-                    // TODO: 2017/6/3 這裡要在處理新增歌曲及切換歌單時，播放歌曲的位置，
-                    mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+                    if (mCurrentPlayListId != playlistPosition) {
+                        //切換歌單，從頭播放歌曲
+                        mSongTrackPosition = 0;
+                    } else {
+                        //原歌單就是播最新加的一首歌
+                        mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+                    }
+                    mCurrentPlayListId = playlistPosition;
                     handlePlayRequest();
                 }
             }
