@@ -5,15 +5,15 @@ import android.text.TextUtils;
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
-import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
+import com.tonynowater.smallplayer.databinding.LayoutU2bSearchPlaylistAdapterListitemBinding;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
- * Created by tony10532 on 2017/5/20.
+ * 搜尋清單Adapter
+ * Created by tonynowater on 2017/5/20.
  */
-
-public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapter<U2BPlayListDTO.ItemsBean, LayoutSonglistadapterListitemBinding> {
+public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapter<U2BPlayListDTO.ItemsBean, LayoutU2bSearchPlaylistAdapterListitemBinding> {
     private static final String TAG = U2BSearchPlayListFragmentAdapter.class.getSimpleName();
 
     public U2BSearchPlayListFragmentAdapter(OnClickSomething<U2BPlayListDTO.ItemsBean> mOnClickSongListener) {
@@ -22,13 +22,13 @@ public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapte
 
     @Override
     protected int getItemResourceId() {
-        return R.layout.layout_songlistadapter_listitem;
+        return R.layout.layout_u2b_search_playlist_adapter_listitem;
     }
 
     @Override
     protected void onBindItem(BaseViewHolder holder, int position) {
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
-        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescription());
+        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescriptionForList());
         U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
         String sUrl = null;
         if (thumbnailsBean != null) {

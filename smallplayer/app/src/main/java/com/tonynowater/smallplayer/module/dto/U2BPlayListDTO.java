@@ -1,5 +1,7 @@
 package com.tonynowater.smallplayer.module.dto;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -233,6 +235,16 @@ public class U2BPlayListDTO {
             private ThumbnailsBean thumbnails;
             private String channelTitle;
             private String liveBroadcastContent;
+
+            /**
+             * description為空的話就改顯示 來自 channelTitle
+             */
+            public String getDescriptionForList() {
+                if (TextUtils.isEmpty(getDescription())) {
+                    return String.format("來自 %s",channelTitle);
+                }
+                return getDescription();
+            }
 
             public String getPublishedAt() {
                 return publishedAt;

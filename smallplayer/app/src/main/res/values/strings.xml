@@ -15,7 +15,7 @@
     <string name="seaching">搜尋中...</string>
     <string name="u2b_downloading">讀取Youtube音樂中...</string>
 
-    <string name="viewpager_title_u2b_search_playlist">搜尋專輯</string>
+    <string name="viewpager_title_u2b_search_playlist">搜尋清單</string>
     <string name="viewpager_title_local_music">本地音樂</string>
     <string name="viewpager_title_u2b_search_video">搜尋音樂</string>
     <string name="viewpager_title_u2b_search_channel">搜尋頻道</string>
@@ -28,6 +28,7 @@
     <string name="add_play_list_dialog_title">新增歌單</string>
     <string name="menu_edit_title">編輯</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
+    <string name="list_iv_description">搜尋的音樂圖片</string>
 
     <string-array name="action_list">
         <item>播放</item>
