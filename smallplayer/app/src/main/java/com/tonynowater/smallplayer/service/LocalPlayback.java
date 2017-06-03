@@ -11,6 +11,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.io.IOException;
 
@@ -127,7 +128,7 @@ public class LocalPlayback implements Playback
     }
 
     @Override
-    public void play(int trackPosition) {
+    public void play(final int trackPosition) {
 
         if (mCurrentTrackPosition != trackPosition) {
             Log.d(TAG, String.format("before track : %s \t coming track : %s",mCurrentTrackPosition,trackPosition));
@@ -142,17 +143,38 @@ public class LocalPlayback implements Playback
         }
 
         createMediaPlayerIfNeeded();
-        MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
-        String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
+
+        final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
+        if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
+            //播放本地音樂
+            String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
+            play(trackPosition, source ,mediaMetadataCompat);
+        } else {
+            //播放Youtube音樂
+            new YoutubeExtratorUtil(mPlayMusicService.getApplicationContext()
+                    , mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)
+                    , new YoutubeExtratorUtil.CallBack() {
+                @Override
+                public void getU2BUrl(String url) {
+                    play(trackPosition, url ,mediaMetadataCompat);
+                }
+            }).execute();
+        }
+    }
+
+    private void play(int trackPosition, String source, MediaMetadataCompat mediaMetadataCompat) {
         try {
             Log.d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
             mCurrentTrackPosition = trackPosition;
             mCurrentPosition = 0;
             mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-            mState = PlaybackStateCompat.STATE_BUFFERING;
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(source);
             mMediaPlayer.prepareAsync();
+
+            // TODO: 2017/6/3 這邊通知會延遲，要在處理
+            //設定狀態為BUFFERING通知畫面
+            mState = PlaybackStateCompat.STATE_BUFFERING;
             mPlaybackCallback.onPlaybackStateChanged();
         } catch (IOException e) {
             e.printStackTrace();

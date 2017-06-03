@@ -152,8 +152,7 @@ public class U2bPlayListVideoDTO {
             }
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId())
-                    .putString("VIDEO_ID", getSnippet().getResourceId().getVideoId())// TODO: 2017/5/21
-                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getUrl())
+                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getSnippet().getResourceId().getVideoId())
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
@@ -173,21 +172,13 @@ public class U2bPlayListVideoDTO {
             }
             PlayListSongEntity playListSongEntity = new PlayListSongEntity();
             playListSongEntity.setId((int) getVideoDuration());
-            playListSongEntity.setSource(getUrl());
+            playListSongEntity.setSource(getSnippet().getResourceId().getVideoId());
             playListSongEntity.setArtist(getSnippet().getTitle());
             playListSongEntity.setTitle(getSnippet().getTitle());
             playListSongEntity.setDuration((int) getVideoDuration());
             playListSongEntity.setAlbumArtUri(sArtUrl);
             playListSongEntity.setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
             return playListSongEntity;
-        }
-
-        public void setDataSource(String url) {
-            this.url = url;
-        }
-
-        public String getUrl() {
-            return url;
         }
 
         public void setVideoDuration(int durationToMilionSecond) {

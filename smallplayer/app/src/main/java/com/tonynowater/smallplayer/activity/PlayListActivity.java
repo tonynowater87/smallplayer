@@ -66,25 +66,18 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
     @Override
     public void onClick(final Object object) {
         if (object instanceof U2bPlayListVideoDTO.ItemsBean) {
-
             DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     final U2bPlayListVideoDTO.ItemsBean u2bPlayListVideoItem = ((U2bPlayListVideoDTO.ItemsBean) object);
-                    new YoutubeExtratorUtil(getApplicationContext(), u2bPlayListVideoItem.getSnippet().getResourceId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
-                        @Override
-                        public void getU2BUrl(String url) {
-                            u2bPlayListVideoItem.setDataSource(url);
-                            if (i == 0) {
-                                RealmUtils realmUtils = new RealmUtils();
-                                realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongEntity());
-                                sendMetaDataToService(realmUtils.queryCurrentPlayListID());
-                                realmUtils.close();
-                            } else {
-                                DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem);
-                            }
-                        }
-                    }).execute();
+                    if (i == 0) {
+                        RealmUtils realmUtils = new RealmUtils();
+                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongEntity());
+                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                        realmUtils.close();
+                    } else {
+                        DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem);
+                    }
                 }
             });
         }

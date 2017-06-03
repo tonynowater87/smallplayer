@@ -47,7 +47,6 @@ import com.tonynowater.smallplayer.u2b.U2BApi;
 import com.tonynowater.smallplayer.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
-import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -286,19 +285,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) object);
-                    new YoutubeExtratorUtil(getApplicationContext(), u2bVideoItem.getId().getVideoId(), new YoutubeExtratorUtil.CallBack() {
-                        @Override
-                        public void getU2BUrl(String url) {
-                            u2bVideoItem.setDataSource(url);
-                            if (i == 0) {
-                                realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
-                                sendMetaDataToService(realmUtils.queryCurrentPlayListID());
-                            } else {
-                                DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem);
-                            }
-                            realmUtils.close();
-                        }
-                    }).execute();
+                    if (i == 0) {
+                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
+                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                    } else {
+                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem);
+                    }
+                    realmUtils.close();
                 }
             });
         } else if (object instanceof U2BPlayListDTO.ItemsBean) {

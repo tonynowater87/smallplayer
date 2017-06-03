@@ -4,7 +4,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
-import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.u2b.Playable;
 
@@ -204,7 +203,7 @@ public class U2BVideoDTO {
             }
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
-                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getDataSource())
+                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getId().getVideoId())
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
@@ -223,22 +222,14 @@ public class U2BVideoDTO {
                 Log.e(TAG, "getMediaMetadata: null url");
             }
             PlayListSongEntity playListSongEntity = new PlayListSongEntity();
-            playListSongEntity.setId((int) getVideoDuration());
-            playListSongEntity.setSource(getDataSource());
+            playListSongEntity.setId((int) getVideoDuration());// TODO: 2017/6/3 因為table結構id是int，所以先暫用Duration當id
+            playListSongEntity.setSource(getId().getVideoId());
             playListSongEntity.setArtist(getSnippet().getTitle());
             playListSongEntity.setTitle(getSnippet().getTitle());
             playListSongEntity.setDuration((int) getVideoDuration());
             playListSongEntity.setAlbumArtUri(sArtUrl);
             playListSongEntity.setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
             return playListSongEntity;
-        }
-
-        public void setDataSource(String url) {
-            this.url = url;
-        }
-
-        public String getDataSource() {
-            return url;
         }
 
         public static class IdBean {
