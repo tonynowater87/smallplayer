@@ -17,9 +17,12 @@ import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -87,6 +90,30 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
         mBinding.buttonAction.setOnClickListener(mOnClickListener);
         mBinding.llSongInfoFragmentPlayer.setOnClickListener(mOnClickListener);
+        initialUI();
+    }
+
+    /**
+     * 設定預設的歌曲文字圖片顯示
+     */
+    private void initialUI() {
+        RealmUtils realmUtils = new RealmUtils();
+        List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListIdSortByPosition(realmUtils.queryCurrentPlayListID());
+        if (playListSongEntities.size() > 0) {
+            PlayListSongEntity playListSongEntity = playListSongEntities.get(0);
+            setUIByPlayListSongEntity(playListSongEntity);
+        }
+        realmUtils.close();
+    }
+
+    private void setUIByPlayListSongEntity(PlayListSongEntity playListSongEntity) {
+        mBinding.textViewSongNameValue.setText(playListSongEntity.getTitle());
+        mBinding.textViewSongArtistValue.setText(playListSongEntity.getArtist());
+        if (playListSongEntity.getAlbumArtUri() == null) {
+            Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
+        } else {
+            Glide.with(MyApplication.getContext()).load(playListSongEntity.getAlbumArtUri()).into(mBinding.imageviewThumb);
+        }
     }
 
     @Override

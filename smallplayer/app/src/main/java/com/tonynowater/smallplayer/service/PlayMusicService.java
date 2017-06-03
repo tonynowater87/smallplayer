@@ -61,7 +61,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     // 表示Service是否已start過了
     private boolean mServiceStarted;
     private int mSongTrackPosition = 0;
-    private int mCurrentPlayListId;
+    private int mCurrentPlayListId = -1;
 
     public PlayMusicService() {
         RealmUtils realmUtils = new RealmUtils();
