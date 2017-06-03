@@ -6,10 +6,13 @@ import android.media.MediaPlayer;
 import android.media.audiofx.Equalizer;
 import android.media.session.PlaybackState;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
@@ -40,6 +43,7 @@ public class LocalPlayback implements Playback
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
     private Equalizer mEqualizer;
+    private AsyncTask mYoutubeAsyncTask;
 
     public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
@@ -70,7 +74,7 @@ public class LocalPlayback implements Playback
     public void onPrepared(MediaPlayer mp) {
         mState = PlaybackStateCompat.STATE_PLAYING;
         Log.d(TAG, "onPrepared:" + mState);
-        mMediaPlayer.start();
+        mp.start();
         mPlaybackCallback.onPlaybackStateChanged();
     }
 
@@ -127,8 +131,14 @@ public class LocalPlayback implements Playback
 
     }
 
+    // TODO: 2017/6/3 從Youtube音樂切回播本地音樂，會有不是播放本地音樂的問題
     @Override
     public void play(final int trackPosition) {
+
+        if (mYoutubeAsyncTask != null) {
+            Log.d(TAG, "play: mYoutubeAsyncTask.cancel(true)");
+            mYoutubeAsyncTask.cancel(true);
+        }
 
         if (mCurrentTrackPosition != trackPosition) {
             Log.d(TAG, String.format("before track : %s \t coming track : %s",mCurrentTrackPosition,trackPosition));
@@ -142,8 +152,6 @@ public class LocalPlayback implements Playback
             return;
         }
 
-        createMediaPlayerIfNeeded();
-
         final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
         if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
             //播放本地音樂
@@ -151,11 +159,15 @@ public class LocalPlayback implements Playback
             play(trackPosition, source ,mediaMetadataCompat);
         } else {
             //播放Youtube音樂
-            new YoutubeExtratorUtil(mPlayMusicService.getApplicationContext()
+            mYoutubeAsyncTask = new YoutubeExtratorUtil(mPlayMusicService.getApplicationContext()
                     , mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)
                     , new YoutubeExtratorUtil.CallBack() {
                 @Override
                 public void getU2BUrl(String url) {
+                    if (TextUtils.isEmpty(url)) {
+                        mPlaybackCallback.onError(mPlayMusicService.getString(R.string.extract_youtube_error));
+                        return;
+                    }
                     play(trackPosition, url ,mediaMetadataCompat);
                 }
             }).execute();
@@ -164,6 +176,7 @@ public class LocalPlayback implements Playback
 
     private void play(int trackPosition, String source, MediaMetadataCompat mediaMetadataCompat) {
         try {
+            createMediaPlayerIfNeeded();
             Log.d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
             mCurrentTrackPosition = trackPosition;
             mCurrentPosition = 0;
@@ -183,20 +196,26 @@ public class LocalPlayback implements Playback
     }
 
     private void createMediaPlayerIfNeeded() {
-        Log.d(TAG, "createMediaPlayerIfNeeded. needed? " + (mMediaPlayer==null));
-        if (mMediaPlayer == null) {
-            mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setOnPreparedListener(this);
-            mMediaPlayer.setOnCompletionListener(this);
-            mMediaPlayer.setOnBufferingUpdateListener(this);
-            mMediaPlayer.setOnSeekCompleteListener(this);
-            mMediaPlayer.setOnErrorListener(this);
-            mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
-            mEqualizer.setEnabled(true);
-
-        } else {
+        Log.d(TAG, "createMediaPlayerIfNeeded");
+        if (mMediaPlayer != null) {
             mMediaPlayer.reset();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
         }
+
+        if (mEqualizer != null) {
+            mEqualizer.release();
+            mEqualizer = null;
+        }
+
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setOnPreparedListener(this);
+        mMediaPlayer.setOnCompletionListener(this);
+        mMediaPlayer.setOnBufferingUpdateListener(this);
+        mMediaPlayer.setOnSeekCompleteListener(this);
+        mMediaPlayer.setOnErrorListener(this);
+        mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
+        mEqualizer.setEnabled(true);
     }
 
     @Override
