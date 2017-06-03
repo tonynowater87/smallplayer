@@ -161,6 +161,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             String action = intent.getAction();
             if (TextUtils.equals(action, PLAY_PLAYLIST)) {
                 int playlistPosition = intent.getIntExtra(BUNDLE_KEY_PLAYLIST_POSITION,0);
+                mMusicProvider.queryDBPlayList(playlistPosition);
                 if (mCurrentPlayListId != playlistPosition) {
                     //切換歌單，從頭播放歌曲
                     mSongTrackPosition = 0;
@@ -169,7 +170,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
                 }
                 mCurrentPlayListId = playlistPosition;
-                mMusicProvider.queryDBPlayList(playlistPosition);
                 if (mMusicProvider.getPlayListSize() == 0) {
                     //切換到沒歌曲的歌單要停止播放
                     Bundle bundle = new Bundle();
