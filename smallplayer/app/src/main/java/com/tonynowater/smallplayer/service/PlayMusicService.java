@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.BuildConfig;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -63,7 +64,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     private int mCurrentPlayListId;
 
     public PlayMusicService() {
-        mMusicProvider = new MusicProvider();
+        RealmUtils realmUtils = new RealmUtils();
+        mMusicProvider = new MusicProvider(realmUtils.queryCurrentPlayListID());
+        realmUtils.close();
     }
 
     @Override
@@ -158,6 +161,14 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             String action = intent.getAction();
             if (TextUtils.equals(action, PLAY_PLAYLIST)) {
                 int playlistPosition = intent.getIntExtra(BUNDLE_KEY_PLAYLIST_POSITION,0);
+                if (mCurrentPlayListId != playlistPosition) {
+                    //切換歌單，從頭播放歌曲
+                    mSongTrackPosition = 0;
+                } else {
+                    //切換原歌單就是播最新加的一首歌
+                    mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+                }
+                mCurrentPlayListId = playlistPosition;
                 mMusicProvider.queryDBPlayList(playlistPosition);
                 if (mMusicProvider.getPlayListSize() == 0) {
                     //切換到沒歌曲的歌單要停止播放
@@ -165,14 +176,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, true);
                     handleStopRequest(bundle);
                 } else {
-                    if (mCurrentPlayListId != playlistPosition) {
-                        //切換歌單，從頭播放歌曲
-                        mSongTrackPosition = 0;
-                    } else {
-                        //原歌單就是播最新加的一首歌
-                        mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
-                    }
-                    mCurrentPlayListId = playlistPosition;
                     handlePlayRequest();
                 }
             }

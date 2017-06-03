@@ -17,10 +17,12 @@ public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
 
-    public MusicProvider() {
-        //預設先載入第0組的播放清單
+    /**
+     * @param playlistPosition 預設要載入的播放清單id
+     */
+    public MusicProvider(int playlistPosition) {
         mMusicPlayList = new ArrayList<>();
-        queryDBPlayList(0);
+        queryDBPlayList(playlistPosition);
     }
 
     /** 切換歌單 */
