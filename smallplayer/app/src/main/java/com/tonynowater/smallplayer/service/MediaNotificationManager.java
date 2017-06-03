@@ -197,7 +197,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         builder.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(new int[]{playPauseButtonPosition}).setMediaSession(mToken))
                 .setColor(mNotificationColor)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher)//沒setSmallIcon，通知會直接沒有顯示
                 .setUsesChronometer(true)//TODO
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
@@ -215,27 +215,33 @@ public class MediaNotificationManager extends BroadcastReceiver {
         return builder.build();
     }
 
+    /**
+     * 設定通知的圖片
+     */
     private Bitmap getAlbumArt(MediaMetadataCompat mMediaMetadata, NotificationCompat.Builder builder) {
         String fetchArtUrl = mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
 
         boolean isLocal = TextUtils.equals(MetaDataCustomKeyDefine.ISLOCAL,mMediaMetadata.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL));
-        Bitmap bitmap = null;
-
-        if (!TextUtils.isEmpty(fetchArtUrl)) {
-
-            if (isLocal) {
+        Bitmap bitmap ;
+        
+        if (isLocal) {
+            if (!TextUtils.isEmpty(fetchArtUrl)) {
                 bitmap = BitmapFactory.decodeFile(fetchArtUrl);
             } else {
-
-                bitmap = AlbumArtCache.getInstance().getIconImage(fetchArtUrl);
-                if (bitmap == null) {
-
-                    bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
-                            R.mipmap.ic_launcher);
-                }
-
-                fetchBitmapFromURLAsync(fetchArtUrl, builder);
+                // TODO: 2017/6/3 這邊要改成本地音樂沒AlbumArt時的預設圖片
+                bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
+                        R.mipmap.ic_launcher);
             }
+        } else {
+
+            bitmap = AlbumArtCache.getInstance().getIconImage(fetchArtUrl);
+            if (bitmap == null) {
+                // TODO: 2017/6/3 這邊要在改成下載中的讀取圖
+                bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
+                        R.mipmap.ic_launcher);
+            }
+
+            fetchBitmapFromURLAsync(fetchArtUrl, builder);
         }
 
         return bitmap;

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="128dp"
+    xmlns:tool="http://schemas.android.com/tools"
     android:background="@color/colorPrimary">
 
     <ImageView
@@ -28,24 +29,26 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_marginEnd="32dp"
             android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/notification_textview"
+                style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:gravity="center"/>
+                android:ellipsize="end"
+                android:gravity="center"
+                tool:text="五月天-有些事現在不做一輩子都不會做了"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:orientation="horizontal"
             android:weightSum="3">
 
@@ -54,6 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_media_previous" />
 
             <ImageView
@@ -61,6 +65,7 @@
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_media_play" />
 
             <ImageView
@@ -68,6 +73,7 @@
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_media_next" />
 
         </LinearLayout>

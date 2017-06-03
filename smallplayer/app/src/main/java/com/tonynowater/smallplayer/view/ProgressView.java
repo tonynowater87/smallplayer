@@ -8,7 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.tonynowater.smallplayer.service.ResourceHelper;
+import com.tonynowater.smallplayer.R;
 
 /**
  * Created by tonyliao on 2017/5/19.
@@ -42,7 +42,7 @@ public class ProgressView extends View {
     private void initial() {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(ContextCompat.getColor(getContext(), android.R.color.holo_orange_light));
+        mPaint.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
     }
 
     @Override
