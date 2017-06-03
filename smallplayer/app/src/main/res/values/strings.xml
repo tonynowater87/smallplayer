@@ -29,6 +29,7 @@
     <string name="menu_edit_title">編輯</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
     <string name="list_iv_description">搜尋的音樂圖片</string>
+    <string name="dash">-</string>
 
     <string-array name="action_list">
         <item>播放</item>

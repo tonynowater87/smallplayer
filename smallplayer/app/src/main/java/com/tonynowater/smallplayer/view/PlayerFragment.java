@@ -145,6 +145,13 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                 mBinding.progressBar.setmMax(mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
             }
         }
+
+        if (mPlaybackStateCompat.getExtras() != null && mPlaybackStateCompat.getExtras().getBoolean(PlayMusicService.BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST)) {
+            //切換到沒歌曲的播放清單將UI文字圖片設回預設值
+            Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
+            mBinding.textViewSongNameValue.setText(getString(R.string.dash));
+            mBinding.textViewSongArtistValue.setText(getString(R.string.dash));
+        }
     }
 
     private void startScheduledUpdateProgress() {

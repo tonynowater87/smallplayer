@@ -29,6 +29,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION = "BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION";
+    public static final String BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST = "BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST";
     public static final String GET_CURRENT_PLAY_LIST_ID = "GET_CURRENT_PLAY_LIST_ID";
     private static final String ROOT_ID_TEST = "ROOT_ID_TEST";
     private static final int STOP_DELAY = 30000;
@@ -100,6 +101,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     /** 更新播放狀態至Notification */
     private void updatePlaybackState(String sError) {
+        updatePlaybackState(sError, null);
+    }
+
+    /** 更新播放狀態至Notification */
+    private void updatePlaybackState(String sError, Bundle extraBundle) {
         Log.d(TAG, "updatePlaybackState: " + mLocalPlayback.getState());
         long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         int state;
@@ -116,7 +122,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         }
 
         stateBuilder.setState(state,position,1.0f, SystemClock.elapsedRealtime());
+
         Bundle bundle = new Bundle();
+        if (extraBundle != null) {
+            bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, extraBundle.getBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST));
+        }
         bundle.putInt(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());
         stateBuilder.setExtras(bundle);
         mMediaSessionCompat.setPlaybackState(stateBuilder.build());
@@ -148,8 +158,16 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             if (TextUtils.equals(action, PLAY_PLAYLIST)) {
                 int position = intent.getIntExtra(BUNDLE_KEY_PLAYLIST_POSITION,0);
                 mMusicProvider.queryDBPlayList(position);
-                mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
-                handlePlayRequest();
+                if (mMusicProvider.getPlayListSize() == 0) {
+                    //切換到沒歌曲的歌單要停止播放
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, true);
+                    handleStopRequest(bundle);
+                } else {
+                    // TODO: 2017/6/3 這裡要在處理新增歌曲及切換歌單時，播放歌曲的位置，
+                    mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+                    handlePlayRequest();
+                }
             }
         }
 
@@ -263,9 +281,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     }
 
     private void handleStopRequest() {
+        handleStopRequest(null);
+    }
+
+    private void handleStopRequest(Bundle bundle) {
         Log.d(TAG, "handleStopRequest: " + mLocalPlayback.getState());
         mLocalPlayback.stop(true);
-        updatePlaybackState(null);
+        updatePlaybackState(null, bundle);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
     }
 
