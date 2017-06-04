@@ -6,6 +6,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListAdapterBinding;
+import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
@@ -41,6 +42,7 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
         PlayListEntity playListEntity = mDataList.get(position);
         if (playListEntity.isDeletable()) {
             realmUtils.deletePlayList(playListEntity);
+            realmUtils.setCurrentPlayListID(realmUtils.queryAllPlayList().size() > 1 ? (realmUtils.queryCurrentPlayListPosition() - 1) : BaseDAO.DEFAULT_ID);
         }
 
         mDataList = realmUtils.queryAllPlayListSortByPosition();
