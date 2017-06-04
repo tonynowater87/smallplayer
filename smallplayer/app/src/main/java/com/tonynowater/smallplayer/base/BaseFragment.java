@@ -3,8 +3,6 @@ package com.tonynowater.smallplayer.base;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.MediaMetadataCompat;
@@ -15,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tonynowater.smallplayer.service.PlayMusicService;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
 /**
  * Created by tonynowater on 2017/5/20.
@@ -24,7 +22,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     private static final String TAG = BaseFragment.class.getSimpleName();
     protected T mBinding;
     private MediaControllerCompat.TransportControls mTransportControls;
-
+    protected RealmUtils mRealmUtils;
 
     private MediaControllerCompat.Callback mMediaControllerCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -45,6 +43,10 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
             BaseFragment.this.onSessionDestroyed();
         }
     };
+
+    public BaseFragment() {
+        mRealmUtils = new RealmUtils();
+    }
 
     @Nullable
     @Override
@@ -67,6 +69,12 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
             mediaControllerCompat.unregisterCallback(mMediaControllerCallback);
         }
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        mRealmUtils.close();
+        super.onDestroy();
     }
 
     public void onConnected() {

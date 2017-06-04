@@ -24,13 +24,16 @@
     <string name="search_view_hint">請輸入要搜尋的內容...</string>
     <string name="menu_playlist">編輯播放清單</string>
     <string name="add_playlist">新增播放清單</string>
-    <string name="add_play_list_dialog_hint">我的歌單</string>
+    <string name="add_play_list_dialog_hint">請輸入歌單名稱...</string>
     <string name="add_play_list_dialog_title">新增歌單</string>
     <string name="menu_edit_title">編輯</string>
+    <string name="title_edit_play_list">編輯播放清單</string>
+    <string name="title_edit_play_song">編輯 %s 歌曲</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
     <string name="list_iv_description">搜尋的音樂圖片</string>
     <string name="dash">-</string>
     <string name="extract_youtube_error">無法獲取影音串流</string>
+    <string name="playlist_create_date">自 %s 創建</string>
 
     <string-array name="action_list">
         <item>播放</item>

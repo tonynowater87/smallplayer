@@ -22,6 +22,8 @@ public class PlayListEntity extends RealmObject {
 
     private boolean deletable = true;
 
+    private String createDate;
+
     public int getId() {
         return id;
     }
@@ -65,5 +67,13 @@ public class PlayListEntity extends RealmObject {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
     }
 }

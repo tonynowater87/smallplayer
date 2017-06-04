@@ -6,9 +6,8 @@ import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
-import com.tonynowater.smallplayer.u2b.Playable;
-import com.tonynowater.smallplayer.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
@@ -44,9 +43,9 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentA
             sUrl = thumbnailsBean.getDefaultX().getUrl();
         }
         if (!TextUtils.isEmpty(sUrl)) {
-            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(sUrl).into(holder.getBinding().ivSonglistadapter);
         } else {
-            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
         }
     }
 }

@@ -36,9 +36,9 @@ public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapte
             sUrl = thumbnailsBean.getDefaultX().getUrl();
         }
         if (!TextUtils.isEmpty(sUrl)) {
-            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(sUrl).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(sUrl).into(holder.getBinding().ivSonglistadapter);
         } else {
-            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
         }
     }
 }

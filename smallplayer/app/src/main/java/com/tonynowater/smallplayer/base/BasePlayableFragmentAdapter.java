@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.base;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +26,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     protected List<K> mDataList;
     protected OnClickSomething<K> mOnClickSongListener;
     protected RealmUtils realmUtils;
+    protected Context mContext;
 
     protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();
@@ -34,6 +36,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     @Override
     public BasePlayableFragmentAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        mContext = parent.getContext();
         View view;
         final BaseViewHolder baseViewHolder;
         switch (viewType) {

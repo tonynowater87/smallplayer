@@ -7,6 +7,7 @@ import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayFolderEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.util.DateUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -88,6 +89,7 @@ public class RealmUtils implements Closeable{
         PlayListEntity playListEntity = new PlayListEntity();
         playListEntity.setFolderId(BaseDAO.DEFAULT_ID);
         playListEntity.setPlayListName(playListName);
+        playListEntity.setCreateDate(DateUtil.getCurrentDate());
         playListDAO.insert(playListEntity);
     }
 
@@ -165,6 +167,7 @@ public class RealmUtils implements Closeable{
             playListEntity.setPlayListName(DEFAULT_PLAY_LIST_NAME);
             playListEntity.setDeletable(false);//預設歌單不可刪除
             playListEntity.setFolderId(playFolderDAO.insert(playFolderEntity));
+            playListEntity.setCreateDate(DateUtil.getCurrentDate());
             playListDAO.insert(playListEntity);
         }
     }

@@ -40,9 +40,9 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getArtist());
         holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration(mDataList.get(position).getDuration()));
         if (!TextUtils.isEmpty(mDataList.get(position).getAlbumArtUri())) {
-            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(mDataList.get(position).getAlbumArtUri()).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(mDataList.get(position).getAlbumArtUri()).into(holder.getBinding().ivSonglistadapter);
         } else {
-            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
         }
     }
 

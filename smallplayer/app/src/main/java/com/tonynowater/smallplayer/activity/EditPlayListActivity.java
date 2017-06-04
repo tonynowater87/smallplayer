@@ -3,24 +3,18 @@ package com.tonynowater.smallplayer.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
 import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
 import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
-import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
-import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
 
@@ -73,31 +67,6 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_edit_play_list;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0,0,0,getString(R.string.add_playlist));
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case 0:
-                DialogUtil.showAddPlayListDialog(this, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
-                        RealmUtils realmUtils = new RealmUtils();
-                        realmUtils.addNewPlayList(charSequence.toString());
-                        realmUtils.close();
-                        replaceShowPlayListFragment();
-                    }
-                });
-                break;
-        }
-
-        return true;
     }
 
     @Override

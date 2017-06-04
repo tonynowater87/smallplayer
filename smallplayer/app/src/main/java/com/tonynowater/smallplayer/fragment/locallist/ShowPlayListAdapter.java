@@ -1,7 +1,5 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
-import android.util.Log;
-
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
@@ -11,13 +9,19 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
+ * 播放清單Adapter
  * Created by tonynowater on 2017/5/29.
  */
 public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEntity, LayoutShowPlayListAdapterBinding> implements ItemTouchHelperAdapter{
     private static final String TAG = ShowPlayListAdapter.class.getSimpleName();
+    int[] mSongCountArray;
     public ShowPlayListAdapter(OnClickSomething<PlayListEntity> mOnClickSongListener) {
         super(mOnClickSongListener);
         mDataList = realmUtils.queryAllPlayListSortByPosition();
+        mSongCountArray = new int[mDataList.size()];
+        for (int i = 0; i < mDataList.size(); i++) {
+            mSongCountArray[i] = realmUtils.queryPlayListSongByListId(mDataList.get(i).getId()).size();
+        }
     }
 
     @Override
@@ -32,9 +36,9 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
 
     @Override
     protected void onBindItem(BaseViewHolder holder, int position) {
-        String name = mDataList.get(position).getPlayListName();
-        Log.d(TAG, "onBindItem: " + name);
-        holder.getBinding().tvLayoutU2bsuggestionAdapterListItem.setText(name);
+        holder.getBinding().tvPlaylistName.setText(mDataList.get(position).getPlayListName());
+        holder.getBinding().tvPlaylistCreateDate.setText(String.format(mContext.getString(R.string.playlist_create_date), mDataList.get(position).getCreateDate()));
+        holder.getBinding().tvPlaylistSongCount.setText(String.valueOf(mSongCountArray[position]));
     }
 
     @Override

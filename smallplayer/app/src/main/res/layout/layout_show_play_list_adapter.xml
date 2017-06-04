@@ -1,22 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ll_layout_u2bsuggestion_adapter_list_item"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:orientation="vertical">
+        android:layout_height="75dp"
+        android:padding="5dp">
 
         <TextView
-            android:id="@+id/tv_layout_u2bsuggestion_adapter_list_item"
-            style="@style/Base.TextAppearance.AppCompat.Large"
-            android:layout_marginLeft="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:textColor="@android:color/black"/>
+            style="@style/TextAppearance.AppCompat.Small"
+            android:id="@+id/tv_playlist_song_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:textStyle="italic" />
 
-    </LinearLayout>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/tv_playlist_name"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="left|center_vertical"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/tv_playlist_create_date"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="left|center_vertical"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </layout>
