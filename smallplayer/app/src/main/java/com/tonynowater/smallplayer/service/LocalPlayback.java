@@ -1,6 +1,9 @@
 package com.tonynowater.smallplayer.service;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.Equalizer;
@@ -19,7 +22,6 @@ import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 import java.io.IOException;
 
 /**
- * // TODO: 2017/5/29 獲取音樂權限待實做
  * // TODO: 2017/5/29 綁定Wifi待實做
  * Created by tonyliao on 2017/5/12.
  */
@@ -32,9 +34,12 @@ public class LocalPlayback implements Playback
         , MediaPlayer.OnBufferingUpdateListener {
 
     private static final String TAG = LocalPlayback.class.getSimpleName();
+    private static final float VOLUME_DOCK = 0.2f;
+    private static final float VOLUME_NORMAL = 1.0f;
     private PlayMusicService mPlayMusicService;
     private WifiManager.WifiLock mWifiLock;
     private AudioManager mAudioManager;
+    private int mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
     private int mState = PlaybackStateCompat.STATE_NONE;
     private int mCurrentPosition;
     private int mCurrentTrackPosition;
@@ -45,6 +50,22 @@ public class LocalPlayback implements Playback
     private Equalizer mEqualizer;
     private AsyncTask mYoutubeAsyncTask;
 
+    private boolean mAudioNoisyReceiverRegistered = false;
+    private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private final BroadcastReceiver mAudioNoisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == intent.getAction()) {
+                Log.d(TAG, "onReceive: " + isPlaying());
+                if (isPlaying()) {
+                    pause();
+                } else {
+                    play(mCurrentTrackPosition);
+                }
+            }
+        }
+    };
+
     public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
         this.mMusicProvider = mMusicProvider;
@@ -53,9 +74,84 @@ public class LocalPlayback implements Playback
         mWifiLock = ((WifiManager) mPlayMusicService.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     }
 
+    /**
+     * 試著獲取AudioFocus
+     */
+    private void tryToGetAudioFocus() {
+        Log.d(TAG, "tryToGetAudioFocus: ");
+        registerAudioNoisyReceiver();
+        int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+        } else {
+            mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
+        }
+    }
+
+    /**
+     * 放棄AudioFocus
+     */
+    private void giveUpAudioFocus() {
+        Log.d(TAG, "giveUpAudioFocus: ");
+        unregisterAudioNoisyReceiver();
+        if (mAudioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
+        }
+    }
+
+    private void registerAudioNoisyReceiver() {
+        if (!mAudioNoisyReceiverRegistered) {
+            mPlayMusicService.registerReceiver(mAudioNoisyReceiver, mAudioNoisyIntentFilter);
+            mAudioNoisyReceiverRegistered = true;
+        }
+    }
+
+    private void unregisterAudioNoisyReceiver() {
+        if (mAudioNoisyReceiverRegistered) {
+            mPlayMusicService.unregisterReceiver(mAudioNoisyReceiver);
+            mAudioNoisyReceiverRegistered = false;
+        }
+    }
+
+    private void configureMediaPlayerByAudioFocus() {
+        Log.d(TAG, "configureMediaPlayerByAudioFocus: " + mAudioFocus);
+        if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED
+         || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS
+         || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            if (isPlaying()) {
+                pause();
+            }
+        } else {
+            if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                setMediaPlayerVolume(VOLUME_DOCK);
+            } else {
+                setMediaPlayerVolume(VOLUME_NORMAL);
+            }
+        }
+    }
+
+    private void setMediaPlayerVolume(float volume) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setVolume(volume, volume);
+        }
+    }
+
     @Override
     public void onAudioFocusChange(int focusChange) {
         Log.d(TAG, "onAudioFocusChange: " + focusChange);
+        if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            //獲取AudioFocus後繼續播放
+            mAudioFocus = AudioManager.AUDIOFOCUS_GAIN;
+            play(mCurrentTrackPosition);
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS
+                || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
+                || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+            mAudioFocus = focusChange;
+        } else {
+            Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
+        }
+
+        configureMediaPlayerByAudioFocus();
     }
 
     @Override
@@ -135,6 +231,13 @@ public class LocalPlayback implements Playback
     @Override
     public void play(final int trackPosition) {
 
+        tryToGetAudioFocus();
+
+        if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            Log.d(TAG, "play: AudioManager.AUDIOFOCUS_REQUEST_FAILED");
+            return;
+        }
+        
         if (mYoutubeAsyncTask != null) {
             Log.d(TAG, "play: mYoutubeAsyncTask.cancel(true)");
             mYoutubeAsyncTask.cancel(true);
@@ -241,6 +344,7 @@ public class LocalPlayback implements Playback
         }
 
         mCurrentPosition = 0;
+        giveUpAudioFocus();
         releaseResource();
     }
 
