@@ -1,7 +1,8 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
-import android.util.Log;
+import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
@@ -9,11 +10,11 @@ import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBind
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.OnClickSomething;
+import com.tonynowtaer87.myutil.TimeUtil;
 
 /**
  * Created by tonynowater on 2017/5/30.
  */
-
 public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutShowPlayListSongAdapterBinding> implements ItemTouchHelperAdapter{
     private static final String TAG = ShowPlayListSongAdapter.class.getSimpleName();
     private int playListId;
@@ -35,9 +36,14 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
 
     @Override
     protected void onBindItem(BaseViewHolder holder, int position) {
-        String name = mDataList.get(position).getTitle();
-        Log.d(TAG, "onBindItem: " + name);
-        holder.getBinding().tvLayoutU2bsuggestionAdapterListItem.setText(name);
+        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getTitle());
+        holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getArtist());
+        holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration(mDataList.get(position).getDuration()));
+        if (!TextUtils.isEmpty(mDataList.get(position).getAlbumArtUri())) {
+            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(mDataList.get(position).getAlbumArtUri()).into(holder.getBinding().ivSonglistadapter);
+        } else {
+            Glide.with(holder.getBinding().ivSonglistadapter.getContext()).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+        }
     }
 
     @Override

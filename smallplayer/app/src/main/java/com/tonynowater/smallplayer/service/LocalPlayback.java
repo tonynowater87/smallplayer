@@ -56,6 +56,7 @@ public class LocalPlayback implements Playback
         @Override
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == intent.getAction()) {
+                //耳機拔掉的事件
                 Log.d(TAG, "onReceive: " + isPlaying());
                 if (isPlaying()) {
                     pause();

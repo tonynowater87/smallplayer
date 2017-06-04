@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.module.dto;
 
 import android.support.v4.media.MediaMetadataCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
@@ -143,13 +144,6 @@ public class U2bPlayListVideoDTO {
 
         //TODO
         public MediaMetadataCompat getMediaMetadata() {
-
-            String sArtUrl = "";
-            try {
-                sArtUrl = getSnippet().getThumbnails().getStandard().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
-            } catch (Exception e) {
-                Log.e(TAG, "getMediaMetadata: null url");
-            }
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId())
                     .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getSnippet().getResourceId().getVideoId())
@@ -157,28 +151,39 @@ public class U2bPlayListVideoDTO {
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, sArtUrl)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getArtUrl())
                     .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISNOTLOCAL)
                     .build();
         }
 
         @Override
         public PlayListSongEntity getPlayListSongEntity() {
-            String sArtUrl = "";
-            try {
-                sArtUrl = getSnippet().getThumbnails().getHigh().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
-            } catch (Exception e) {
-                Log.e(TAG, "getMediaMetadata: null url");
-            }
             PlayListSongEntity playListSongEntity = new PlayListSongEntity();
             playListSongEntity.setId((int) getVideoDuration());
             playListSongEntity.setSource(getSnippet().getResourceId().getVideoId());
             playListSongEntity.setArtist(getSnippet().getTitle());
             playListSongEntity.setTitle(getSnippet().getTitle());
             playListSongEntity.setDuration((int) getVideoDuration());
-            playListSongEntity.setAlbumArtUri(sArtUrl);
+            playListSongEntity.setAlbumArtUri(getArtUrl());
             playListSongEntity.setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
             return playListSongEntity;
+        }
+
+        /**
+         * @return 畫面要顯示的Art圖
+         */
+        private String getArtUrl() {
+            String sArtUrl;
+            try {
+                sArtUrl = getSnippet().getThumbnails().getStandard().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
+                if (TextUtils.isEmpty(sArtUrl)) {
+                    sArtUrl = getSnippet().getThumbnails().getDefaultX().getUrl();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "getStandard() null ");
+                sArtUrl = getSnippet().getThumbnails().getDefaultX().getUrl();
+            }
+            return sArtUrl;
         }
 
         public void setVideoDuration(int durationToMilionSecond) {
