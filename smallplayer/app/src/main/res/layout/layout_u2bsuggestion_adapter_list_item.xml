@@ -4,16 +4,16 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/ll_layout_u2bsuggestion_adapter_list_item"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/seachview_list_height"
+        android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_layout_u2bsuggestion_adapter_list_item"
             style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:layout_marginLeft="5dp"
+            android:layout_margin="@dimen/margin_gap_level_1"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:textColor="@android:color/black"/>
 

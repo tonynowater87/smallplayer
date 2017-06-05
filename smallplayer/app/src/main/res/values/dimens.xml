@@ -10,5 +10,7 @@
     <dimen name="list_image_width">80dp</dimen>
     <dimen name="list_image_height">60dp</dimen>
     <dimen name="list_height">75dp</dimen>
-    <dimen name="seachview_list_height">35dp</dimen>
+    <dimen name="margin_gap_level_1">5dp</dimen>
+    <dimen name="margin_gap_level_2">10dp</dimen>
+    <dimen name="margin_gap_level_3">15dp</dimen>
 </resources>
