@@ -60,8 +60,6 @@ public class LocalPlayback implements Playback
                 Log.d(TAG, "onReceive: " + isPlaying());
                 if (isPlaying()) {
                     pause();
-                } else {
-                    play(mCurrentTrackPosition);
                 }
             }
         }
