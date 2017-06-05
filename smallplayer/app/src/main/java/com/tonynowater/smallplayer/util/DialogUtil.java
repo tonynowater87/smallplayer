@@ -8,7 +8,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
-import com.tonynowater.smallplayer.u2b.Playable;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 
 import java.util.List;
 

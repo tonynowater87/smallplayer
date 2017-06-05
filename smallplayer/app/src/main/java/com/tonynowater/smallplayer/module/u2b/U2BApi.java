@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.u2b;
+package com.tonynowater.smallplayer.module.u2b;
 
 import android.util.Log;
 

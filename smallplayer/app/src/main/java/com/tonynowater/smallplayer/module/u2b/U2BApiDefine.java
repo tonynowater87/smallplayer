@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.u2b;
+package com.tonynowater.smallplayer.module.u2b;
 
 /**
  * Created by tonyliao on 2017/4/30.

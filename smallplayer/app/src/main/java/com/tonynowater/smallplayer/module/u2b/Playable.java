@@ -1,8 +1,7 @@
-package com.tonynowater.smallplayer.u2b;
+package com.tonynowater.smallplayer.module.u2b;
 
 import android.support.v4.media.MediaMetadataCompat;
 
-import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 
 /**

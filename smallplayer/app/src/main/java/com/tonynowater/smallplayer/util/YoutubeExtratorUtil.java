@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.tonynowater.smallplayer.u2b.U2BApiDefine;
+import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 
 import at.huber.youtubeExtractor.VideoMeta;
 import at.huber.youtubeExtractor.YouTubeExtractor;

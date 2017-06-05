@@ -27,7 +27,7 @@ import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
-import com.tonynowater.smallplayer.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 
 import java.util.ArrayList;
 import java.util.List;

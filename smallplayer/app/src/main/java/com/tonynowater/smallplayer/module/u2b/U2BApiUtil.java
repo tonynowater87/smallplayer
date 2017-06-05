@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.u2b;
+package com.tonynowater.smallplayer.module.u2b;
 
 import org.json.JSONArray;
 import org.json.JSONException;

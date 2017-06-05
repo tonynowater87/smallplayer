@@ -43,8 +43,8 @@ import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
-import com.tonynowater.smallplayer.u2b.U2BApi;
-import com.tonynowater.smallplayer.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.module.u2b.U2BApi;
+import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
@@ -56,6 +56,7 @@ import static android.support.v4.widget.CursorAdapter.FLAG_REGISTER_CONTENT_OBSE
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT = 15;//最近搜尋記錄要顯示的筆數
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
     private int mCurrentViewPagerPosition = 0;
     private SimpleCursorAdapter simpleCursorAdapter;
@@ -111,7 +112,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d(TAG, "onQueryTextChange: " + newText);
-                if (!TextUtils.isEmpty(newText)) {
+                if (!TextUtils.isEmpty(newText.trim())) {
                     if (mBaseViewPagerFragments[mCurrentViewPagerPosition] instanceof U2BSearchViewPagerFragment) {
                         U2BApi.newInstance().queryU2BSUGGESTION(newText, new Callback() {
                             @Override
@@ -136,7 +137,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         });
                     }
                 } else {
-                    suggestions = getRecentSearchList(10);
+                    suggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
                    initialSearchViewSuggestAdapter(suggestions);//改顯示歷史搜尋紀錄
                 }
                 return false;
