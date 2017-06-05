@@ -1,6 +1,5 @@
 package com.tonynowater.smallplayer.util;
 
-import android.content.Context;
 import android.widget.Toast;
 
 import com.tonynowater.smallplayer.MyApplication;

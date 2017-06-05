@@ -25,7 +25,7 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        SongListAdapter songListAdapter = new SongListAdapter(getActivity().getApplicationContext(), (OnClickSomething) getActivity());
+        SongListAdapter songListAdapter = new SongListAdapter((OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(),LinearLayoutManager.VERTICAL,false);
         mBinding.recyclerviewSonglistfragment.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());

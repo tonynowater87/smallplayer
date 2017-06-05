@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.SparseArray;
 
 import com.tonynowater.smallplayer.module.dto.Album;
 import com.tonynowater.smallplayer.module.dto.Song;
@@ -137,4 +138,21 @@ public class MediaUtils {
         return albumList;
     }
 
+    /**
+     * @return 將Album放進Song裡的本地歌單
+     */
+    public static List<Song> getSongList(Context context) {
+        List<Song> songList = MediaUtils.getAudioList(context);
+        List<Album> albumList = MediaUtils.getAlbumList(context);
+        SparseArray<Album> albumSparseArray = new SparseArray<>();
+        for (Album album : albumList) {
+            albumSparseArray.put(album.getmId(), album);
+        }
+
+        for (Song song : songList) {
+            song.setmAlbumObj(albumSparseArray.get(song.getmAlbumID()));
+        }
+
+        return songList;
+    }
 }

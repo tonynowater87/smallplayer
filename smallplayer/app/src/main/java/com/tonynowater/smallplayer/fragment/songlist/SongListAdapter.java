@@ -1,16 +1,16 @@
 package com.tonynowater.smallplayer.fragment.songlist;
 
-import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
+import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.module.dto.Song;
+import com.tonynowater.smallplayer.util.MediaUtils;
 import com.tonynowater.smallplayer.util.OnClickSomething;
-import com.tonynowater.smallplayer.util.SongPlayManager;
 
 import java.io.File;
 
@@ -20,9 +20,9 @@ import java.io.File;
  */
 public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSonglistadapterListitemBinding> {
 
-    public SongListAdapter(Context context, OnClickSomething mOnClickSongListener) {
+    public SongListAdapter(OnClickSomething mOnClickSongListener) {
         super(mOnClickSongListener);
-        mDataList = SongPlayManager.getInstance(context).getSongList();
+        mDataList = MediaUtils.getSongList(MyApplication.getContext());
     }
 
     @Override
