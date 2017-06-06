@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.provider.SearchRecentSuggestions;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -26,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
@@ -136,7 +138,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     }
                 } else {
                     suggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
-                   initialSearchViewSuggestAdapter(suggestions, true);//改顯示歷史搜尋紀錄
+                    initialSearchViewSuggestAdapter(suggestions, true);//改顯示歷史搜尋紀錄
                 }
                 return false;
             }
@@ -196,8 +198,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 if (MiscellaneousUtil.isListOK(suggestions)) {
                     if (TextUtils.equals(getString(R.string.search_bar_hint), suggestions.get(position))) {
                         //若是點擊最近搜尋列，清空搜尋記錄
-                        searchRecentSuggestions.clearHistory();
-                        searchView.setSuggestionsAdapter(null);
+                        DialogUtil.showYesNoDialog(MainActivity.this, getString(R.string.search_bar_clear_history_confirm_dialog_title),new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                                switch (dialogAction) {
+                                    case POSITIVE:
+                                        searchRecentSuggestions.clearHistory();
+                                        searchView.setSuggestionsAdapter(null);
+                                        break;
+                                    case NEGATIVE:
+                                        break;
+                                }
+                            }
+                        });
                     } else {
                         searchRecentSuggestions.saveRecentQuery(suggestions.get(position), null);//儲存最近搜尋紀錄
                         searchView.setQuery(suggestions.get(position), true);

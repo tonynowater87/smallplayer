@@ -1,7 +1,10 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
@@ -9,6 +12,7 @@ import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBinding;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowtaer87.myutil.TimeUtil;
 
@@ -47,10 +51,20 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
     }
 
     @Override
-    public void onDismiss(int position) {
-        realmUtils.deleteSongFromPlayList(mDataList.get(position));
-        mDataList = new RealmUtils().queryPlayListSongByListIdSortByPosition(playListId);
-        notifyDataSetChanged();
+    public void onDismiss(final int position) {
+        DialogUtil.showYesNoDialog(mContext, String.format(mContext.getString(R.string.delete_hint), mDataList.get(position).getTitle()), new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                switch (dialogAction) {
+                    case POSITIVE:
+                        realmUtils.deleteSongFromPlayList(mDataList.get(position));
+                        mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(playListId);
+                        break;
+                }
+
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

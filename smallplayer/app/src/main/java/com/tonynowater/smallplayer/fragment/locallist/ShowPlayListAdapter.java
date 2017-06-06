@@ -1,11 +1,16 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
+import android.support.annotation.NonNull;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListAdapterBinding;
 import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
@@ -43,14 +48,25 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
 
     @Override
     public void onDismiss(int position) {
-        PlayListEntity playListEntity = mDataList.get(position);
+        final PlayListEntity playListEntity = mDataList.get(position);
         if (playListEntity.isDeletable()) {
-            realmUtils.deletePlayList(playListEntity);
-            realmUtils.setCurrentPlayListID(realmUtils.queryAllPlayList().size() > 1 ? (realmUtils.queryCurrentPlayListPosition() - 1) : BaseDAO.DEFAULT_ID);
+            DialogUtil.showYesNoDialog(mContext, String.format(mContext.getString(R.string.delete_hint), playListEntity.getPlayListName()),new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                    switch (dialogAction) {
+                        case POSITIVE:
+                            realmUtils.deletePlayList(playListEntity);
+                            realmUtils.setCurrentPlayListID(realmUtils.queryAllPlayList().size() > 1 ? (realmUtils.queryCurrentPlayListPosition() - 1) : BaseDAO.DEFAULT_ID);
+                            mDataList = realmUtils.queryAllPlayListSortByPosition();
+                            break;
+                    }
+                    notifyDataSetChanged();
+                }
+            });
+        } else {
+            DialogUtil.showMessageDialog(mContext, mContext.getString(R.string.normal_dialog_title),mContext.getString(R.string.default_list_can_not_delete));
+            notifyDataSetChanged();
         }
-
-        mDataList = realmUtils.queryAllPlayListSortByPosition();
-        notifyDataSetChanged();
     }
 
     @Override
