@@ -1,5 +1,7 @@
 package com.tonynowater.smallplayer.module.dto.realm;
 
+import android.util.Log;
+
 import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayFolderDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListDAO;
@@ -74,7 +76,12 @@ public class RealmUtils implements Closeable{
 
     /** @return 現正播放的PlayListPosition */
     public int queryCurrentPlayListPosition() {
-        return playListDAO.getQuery().equalTo(PlayListDAO.COLUMN_ID, playFolderDAO.queryAll().get(0).getCurrentPlayListId()).findFirst().getPosition();
+        try {
+            return playListDAO.getQuery().equalTo(PlayListDAO.COLUMN_ID, playFolderDAO.queryAll().get(0).getCurrentPlayListId()).findFirst().getPosition();
+        } catch (NullPointerException e) {
+            // FIXME: 2017/6/6 這邊若刪除正在播放的清單會當機，待處理，先 try catch起來
+            return BaseDAO.DEFAULT_ID;
+        }
     }
 
     /** 更新現正播放的PlayListID */
@@ -93,10 +100,23 @@ public class RealmUtils implements Closeable{
         playListDAO.insert(playListEntity);
     }
 
-    /** 新增歌曲至播放清單 */
-    public void addSongToPlayList(final int playlistID, final PlayListSongEntity playListSong) {
+    /**
+     * 新增歌曲至播放清單
+     * @return 是否成功加入
+     */
+    public boolean addSongToPlayList(final int playlistID, final PlayListSongEntity playListSong) {
+
+        HashMap<String, Object> param = new HashMap<>();
+        param.put(PlayListSongDAO.COLUMN_LIST_ID, playlistID);
+        param.put(PlayListSongDAO.COLUMN_TITLE, playListSong.getTitle());
+        if (playListSongDAO.queryForCopy(param).size() > 0) {
+            Log.d(TAG, "addSongToPlayList: 重覆加入 " + playListSong.getTitle());
+            return false;
+        }
+
         playListSong.setListId(playlistID);
         playListSongDAO.insert(playListSong);
+        return true;
     }
 
     /**

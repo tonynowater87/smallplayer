@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.module.dto.realm.entity;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -12,7 +13,7 @@ import io.realm.annotations.Required;
  * Created by tonynowater on 2017/5/31.
  */
 
-public class PlayListSongEntity extends RealmObject {
+public class PlayListSongEntity extends RealmObject implements Playable{
 
     @PrimaryKey
     private int id;
@@ -98,6 +99,7 @@ public class PlayListSongEntity extends RealmObject {
         this.listId = listId;
     }
 
+    @Override
     public MediaMetadataCompat getMediaMetadata() {
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, String.valueOf(getId()))
@@ -109,6 +111,11 @@ public class PlayListSongEntity extends RealmObject {
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri())
                 .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, getIsLocal())
                 .build();
+    }
+
+    @Override
+    public PlayListSongEntity getPlayListSongEntity() {
+        return this;
     }
 
     public int getPosition() {

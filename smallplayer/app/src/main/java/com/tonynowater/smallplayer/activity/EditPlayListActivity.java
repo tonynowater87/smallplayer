@@ -7,14 +7,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.view.View;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
 import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
 import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
 
@@ -70,7 +74,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     }
 
     @Override
-    public void onClick(Object object) {
+    public void onClick(final Object object) {
         if (object instanceof PlayListEntity) {
             PlayListEntity playListEntity = (PlayListEntity) object;
             getSupportFragmentManager().beginTransaction()
@@ -79,7 +83,20 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                     .commit();
 
         } else if (object instanceof PlayListSongEntity){
-
+            final RealmUtils realmUtils = new RealmUtils();
+            DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                    PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
+                    if (i == 0) {
+                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), playListSongEntity);
+                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                    } else {
+                        DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity);
+                    }
+                    realmUtils.close();
+                }
+            });
         }
     }
 
@@ -90,6 +107,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
             this.finish();
         } else {
             fm.popBackStack();
+            mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);//展開toolbar
         }
     }
 }

@@ -10,6 +10,7 @@ public class PlayListSongDAO extends BaseDAO<PlayListSongEntity> {
 
     public static final String COLUMN_LIST_ID = "listId";
     public static final String COLUMN_POSITION = "position";
+    public static final String COLUMN_TITLE = "title";
 
     public PlayListSongDAO() {
         super(PlayListSongEntity.class);
