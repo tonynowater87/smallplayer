@@ -42,6 +42,13 @@ public class RealmUtils implements Closeable{
         return playListDAO.queryForCopy(params);
     }
 
+    /** @return 指定id的播放清單 */
+    public List<PlayListEntity> queryPlayListById(int id) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(PlayListDAO.COLUMN_ID, id);
+        return playListDAO.queryForCopy(params);
+    }
+
     /** @return 所有的播放清單依Position排序 */
     public List<PlayListEntity> queryAllPlayListSortByPosition() {
         return playListDAO.copyFromRealm(playListDAO.getQuery()

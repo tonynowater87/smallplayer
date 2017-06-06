@@ -81,7 +81,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
                 initialPlayListAdapter();
                 break;
             case PlayListSongs:
-                getActivity().setTitle(String.format(getString(R.string.title_edit_play_song, mRealmUtils.queryAllPlayListSortByPosition().get(getArguments().getInt(BUNDLE_KEY_POSITION)))));
+                getActivity().setTitle(String.format(getString(R.string.title_edit_play_song, mRealmUtils.queryPlayListById(getArguments().getInt(BUNDLE_KEY_POSITION)).get(0).getPlayListName())));
                 initialPlayListSongAdapter();
                 break;
         }
