@@ -13,13 +13,15 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
+import java.util.Collections;
+
 /**
  * 播放清單Adapter
  * Created by tonynowater on 2017/5/29.
  */
 public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEntity, LayoutShowPlayListAdapterBinding> implements ItemTouchHelperAdapter{
     private static final String TAG = ShowPlayListAdapter.class.getSimpleName();
-    int[] mSongCountArray;
+    private int[] mSongCountArray;
     public ShowPlayListAdapter(OnClickSomething<PlayListEntity> mOnClickSongListener) {
         super(mOnClickSongListener);
         mDataList = realmUtils.queryAllPlayListSortByPosition();
@@ -72,7 +74,7 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     @Override
     public void onMove(int from, int to) {
         realmUtils.updatePlayListPosition(mDataList.get(from), mDataList.get(to));
-        mDataList = realmUtils.queryAllPlayListSortByPosition();
-        notifyDataSetChanged();
+        Collections.swap(mDataList, from, to);
+        notifyItemMoved(from, to);
     }
 }

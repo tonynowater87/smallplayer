@@ -16,6 +16,8 @@ import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowtaer87.myutil.TimeUtil;
 
+import java.util.Collections;
+
 /**
  * Created by tonynowater on 2017/5/30.
  */
@@ -70,7 +72,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
     @Override
     public void onMove(int from, int to) {
         realmUtils.updatePlayListSongPosition(mDataList.get(from), mDataList.get(to));
-        mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(playListId);
-        notifyDataSetChanged();
+        Collections.swap(mDataList, from, to);
+        notifyItemMoved(from, to);
     }
 }

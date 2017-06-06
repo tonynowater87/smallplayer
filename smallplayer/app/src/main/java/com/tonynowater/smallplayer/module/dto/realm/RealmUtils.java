@@ -155,6 +155,16 @@ public class RealmUtils implements Closeable{
     }
 
     /**
+     * 更新播放清單的位置
+     * @param playListEntityList
+     */
+    public void updatePlayList(List<PlayListEntity> playListEntityList) {
+        for (PlayListEntity entity : playListEntityList) {
+            playListDAO.update(entity);
+        }
+    }
+
+    /**
      * 更新播放歌曲的位置
      * @param from
      * @param to
