@@ -18,7 +18,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -47,19 +46,18 @@ import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
+import com.tonynowater.smallplayer.view.CustomSearchAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.support.v4.widget.CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT = 15;//最近搜尋記錄要顯示的筆數
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
     private int mCurrentViewPagerPosition = 0;
-    private SimpleCursorAdapter simpleCursorAdapter;
+    private CustomSearchAdapter simpleCursorAdapter;
     private List<String> suggestions;
     private SearchRecentSuggestions searchRecentSuggestions;
 
@@ -129,7 +127,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                         public void run() {
                                             Log.d(TAG, "suggesion response: " + sResponse);
                                             suggestions =U2BApiUtil.getSuggestionStringList(sResponse);
-                                            initialSearchViewSuggestAdapter(suggestions);
+                                            initialSearchViewSuggestAdapter(suggestions, false);
                                         }
                                     });
                                 }
@@ -138,7 +136,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     }
                 } else {
                     suggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
-                   initialSearchViewSuggestAdapter(suggestions);//改顯示歷史搜尋紀錄
+                   initialSearchViewSuggestAdapter(suggestions, true);//改顯示歷史搜尋紀錄
                 }
                 return false;
             }
@@ -169,22 +167,20 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 return listRecentSearch;
             }
 
-            private void initialSearchViewSuggestAdapter(List<String> suggestionStringList) {
-                String [] columns = new String[] {BaseColumns._ID, "suggestion"};
+            private void initialSearchViewSuggestAdapter(List<String> suggestionStringList, boolean bAddFirstRow) {
+                String [] columns = new String[] {BaseColumns._ID, CustomSearchAdapter.COLUMN_SUGGESTION};
                 MatrixCursor matrixCursor = new MatrixCursor(columns);
-                String[] from = new String[] {"suggestion"};
-                int[] to = new int[] {R.id.tv_layout_u2bsuggestion_adapter_list_item};
+
+                if (suggestionStringList.size() > 0 && bAddFirstRow) {
+                    suggestionStringList.add(0,getString(R.string.search_bar_hint));
+                }
 
                 for (int i = 0; i < suggestionStringList.size(); i++) {
                     matrixCursor.addRow(new Object[] {i, suggestionStringList.get(i)});
                 }
 
-                simpleCursorAdapter = new SimpleCursorAdapter(getApplicationContext()
-                        , R.layout.layout_u2bsuggestion_adapter_list_item
-                        , matrixCursor
-                        , from
-                        , to
-                        ,FLAG_REGISTER_CONTENT_OBSERVER);
+                simpleCursorAdapter = new CustomSearchAdapter(getApplicationContext(), matrixCursor, false);
+
                 searchView.setSuggestionsAdapter(simpleCursorAdapter);
             }
         });
@@ -198,8 +194,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             @Override
             public boolean onSuggestionClick(int position) {
                 if (MiscellaneousUtil.isListOK(suggestions)) {
-                    searchRecentSuggestions.saveRecentQuery(suggestions.get(position), null);//儲存最近搜尋紀錄
-                    searchView.setQuery(suggestions.get(position),true);
+                    if (TextUtils.equals(getString(R.string.search_bar_hint), suggestions.get(position))) {
+                        //若是點擊最近搜尋列，清空搜尋記錄
+                        searchRecentSuggestions.clearHistory();
+                        searchView.setSuggestionsAdapter(null);
+                    } else {
+                        searchRecentSuggestions.saveRecentQuery(suggestions.get(position), null);//儲存最近搜尋紀錄
+                        searchView.setQuery(suggestions.get(position), true);
+                    }
                 }
                 return true;
             }

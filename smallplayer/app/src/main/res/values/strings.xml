@@ -34,6 +34,8 @@
     <string name="dash">-</string>
     <string name="extract_youtube_error">無法獲取影音串流</string>
     <string name="playlist_create_date">自 %s 創建</string>
+    <string name="search_bar_hint">最近搜尋紀錄</string>
+    <string name="search_bar_clear_history">清除搜尋記錄</string>
 
     <string-array name="action_list">
         <item>播放</item>

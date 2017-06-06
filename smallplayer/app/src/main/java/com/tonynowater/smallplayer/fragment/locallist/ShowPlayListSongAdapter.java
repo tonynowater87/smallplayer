@@ -59,5 +59,4 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
         mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(playListId);
         notifyDataSetChanged();
     }
-
 }

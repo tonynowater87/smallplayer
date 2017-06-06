@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ll_layout_u2bsuggestion_adapter_list_item"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rl_layout_u2bsuggestion_adapter_list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -12,11 +12,24 @@
             android:id="@+id/tv_layout_u2bsuggestion_adapter_list_item"
             style="@style/Base.TextAppearance.AppCompat.Medium"
             android:layout_margin="@dimen/margin_gap_level_1"
+            android:layout_alignParentStart="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:textColor="@android:color/black"/>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tv_right_layout_u2bsuggestion_adapter_list_item"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/margin_gap_level_1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="top"
+            android:text="@string/search_bar_clear_history"
+            android:textColor="@android:color/holo_orange_light"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
 
 </layout>
