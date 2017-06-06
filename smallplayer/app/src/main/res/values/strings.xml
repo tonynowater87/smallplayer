@@ -24,8 +24,9 @@
     <string name="search_view_hint">請輸入要搜尋的內容...</string>
     <string name="menu_playlist">編輯播放清單</string>
     <string name="add_playlist">新增播放清單</string>
-    <string name="add_play_list_dialog_hint">請輸入歌單名稱...</string>
+    <string name="input_play_list_name_dialog_hint">請輸入歌單名稱...</string>
     <string name="add_play_list_dialog_title">新增歌單</string>
+    <string name="edit_play_list_name_dialog_title">編輯歌單名稱</string>
     <string name="menu_edit_title">編輯</string>
     <string name="title_edit_play_list">編輯播放清單</string>
     <string name="title_edit_play_song">編輯 %s 裡的歌曲</string>

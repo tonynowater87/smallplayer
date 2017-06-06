@@ -81,6 +81,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                     .replace(R.id.content, EditPlayListFragment.newInstance(playListEntity.getId(),EnumEditListType.PlayListSongs))
                     .addToBackStack(null)
                     .commit();
+            mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);//展開toolbar
 
         } else if (object instanceof PlayListSongEntity){
             final RealmUtils realmUtils = new RealmUtils();

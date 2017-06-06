@@ -18,14 +18,26 @@ import java.util.List;
 public class DialogUtil {
 
     /**
-     * 顯示新增播放清單的Dialog
+     * 顯示單欄輸入的Dialog
      * @param context
      * @param callback
      */
-    public static void showAddPlayListDialog(Context context, MaterialDialog.InputCallback callback) {
+    public static void showInputDialog(Context context, String title, String hint, MaterialDialog.InputCallback callback) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
-        builder.title(R.string.add_play_list_dialog_title);
-        builder.input(context.getString(R.string.add_play_list_dialog_hint), "", false, callback);
+        builder.title(title);
+        builder.input(hint, "", false, callback);
+        builder.show();
+    }
+
+    /**
+     * 顯示單欄輸入的Dialog
+     * @param context
+     * @param callback
+     */
+    public static void showInputDialog(Context context, String title, String hint, String prefill, MaterialDialog.InputCallback callback) {
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+        builder.title(title);
+        builder.input(hint, prefill, false, callback);
         builder.show();
     }
 

@@ -17,7 +17,7 @@ import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.base.CustomItemTouchHelperCallback;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListFragmentBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
-import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
@@ -29,6 +29,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
     public static final String BUNDLE_KEY_ENUM_EDITLISTTYPE = "BUNDLE_KEY_ENUM_EDITLISTTYPE";
     private static final String BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION";
     private EnumEditListType mEnumType;
+    private int mId;
 
     @Override
     protected int getLayoutResource() {
@@ -75,13 +76,14 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mEnumType = (EnumEditListType) getArguments().getSerializable(BUNDLE_KEY_ENUM_EDITLISTTYPE);
+        mId = getArguments().getInt(BUNDLE_KEY_POSITION);
         switch (mEnumType) {
             case PlayList:
                 getActivity().setTitle(getString(R.string.title_edit_play_list));
                 initialPlayListAdapter();
                 break;
             case PlayListSongs:
-                getActivity().setTitle(String.format(getString(R.string.title_edit_play_song, mRealmUtils.queryPlayListById(getArguments().getInt(BUNDLE_KEY_POSITION)).get(0).getPlayListName())));
+                getActivity().setTitle(String.format(getString(R.string.title_edit_play_song, mRealmUtils.queryPlayListById(mId).get(0).getPlayListName())));
                 initialPlayListSongAdapter();
                 break;
         }
@@ -122,7 +124,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
         if (mEnumType == EnumEditListType.PlayList) {
             inflater.inflate(R.menu.menu_edit_playlist, menu);
         } else {
-            menu.clear();
+            inflater.inflate(R.menu.menu_edit_playlistsong, menu);
         }
     }
 
@@ -131,13 +133,23 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
 
         switch (item.getItemId()) {
             case R.id.menu_add:
-                DialogUtil.showAddPlayListDialog(getContext(), new MaterialDialog.InputCallback() {
+                DialogUtil.showInputDialog(getContext(), getString(R.string.add_play_list_dialog_title), getString(R.string.input_play_list_name_dialog_hint),new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
-                        RealmUtils realmUtils = new RealmUtils();
-                        realmUtils.addNewPlayList(charSequence.toString());
-                        realmUtils.close();
+                        mRealmUtils.addNewPlayList(charSequence.toString());
                         initialPlayListAdapter();
+                    }
+                });
+                return true;
+            case R.id.menu_edit_playlist_name:
+                PlayListEntity playListEntity = mRealmUtils.queryPlayListById(mId).get(0);
+                DialogUtil.showInputDialog(getContext(), getString(R.string.edit_play_list_name_dialog_title), getString(R.string.input_play_list_name_dialog_hint), playListEntity.getPlayListName(), new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
+                        PlayListEntity playListEntity = mRealmUtils.queryPlayListById(mId).get(0);
+                        playListEntity.setPlayListName(charSequence.toString());
+                        mRealmUtils.updatePlayList(playListEntity);
+                        getActivity().setTitle(String.format(getString(R.string.title_edit_play_song, charSequence.toString())));
                     }
                 });
                 return true;
