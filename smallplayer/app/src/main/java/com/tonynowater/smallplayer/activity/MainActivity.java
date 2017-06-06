@@ -283,10 +283,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         // TODO: 2017/5/30 這邊要在簡化
         final RealmUtils realmUtils = new RealmUtils();
         if (object instanceof Song) {
-            DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
+            final Song song = ((Song) object);
+            DialogUtil.showActionDialog(this, song.getmTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                    Song song = ((Song) object);
                     if (i == 0) {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
                         sendMetaDataToService(realmUtils.queryCurrentPlayListID());
@@ -297,10 +297,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 }
             });
         } else if (object instanceof U2BVideoDTO.ItemsBean) {
-            DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
+            final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) object);
+            DialogUtil.showActionDialog(this, u2bVideoItem.getPlayListSongEntity().getTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
-                    final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) object);
                     if (i == 0) {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
                         sendMetaDataToService(realmUtils.queryCurrentPlayListID());

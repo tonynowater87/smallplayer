@@ -16,7 +16,6 @@ import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.util.DialogUtil;
-import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.util.List;
 
@@ -66,10 +65,10 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
     @Override
     public void onClick(final Object object) {
         if (object instanceof U2bPlayListVideoDTO.ItemsBean) {
-            DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
+            final U2bPlayListVideoDTO.ItemsBean u2bPlayListVideoItem = ((U2bPlayListVideoDTO.ItemsBean) object);
+            DialogUtil.showActionDialog(this, u2bPlayListVideoItem.getPlayListSongEntity().getTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
-                    final U2bPlayListVideoDTO.ItemsBean u2bPlayListVideoItem = ((U2bPlayListVideoDTO.ItemsBean) object);
                     if (i == 0) {
                         RealmUtils realmUtils = new RealmUtils();
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongEntity());

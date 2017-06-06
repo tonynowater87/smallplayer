@@ -34,8 +34,9 @@ public class DialogUtil {
      * @param context
      * @param callback
      */
-    public static void showActionDialog(Context context, MaterialDialog.ListCallback callback) {
+    public static void showActionDialog(Context context, String title, MaterialDialog.ListCallback callback) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+        builder.title(title);
         builder.items(R.array.action_list);
         builder.itemsCallback(callback);
         builder.show();
@@ -50,6 +51,7 @@ public class DialogUtil {
         final RealmUtils realmUtils = new RealmUtils();
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayList();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+        builder.title(playable.getPlayListSongEntity().getTitle());
         builder.items(playListEntities);
         builder.itemsCallback(new MaterialDialog.ListCallback() {
             @Override

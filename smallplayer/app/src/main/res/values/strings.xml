@@ -28,7 +28,7 @@
     <string name="add_play_list_dialog_title">新增歌單</string>
     <string name="menu_edit_title">編輯</string>
     <string name="title_edit_play_list">編輯播放清單</string>
-    <string name="title_edit_play_song">編輯 %s 歌曲</string>
+    <string name="title_edit_play_song">編輯 %s 裡的歌曲</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
     <string name="list_iv_description">搜尋的音樂圖片</string>
     <string name="dash">-</string>
@@ -36,7 +36,7 @@
     <string name="playlist_create_date">自 %s 創建</string>
     <string name="search_bar_hint">最近搜尋紀錄</string>
     <string name="search_bar_clear_history">清除搜尋記錄</string>
-    <string name="search_bar_clear_history_confirm_dialog_title">是否要清空歷史記錄?</string>
+    <string name="search_bar_clear_history_confirm_dialog_title">清空歷史記錄?</string>
     <string name="delete_hint">確定要刪除 %s ?</string>
     <string name="default_list_can_not_delete">預設歌單不可刪除</string>
     <string name="normal_dialog_title">訊息</string>

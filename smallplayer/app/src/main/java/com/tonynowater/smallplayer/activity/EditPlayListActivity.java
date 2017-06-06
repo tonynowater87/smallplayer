@@ -84,10 +84,10 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
 
         } else if (object instanceof PlayListSongEntity){
             final RealmUtils realmUtils = new RealmUtils();
-            DialogUtil.showActionDialog(this, new MaterialDialog.ListCallback() {
+            final PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
+            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                    PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
                     if (i == 0) {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), playListSongEntity);
                         sendMetaDataToService(realmUtils.queryCurrentPlayListID());
