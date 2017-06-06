@@ -64,6 +64,7 @@ public class LocalPlayback implements Playback
             }
         }
     };
+    private boolean mPlayOnFocusGain;//獲取AudioFocus後是否繼續播放
 
     public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
@@ -139,13 +140,20 @@ public class LocalPlayback implements Playback
     public void onAudioFocusChange(int focusChange) {
         Log.d(TAG, "onAudioFocusChange: " + focusChange);
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            //獲取AudioFocus後繼續播放
             mAudioFocus = AudioManager.AUDIOFOCUS_GAIN;
-            play(mCurrentTrackPosition);
+            if (mPlayOnFocusGain) {
+                play(mCurrentTrackPosition);
+            }
         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS
                 || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
                 || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
             mAudioFocus = focusChange;
+
+            if (mState == PlaybackStateCompat.STATE_PLAYING) {
+                mPlayOnFocusGain = true;
+                mCurrentPosition = mMediaPlayer.getCurrentPosition();
+            }
+
         } else {
             Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
         }
@@ -229,7 +237,7 @@ public class LocalPlayback implements Playback
     // TODO: 2017/6/3 從Youtube音樂切回播本地音樂，會有不是播放本地音樂的問題
     @Override
     public void play(final int trackPosition) {
-
+        mPlayOnFocusGain = true;
         tryToGetAudioFocus();
 
         if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
@@ -326,6 +334,7 @@ public class LocalPlayback implements Playback
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentPosition = mMediaPlayer.getCurrentPosition();
+                mPlayOnFocusGain = false;
             }
         }
 
