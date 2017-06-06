@@ -179,7 +179,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     matrixCursor.addRow(new Object[] {i, suggestionStringList.get(i)});
                 }
 
-                simpleCursorAdapter = new CustomSearchAdapter(getApplicationContext(), matrixCursor, false);
+                simpleCursorAdapter = new CustomSearchAdapter(getApplicationContext(), matrixCursor, true);
 
                 searchView.setSuggestionsAdapter(simpleCursorAdapter);
             }
