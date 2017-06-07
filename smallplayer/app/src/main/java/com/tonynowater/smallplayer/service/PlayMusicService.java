@@ -13,6 +13,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.tonynowater.smallplayer.BuildConfig;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
@@ -208,6 +209,38 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     }
 
     private final class MySessionCall extends MediaSessionCompat.Callback {
+
+        /**
+         * 處理線控按鈕事件
+         */
+        @Override
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            if (TextUtils.equals(Intent.ACTION_MEDIA_BUTTON, mediaButtonEvent.getAction())) {
+                KeyEvent keyEvent = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                if (keyEvent != null) {
+                    switch (keyEvent.getKeyCode()) {
+                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                        case KeyEvent.KEYCODE_HEADSETHOOK:
+                            onPlay();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_NEXT:
+                            onSkipToNext();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                            onSkipToPrevious();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PLAY:
+                            onPlay();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                            onPause();
+                            break;
+                    }
+                }
+            }
+
+            return true;
+        }
 
         @Override
         public void onPlay() {
