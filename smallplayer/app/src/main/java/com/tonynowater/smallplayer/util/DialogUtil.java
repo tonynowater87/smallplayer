@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -115,6 +116,23 @@ public class DialogUtil {
     }
 
     /**
+     * 顯示確定/取消對話框
+     * @param context
+     * @param title
+     * @param singleButtonCallback
+     */
+    public static void showYesNoDialog(Context context, String title, MaterialDialog.SingleButtonCallback singleButtonCallback, DialogInterface.OnDismissListener dismissListener) {
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+        builder.title(title);
+        builder.positiveText(context.getString(android.R.string.ok));
+        builder.negativeText(context.getString(android.R.string.cancel));
+        builder.onPositive(singleButtonCallback);
+        builder.onNegative(singleButtonCallback);
+        builder.dismissListener(dismissListener);
+        builder.show();
+    }
+
+    /**
      * 顯示警示訊息對話框
      * @param context
      * @param title
@@ -125,6 +143,22 @@ public class DialogUtil {
         builder.title(title);
         builder.content(msg);
         builder.positiveText(context.getString(android.R.string.ok));
+        builder.show();
+    }
+
+    /**
+     * 顯示警示訊息對話框
+     * @param context
+     * @param title
+     * @param msg
+     * @param callback
+     */
+    public static void showMessageDialog(Context context, String title, String msg, MaterialDialog.SingleButtonCallback callback) {
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+        builder.title(title);
+        builder.content(msg);
+        builder.positiveText(context.getString(android.R.string.ok));
+        builder.onPositive(callback);
         builder.show();
     }
 }

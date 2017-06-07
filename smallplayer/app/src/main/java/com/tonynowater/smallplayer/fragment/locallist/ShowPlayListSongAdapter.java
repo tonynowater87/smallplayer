@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -64,6 +65,11 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
                         break;
                 }
 
+                notifyDataSetChanged();
+            }
+        }, new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
                 notifyDataSetChanged();
             }
         });

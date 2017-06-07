@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -52,7 +53,7 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     public void onDismiss(int position) {
         final PlayListEntity playListEntity = mDataList.get(position);
         if (playListEntity.isDeletable()) {
-            DialogUtil.showYesNoDialog(mContext, String.format(mContext.getString(R.string.delete_hint), playListEntity.getPlayListName()),new MaterialDialog.SingleButtonCallback() {
+            DialogUtil.showYesNoDialog(mContext, String.format(mContext.getString(R.string.delete_hint), playListEntity.getPlayListName()), new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
                     switch (dialogAction) {
@@ -62,6 +63,11 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
                             mDataList = realmUtils.queryAllPlayListSortByPosition();
                             break;
                     }
+                    notifyDataSetChanged();
+                }
+            }, new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
                     notifyDataSetChanged();
                 }
             });
