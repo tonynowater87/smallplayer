@@ -267,6 +267,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             public void onPageSelected(int position) {
                 Log.d(TAG, "onPageSelected: " + position);
                 mCurrentViewPagerPosition = position;
+                mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
             }
 
             @Override
