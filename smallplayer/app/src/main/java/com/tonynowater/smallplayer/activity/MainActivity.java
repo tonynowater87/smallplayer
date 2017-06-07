@@ -128,8 +128,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                         @Override
                                         public void run() {
                                             Log.d(TAG, "suggesion response: " + sResponse);
-                                            suggestions =U2BApiUtil.getSuggestionStringList(sResponse);
-                                            initialSearchViewSuggestAdapter(suggestions, false);
+                                            suggestions = U2BApiUtil.getSuggestionStringList(sResponse);
+                                            if (MiscellaneousUtil.isListOK(suggestions)) {
+                                                initialSearchViewSuggestAdapter(suggestions, false);
+                                            }
                                         }
                                     });
                                 }
