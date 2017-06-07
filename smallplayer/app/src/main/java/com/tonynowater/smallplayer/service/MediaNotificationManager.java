@@ -19,6 +19,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.tonynowater.smallplayer.R;
@@ -255,8 +256,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
-            remoteViews.setImageViewResource(R.id.notification_image_view_play, R.drawable.ic_refresh_white);
+            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
+            remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
         } else {
+            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.VISIBLE);
+            remoteViews.setViewVisibility(R.id.progress_bar, View.GONE);
             boolean isPlay = mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING;
             remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
         }
