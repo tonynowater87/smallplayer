@@ -142,6 +142,8 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
             return;
         }
 
+        mBinding.buttonPlay.setVisibility(View.VISIBLE);
+        mBinding.progressBar.setVisibility(View.GONE);
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_NONE:
                 mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_play));
@@ -158,7 +160,8 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                 mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(android.R.drawable.ic_media_play));
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-                mBinding.buttonPlay.setImageDrawable(MyApplication.getContext().getDrawable(R.drawable.ic_refresh_white));
+                mBinding.buttonPlay.setVisibility(View.GONE);
+                mBinding.progressBar.setVisibility(View.VISIBLE);
                 break;
             default:
                 break;
@@ -168,8 +171,8 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
 
         int duration = mPlaybackStateCompat.getExtras() == null ? 0 : mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION);
         if (duration != 0) {// TODO: 2017/5/28 這邊切換到PlayListVideoActivity的時候Duration會是0
-            if (mBinding.progressBar.getmMax() != duration) {
-                mBinding.progressBar.setmMax(mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
+            if (mBinding.progressView.getmMax() != duration) {
+                mBinding.progressView.setmMax(mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
             }
         }
 
@@ -251,6 +254,6 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
             currentTime += (int) deltaTime * mPlaybackStateCompat.getPlaybackSpeed();
         }
 
-        mBinding.progressBar.setmProgress((int) currentTime);
+        mBinding.progressView.setmProgress((int) currentTime);
     }
 }

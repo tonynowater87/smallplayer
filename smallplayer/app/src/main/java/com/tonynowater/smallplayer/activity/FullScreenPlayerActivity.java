@@ -57,6 +57,8 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         }
         mLastPlaybackState = state;
 
+        mBinding.ivPlayPauseActivityFullScreenPlayer.setVisibility(View.VISIBLE);
+        mBinding.progressBar.setVisibility(View.GONE);
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
                 mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
@@ -72,7 +74,8 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-                mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(R.drawable.ic_refresh_white));
+                mBinding.ivPlayPauseActivityFullScreenPlayer.setVisibility(View.GONE);
+                mBinding.progressBar.setVisibility(View.VISIBLE);
                 stopSeekbarUpdate();
                 break;
             default:

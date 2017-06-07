@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
@@ -16,12 +17,12 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
-import com.tonynowater.smallplayer.module.u2b.U2BApi;
-import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.u2b.U2BApi;
+import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;
@@ -45,6 +46,12 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         @Override
         public void onFailure(Request request, IOException e) {
             mToastUtil.showToast(getString(R.string.u2b_query_failure));
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mBinding.lottieAnimationView.setVisibility(View.GONE);
+                }
+            });
         }
 
         @Override
@@ -84,6 +91,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 @Override
                 public void run() {
                     mSongListAdapter.notifyDataSetChanged();
+                    mBinding.lottieAnimationView.setVisibility(View.GONE);
                 }
             });
         }
@@ -129,7 +137,14 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
 
     private Callback mDurationSearchCallback = new Callback() {
         @Override
-        public void onFailure(Request request, IOException e) {}
+        public void onFailure(Request request, IOException e) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mBinding.lottieAnimationView.setVisibility(View.GONE);
+                }
+            });
+        }
 
         @Override
         public void onResponse(Response response) throws IOException {
@@ -188,16 +203,19 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                // FIXME: 2017/6/8 ??
                                 mSongListAdapter.notifyDataSetChanged();
                             }
                         });
                         break;
                 }
 
+                // FIXME: 2017/6/8 ??
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mSongListAdapter.notifyDataSetChanged();
+                        mBinding.lottieAnimationView.setVisibility(View.GONE);
                     }
                 });
             }
@@ -263,6 +281,8 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     U2BApi.newInstance().queryU2BChannel(query, mViedoSearchCallback);
                     break;
             }
+
+            mBinding.lottieAnimationView.setVisibility(View.VISIBLE);
         }
     }
 

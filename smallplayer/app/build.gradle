@@ -43,4 +43,6 @@ dependencies {
     compile project(':myutil')
     compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
     compile 'com.afollestad.material-dialogs:core:' + rootProject.materialdialogVer
+    compile 'com.airbnb.android:lottie:' + rootProject.lottieVer
+
 }

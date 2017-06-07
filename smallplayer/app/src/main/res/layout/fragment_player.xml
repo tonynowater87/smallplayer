@@ -19,31 +19,39 @@
         <LinearLayout
             android:id="@+id/ll_media_buttons"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/media_button_size"
+            android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:orientation="horizontal">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/buttonPrevious"
                 android:layout_width="@dimen/media_button_size"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/media_button_size"
                 android:src="@android:drawable/ic_media_previous" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/buttonPlay"
                 android:layout_width="@dimen/media_button_size"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/media_button_size"
                 android:layout_toRightOf="@+id/buttonPrevious"
                 android:src="@android:drawable/ic_media_play" />
 
-            <ImageButton
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/media_button_size"
+                android:layout_height="@dimen/media_button_size"
+                android:layout_toRightOf="@+id/buttonPrevious"
+                android:visibility="gone"/>
+
+            <ImageView
                 android:id="@+id/buttonNext"
                 android:layout_width="@dimen/media_button_size"
                 android:layout_height="match_parent"
                 android:layout_toRightOf="@+id/buttonPlay"
                 android:src="@android:drawable/ic_media_next" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/buttonAction"
                 android:layout_width="@dimen/media_button_size"
                 android:layout_height="match_parent"
@@ -57,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/margin_gap_level_1"
             android:layout_toLeftOf="@+id/ll_media_buttons"
             android:layout_toRightOf="@+id/imageview_thumb"
             android:orientation="vertical">
@@ -85,7 +93,7 @@
         </LinearLayout>
 
         <com.tonynowater.smallplayer.view.ProgressView
-            android:id="@+id/progress_bar"
+            android:id="@+id/progress_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/progress_bar_height"
             android:layout_alignTop="@+id/imageview_thumb"
