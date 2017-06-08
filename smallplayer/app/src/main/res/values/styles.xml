@@ -26,5 +26,7 @@
         <!--<item name="queryBackground">@color/colorAccent</item>-->
         <!--搜尋的提示字-->
         <item name="queryHint">@string/search_view_hint</item>
+        <item name="android:textColorHint">@android:color/darker_gray</item>
+        <item name="android:editTextColor">@android:color/darker_gray</item>
     </style>
 </resources>

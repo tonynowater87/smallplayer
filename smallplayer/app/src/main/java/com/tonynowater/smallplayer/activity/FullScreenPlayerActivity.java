@@ -13,14 +13,12 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 
@@ -113,10 +111,6 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
         mCurrentPlayList.clear();
         mCurrentPlayList = new ArrayList<>(children);
-//        for (int i = 0; i < children.size(); i++) {
-//            Log.d(TAG, "onChildrenLoaded: " + children.get(i).getDescription().getTitle());
-//            mCurrentPlayList.add(children.get(i).getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_TITLE));
-//        }
     }
 
     @Override
@@ -129,8 +123,10 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         mBinding.tvTitleActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mBinding.tvArtistActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
-        mBinding.tvAlbumDescriptionActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION));
-        Glide.with(getApplicationContext()).load(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)).into((ImageView) mBinding.rlRootActivityFullScreenPlayer.findViewById(R.id.imageview_background_activity_full_screen_player));
+        String ArtUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+        if (!TextUtils.isEmpty(ArtUrl)) {
+            Glide.with(getApplicationContext()).load(ArtUrl).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
+        }
     }
 
     private SeekBar.OnSeekBarChangeListener mOnSeekChangedListener = new SeekBar.OnSeekBarChangeListener() {
@@ -172,14 +168,21 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-        setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
-        //mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);
+//        setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
+        mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);//隱藏ToolBar
         mBinding.seekbarActivityFullScreenPlayer.setOnSeekBarChangeListener(mOnSeekChangedListener);
         mBinding.ivPreviousActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivNextActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivEqActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivModeActivityFullScreenPlayer.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // TODO: 2017/6/8 讀取、預設圖還要在換
+        Glide.with(getApplicationContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
     }
 
     @Override

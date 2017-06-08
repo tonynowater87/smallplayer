@@ -5,8 +5,7 @@
     <RelativeLayout
         android:id="@+id/rl_root_activity_full_screen_player"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/black">
+        android:layout_height="match_parent">
 
         <include
             android:id="@+id/toolbar"
@@ -18,145 +17,138 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-        <LinearLayout
-            android:id="@+id/ll_controller_activity_full_screen_player"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tv_title_activity_full_screen_player"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="center_horizontal"
-                android:maxLines="1"
-                android:shadowColor="@android:color/black"
-                android:shadowRadius="20"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/colorPrimaryDark" />
-
-            <TextView
-                android:id="@+id/tv_artist_activity_full_screen_player"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center_horizontal"
-                android:maxLines="1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:shadowColor="@android:color/black"
-                android:shadowRadius="20"
-                android:textColor="@color/colorPrimaryDark" />
-
-            <TextView
-                android:id="@+id/tv_album_description_activity_full_screen_player"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center_horizontal"
-                android:maxLines="1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:shadowColor="@android:color/black"
-                android:shadowRadius="20"
-                android:textColor="@color/colorPrimaryDark" />
+            android:layout_height="match_parent"
+            android:background="@drawable/fullscreen_bg_gradient">
 
             <LinearLayout
+                android:id="@+id/ll_controller_activity_full_screen_player"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/full_screen_player_activity_seekbar_field_height"
-                android:orientation="horizontal"
-                android:weightSum="10">
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_start_text_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:layout_marginStart="5dp"
-                    android:text="@string/default_start_time"
-                    android:textColor="@android:color/darker_gray"
-                    tool:text="00:00" />
-
-                <SeekBar
-                    android:id="@+id/seekbar_activity_full_screen_player"
-                    android:layout_width="0dp"
+                    android:id="@+id/tv_title_activity_full_screen_player"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
-                    android:layout_gravity="center"
-                    tool:max="100"
-                    tool:progress="50"/>
+                    android:ellipsize="end"
+                    android:gravity="center_horizontal"
+                    android:maxLines="1"
+                    android:shadowColor="@android:color/black"
+                    android:shadowRadius="20"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/white" />
 
                 <TextView
-                    android:id="@+id/tv_end_text_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
-                    android:gravity="center"
-                    android:textColor="@android:color/darker_gray"
-                    tool:text="03:50" />
+                    android:id="@+id/tv_artist_activity_full_screen_player"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center_horizontal"
+                    android:maxLines="1"
+                    android:shadowColor="@android:color/darker_gray"
+                    android:shadowRadius="20"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/white" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/full_screen_player_activity_seekbar_field_height"
+                    android:orientation="horizontal"
+                    android:weightSum="10">
+
+                    <TextView
+                        android:id="@+id/tv_start_text_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.5"
+                        android:gravity="center"
+                        android:text="@string/default_start_time"
+                        android:textColor="@android:color/darker_gray"
+                        tool:text="00:00" />
+
+                    <SeekBar
+                        android:id="@+id/seekbar_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="7"
+                        tool:max="100"
+                        tool:progress="50" />
+
+                    <TextView
+                        android:id="@+id/tv_end_text_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1.5"
+                        android:gravity="center"
+                        android:textColor="@android:color/darker_gray"
+                        tool:text="03:50" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/full_screen_player_activity_seekbar_field_height"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <ImageView
+                        android:id="@+id/iv_mode_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:src="@drawable/ic_queue_music_white" />
+
+                    <ImageView
+                        android:id="@+id/iv_previous_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:src="@android:drawable/ic_media_previous" />
+
+                    <ImageView
+                        android:id="@+id/iv_play_pause__activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:src="@android:drawable/ic_media_play" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/iv_next_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:src="@android:drawable/ic_media_next" />
+
+                    <ImageView
+                        android:id="@+id/iv_eq_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:src="@drawable/ic_settings_applications_white" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/full_screen_player_activity_seekbar_field_height"
-                android:orientation="horizontal"
-                android:weightSum="5">
-
-                <ImageView
-                    android:id="@+id/iv_mode_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@drawable/ic_queue_music_white" />
-
-                <ImageView
-                    android:id="@+id/iv_previous_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@android:drawable/ic_media_previous" />
-
-                <ImageView
-                    android:id="@+id/iv_play_pause__activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@android:drawable/ic_media_play" />
-
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:visibility="gone"/>
-
-                <ImageView
-                    android:id="@+id/iv_next_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@android:drawable/ic_media_next" />
-
-                <ImageView
-                    android:id="@+id/iv_eq_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@drawable/ic_settings_applications_white" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 
