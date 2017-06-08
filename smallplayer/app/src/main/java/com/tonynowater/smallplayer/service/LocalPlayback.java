@@ -317,7 +317,7 @@ public class LocalPlayback implements Playback
             mEqualizer.release();
             mEqualizer = null;
         }
-
+        
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnCompletionListener(this);

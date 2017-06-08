@@ -11,12 +11,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 
@@ -25,9 +29,11 @@ import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
+import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
+import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
-import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.view.CurrentPlayListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +49,8 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     private static final int DEFAULT_PROGRESS = 0;
     private Handler mHandler = new Handler();
     private PlaybackStateCompat mLastPlaybackState;
-    private List<String> mCurrentPlayList = new ArrayList<>();
+    private List<MediaBrowserCompat.MediaItem> mCurrentPlayList = new ArrayList<>();
+    private BottomSheetDialog mBottomSheetDialog;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -105,10 +112,11 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
         mCurrentPlayList.clear();
-        for (int i = 0; i < children.size(); i++) {
-            Log.d(TAG, "onChildrenLoaded: " + children.get(i).getDescription().getTitle());
-            mCurrentPlayList.add(children.get(i).getDescription().getTitle().toString());
-        }
+        mCurrentPlayList = new ArrayList<>(children);
+//        for (int i = 0; i < children.size(); i++) {
+//            Log.d(TAG, "onChildrenLoaded: " + children.get(i).getDescription().getTitle());
+//            mCurrentPlayList.add(children.get(i).getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+//        }
     }
 
     @Override
@@ -236,28 +244,37 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         }
     }
 
-    private void showCurrentPlayList() {
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        ListView listView = new ListView(this);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MyApplication.getContext(), android.R.layout.simple_list_item_1, mCurrentPlayList);
-        listView.setBackgroundColor(Color.BLACK);
-        listView.setAdapter(arrayAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                Bundle bundle = new Bundle();
-                bundle.putInt(PlayMusicService.BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION, position);
-                mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST, bundle);
-                mBinding.seekbarActivityFullScreenPlayer.setProgress(DEFAULT_PROGRESS);
-                bottomSheetDialog.dismiss();
-            }
-        });
-        bottomSheetDialog.setContentView(listView);
-        bottomSheetDialog.show();
+    @Override
+    public void onClick(Object o) {
+
+        if (o instanceof MediaBrowserCompat.MediaItem) {
+            MediaBrowserCompat.MediaItem mediaItem = (MediaBrowserCompat.MediaItem) o;
+            Bundle bundle = new Bundle();
+            bundle.putInt(PlayMusicService.BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION, Integer.parseInt(mediaItem.getMediaId()));
+            mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST, bundle);
+            mBinding.seekbarActivityFullScreenPlayer.setProgress(DEFAULT_PROGRESS);
+            mBottomSheetDialog.dismiss();
+        }
     }
 
+    /** 顯示目前播放清單 */
+    private void showCurrentPlayList() {
+        mBottomSheetDialog = new BottomSheetDialog(this);
+        RecyclerView recyclerView = new RecyclerView(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        RecyclerViewDivideLineDecorator recyclerViewDivideLineDecorator = new RecyclerViewDivideLineDecorator(this);
+        CurrentPlayListAdapter currentPlayListAdapter = new CurrentPlayListAdapter(this);
+        recyclerView.setAdapter(currentPlayListAdapter);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(recyclerViewDivideLineDecorator);
+        currentPlayListAdapter.setDataSource(mCurrentPlayList);
+        mBottomSheetDialog.setContentView(recyclerView);
+        mBottomSheetDialog.show();
+    }
+
+    /** 顯示等化器設定 */
     private void showEqList() {
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        mBottomSheetDialog = new BottomSheetDialog(this);
         ListView listView = new ListView(this);
         final EqualizerType[] types = EqualizerType.values();
         final String[] names = new String[types.length];
@@ -273,18 +290,18 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
                 mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
-                bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                mBottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         Snackbar.make(mBinding.rlRootActivityFullScreenPlayer, String.format(getString(R.string.equlizer_set_finish_toast), names[position]),Snackbar.LENGTH_SHORT).show();
                     }
                 });
-                bottomSheetDialog.dismiss();
+                mBottomSheetDialog.dismiss();
             }
         });
 
-        bottomSheetDialog.setContentView(listView);
-        bottomSheetDialog.show();
+        mBottomSheetDialog.setContentView(listView);
+        mBottomSheetDialog.show();
     }
 
     private void onPressPlayButton() {
