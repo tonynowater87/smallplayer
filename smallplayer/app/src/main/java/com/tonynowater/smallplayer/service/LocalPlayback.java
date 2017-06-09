@@ -9,7 +9,6 @@ import android.media.MediaPlayer;
 import android.media.audiofx.Equalizer;
 import android.media.session.PlaybackState;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -17,6 +16,7 @@ import android.util.Log;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.io.IOException;
@@ -48,8 +48,7 @@ public class LocalPlayback implements Playback
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
     private Equalizer mEqualizer;
-    private AsyncTask mYoutubeAsyncTask;
-
+    private YoutubeExtratorUtil mYoutubeExtratorAsyncTask;
     private boolean mAudioNoisyReceiverRegistered = false;
     private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private final BroadcastReceiver mAudioNoisyReceiver = new BroadcastReceiver() {
@@ -244,10 +243,10 @@ public class LocalPlayback implements Playback
             Log.d(TAG, "play: AudioManager.AUDIOFOCUS_REQUEST_FAILED");
             return;
         }
-        
-        if (mYoutubeAsyncTask != null) {
-            Log.d(TAG, "play: mYoutubeAsyncTask.cancel(true)");
-            mYoutubeAsyncTask.cancel(true);
+
+        if (mYoutubeExtratorAsyncTask != null) {
+            Log.d(TAG, "play: mYoutubeExtratorAsyncTask.cancel(true)");
+            mYoutubeExtratorAsyncTask.cancel(true);
         }
 
         if (mCurrentTrackPosition != trackPosition) {
@@ -262,6 +261,10 @@ public class LocalPlayback implements Playback
             return;
         }
 
+        //設定狀態為BUFFERING通知畫面
+        mState = PlaybackStateCompat.STATE_BUFFERING;
+        mPlaybackCallback.onPlaybackStateChanged();
+
         final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
         if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
             //播放本地音樂
@@ -269,18 +272,18 @@ public class LocalPlayback implements Playback
             play(trackPosition, source ,mediaMetadataCompat);
         } else {
             //播放Youtube音樂
-            mYoutubeAsyncTask = new YoutubeExtratorUtil(mPlayMusicService.getApplicationContext()
-                    , mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)
-                    , new YoutubeExtratorUtil.CallBack() {
+            mYoutubeExtratorAsyncTask = new YoutubeExtratorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtratorUtil.CallBack() {
                 @Override
                 public void getU2BUrl(String url) {
                     if (TextUtils.isEmpty(url)) {
                         mPlaybackCallback.onError(mPlayMusicService.getString(R.string.extract_youtube_error));
                         return;
                     }
-                    play(trackPosition, url ,mediaMetadataCompat);
+                    play(trackPosition, url, mediaMetadataCompat);
                 }
-            }).execute();
+            });
+
+            mYoutubeExtratorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         }
     }
 
@@ -294,11 +297,6 @@ public class LocalPlayback implements Playback
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(source);
             mMediaPlayer.prepareAsync();
-
-            // TODO: 2017/6/3 這邊通知會延遲，要在處理
-            //設定狀態為BUFFERING通知畫面
-            mState = PlaybackStateCompat.STATE_BUFFERING;
-            mPlaybackCallback.onPlaybackStateChanged();
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, "play error: " + e.toString() );// TODO: 2017/5/24 錯誤事件需要接到畫面處理
@@ -308,7 +306,6 @@ public class LocalPlayback implements Playback
     private void createMediaPlayerIfNeeded() {
         Log.d(TAG, "createMediaPlayerIfNeeded");
         if (mMediaPlayer != null) {
-            mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
