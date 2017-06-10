@@ -25,11 +25,7 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     private int[] mSongCountArray;
     public ShowPlayListAdapter(OnClickSomething<PlayListEntity> mOnClickSongListener) {
         super(mOnClickSongListener);
-        mDataList = realmUtils.queryAllPlayListSortByPosition();
-        mSongCountArray = new int[mDataList.size()];
-        for (int i = 0; i < mDataList.size(); i++) {
-            mSongCountArray[i] = realmUtils.queryPlayListSongByListId(mDataList.get(i).getId()).size();
-        }
+        refreshData();
     }
 
     @Override
@@ -82,5 +78,14 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
         realmUtils.updatePlayListPosition(mDataList.get(from), mDataList.get(to));
         Collections.swap(mDataList, from, to);
         notifyItemMoved(from, to);
+    }
+
+    public void refreshData() {
+        mDataList = realmUtils.queryAllPlayListSortByPosition();
+        mSongCountArray = new int[mDataList.size()];
+        for (int i = 0; i < mDataList.size(); i++) {
+            mSongCountArray[i] = realmUtils.queryPlayListSongByListId(mDataList.get(i).getId()).size();
+        }
+        notifyDataSetChanged();
     }
 }

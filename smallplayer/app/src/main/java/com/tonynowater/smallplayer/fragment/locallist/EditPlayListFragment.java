@@ -30,6 +30,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
     private static final String BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION";
     private EnumEditListType mEnumType;
     private int mId;
+    private ShowPlayListAdapter mShowPlayListAdapter;
 
     @Override
     protected int getLayoutResource() {
@@ -108,13 +109,13 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
      * 播放清單的Adapter
      */
     private void initialPlayListAdapter() {
-        ShowPlayListAdapter adapter = new ShowPlayListAdapter((OnClickSomething) getActivity());
+        mShowPlayListAdapter = new ShowPlayListAdapter((OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
-        mBinding.recyclerview.setAdapter(adapter);
-        CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(adapter);
+        mBinding.recyclerview.setAdapter(mShowPlayListAdapter);
+        CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(mShowPlayListAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(mBinding.recyclerview);
     }
@@ -137,7 +138,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
                     @Override
                     public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
                         mRealmUtils.addNewPlayList(charSequence.toString());
-                        initialPlayListAdapter();
+                        mShowPlayListAdapter.refreshData();
                     }
                 });
                 return true;

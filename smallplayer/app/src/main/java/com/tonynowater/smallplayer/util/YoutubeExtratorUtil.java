@@ -25,7 +25,7 @@ public class YoutubeExtratorUtil extends YouTubeExtractor{
     @Override
     protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
         if (ytFiles != null) {
-            for (int i = 0, itag = 0; i < ytFiles.size(); i++) {
+            for (int i = 0, itag; i < ytFiles.size(); i++) {
                 itag = ytFiles.keyAt(i);
                 YtFile ytFile = ytFiles.get(itag);// ytFile represents one file with its url and meta data
                 if (ytFile.getMeta().getHeight() == -1 || ytFile.getMeta().getHeight() >= 360) {// Just add videos in a decent format => height -1 = audio
