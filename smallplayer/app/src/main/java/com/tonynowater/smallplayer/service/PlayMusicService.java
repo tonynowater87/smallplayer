@@ -24,7 +24,7 @@ import java.util.List;
 public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private static final String TAG = PlayMusicService.class.getSimpleName();
-    public static final String PLAY_PLAYLIST = "PLAY_PLAYLIST";
+    public static final String ACTIOIN_PLAY_PLAYLIST = "ACTIOIN_PLAY_PLAYLIST";
     public static final String ACTION_CHANGE_EQUALIZER_TYPE = "ACTION_CHANGE_EQUALIZER_TYPE";
     public static final String ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST = "ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST";
     public static final String BUNDLE_KEY_PLAYLIST_POSITION = "BUNDLE_KEY_PLAYLIST_POSITION";
@@ -158,30 +158,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            String action = intent.getAction();
-            if (TextUtils.equals(action, PLAY_PLAYLIST)) {
-                int playlistPosition = intent.getIntExtra(BUNDLE_KEY_PLAYLIST_POSITION,0);
-                mMusicProvider.queryDBPlayList(playlistPosition);
-                if (mCurrentPlayListId != playlistPosition) {
-                    //切換歌單，從頭播放歌曲
-                    mSongTrackPosition = 0;
-                } else {
-                    //切換原歌單就是播最新加的一首歌
-                    mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
-                }
-                mCurrentPlayListId = playlistPosition;
-                if (mMusicProvider.getPlayListSize() == 0) {
-                    //切換到沒歌曲的歌單要停止播放
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, true);
-                    handleStopRequest(bundle);
-                } else {
-                    handlePlayRequest();
-                }
-            }
-        }
-
+        Log.d(TAG, "onStartCommand: ");
         return START_STICKY;
     }
 
@@ -300,6 +277,30 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     mSongTrackPosition = extras.getInt(BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION);
                     handlePlayRequest();
                     break;
+                case ACTIOIN_PLAY_PLAYLIST:
+                    int playlistPosition = extras.getInt(BUNDLE_KEY_PLAYLIST_POSITION,0);
+                    handlePlayList(playlistPosition);
+                    break;
+            }
+        }
+
+        private void handlePlayList(int playlistPosition) {
+            mMusicProvider.queryDBPlayList(playlistPosition);
+            if (mCurrentPlayListId != playlistPosition) {
+                //切換歌單，從頭播放歌曲
+                mSongTrackPosition = 0;
+            } else {
+                //切換原歌單就是播最新加的一首歌
+                mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+            }
+            mCurrentPlayListId = playlistPosition;
+            if (mMusicProvider.getPlayListSize() == 0) {
+                //切換到沒歌曲的歌單要停止播放
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, true);
+                handleStopRequest(bundle);
+            } else {
+                handlePlayRequest();
             }
         }
 

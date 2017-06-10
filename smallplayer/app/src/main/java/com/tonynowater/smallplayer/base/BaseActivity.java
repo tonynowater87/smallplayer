@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.base;
 
 import android.content.ComponentName;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
@@ -178,10 +177,9 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
      */
     public void sendMetaDataToService(int playListPosition) {
         Log.d(TAG, "sendMetaDataToService: " + playListPosition);
-        Intent it = new Intent(this,PlayMusicService.class);
-        it.setAction(PlayMusicService.PLAY_PLAYLIST);
-        it.putExtra(PlayMusicService.BUNDLE_KEY_PLAYLIST_POSITION, playListPosition);
-        startService(it);
+        Bundle bundle = new Bundle();
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_POSITION, playListPosition);
+        mTransportControls.sendCustomAction(PlayMusicService.ACTIOIN_PLAY_PLAYLIST, bundle);
     }
 
     @Override
