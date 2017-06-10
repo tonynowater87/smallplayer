@@ -2,6 +2,8 @@ package com.tonynowater.smallplayer.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -10,6 +12,7 @@ import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
+import com.tonynowater.smallplayer.service.PlayMusicService;
 
 import java.util.List;
 
@@ -60,7 +63,7 @@ public class DialogUtil {
      * @param context
      * @param playable
      */
-    public static void showSelectPlaylistDialog(Context context, final Playable playable) {
+    public static void showSelectPlaylistDialog(Context context, final Playable playable, final MediaControllerCompat.TransportControls transportControls) {
         final RealmUtils realmUtils = new RealmUtils();
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayList();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
@@ -69,8 +72,12 @@ public class DialogUtil {
         builder.itemsCallback(new MaterialDialog.ListCallback() {
             @Override
             public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                realmUtils.addSongToPlayList(playListEntities.get(i).getId(), playable.getPlayListSongEntity());
+                int playlistID = playListEntities.get(i).getId();
+                realmUtils.addSongToPlayList(playlistID, playable.getPlayListSongEntity());
                 realmUtils.close();
+                Bundle bundle = new Bundle();
+                bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playlistID);
+                transportControls.sendCustomAction(PlayMusicService.ACTION_ADD_SONG_TO_PLAYLIST, bundle);
             }
         });
         builder.show();
@@ -84,9 +91,10 @@ public class DialogUtil {
         final RealmUtils realmUtils = new RealmUtils();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(baseActivity);
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
+        int currentPlaylistPosition = realmUtils.queryCurrentPlayListPosition();
         builder.title(R.string.change_play_list_dialog_title);
         builder.items(playListEntities);
-        builder.itemsCallbackSingleChoice(realmUtils.queryCurrentPlayListPosition(), new MaterialDialog.ListCallbackSingleChoice() {
+        builder.itemsCallbackSingleChoice(currentPlaylistPosition, new MaterialDialog.ListCallbackSingleChoice() {
             @Override
             public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                 int playListId = playListEntities.get(i).getId();

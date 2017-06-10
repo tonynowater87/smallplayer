@@ -27,7 +27,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String ACTIOIN_PLAY_PLAYLIST = "ACTIOIN_PLAY_PLAYLIST";
     public static final String ACTION_CHANGE_EQUALIZER_TYPE = "ACTION_CHANGE_EQUALIZER_TYPE";
     public static final String ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST = "ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST";
-    public static final String BUNDLE_KEY_PLAYLIST_POSITION = "BUNDLE_KEY_PLAYLIST_POSITION";
+    public static final String ACTION_ADD_SONG_TO_PLAYLIST = "ACTION_ADD_SONG_TO_PLAYLIST";
+    public static final String BUNDLE_KEY_PLAYLIST_ID = "BUNDLE_KEY_PLAYLIST_ID";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION = "BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION";
@@ -62,11 +63,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     // 表示Service是否已start過了
     private boolean mServiceStarted;
     private int mSongTrackPosition = 0;
-    private int mCurrentPlayListId = -1;
+    private int mCurrentPlayListId;
 
     public PlayMusicService() {
         RealmUtils realmUtils = new RealmUtils();
-        mMusicProvider = new MusicProvider(realmUtils.queryCurrentPlayListID());
+        mCurrentPlayListId = realmUtils.queryCurrentPlayListID();
+        mMusicProvider = new MusicProvider(mCurrentPlayListId);
         realmUtils.close();
     }
 
@@ -278,12 +280,32 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     handlePlayRequest();
                     break;
                 case ACTIOIN_PLAY_PLAYLIST:
-                    int playlistPosition = extras.getInt(BUNDLE_KEY_PLAYLIST_POSITION,0);
+                    int playlistPosition = extras.getInt(BUNDLE_KEY_PLAYLIST_ID,0);
                     handlePlayList(playlistPosition);
+                    break;
+                case ACTION_ADD_SONG_TO_PLAYLIST:
+                    handleAddSongToPlaylist(extras);
+
                     break;
             }
         }
 
+        /** 加歌至歌單動作處理 */
+        private void handleAddSongToPlaylist(Bundle bundle) {
+            Log.d(TAG, "handleAddSongToPlaylist: ");
+            int playlistPosition = bundle.getInt(BUNDLE_KEY_PLAYLIST_ID,0);
+            if (mCurrentPlayListId != playlistPosition) {
+                Log.d(TAG, "handleAddSongToPlaylist: mCurrentPlayListId != playlistPosition :" + mCurrentPlayListId);
+                return;
+            }
+            mMusicProvider.queryDBPlayList(playlistPosition);
+            mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+            if (mLocalPlayback.isPlaying()) {
+                handlePlayRequest();
+            }
+        }
+
+        /** 切換歌單動作處理 */
         private void handlePlayList(int playlistPosition) {
             mMusicProvider.queryDBPlayList(playlistPosition);
             if (mCurrentPlayListId != playlistPosition) {

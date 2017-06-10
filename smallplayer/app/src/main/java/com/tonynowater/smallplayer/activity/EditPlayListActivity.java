@@ -93,7 +93,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), playListSongEntity);
                         sendMetaDataToService(realmUtils.queryCurrentPlayListID());
                     } else {
-                        DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity);
+                        DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
                     }
                     realmUtils.close();
                 }

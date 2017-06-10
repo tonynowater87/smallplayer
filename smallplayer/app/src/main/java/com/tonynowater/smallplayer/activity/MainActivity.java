@@ -294,7 +294,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
                         sendMetaDataToService(realmUtils.queryCurrentPlayListID());
                     } else {
-                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, song);
+                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
                     }
                     realmUtils.close();
                 }
@@ -308,7 +308,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
                         sendMetaDataToService(realmUtils.queryCurrentPlayListID());
                     } else {
-                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem);
+                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);
                     }
                     realmUtils.close();
                 }

@@ -75,7 +75,7 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                         sendMetaDataToService(realmUtils.queryCurrentPlayListID());
                         realmUtils.close();
                     } else {
-                        DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem);
+                        DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);
                     }
                 }
             });

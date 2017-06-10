@@ -178,7 +178,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     public void sendMetaDataToService(int playListPosition) {
         Log.d(TAG, "sendMetaDataToService: " + playListPosition);
         Bundle bundle = new Bundle();
-        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_POSITION, playListPosition);
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListPosition);
         mTransportControls.sendCustomAction(PlayMusicService.ACTIOIN_PLAY_PLAYLIST, bundle);
     }
 

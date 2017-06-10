@@ -154,6 +154,8 @@ public class RealmUtils implements Closeable{
      * @param to
      */
     public void updatePlayListPosition(PlayListEntity from, PlayListEntity to) {
+        Log.d(TAG, "updatePlayListPosition: from:" + from.getPosition());
+        Log.d(TAG, "updatePlayListPosition: to:" + to.getPosition());
         int fromPosition = from.getPosition();
         from.setPosition(to.getPosition());
         to.setPosition(fromPosition);
