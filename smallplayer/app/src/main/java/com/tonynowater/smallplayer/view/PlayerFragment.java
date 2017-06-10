@@ -169,13 +169,6 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
 
         Log.d(TAG, "updateState: " + state.getState());
 
-        int duration = mPlaybackStateCompat.getExtras() == null ? 0 : mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION);
-        if (duration != 0) {// TODO: 2017/5/28 這邊切換到PlayListVideoActivity的時候Duration會是0
-            if (mBinding.progressView.getmMax() != duration) {
-                mBinding.progressView.setmMax(mPlaybackStateCompat.getExtras().getInt(PlayMusicService.BUNDLE_KEY_SONG_DURATION));
-            }
-        }
-
         if (mPlaybackStateCompat.getExtras() != null && mPlaybackStateCompat.getExtras().getBoolean(PlayMusicService.BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST)) {
             //切換到沒歌曲的播放清單將UI文字圖片設回預設值
             Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
@@ -221,6 +214,8 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         if (metadata == null) {
             return;
         }
+
+        mBinding.progressView.setmMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         mBinding.textViewSongNameValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mBinding.textViewSongArtistValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
         if (metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) == null) {
