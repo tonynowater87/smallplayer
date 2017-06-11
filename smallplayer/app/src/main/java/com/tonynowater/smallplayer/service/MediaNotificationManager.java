@@ -350,6 +350,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
             public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                 // 更新通知的icon
                 Log.d(TAG, "fetchBitmapFromURLAsync: set bitmap to " + artUrl);
+                if (mMediaMetadata == null) {
+                    Log.d(TAG, "onFetched: 因為歌曲已刪除，所以就不更新通知了");
+                    return;
+                }
                 builder.setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)

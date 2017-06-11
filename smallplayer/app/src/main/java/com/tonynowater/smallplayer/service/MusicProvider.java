@@ -28,10 +28,10 @@ public class MusicProvider {
     }
 
     /** 切換歌單 */
-    public void queryDBPlayList(int position) {
+    public void queryDBPlayList(int playlistId) {
         mMusicPlayList.clear();
         RealmUtils realmUtils = new RealmUtils();
-        List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListIdSortByPosition(position);
+        List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListIdSortByPosition(playlistId);
         for (int i = 0; i < playListSongEntities.size(); i++) {
             mMusicPlayList.add(playListSongEntities.get(i).getMediaMetadata());
         }
@@ -39,7 +39,7 @@ public class MusicProvider {
     }
 
     public MediaMetadataCompat getPlayList(int index) {
-        return index > mMusicPlayList.size() && mMusicPlayList.size() != 0 ? null : mMusicPlayList.get(index);
+        return index < mMusicPlayList.size() && mMusicPlayList.size() >= 0 ? mMusicPlayList.get(index) : null;
     }
 
     public int getPlayListSize() {

@@ -28,7 +28,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String ACTION_CHANGE_EQUALIZER_TYPE = "ACTION_CHANGE_EQUALIZER_TYPE";
     public static final String ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST = "ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST";
     public static final String ACTION_ADD_SONG_TO_PLAYLIST = "ACTION_ADD_SONG_TO_PLAYLIST";
+    public static final String ACTION_REMOVE_SONG_FROM_PLAYLIST = "ACTION_REMOVE_SONG_FROM_PLAYLIST";
     public static final String BUNDLE_KEY_PLAYLIST_ID = "BUNDLE_KEY_PLAYLIST_ID";
+    public static final String BUNDLE_KEY_SONG_ID = "BUNDLE_KEY_SONG_ID";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION = "BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION";
@@ -261,11 +263,17 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 return;
             }
 
+            minusSongTrackPosition();
+            handlePlayRequest();
+        }
+
+        private void minusSongTrackPosition() {
             mSongTrackPosition--;
             if (mSongTrackPosition < 0) {
                 mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
             }
-            handlePlayRequest();
+
+            Log.d(TAG, "minusSongTrackPosition: " + mSongTrackPosition);
         }
 
         @Override
@@ -280,42 +288,92 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     handlePlayRequest();
                     break;
                 case ACTIOIN_PLAY_PLAYLIST:
-                    int playlistPosition = extras.getInt(BUNDLE_KEY_PLAYLIST_ID,0);
-                    handlePlayList(playlistPosition);
+                    handlePlayList(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
                     break;
                 case ACTION_ADD_SONG_TO_PLAYLIST:
-                    handleAddSongToPlaylist(extras);
-
+                    handleAddSongToPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
                     break;
+                case ACTION_REMOVE_SONG_FROM_PLAYLIST:
+                    handleRemoveSongFromPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID), extras.getInt(BUNDLE_KEY_SONG_ID));
+                    break;
+            }
+        }
+
+        /**
+         * 從歌單刪除歌曲動作處理
+         * @param playlistId
+         * @param songId
+         */
+        private void handleRemoveSongFromPlaylist(int playlistId, int songId) {
+
+            if (!mMusicProvider.isPlayListAvailable()) {
+                Log.w(TAG, "handleRemoveSongFromPlaylist: 目前沒有歌曲");
+                return;
+            }
+
+            if (mMusicProvider.getPlayList(mSongTrackPosition) == null) {
+                mSongTrackPosition = 0;
+            }
+
+            String currentSongId = mMusicProvider.getPlayList(mSongTrackPosition).getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+
+            Log.d(TAG, "handleRemoveSongFromPlaylist: id 1 : " + String.valueOf(songId));
+            Log.d(TAG, "handleRemoveSongFromPlaylist: id 2 : " + currentSongId);
+            if (TextUtils.equals(String.valueOf(songId), currentSongId)) {
+                //刪目前正在播放的歌曲
+                mMusicProvider.queryDBPlayList(playlistId);
+                if (mLocalPlayback.isPlaying()) {
+                    //刪目前正在播放的歌曲, 停止播放
+                    handleStopRequest();
+
+                    if (mMusicProvider.getPlayList(mSongTrackPosition) == null) {
+                        mSongTrackPosition = 0;
+                    }
+                }
+                //給畫面更新歌曲UI)
+                updateMetadata(mMusicProvider.getPlayList(mSongTrackPosition));
+            } else {
+                //刪不是現在播放的歌曲，刷新目前播放清單
+                mMusicProvider.queryDBPlayList(playlistId);
+            }
+
+            if (!mMusicProvider.isPlayListAvailable()) {
+                //刪到沒歌時要停止播放
+                if (mLocalPlayback.isPlaying()) {
+                    Log.w(TAG, "handleRemoveSongFromPlaylist: 刪到沒歌時要停止播放");
+                    mLocalPlayback.stop(true);
+                }
             }
         }
 
         /** 加歌至歌單動作處理 */
-        private void handleAddSongToPlaylist(Bundle bundle) {
+        private void handleAddSongToPlaylist(int playlistId) {
             Log.d(TAG, "handleAddSongToPlaylist: ");
-            int playlistPosition = bundle.getInt(BUNDLE_KEY_PLAYLIST_ID,0);
-            if (mCurrentPlayListId != playlistPosition) {
-                Log.d(TAG, "handleAddSongToPlaylist: mCurrentPlayListId != playlistPosition :" + mCurrentPlayListId);
+            if (mCurrentPlayListId != playlistId) {
+                Log.d(TAG, "handleAddSongToPlaylist: mCurrentPlayListId != playlistId :" + mCurrentPlayListId);
                 return;
             }
-            mMusicProvider.queryDBPlayList(playlistPosition);
-            mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
+            mMusicProvider.queryDBPlayList(playlistId);
             if (mLocalPlayback.isPlaying()) {
+                mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
                 handlePlayRequest();
+            } else {
+                //給畫面更新歌曲UI
+                updateMetadata(mMusicProvider.getPlayList(mSongTrackPosition));
             }
         }
 
         /** 切換歌單動作處理 */
-        private void handlePlayList(int playlistPosition) {
-            mMusicProvider.queryDBPlayList(playlistPosition);
-            if (mCurrentPlayListId != playlistPosition) {
+        private void handlePlayList(int playlistId) {
+            mMusicProvider.queryDBPlayList(playlistId);
+            if (mCurrentPlayListId != playlistId) {
                 //切換歌單，從頭播放歌曲
                 mSongTrackPosition = 0;
             } else {
                 //切換原歌單就是播最新加的一首歌
                 mSongTrackPosition = mMusicProvider.getPlayListSize() - 1;
             }
-            mCurrentPlayListId = playlistPosition;
+            mCurrentPlayListId = playlistId;
             if (mMusicProvider.getPlayListSize() == 0) {
                 //切換到沒歌曲的歌單要停止播放
                 Bundle bundle = new Bundle();
@@ -334,11 +392,17 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     }
 
     private void skipToNext() {
+        addSongTrackPosition();
+        handlePlayRequest();
+    }
+
+    private void addSongTrackPosition() {
         mSongTrackPosition++;
         if (mSongTrackPosition >= mMusicProvider.getPlayListSize()) {
             mSongTrackPosition = 0;
         }
-        handlePlayRequest();
+
+        Log.d(TAG, "addSongTrackPosition: " + mSongTrackPosition);
     }
 
     private void handlePauseRequest() {
@@ -383,6 +447,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         if (metadata == null) {
             Log.w(TAG, "updateMetadata: metadata null ");
+            mMediaSessionCompat.setMetadata(metadata);
             return;
         }
 

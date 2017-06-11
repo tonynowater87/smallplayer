@@ -31,6 +31,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
     private EnumEditListType mEnumType;
     private int mId;
     private ShowPlayListAdapter mShowPlayListAdapter;
+    private ShowPlayListSongAdapter mShowPlayListSongAdapter;
 
     @Override
     protected int getLayoutResource() {
@@ -50,6 +51,13 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
     @Override
     protected void onMetadataChanged(MediaMetadataCompat metadata) {
 
+    }
+
+    @Override
+    protected void onFragmentMediaConnected() {
+        if (mShowPlayListSongAdapter != null) {
+            mShowPlayListSongAdapter.setTransportControls(mTransportControls);
+        }
     }
 
     public EditPlayListFragment() {
@@ -94,13 +102,13 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
      * 播放清單裡歌曲的Adapter
      */
     private void initialPlayListSongAdapter() {
-        ShowPlayListSongAdapter adapter = new ShowPlayListSongAdapter(getArguments().getInt(BUNDLE_KEY_POSITION), (OnClickSomething) getActivity());
+        mShowPlayListSongAdapter = new ShowPlayListSongAdapter(getArguments().getInt(BUNDLE_KEY_POSITION), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
-        mBinding.recyclerview.setAdapter(adapter);
-        CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(adapter);
+        mBinding.recyclerview.setAdapter(mShowPlayListSongAdapter);
+        CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(mShowPlayListSongAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(mBinding.recyclerview);
     }

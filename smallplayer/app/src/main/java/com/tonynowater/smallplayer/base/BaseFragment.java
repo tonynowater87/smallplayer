@@ -21,20 +21,28 @@ import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     private static final String TAG = BaseFragment.class.getSimpleName();
     protected T mBinding;
-    private MediaControllerCompat.TransportControls mTransportControls;
+    protected MediaControllerCompat.TransportControls mTransportControls;
     protected RealmUtils mRealmUtils;
 
     private MediaControllerCompat.Callback mMediaControllerCallback = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
-            BaseFragment.this.onPlaybackStateChanged(state);
+            if (isAdded()) {
+                BaseFragment.this.onPlaybackStateChanged(state);
+            } else {
+                Log.w(TAG, "onPlaybackStateChanged: isNoAdded");
+            }
         }
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
-            BaseFragment.this.onMetadataChanged(metadata);
+            if (isAdded()) {
+                BaseFragment.this.onMetadataChanged(metadata);
+            } else {
+                Log.w(TAG, "onMetadataChanged: isNoAdded");
+            }
         }
 
         @Override
@@ -82,8 +90,14 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
         Log.d(TAG, "onConnected: " + (mediaControllerCompat == null));
         if (mediaControllerCompat != null) {
             mTransportControls = mediaControllerCompat.getTransportControls();
-            onPlaybackStateChanged(mediaControllerCompat.getPlaybackState());
-            onMetadataChanged(mediaControllerCompat.getMetadata());
+
+            if (isAdded()) {
+                onFragmentMediaConnected();
+                onPlaybackStateChanged(mediaControllerCompat.getPlaybackState());
+                onMetadataChanged(mediaControllerCompat.getMetadata());
+            } else {
+                Log.w(TAG, "onConnected: isNotAdded");
+            }
             mediaControllerCompat.registerCallback(mMediaControllerCallback);
         }
     }
@@ -92,6 +106,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     protected abstract void onPlaybackStateChanged(PlaybackStateCompat state);
     protected abstract void onSessionDestroyed();
     protected abstract void onMetadataChanged(MediaMetadataCompat metadata);
+    protected abstract void onFragmentMediaConnected();
 
     protected void skipToNext() {
         if (mTransportControls != null) {

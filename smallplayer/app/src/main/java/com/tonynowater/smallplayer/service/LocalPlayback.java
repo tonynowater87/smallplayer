@@ -266,6 +266,13 @@ public class LocalPlayback implements Playback
         mPlaybackCallback.onPlaybackStateChanged();
 
         final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
+
+        if (mediaMetadataCompat == null) {
+            stop(true);
+            Log.d(TAG, "play: null");
+            return;
+        }
+
         if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
             //播放本地音樂
             String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);

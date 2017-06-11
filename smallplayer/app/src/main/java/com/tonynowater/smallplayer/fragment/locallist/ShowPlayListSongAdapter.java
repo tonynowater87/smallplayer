@@ -1,7 +1,9 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -13,6 +15,7 @@ import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBinding;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowtaer87.myutil.TimeUtil;
@@ -24,11 +27,13 @@ import java.util.Collections;
  */
 public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutShowPlayListSongAdapterBinding> implements ItemTouchHelperAdapter{
     private static final String TAG = ShowPlayListSongAdapter.class.getSimpleName();
-    private int playListId;
-    public ShowPlayListSongAdapter(int id, OnClickSomething<PlayListSongEntity> mOnClickSongListener) {
+    private int mPlayListId;
+    private MediaControllerCompat.TransportControls mTransportControls;
+
+    public ShowPlayListSongAdapter(int mPlayListId, OnClickSomething<PlayListSongEntity> mOnClickSongListener) {
         super(mOnClickSongListener);
-        playListId = id;
-        mDataList = new RealmUtils().queryPlayListSongByListIdSortByPosition(id);
+        this.mPlayListId = mPlayListId;
+        mDataList = new RealmUtils().queryPlayListSongByListIdSortByPosition(mPlayListId);
     }
 
     @Override
@@ -60,8 +65,10 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
             public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
                 switch (dialogAction) {
                     case POSITIVE:
-                        realmUtils.deleteSongFromPlayList(mDataList.get(position));
-                        mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(playListId);
+                        PlayListSongEntity playListSongEntity = mDataList.get(position);
+                        realmUtils.deleteSongFromPlayList(playListSongEntity);
+                        mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(mPlayListId);
+                        sendDeleteAction(playListSongEntity.getId());
                         break;
                 }
 
@@ -75,10 +82,23 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
         });
     }
 
+    private void sendDeleteAction(int playListSongEntityId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, mPlayListId);
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_SONG_ID, playListSongEntityId);
+        if (mTransportControls != null) {
+            mTransportControls.sendCustomAction(PlayMusicService.ACTION_REMOVE_SONG_FROM_PLAYLIST, bundle);
+        }
+    }
+
     @Override
     public void onMove(int from, int to) {
         realmUtils.updatePlayListSongPosition(mDataList.get(from), mDataList.get(to));
         Collections.swap(mDataList, from, to);
         notifyItemMoved(from, to);
+    }
+
+    public void setTransportControls(MediaControllerCompat.TransportControls mTransportControls) {
+        this.mTransportControls = mTransportControls;
     }
 }

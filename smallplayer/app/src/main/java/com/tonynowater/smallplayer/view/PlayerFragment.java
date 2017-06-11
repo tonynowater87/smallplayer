@@ -38,6 +38,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
 
     private static final long INITIAL_DELAY = 100;
     private static final long UPDATE_PERIOD = 1000;
+    private static final int DEFAULT_PROGRESS = 0;
     private PlaybackStateCompat mPlaybackStateCompat;
     private Handler mHandler = new Handler();
     private ScheduledExecutorService mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -58,8 +59,8 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
             switch (v.getId()) {
                 case R.id.buttonPlay:
                     if (state == PlaybackStateCompat.STATE_PAUSED
-                            ||state == PlaybackStateCompat.STATE_STOPPED
-                            ||state == PlaybackStateCompat.STATE_NONE) {
+                            || state == PlaybackStateCompat.STATE_STOPPED
+                            || state == PlaybackStateCompat.STATE_NONE) {
                         play();
                     } else if (state == PlaybackStateCompat.STATE_PLAYING) {
                         pause();
@@ -90,7 +91,6 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
         mBinding.buttonAction.setOnClickListener(mOnClickListener);
         mBinding.llSongInfoFragmentPlayer.setOnClickListener(mOnClickListener);
-        initialUI();
     }
 
     /**
@@ -116,6 +116,13 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         }
     }
 
+    private void setUIWhenPlayListSongEntityNull() {
+        mBinding.textViewSongNameValue.setText(getString(R.string.dash));
+        mBinding.textViewSongArtistValue.setText(getString(R.string.dash));
+        mBinding.progressBar.setProgress(DEFAULT_PROGRESS);
+        Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
+    }
+
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_player;
@@ -133,6 +140,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
 
     /**
      * 更新播放的狀態
+     *
      * @param state
      */
     private void updateState(PlaybackStateCompat state) {
@@ -210,8 +218,9 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
 
     @Override
     protected void onMetadataChanged(MediaMetadataCompat metadata) {
-        Log.d(TAG, "onMetadataChanged: ");
+        Log.d(TAG, "onMetadataChanged: " + (metadata == null));
         if (metadata == null) {
+            setUIWhenPlayListSongEntityNull();
             return;
         }
 
@@ -223,6 +232,11 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         } else {
             Glide.with(MyApplication.getContext()).load(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)).into(mBinding.imageviewThumb);
         }
+    }
+
+    @Override
+    protected void onFragmentMediaConnected() {
+        initialUI();
     }
 
     @Override
