@@ -219,7 +219,7 @@ public class U2BVideoDTO {
             try {
                 sArtUrl = getSnippet().getThumbnails().getHigh().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
             } catch (Exception e) {
-                Log.e(TAG, "getMediaMetadata: null url");
+                Log.e(TAG, "getPlayListSongEntity: null url");
             }
             PlayListSongEntity playListSongEntity = new PlayListSongEntity();
             playListSongEntity.setId((int) getVideoDuration());// TODO: 2017/6/3 因為table結構id是int，所以先暫用Duration當id

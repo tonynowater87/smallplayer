@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.util.Log;
 
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
@@ -18,6 +19,7 @@ import java.util.List;
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
+    private int mSongTrackPosition = 0;
 
     /**
      * @param playlistPosition 預設要載入的播放清單id
@@ -74,5 +76,38 @@ public class MusicProvider {
                 .setExtras(bundle)
                 .build();
         return new MediaBrowserCompat.MediaItem(description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+    }
+
+    public void minusSongTrackPosition() {
+        mSongTrackPosition--;
+        if (mSongTrackPosition < 0) {
+            mSongTrackPosition = mMusicPlayList.size() - 1;
+        }
+
+        Log.d(TAG, "minusSongTrackPosition: " + mSongTrackPosition);
+    }
+
+    public void setmSongTrackPosition(int mSongTrackPosition) {
+        this.mSongTrackPosition = mSongTrackPosition;
+    }
+
+    public int getmSongTrackPosition() {
+        return mSongTrackPosition;
+    }
+
+    /**
+     * @return 目前正在播放的MediaMetaData
+     */
+    public MediaMetadataCompat getCurrentPlayingMediaMetadata() {
+        return getPlayList(mSongTrackPosition);
+    }
+
+    public void addSongTrackPosition() {
+        mSongTrackPosition++;
+        if (mSongTrackPosition >= getPlayListSize()) {
+            mSongTrackPosition = 0;
+        }
+
+        Log.d(TAG, "addSongTrackPosition: " + mSongTrackPosition);
     }
 }
