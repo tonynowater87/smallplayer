@@ -83,7 +83,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     };
 
-    private void stopNotification() {
+    public void stopNotification() {
         Log.d(TAG, "stopNotification:" + mStarted);
         if (mStarted) {
             mStarted = false;
@@ -271,7 +271,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private void setNotificationPlayState(NotificationCompat.Builder builder) {
         Log.d(TAG, "setNotificationPlayState: " + mPlaybackState);
-        if (mPlaybackState == null || !mStarted) {
+        if (!mStarted) {
             Log.d(TAG, "setNotificationPlayState: cancel notification");
             return;
         }

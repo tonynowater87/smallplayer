@@ -142,6 +142,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
             mMediaNotificationManager.startNotification();
+        } else {
+            mMediaNotificationManager.stopNotification();
         }
     }
 
