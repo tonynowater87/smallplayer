@@ -210,7 +210,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public boolean isPlaying() {
-        return mMediaPlayer == null ? false : mMediaPlayer.isPlaying();
+        return mState == PlaybackStateCompat.STATE_PLAYING || mState == PlaybackStateCompat.STATE_BUFFERING || (mMediaPlayer != null && mMediaPlayer.isPlaying()) ? true : false;
     }
 
     @Override

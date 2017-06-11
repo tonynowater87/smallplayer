@@ -172,6 +172,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private Notification createNofification() {
         Log.d(TAG, "createNofification: MetaData = " + mMediaMetadata);
+        Log.d(TAG, "createNofification: mPlaybackState = " + mPlaybackState);
         if (mMediaMetadata == null || mPlaybackState == null) {
             return null;
         }
@@ -276,7 +277,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
             return;
         }
 
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING && mPlaybackState.getPosition() >= 0) {
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+            || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING
+            && mPlaybackState.getPosition() >= 0) {
             long playTime = System.currentTimeMillis() - mPlaybackState.getPosition();
             Log.d(TAG, "setNotificationPlayState , position : " + playTime / 1000 + " seconds.");
             builder.setWhen(playTime)
