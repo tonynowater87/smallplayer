@@ -293,7 +293,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             }
         }
 
-        // FIXME: 2017/6/12 暫停時切換歌曲在移動位置，會是播原來的歌曲問題。
         /**
          * 指定位置播放歌曲
          * @param songPosition 要播放的歌曲位置
