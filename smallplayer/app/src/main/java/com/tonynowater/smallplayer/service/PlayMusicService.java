@@ -275,11 +275,10 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     mLocalPlayback.setEqualizer((EqualizerType) extras.getSerializable(BUNDLE_KEY_EQUALIZER_TYPE));
                     break;
                 case ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST:
-                    mMusicProvider.setmSongTrackPosition(extras.getInt(BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION));
-                    handlePlayRequest();
+                    handlePlayExplicitSong(extras.getInt(BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION));
                     break;
                 case ACTIOIN_PLAY_PLAYLIST:
-                    handlePlayList(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
+                    handleChangePlayList(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
                     break;
                 case ACTION_ADD_SONG_TO_PLAYLIST:
                     handleAddSongToPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
@@ -287,6 +286,22 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 case ACTION_REMOVE_SONG_FROM_PLAYLIST:
                     handleRemoveSongFromPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID), extras.getInt(BUNDLE_KEY_SONG_ID));
                     break;
+            }
+        }
+
+        // FIXME: 2017/6/12 暫停時切換歌曲在移動位置，會是播原來的歌曲問題。
+        /**
+         * 指定位置播放歌曲
+         * @param songPosition 要播放的歌曲位置
+         */
+        private void handlePlayExplicitSong(int songPosition) {
+            mMusicProvider.setmSongTrackPosition(songPosition);
+            if (mLocalPlayback.isPlaying()) {
+                //正在播放時換歌曲繼續播放
+                handlePlayRequest();
+            } else {
+                //暫停時換歌曲停止播放
+                handleStopRequest();
             }
         }
 
@@ -348,7 +363,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         }
 
         /** 切換歌單動作處理 */
-        private void handlePlayList(int playlistId) {
+        private void handleChangePlayList(int playlistId) {
             mMusicProvider.queryDBPlayList(playlistId);
             if (mCurrentPlayListId != playlistId) {
                 //切換歌單，從頭播放歌曲
@@ -364,7 +379,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, true);
                 handleStopRequest(bundle);
             } else {
-                handlePlayRequest();
+
+                if (mLocalPlayback.isPlaying()) {
+                    handlePlayRequest();
+                } else {
+                    //給畫面更新歌曲UI)
+                    updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
+                }
             }
         }
 

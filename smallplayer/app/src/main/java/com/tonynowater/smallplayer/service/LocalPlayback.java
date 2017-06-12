@@ -64,6 +64,7 @@ public class LocalPlayback implements Playback
         }
     };
     private boolean mPlayOnFocusGain;//獲取AudioFocus後是否繼續播放
+    private String mCurrentPlayId;//目前正在播放歌曲的Id
 
     public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
@@ -239,6 +240,14 @@ public class LocalPlayback implements Playback
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
 
+        final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
+
+        if (mediaMetadataCompat == null) {
+            stop(true);
+            Log.e(TAG, "play: null");
+            return;
+        }
+
         if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
             Log.d(TAG, "play: AudioManager.AUDIOFOCUS_REQUEST_FAILED");
             return;
@@ -254,24 +263,19 @@ public class LocalPlayback implements Playback
             mCurrentPosition = 0;
         }
 
-        if (mCurrentPosition != 0) {
+        if (mCurrentPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+            //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
             Log.d(TAG, "pause and play position : " + trackPosition);
             mState = PlaybackStateCompat.STATE_BUFFERING;
             mMediaPlayer.seekTo(mCurrentPosition);
             return;
         }
 
+        mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+
         //設定狀態為BUFFERING通知畫面
         mState = PlaybackStateCompat.STATE_BUFFERING;
         mPlaybackCallback.onPlaybackStateChanged();
-
-        final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
-
-        if (mediaMetadataCompat == null) {
-            stop(true);
-            Log.d(TAG, "play: null");
-            return;
-        }
 
         if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
             //播放本地音樂

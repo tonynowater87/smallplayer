@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-
+// TODO: 2017/6/12 刪除目前播放歌曲後，縮小返回歌曲資訊會不見
 /**
  * 畫面底部的播放Fragment
  * Created by tonynowater on 2017/5/20.
