@@ -142,7 +142,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
             mMediaNotificationManager.startNotification();
         } else {
-            mMediaNotificationManager.stopNotification();
+            mMediaNotificationManager.cancelNotification();
         }
     }
 
@@ -346,13 +346,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 return;
             }
             mMusicProvider.queryDBPlayList(playlistId);
-            if (mLocalPlayback.isPlaying()) {
-                mMusicProvider.setmSongTrackPosition(mMusicProvider.getPlayListSize() - 1);
-                handlePlayRequest();
-            } else {
-                //給畫面更新歌曲UI
-                updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
-            }
         }
 
         /** 切換歌單動作處理 */

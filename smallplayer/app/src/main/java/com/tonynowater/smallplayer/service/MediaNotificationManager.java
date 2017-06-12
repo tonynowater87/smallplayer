@@ -83,7 +83,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     };
 
-    public void stopNotification() {
+    private void stopNotification() {
         Log.d(TAG, "stopNotification:" + mStarted);
         if (mStarted) {
             mStarted = false;
@@ -92,6 +92,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
             mPlayMusicService.unregisterReceiver(this);
             mPlayMusicService.stopForeground(true);
         }
+    }
+
+    public void cancelNotification() {
+        Log.d(TAG, "cancelNotification: " + mStarted);
+        mNotificationManager.cancel(NOTIFICATION_ID);
     }
 
     private PendingIntent mPlayIntent;
