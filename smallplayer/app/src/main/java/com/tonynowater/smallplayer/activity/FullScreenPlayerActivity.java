@@ -176,6 +176,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         mBinding.ivNextActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivEqActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivModeActivityFullScreenPlayer.setOnClickListener(this);
+        mBinding.ivShuffleActivityFullScreenPlayer.setOnClickListener(this);
     }
 
     @Override
@@ -243,6 +244,8 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
                 break;
             case R.id.iv_mode_activity_full_screen_player:
                 showCurrentPlayList();
+                break;
+            case R.id.iv_shuffle_activity_full_screen_player:
                 break;
         }
     }

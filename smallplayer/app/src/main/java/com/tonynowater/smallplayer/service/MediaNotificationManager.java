@@ -27,6 +27,58 @@ import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
 
+// FIXME: 2017/6/12 播到一半縮小會有通知失效的問題以及廣播未解註冊的錯誤
+// FIXME: 2017/6/12 疑似Service沒有Start過，所以畫面縮小就Destroy的關係
+//06-12 21:56:32.843 5702-5702/com.tonynowater.smallplayer D/PlayMusicService: updatePlaybackState: 3
+//        06-12 21:56:39.191 5702-5702/com.tonynowater.smallplayer D/PlayMusicService: onDestroy:
+//        06-12 21:56:39.191 5702-5702/com.tonynowater.smallplayer D/PlayMusicService: updatePlaybackState: 3
+//        06-12 21:56:39.301 5702-5702/com.tonynowater.smallplayer E/ActivityThread: Service com.tonynowater.smallplayer.service.PlayMusicService has leaked IntentReceiver com.tonynowater.smallplayer.service.LocalPlayback$1@ec220d7 that was originally registered here. Are you missing a call to unregisterReceiver()?
+//        android.app.IntentReceiverLeaked: Service com.tonynowater.smallplayer.service.PlayMusicService has leaked IntentReceiver com.tonynowater.smallplayer.service.LocalPlayback$1@ec220d7 that was originally registered here. Are you missing a call to unregisterReceiver()?
+//        at android.app.LoadedApk$ReceiverDispatcher.<init>(LoadedApk.java:993)
+//        at android.app.LoadedApk.getReceiverDispatcher(LoadedApk.java:794)
+//        at android.app.ContextImpl.registerReceiverInternal(ContextImpl.java:1708)
+//        at android.app.ContextImpl.registerReceiver(ContextImpl.java:1688)
+//        at android.app.ContextImpl.registerReceiver(ContextImpl.java:1682)
+//        at android.content.ContextWrapper.registerReceiver(ContextWrapper.java:488)
+//        at com.tonynowater.smallplayer.service.LocalPlayback.registerAudioNoisyReceiver(LocalPlayback.java:104)
+//        at com.tonynowater.smallplayer.service.LocalPlayback.tryToGetAudioFocus(LocalPlayback.java:82)
+//        at com.tonynowater.smallplayer.service.LocalPlayback.play(LocalPlayback.java:241)
+//        at com.tonynowater.smallplayer.service.PlayMusicService.handlePlayRequest(PlayMusicService.java:456)
+//        at com.tonynowater.smallplayer.service.PlayMusicService.access$700(PlayMusicService.java:24)
+//        at com.tonynowater.smallplayer.service.PlayMusicService$MySessionCall.handlePlayingNow(PlayMusicService.java:379)
+//        at com.tonynowater.smallplayer.service.PlayMusicService$MySessionCall.onCustomAction(PlayMusicService.java:282)
+//        at android.support.v4.media.session.MediaSessionCompat$Callback$StubApi21.onCustomAction(MediaSessionCompat.java:1063)
+//        at android.support.v4.media.session.MediaSessionCompatApi21$CallbackProxy.onCustomAction(MediaSessionCompatApi21.java:235)
+//        at android.media.session.MediaSession$CallbackMessageHandler.handleMessage(MediaSession.java:1315)
+//        at android.os.Handler.dispatchMessage(Handler.java:102)
+//        at android.os.Looper.loop(Looper.java:135)
+//        at android.app.ActivityThread.main(ActivityThread.java:5272)
+//        at java.lang.reflect.Method.invoke(Native Method)
+//        at java.lang.reflect.Method.invoke(Method.java:372)
+//        at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:909)
+//        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:704)
+//        06-12 21:56:39.317 5702-5702/com.tonynowater.smallplayer E/ActivityThread: Service com.tonynowater.smallplayer.service.PlayMusicService has leaked IntentReceiver com.tonynowater.smallplayer.service.MediaNotificationManager@1105a109 that was originally registered here. Are you missing a call to unregisterReceiver()?
+//        android.app.IntentReceiverLeaked: Service com.tonynowater.smallplayer.service.PlayMusicService has leaked IntentReceiver com.tonynowater.smallplayer.service.MediaNotificationManager@1105a109 that was originally registered here. Are you missing a call to unregisterReceiver()?
+//        at android.app.LoadedApk$ReceiverDispatcher.<init>(LoadedApk.java:993)
+//        at android.app.LoadedApk.getReceiverDispatcher(LoadedApk.java:794)
+//        at android.app.ContextImpl.registerReceiverInternal(ContextImpl.java:1708)
+//        at android.app.ContextImpl.registerReceiver(ContextImpl.java:1688)
+//        at android.app.ContextImpl.registerReceiver(ContextImpl.java:1682)
+//        at android.content.ContextWrapper.registerReceiver(ContextWrapper.java:488)
+//        at com.tonynowater.smallplayer.service.MediaNotificationManager.startNotification(MediaNotificationManager.java:184)
+//        at com.tonynowater.smallplayer.service.PlayMusicService.updatePlaybackState(PlayMusicService.java:143)
+//        at com.tonynowater.smallplayer.service.PlayMusicService.updatePlaybackState(PlayMusicService.java:112)
+//        at com.tonynowater.smallplayer.service.PlayMusicService.access$300(PlayMusicService.java:24)
+//        at com.tonynowater.smallplayer.service.PlayMusicService$1.onPlaybackStateChanged(PlayMusicService.java:57)
+//        at com.tonynowater.smallplayer.service.LocalPlayback.onPrepared(LocalPlayback.java:181)
+//        at android.media.MediaPlayer$EventHandler.handleMessage(MediaPlayer.java:2523)
+//        at android.os.Handler.dispatchMessage(Handler.java:102)
+//        at android.os.Looper.loop(Looper.java:135)
+//        at android.app.ActivityThread.main(ActivityThread.java:5272)
+//        at java.lang.reflect.Method.invoke(Native Method)
+//        at java.lang.reflect.Method.invoke(Method.java:372)
+//        at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:909)
+//        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:704)
 /**
  * 處理通知類別
  * Created by tonyliao on 2017/5/13.

@@ -95,7 +95,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/full_screen_player_activity_seekbar_field_height"
                     android:orientation="horizontal"
-                    android:weightSum="5">
+                    android:weightSum="6">
 
                     <ImageView
                         android:id="@+id/iv_mode_activity_full_screen_player"
@@ -135,6 +135,14 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:src="@android:drawable/ic_media_next" />
+
+                    <ImageView
+                        android:id="@+id/iv_shuffle_activity_full_screen_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:src="@drawable/ic_shuffle_white_24px" />
 
                     <ImageView
                         android:id="@+id/iv_eq_activity_full_screen_player"

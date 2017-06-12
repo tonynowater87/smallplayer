@@ -305,6 +305,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             } else {
                 //暫停時換歌曲停止播放
                 handleStopRequest();
+                //給畫面更新歌曲UI)
+                updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
             }
         }
 
@@ -339,7 +341,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                         mMusicProvider.setmSongTrackPosition(0);
                     }
                 }
-                //給畫面更新歌曲UI)
+                //給畫面更新歌曲UI
                 updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
             } else {
                 //刪不是現在播放的歌曲，刷新目前播放清單
@@ -430,11 +432,14 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         Log.d(TAG, "handleStopRequest: " + mLocalPlayback.getState());
         mLocalPlayback.stop(true);
         updatePlaybackState(null, bundle);
+        mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
     }
 
     private void handlePlayRequest() {
         Log.d(TAG, "handlePlayRequest: " + mLocalPlayback.getState());
+        mDelayedStopHandler.removeCallbacksAndMessages(null);
+
         if (!mServiceStarted) {
             // The MusicService needs to keep running even after the calling MediaBrowser
             // is disconnected. Call startService(Intent) and then stopSelf(..) when we no longer
