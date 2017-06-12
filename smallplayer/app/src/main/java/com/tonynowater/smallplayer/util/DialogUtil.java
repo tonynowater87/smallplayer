@@ -99,7 +99,7 @@ public class DialogUtil {
             public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                 int playListId = playListEntities.get(i).getId();
                 realmUtils.setCurrentPlayListID(playListId);
-                baseActivity.sendMetaDataToService(playListId);
+                baseActivity.sendActionChangePlaylist(playListId);
                 realmUtils.close();
                 return true;
             }

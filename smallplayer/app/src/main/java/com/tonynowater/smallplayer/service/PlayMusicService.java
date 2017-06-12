@@ -24,11 +24,12 @@ import java.util.List;
 public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private static final String TAG = PlayMusicService.class.getSimpleName();
-    public static final String ACTIOIN_PLAY_PLAYLIST = "ACTIOIN_PLAY_PLAYLIST";
+    public static final String ACTION_PLAYING_NOW = "ACTION_PLAYING_NOW";
     public static final String ACTION_CHANGE_EQUALIZER_TYPE = "ACTION_CHANGE_EQUALIZER_TYPE";
     public static final String ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST = "ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST";
     public static final String ACTION_ADD_SONG_TO_PLAYLIST = "ACTION_ADD_SONG_TO_PLAYLIST";
     public static final String ACTION_REMOVE_SONG_FROM_PLAYLIST = "ACTION_REMOVE_SONG_FROM_PLAYLIST";
+    public static final String ACTION_CHANGE_PLAYLIST = "ACTION_CHANGE_PLAYLIST";
     public static final String BUNDLE_KEY_PLAYLIST_ID = "BUNDLE_KEY_PLAYLIST_ID";
     public static final String BUNDLE_KEY_SONG_ID = "BUNDLE_KEY_SONG_ID";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
@@ -277,14 +278,17 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 case ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST:
                     handlePlayExplicitSong(extras.getInt(BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION));
                     break;
-                case ACTIOIN_PLAY_PLAYLIST:
-                    handleChangePlayList(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
+                case ACTION_PLAYING_NOW:
+                    handlePlayingNow(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
                     break;
                 case ACTION_ADD_SONG_TO_PLAYLIST:
                     handleAddSongToPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
                     break;
                 case ACTION_REMOVE_SONG_FROM_PLAYLIST:
                     handleRemoveSongFromPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID), extras.getInt(BUNDLE_KEY_SONG_ID));
+                    break;
+                case ACTION_CHANGE_PLAYLIST:
+                    handleChangePlayList(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
                     break;
             }
         }
@@ -362,8 +366,21 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             mMusicProvider.queryDBPlayList(playlistId);
         }
 
+        /**
+         * 點畫面播放的動作處理
+         * @param playlistId
+         */
+        private void handlePlayingNow(int playlistId) {
+            Log.d(TAG, "handlePlayingNow: ");
+            mMusicProvider.queryDBPlayList(playlistId);
+            //播最新加的一首歌
+            mMusicProvider.setmSongTrackPosition(mMusicProvider.getPlayListSize() - 1);
+            handlePlayRequest();
+        }
+
         /** 切換歌單動作處理 */
         private void handleChangePlayList(int playlistId) {
+            Log.d(TAG, "handleChangePlayList: ");
             mMusicProvider.queryDBPlayList(playlistId);
             if (mCurrentPlayListId != playlistId) {
                 //切換歌單，從頭播放歌曲
@@ -379,11 +396,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, true);
                 handleStopRequest(bundle);
             } else {
-
                 if (mLocalPlayback.isPlaying()) {
+                    //正在播放，切換歌單繼續播放
                     handlePlayRequest();
                 } else {
-                    //給畫面更新歌曲UI)
+                    //更新畫面歌曲UI)
                     updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
                 }
             }

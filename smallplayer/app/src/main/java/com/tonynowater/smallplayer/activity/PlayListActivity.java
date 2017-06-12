@@ -72,7 +72,7 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                     if (i == 0) {
                         RealmUtils realmUtils = new RealmUtils();
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongEntity());
-                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
                         realmUtils.close();
                     } else {
                         DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);

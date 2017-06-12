@@ -172,14 +172,25 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     }
 
     /**
-     * 將要播放的列表位置傳至Service
+     * 「播放」動作
      * @param playListPosition
      */
-    public void sendMetaDataToService(int playListPosition) {
-        Log.d(TAG, "sendMetaDataToService: " + playListPosition);
+    public void sendActionPlayingNow(int playListPosition) {
+        Log.d(TAG, "sendActionPlayingNow: " + playListPosition);
         Bundle bundle = new Bundle();
         bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListPosition);
-        mTransportControls.sendCustomAction(PlayMusicService.ACTIOIN_PLAY_PLAYLIST, bundle);
+        mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAYING_NOW, bundle);
+    }
+
+    /**
+     * 「切換歌單」動作
+     * @param playListPosition
+     */
+    public void sendActionChangePlaylist(int playListPosition) {
+        Log.d(TAG, "sendActionChangePlaylist: " + playListPosition);
+        Bundle bundle = new Bundle();
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListPosition);
+        mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYLIST, bundle);
     }
 
     @Override

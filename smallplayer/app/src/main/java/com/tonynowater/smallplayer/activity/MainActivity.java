@@ -292,7 +292,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     if (i == 0) {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
-                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
                     } else {
                         DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
                     }
@@ -306,7 +306,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     if (i == 0) {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
-                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
                     } else {
                         DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);
                     }

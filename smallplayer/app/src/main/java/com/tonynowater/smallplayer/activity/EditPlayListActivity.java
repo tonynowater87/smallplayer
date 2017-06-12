@@ -91,7 +91,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     if (i == 0) {
                         realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), playListSongEntity);
-                        sendMetaDataToService(realmUtils.queryCurrentPlayListID());
+                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
                     } else {
                         DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
                     }
