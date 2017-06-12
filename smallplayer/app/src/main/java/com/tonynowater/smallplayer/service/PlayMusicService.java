@@ -412,7 +412,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             mMediaSessionCompat.setActive(true);
         }
 
-        mLocalPlayback.play(mMusicProvider.getmSongTrackPosition());
+        mLocalPlayback.play(mMusicProvider.getCurrentPlayingIndex());
         updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
     }
 

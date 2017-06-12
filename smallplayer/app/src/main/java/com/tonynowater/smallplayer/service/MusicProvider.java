@@ -102,6 +102,18 @@ public class MusicProvider {
         return getPlayList(mSongTrackPosition);
     }
 
+    /**
+     * @return 目前正在播放的位置
+     */
+    public int getCurrentPlayingIndex() {
+        Log.d(TAG, "getCurrentPlayingIndex: " + mSongTrackPosition);
+        Log.d(TAG, "getMediaItemList size: " + getMediaItemList().size());
+        if (getPlayList(mSongTrackPosition) == null) {
+            mSongTrackPosition = getMediaItemList().size() - 1;
+        }
+        return mSongTrackPosition;
+    }
+
     public void addSongTrackPosition() {
         mSongTrackPosition++;
         if (mSongTrackPosition >= getPlayListSize()) {
