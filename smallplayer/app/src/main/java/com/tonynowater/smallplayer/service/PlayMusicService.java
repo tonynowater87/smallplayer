@@ -100,7 +100,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy:");
-        stopForeground(true);
         updatePlaybackState(null);
         mServiceStarted = false;
         mMediaSessionCompat.release();

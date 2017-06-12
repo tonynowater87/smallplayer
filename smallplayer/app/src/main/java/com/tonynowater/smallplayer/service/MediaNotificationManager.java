@@ -70,7 +70,16 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             Log.d(TAG, "onMetadataChanged: " + metadata);
+
+
+            if (mPlaybackState.getState() == PlaybackStateCompat.STATE_STOPPED) {
+                Log.d(TAG, "onMetadataChanged: PlaybackStateCompat.STATE_STOPPED");
+                cancelNotification();
+                return;
+            }
+
             mMediaMetadata = metadata;
+
             Notification notification = createNofification();
             if (notification != null) {
                 mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -83,17 +92,23 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     };
 
+    /**
+     * 清除通知，並停止Service
+     */
     private void stopNotification() {
         Log.d(TAG, "stopNotification:" + mStarted);
         if (mStarted) {
             mStarted = false;
             mMediaController.unregisterCallback(mMediaControllerCallback);
-            mNotificationManager.cancel(NOTIFICATION_ID);
             mPlayMusicService.unregisterReceiver(this);
+            mPlayMusicService.stopForeground(true);
             mPlayMusicService.stopSelf();
         }
     }
 
+    /**
+     * 清除通知
+     */
     public void cancelNotification() {
         Log.d(TAG, "cancelNotification: " + mStarted);
         mNotificationManager.cancel(NOTIFICATION_ID);
@@ -152,6 +167,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     }
 
+    /**
+     * 顯示通知並設定Service為前景
+     */
     public void startNotification() {
         if (!mStarted) {
             mMediaMetadata = mMediaController.getMetadata();
