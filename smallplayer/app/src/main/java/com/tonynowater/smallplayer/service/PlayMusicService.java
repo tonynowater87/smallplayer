@@ -100,8 +100,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy:");
+        stopForeground(true);
         updatePlaybackState(null);
-        stopSelf();
         mServiceStarted = false;
         mMediaSessionCompat.release();
         super.onDestroy();
@@ -403,6 +403,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             // The MusicService needs to keep running even after the calling MediaBrowser
             // is disconnected. Call startService(Intent) and then stopSelf(..) when we no longer
             // need to play media.
+            Log.d(TAG, "handlePlayRequest: startService");
             startService(new Intent(getApplicationContext(), PlayMusicService.class));
             mServiceStarted = true;
         }
@@ -444,12 +445,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         @Override
         public void handleMessage(Message msg) {
             PlayMusicService playMusicService = mWeakReference.get();
+            Log.d(TAG, "handleMessage: ");
             if (playMusicService != null && playMusicService.mLocalPlayback != null) {
                 if (playMusicService.mLocalPlayback.isPlaying()) {
                     Log.d(TAG, "handleMessage: mLocalPlayback.isPlaying");
                     return;
                 }
-                Log.w(TAG, "Stopping service with delay handler.");
+                Log.w(TAG, "handleMessage: Stopping service with delay handler.");
                 playMusicService.stopSelf();
                 playMusicService.mServiceStarted = false;
             }

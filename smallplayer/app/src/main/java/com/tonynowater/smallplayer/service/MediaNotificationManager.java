@@ -90,7 +90,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             mMediaController.unregisterCallback(mMediaControllerCallback);
             mNotificationManager.cancel(NOTIFICATION_ID);
             mPlayMusicService.unregisterReceiver(this);
-            mPlayMusicService.stopForeground(true);
+            mPlayMusicService.stopSelf();
         }
     }
 
