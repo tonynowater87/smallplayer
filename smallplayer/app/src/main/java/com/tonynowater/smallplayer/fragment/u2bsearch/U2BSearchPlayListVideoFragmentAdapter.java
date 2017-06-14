@@ -11,9 +11,9 @@ import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
+ * 播放清單裡的歌曲列表
  * Created by tonynowater on 2017/5/21.
  */
-
 public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentAdapter<U2bPlayListVideoDTO.ItemsBean, LayoutSonglistadapterListitemBinding> {
     private static final String TAG = U2BSearchPlayListVideoFragmentAdapter.class.getSimpleName();
 
@@ -24,11 +24,6 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentA
     @Override
     protected int getItemResourceId() {
         return R.layout.layout_songlistadapter_listitem;
-    }
-
-    @Override
-    protected boolean isFootviewVisible() {
-        return false;
     }
 
     @Override

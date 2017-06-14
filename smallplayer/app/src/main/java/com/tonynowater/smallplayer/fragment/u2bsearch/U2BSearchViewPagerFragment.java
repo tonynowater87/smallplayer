@@ -45,13 +45,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     private Callback mViedoSearchCallback = new Callback() {
         @Override
         public void onFailure(Request request, IOException e) {
-            mToastUtil.showToast(getString(R.string.u2b_query_failure));
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mBinding.lottieAnimationView.setVisibility(View.GONE);
-                }
-            });
+            showFailToast();
         }
 
         @Override
@@ -74,6 +68,8 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     case CHANNEL:
                         break;
                 }
+            } else {
+                showFailToast();
             }
         }
 
@@ -97,23 +93,30 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         }
 
         private void initialPlayListVideoList(String sResponse) {
-            mU2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
-            StringBuilder sVideoIds = new StringBuilder();
-            for (int i = 0; i < mU2bPlayListVideoDTO.getItems().size(); i++) {
-                sVideoIds.append(mU2bPlayListVideoDTO.getItems().get(i).getSnippet().getResourceId().getVideoId());
-                if (i < mU2bPlayListVideoDTO.getItems().size() - 1) {
-                    sVideoIds.append(",");
-                }
+            StringBuilder sVideoIds;
+            if (mU2bPlayListVideoDTO == null) {
+                //首次加載
+                mU2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
+                sVideoIds = getQueryDurationOfPlayListVideoIds(mU2bPlayListVideoDTO.getItems());
+            } else {
+                //滑到底加載
+                U2bPlayListVideoDTO u2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
+                mU2bPlayListVideoDTO.setNextPageToken(u2bPlayListVideoDTO.getNextPageToken());
+                mU2bPlayListVideoDTO.getItems().addAll(mU2bPlayListVideoDTO.getItems().size(), u2bPlayListVideoDTO.getItems());
+                sVideoIds = getQueryDurationOfPlayListVideoIds(u2bPlayListVideoDTO.getItems());
             }
+
             U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
         }
 
         private void initialVideoList(String sResponse) {
             StringBuilder sVideoIds;
             if (mU2BVideoDTO == null) {
+                //首次加載
                 mU2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
                 sVideoIds = getQueryDurationVideoIds(mU2BVideoDTO.getItems());
             } else {
+                //滑到底加載
                 U2BVideoDTO u2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
                 mU2BVideoDTO.setNextPageToken(u2BVideoDTO.getNextPageToken());
                 mU2BVideoDTO.getItems().addAll(mU2BVideoDTO.getItems().size(), u2BVideoDTO.getItems());
@@ -132,7 +135,28 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             }
             return sVideoIds;
         }
+
+        private StringBuilder getQueryDurationOfPlayListVideoIds(List<U2bPlayListVideoDTO.ItemsBean> items) {
+            StringBuilder sVideoIds = new StringBuilder();
+            for (int i = 0; i < items.size(); i++) {
+                sVideoIds.append(items.get(i).getSnippet().getResourceId().getVideoId());
+                if (i < items.size() - 1) {
+                    sVideoIds.append(",");
+                }
+            }
+            return sVideoIds;
+        }
     };
+
+    private void showFailToast() {
+        mToastUtil.showToast(getString(R.string.u2b_query_failure));
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mBinding.lottieAnimationView.setVisibility(View.GONE);
+            }
+        });
+    }
 
 
     private Callback mDurationSearchCallback = new Callback() {
@@ -156,6 +180,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 switch (mEnumU2BSearchType) {
                     case VIDEO:
                         HashMap<String, U2BVideoDTO.ItemsBean> hashMap = new HashMap<>();
+                        // FIXME: 2017/6/14 搜尋到一半，在搜尋會 java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.tonynowater.smallplayer.module.dto.U2BVideoDTO.getItems()' on a null object reference
                         for (U2BVideoDTO.ItemsBean item : mU2BVideoDTO.getItems()) {
                             if (item.getVideoDuration() == -1) {
                                 //沒Duration的才放
@@ -173,13 +198,6 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                         }
 
                         mSongListAdapter.setDataSource(mU2BVideoDTO.getItems());
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSongListAdapter.notifyDataSetChanged();
-                                isLoad = false;
-                            }
-                        });
                         break;
                     case PLAYLISTVIDEO:
                         HashMap<String, U2bPlayListVideoDTO.ItemsBean> hashMap2 = new HashMap<>();
@@ -200,24 +218,20 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                         }
 
                         mSongListAdapter.setDataSource(mU2bPlayListVideoDTO.getItems());
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // FIXME: 2017/6/8 ??
-                                mSongListAdapter.notifyDataSetChanged();
-                            }
-                        });
                         break;
                 }
 
-                // FIXME: 2017/6/8 ??
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSongListAdapter.notifyDataSetChanged();
-                        mBinding.lottieAnimationView.setVisibility(View.GONE);
-                    }
-                });
+                if (isAdded()) {
+                    //防止還沒補完，退出當機
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSongListAdapter.notifyDataSetChanged();
+                            isLoad = false;
+                            mBinding.lottieAnimationView.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
         }
     };
@@ -323,8 +337,9 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 Log.d(TAG, "onScrollStateChanged: " + newState);
                 super.onScrollStateChanged(recyclerView, newState);
                 //滑到底的時候做加載
-                if (lastCompletelyVisibleItemPosition + 1 == mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (lastCompletelyVisibleItemPosition + 1 >= mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (!isLoad) {
+                        // FIXME: 2017/6/15 已經滑到底沒資料時，圈圈還是會存在
                         switch (mEnumU2BSearchType) {
                             case VIDEO:
                                 U2BApi.newInstance().queryU2BVideo(mQuery, mU2BVideoDTO.getNextPageToken(), mViedoSearchCallback);
@@ -332,6 +347,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                 break;
                             case PLAYLIST:
                                 U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BPlayListDTO.getNextPageToken(), mViedoSearchCallback);
+                                isLoad = true;
+                                break;
+                            case PLAYLISTVIDEO:
+                                U2BApi.newInstance().queryU2BPlayListVideo(mQuery, mU2bPlayListVideoDTO.getNextPageToken(), mViedoSearchCallback);
                                 isLoad = true;
                                 break;
                             default:

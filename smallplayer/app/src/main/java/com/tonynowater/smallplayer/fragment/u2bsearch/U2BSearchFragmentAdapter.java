@@ -12,6 +12,7 @@ import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
+ * 搜尋音樂的列表
  * Created by tonyliao on 2017/5/1.
  */
 public class U2BSearchFragmentAdapter extends BasePlayableFragmentAdapter<U2BVideoDTO.ItemsBean, LayoutSonglistadapterListitemBinding> {

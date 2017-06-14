@@ -41,7 +41,10 @@ public class U2BApi {
 
     /** 搜尋下一頁U2B的影片 */
     public void queryU2BVideo(String keyword, String pageToken, Callback callback) {
-
+        if (pageToken == null) {
+            Log.d(TAG, "queryU2BVideo: pageToken null");
+            return;
+        }
         Request request = new Request.Builder()
                 .get()
                 .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video, pageToken))
@@ -53,7 +56,6 @@ public class U2BApi {
 
     /** 搜尋第一頁U2B的影片 */
     public void queryU2BVideo(String keyword, Callback callback) {
-
         Request request = new Request.Builder()
                 .get()
                 .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video, ""))
@@ -65,7 +67,9 @@ public class U2BApi {
 
     /** 搜尋下一頁U2B的播放清單 */
     public void queryU2BPlayList(String keyword, String pageToken, Callback callback) {
-
+        if (pageToken == null) {
+            Log.d(TAG, "queryU2BPlayList: pageToken null");
+        }
         Request request = new Request.Builder()
                 .get()
                 .url(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, playlist, pageToken))
@@ -87,11 +91,35 @@ public class U2BApi {
         mOkHttp.newCall(request).enqueue(callback);
     }
 
+    /**
+     * 搜尋播放清單裡第一頁的歌曲
+     * @param playlistId
+     * @param callback
+     */
     public void queryU2BPlayListVideo(String playlistId, Callback callback) {
-
         Request request = new Request.Builder()
                 .get()
-                .url(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, QUERY_MAX_RESULT))
+                .url(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, QUERY_MAX_RESULT, ""))
+                .build();
+
+        Log.d(TAG, "queryU2BPlayListVideo: " + request.urlString());
+        mOkHttp.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 搜尋播放清單裡下一頁的歌曲
+     * @param playlistId
+     * @param callback
+     * @param pageToken
+     */
+    public void queryU2BPlayListVideo(String playlistId, String pageToken, Callback callback) {
+        if (pageToken == null) {
+            Log.d(TAG, "queryU2BPlayListVideo: pageToken null");
+            return;
+        }
+        Request request = new Request.Builder()
+                .get()
+                .url(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, QUERY_MAX_RESULT, pageToken))
                 .build();
 
         Log.d(TAG, "queryU2BPlayListVideo: " + request.urlString());
