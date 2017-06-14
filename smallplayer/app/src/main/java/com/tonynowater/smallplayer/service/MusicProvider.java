@@ -20,6 +20,7 @@ public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
     private int mSongTrackPosition = 0;
+    private EnumPlayMode mEnumPlayMode = EnumPlayMode.NORMAL;
 
     /**
      * @param playlistPosition 預設要載入的播放清單id
@@ -79,12 +80,28 @@ public class MusicProvider {
     }
 
     public void minusSongTrackPosition() {
-        mSongTrackPosition--;
-        if (mSongTrackPosition < 0) {
-            mSongTrackPosition = mMusicPlayList.size() - 1;
+        switch (mEnumPlayMode) {
+            case NORMAL:
+                mSongTrackPosition--;
+                if (mSongTrackPosition < 0) {
+                    mSongTrackPosition = mMusicPlayList.size() - 1;
+                }
+                break;
+            case RANDOM:
+                int randomPosition = (int)(Math.random() * mMusicPlayList.size());
+                if (randomPosition == mSongTrackPosition) {
+                    mSongTrackPosition--;
+                    if (mSongTrackPosition < 0) {
+                        mSongTrackPosition = mMusicPlayList.size() - 1;
+                    }
+                } else {
+                    mSongTrackPosition = randomPosition;
+                }
+                break;
         }
 
-        Log.d(TAG, "minusSongTrackPosition: " + mSongTrackPosition);
+        Log.d(TAG, "minusSongTrackPosition mode : " + mEnumPlayMode.name());
+        Log.d(TAG, "minusSongTrackPosition : " + mSongTrackPosition);
     }
 
     public void setmSongTrackPosition(int mSongTrackPosition) {
@@ -115,11 +132,37 @@ public class MusicProvider {
     }
 
     public void addSongTrackPosition() {
-        mSongTrackPosition++;
-        if (mSongTrackPosition >= getPlayListSize()) {
-            mSongTrackPosition = 0;
+
+        switch (mEnumPlayMode) {
+            case NORMAL:
+                mSongTrackPosition++;
+                if (mSongTrackPosition >= getPlayListSize()) {
+                    mSongTrackPosition = 0;
+                }
+                break;
+            case RANDOM:
+                int randomPosition = (int) (Math.random() * mMusicPlayList.size());
+                Log.d(TAG, "addSongTrackPosition randomPosition : " + randomPosition);
+                if (randomPosition == mSongTrackPosition) {
+                    mSongTrackPosition++;
+                    if (mSongTrackPosition >= getPlayListSize()) {
+                        mSongTrackPosition = 0;
+                    }
+                } else {
+                    mSongTrackPosition = randomPosition;
+                }
+                break;
         }
 
+        Log.d(TAG, "addSongTrackPosition mode : " + mEnumPlayMode.name());
         Log.d(TAG, "addSongTrackPosition: " + mSongTrackPosition);
+    }
+
+    public EnumPlayMode getmEnumPlayMode() {
+        return mEnumPlayMode;
+    }
+
+    public void setmEnumPlayMode(EnumPlayMode mEnumPlayMode) {
+        this.mEnumPlayMode = mEnumPlayMode;
     }
 }

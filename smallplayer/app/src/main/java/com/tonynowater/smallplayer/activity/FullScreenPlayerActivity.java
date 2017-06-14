@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -29,6 +30,7 @@ import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.view.CurrentPlayListAdapter;
@@ -49,6 +51,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     private PlaybackStateCompat mLastPlaybackState;
     private List<MediaBrowserCompat.MediaItem> mCurrentPlayList = new ArrayList<>();
     private BottomSheetDialog mBottomSheetDialog;
+    private EnumPlayMode mEnumPlayMode;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -58,6 +61,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     private void updatePlaybackState(PlaybackStateCompat state) {
         if (state == null) {
+            Log.d(TAG, "updatePlaybackState: state == null");
             return;
         }
         mLastPlaybackState = state;
@@ -86,6 +90,33 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
             default:
                 Log.d(TAG, "updatePlaybackState: unhandle state " + state.getState());
         }
+
+        setShuffleButtonEnable(mLastPlaybackState.getExtras());
+    }
+
+    /**
+     * @param bundle
+     */
+    private void setShuffleButtonEnable(Bundle bundle) {
+
+        if (bundle == null) {
+            Log.d(TAG, "setShuffleButtonEnable: bundle null");
+            return;
+        }
+
+        mEnumPlayMode = getPlayMode(bundle);
+        switch (mEnumPlayMode) {
+            case NORMAL:
+                mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), android.R.color.white));
+                break;
+            case RANDOM:
+                mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                break;
+        }
+    }
+
+    private EnumPlayMode getPlayMode(Bundle bundle) {
+        return (EnumPlayMode) bundle.getSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE);
     }
 
     @Override
@@ -100,6 +131,11 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         }
         Log.d(TAG, "onMetadataChanged: ");
         updateUI(metadata);
+    }
+
+    @Override
+    protected void onMediaServiceConnected() {
+        setShuffleButtonEnable(mMediaBrowserCompat.getExtras());
     }
 
     @Override
@@ -126,6 +162,8 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         String ArtUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
         if (!TextUtils.isEmpty(ArtUrl)) {
             Glide.with(getApplicationContext()).load(ArtUrl).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
+        } else {
+            Glide.with(getApplicationContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
         }
     }
 
@@ -246,8 +284,24 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
                 showCurrentPlayList();
                 break;
             case R.id.iv_shuffle_activity_full_screen_player:
+                sendChangePlayModeAction();
                 break;
         }
+    }
+
+    private void sendChangePlayModeAction() {
+        switch (mEnumPlayMode) {
+            case NORMAL:
+                mEnumPlayMode = EnumPlayMode.RANDOM;
+                break;
+            case RANDOM:
+                mEnumPlayMode = EnumPlayMode.NORMAL;
+                break;
+        }
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE, mEnumPlayMode);
+        mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYMODE, bundle);
     }
 
     @Override

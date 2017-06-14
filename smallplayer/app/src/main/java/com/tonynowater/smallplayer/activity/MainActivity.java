@@ -79,6 +79,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
+    protected void onMediaServiceConnected() {
+
+    }
+
+    @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
 
     }

@@ -46,6 +46,11 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     }
 
     @Override
+    protected void onMediaServiceConnected() {
+
+    }
+
+    @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
 
     }

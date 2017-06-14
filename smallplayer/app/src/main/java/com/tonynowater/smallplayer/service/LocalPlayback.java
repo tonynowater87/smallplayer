@@ -169,7 +169,8 @@ public class LocalPlayback implements Playback
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d(TAG, "onError: " + what);
+        // FIXME: 2017/6/14 目前當歌曲在緩衝時切換播放位置會onError -38 onCompletion
+        Log.d(TAG, "onError: " + what + " " + extra);
         return false;
     }
 

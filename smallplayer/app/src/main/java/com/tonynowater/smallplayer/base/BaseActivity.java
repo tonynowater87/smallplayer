@@ -30,7 +30,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     protected T mBinding;
     protected MediaControllerCompat.TransportControls mTransportControls;
     private PlaybackStateCompat mPlaybackStateCompat;
-    private MediaBrowserCompat mMediaBrowserCompat;
+    protected MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
     private MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -60,6 +60,8 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     protected abstract void onSessionDestroyed();
 
     protected abstract void onMetadataChanged(MediaMetadataCompat metadata);
+
+    protected abstract void onMediaServiceConnected();
 
     protected abstract void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children);
 
@@ -113,9 +115,11 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
                 mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);
                 MediaControllerCompat.setMediaController(BaseActivity.this, mMediaControllerCompat);
                 mPlaybackStateCompat = mMediaControllerCompat.getPlaybackState();
+                onMediaServiceConnected();
                 onPlaybackStateChanged(mPlaybackStateCompat);
                 onMetadataChanged(mMediaControllerCompat.getMetadata());
                 connectPlayerFragment();
+
             } catch (RemoteException e) {
                 e.printStackTrace();
                 Log.e(TAG, "updateState: " + e.toString());

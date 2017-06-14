@@ -40,6 +40,11 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
     }
 
     @Override
+    protected void onMediaServiceConnected() {
+
+    }
+
+    @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
 
     }

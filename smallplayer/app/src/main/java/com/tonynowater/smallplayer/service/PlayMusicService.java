@@ -30,18 +30,19 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String ACTION_ADD_SONG_TO_PLAYLIST = "ACTION_ADD_SONG_TO_PLAYLIST";
     public static final String ACTION_REMOVE_SONG_FROM_PLAYLIST = "ACTION_REMOVE_SONG_FROM_PLAYLIST";
     public static final String ACTION_CHANGE_PLAYLIST = "ACTION_CHANGE_PLAYLIST";
+    public static final String ACTION_CHANGE_PLAYMODE = "ACTION_CHANGE_PLAYMODE";
     public static final String BUNDLE_KEY_PLAYLIST_ID = "BUNDLE_KEY_PLAYLIST_ID";
     public static final String BUNDLE_KEY_SONG_ID = "BUNDLE_KEY_SONG_ID";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION = "BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION";
     public static final String BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST = "BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST";
+    public static final String BUNDLE_KEY_PLAYMODE = "BUNDLE_KEY_PLAYMODE";
     public static final String GET_CURRENT_PLAY_LIST_ID = "GET_CURRENT_PLAY_LIST_ID";
     private static final String ROOT_ID_TEST = "ROOT_ID_TEST";
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
     private MediaSessionCompat mMediaSessionCompat;
-    private PlaybackStateCompat.Builder mPlaybackStateCompatBuilder;
     private MusicProvider mMusicProvider;
     private MediaNotificationManager mMediaNotificationManager;
     private LocalPlayback mLocalPlayback;
@@ -84,10 +85,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         // Enable callbacks from MediaButtons and TransportControls
         mMediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
-
-        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
-        mPlaybackStateCompatBuilder = new PlaybackStateCompat.Builder().setActions(getAvailableAction());
-        mMediaSessionCompat.setPlaybackState(mPlaybackStateCompatBuilder.build());
 
         // MySessionCallback() has methods that handle callbacks from a media controller
         mMediaSessionCompat.setCallback(new MySessionCall());
@@ -136,6 +133,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             bundle.putBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST, extraBundle.getBoolean(BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST));
         }
         bundle.putInt(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());
+        bundle.putSerializable(BUNDLE_KEY_PLAYMODE, mMusicProvider.getmEnumPlayMode());
         stateBuilder.setExtras(bundle);
         mMediaSessionCompat.setPlaybackState(stateBuilder.build());
 
@@ -167,16 +165,26 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         return START_STICKY;
     }
 
+    /**
+     * 這裡必須回傳BrowserRoot，畫面端才能成功連線Service
+     * @param clientPackageName
+     * @param clientUid
+     * @param rootHints
+     * @return
+     */
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
         Log.d(TAG, "onGetRoot: " + clientPackageName);
         // not allowing any arbitrary app to browse your app's contents, you
-        // 這裡必須回傳，畫面端才能成功連線
+        // 這裡必須回傳，畫面端才能成功連線Service
         
         if (clientPackageName.equals(BuildConfig.APPLICATION_ID)) {
             Log.d(TAG, "onGetRoot equals my app");
-            return new BrowserRoot(ROOT_ID_TEST, null);
+            //這裡放的Bundle可從MediaBrowserCompat.getExtra取得
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(BUNDLE_KEY_PLAYMODE, mMusicProvider.getmEnumPlayMode());
+            return new BrowserRoot(ROOT_ID_TEST, bundle);
         }
         return null;
     }
@@ -188,6 +196,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         if (TextUtils.equals(parentId, GET_CURRENT_PLAY_LIST_ID)) {
             result.sendResult(mMusicProvider.getMediaItemList());
         }
+    }
+
+    @Override
+    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result, @NonNull Bundle options) {
+        super.onLoadChildren(parentId, result, options);
     }
 
     private final class MySessionCall extends MediaSessionCompat.Callback {
@@ -290,7 +303,19 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 case ACTION_CHANGE_PLAYLIST:
                     handleChangePlayList(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
                     break;
+                case ACTION_CHANGE_PLAYMODE:
+                    handleChangePlayMode((EnumPlayMode) extras.getSerializable(BUNDLE_KEY_PLAYMODE));
+                    break;
             }
+        }
+
+        /**
+         *
+         * @param enumPlayMode
+         */
+        private void handleChangePlayMode(EnumPlayMode enumPlayMode) {
+            mMusicProvider.setmEnumPlayMode(enumPlayMode);
+            updatePlaybackState(null);
         }
 
         /**
@@ -438,6 +463,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private void handlePlayRequest() {
         Log.d(TAG, "handlePlayRequest: " + mLocalPlayback.getState());
+        Log.d(TAG, "handlePlayRequest mServiceStarted : " + mServiceStarted);
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
         if (!mServiceStarted) {
