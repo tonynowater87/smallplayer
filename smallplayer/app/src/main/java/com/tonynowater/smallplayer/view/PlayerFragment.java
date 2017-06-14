@@ -17,12 +17,9 @@ import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
-import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
-import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -91,19 +88,6 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
         mBinding.buttonAction.setOnClickListener(mOnClickListener);
         mBinding.llSongInfoFragmentPlayer.setOnClickListener(mOnClickListener);
-    }
-
-    /**
-     * 設定預設的歌曲文字圖片顯示
-     */
-    private void initialUI() {
-        RealmUtils realmUtils = new RealmUtils();
-        List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListIdSortByPosition(realmUtils.queryCurrentPlayListID());
-        if (playListSongEntities.size() > 0) {
-            PlayListSongEntity playListSongEntity = playListSongEntities.get(0);
-            setUIByPlayListSongEntity(playListSongEntity);
-        }
-        realmUtils.close();
     }
 
     private void setUIByPlayListSongEntity(PlayListSongEntity playListSongEntity) {
@@ -176,13 +160,6 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         }
 
         Log.d(TAG, "updateState: " + state.getState());
-
-        if (mPlaybackStateCompat.getExtras() != null && mPlaybackStateCompat.getExtras().getBoolean(PlayMusicService.BUNDLE_KEY_CHANGE_NO_SONG_PLAYLIST)) {
-            //切換到沒歌曲的播放清單將UI文字圖片設回預設值
-            Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
-            mBinding.textViewSongNameValue.setText(getString(R.string.dash));
-            mBinding.textViewSongArtistValue.setText(getString(R.string.dash));
-        }
     }
 
     private void startScheduledUpdateProgress() {
@@ -235,9 +212,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
     }
 
     @Override
-    protected void onFragmentMediaConnected() {
-        initialUI();
-    }
+    protected void onFragmentMediaConnected() {}
 
     @Override
     protected void pause() {
