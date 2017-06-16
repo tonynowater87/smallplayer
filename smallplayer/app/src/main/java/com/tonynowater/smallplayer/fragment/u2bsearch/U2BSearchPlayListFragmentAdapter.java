@@ -21,6 +21,11 @@ public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapte
     }
 
     @Override
+    protected boolean isFootViewVisible() {
+        return true;
+    }
+
+    @Override
     protected int getItemResourceId() {
         return R.layout.layout_u2b_search_playlist_adapter_listitem;
     }

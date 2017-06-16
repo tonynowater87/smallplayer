@@ -87,6 +87,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 @Override
                 public void run() {
                     mSongListAdapter.notifyDataSetChanged();
+                    isLoad = false;
                     mBinding.lottieAnimationView.setVisibility(View.GONE);
                 }
             });
@@ -336,22 +337,39 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 Log.d(TAG, "onScrollStateChanged: " + newState);
                 super.onScrollStateChanged(recyclerView, newState);
-                //滑到底的時候做加載
-                if (lastCompletelyVisibleItemPosition + 1 >= mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                //滑到底部的時候做加載
+                if (lastCompletelyVisibleItemPosition + 5 >= mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (!isLoad) {
-                        // FIXME: 2017/6/15 已經滑到底沒資料時，圈圈還是會存在
                         switch (mEnumU2BSearchType) {
                             case VIDEO:
-                                U2BApi.newInstance().queryU2BVideo(mQuery, mU2BVideoDTO.getNextPageToken(), mViedoSearchCallback);
-                                isLoad = true;
+                                if (TextUtils.isEmpty(mU2BVideoDTO.getNextPageToken())) {
+                                    Log.d(TAG, "onScrollStateChanged: token null");
+                                    mSongListAdapter.setFootviewVisible(false);
+                                    mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
+                                } else {
+                                    U2BApi.newInstance().queryU2BVideo(mQuery, mU2BVideoDTO.getNextPageToken(), mViedoSearchCallback);
+                                    isLoad = true;
+                                }
                                 break;
                             case PLAYLIST:
-                                U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BPlayListDTO.getNextPageToken(), mViedoSearchCallback);
-                                isLoad = true;
+                                if (TextUtils.isEmpty(mU2BPlayListDTO.getNextPageToken())) {
+                                    Log.d(TAG, "onScrollStateChanged: token null");
+                                    mSongListAdapter.setFootviewVisible(false);
+                                    mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
+                                } else {
+                                    U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BPlayListDTO.getNextPageToken(), mViedoSearchCallback);
+                                    isLoad = true;
+                                }
                                 break;
                             case PLAYLISTVIDEO:
-                                U2BApi.newInstance().queryU2BPlayListVideo(mQuery, mU2bPlayListVideoDTO.getNextPageToken(), mViedoSearchCallback);
-                                isLoad = true;
+                                if (TextUtils.isEmpty(mU2bPlayListVideoDTO.getNextPageToken())) {
+                                    Log.d(TAG, "onScrollStateChanged: token null");
+                                    mSongListAdapter.setFootviewVisible(false);
+                                    mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
+                                } else {
+                                    U2BApi.newInstance().queryU2BPlayListVideo(mQuery, mU2bPlayListVideoDTO.getNextPageToken(), mViedoSearchCallback);
+                                    isLoad = true;
+                                }
                                 break;
                             default:
                                 Log.d(TAG, "onScrollStateChanged : DoNothing " + mEnumU2BSearchType.name());

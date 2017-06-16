@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.ArrayList;
@@ -27,12 +28,16 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     protected OnClickSomething<K> mOnClickSongListener;
     protected RealmUtils realmUtils;
     protected Context mContext;
+    protected boolean mFootviewIsVisible = true;
 
     protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();
         this.mDataList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
+        mFootviewIsVisible = isFootViewVisible();
     }
+
+    protected abstract boolean isFootViewVisible();
 
     @Override
     public BasePlayableFragmentAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -52,7 +57,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
                 return baseViewHolder;
             case FOOTER_VIEWTYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_footer, parent, false);
-                if (!isFootviewVisible()) {
+                if (!mFootviewIsVisible) {
                     view.setVisibility(View.GONE);
                 }
                 baseViewHolder = new BaseViewHolder(view);
@@ -78,7 +83,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     @Override
     public int getItemCount() {
 
-        if (hasData() && isFootviewVisible()) {
+        if (hasData() && mFootviewIsVisible) {
             return mDataList.size() + 1;
         } else {
             return mDataList.size();
@@ -92,7 +97,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     @Override
     public int getItemViewType(int position) {
-        if (hasData() && isFootviewVisible() && position + 1 == getItemCount()) {
+        if (hasData() && mFootviewIsVisible && position + 1 == getItemCount()) {
             return FOOTER_VIEWTYPE;
         }
 
@@ -102,11 +107,17 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     /** 設置要顯示的List資料 */
     public void setDataSource (List<K> dataSource) {
         mDataList = new ArrayList<>(dataSource);
+        if (mDataList.size() < U2BApi.QUERY_MAX_RESULT) {
+            //資料小於查詢的最小筆數25筆，不要顯示FootView
+            setFootviewVisible(false);
+        }
     }
 
-    /** @return 是否要顯示FooterView */
-    protected boolean isFootviewVisible () {
-        return true;
+    /**
+     * @param footviewVisible 設置FootView是否可見
+     */
+    public void setFootviewVisible (boolean footviewVisible) {
+        mFootviewIsVisible = footviewVisible;
     }
 
     public class BaseViewHolder extends RecyclerView.ViewHolder {

@@ -6,9 +6,8 @@ import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
-import com.tonynowater.smallplayer.module.u2b.Playable;
-import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 /**
@@ -20,6 +19,11 @@ public class U2BSearchFragmentAdapter extends BasePlayableFragmentAdapter<U2BVid
 
     public U2BSearchFragmentAdapter(OnClickSomething<U2BVideoDTO.ItemsBean> mOnClickSongListener) {
         super(mOnClickSongListener);
+    }
+
+    @Override
+    protected boolean isFootViewVisible() {
+        return true;
     }
 
     @Override

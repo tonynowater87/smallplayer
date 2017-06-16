@@ -22,13 +22,13 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
     }
 
     @Override
-    protected int getItemResourceId() {
-        return R.layout.layout_current_play_list_adapter;
+    protected boolean isFootViewVisible() {
+        return false;
     }
 
     @Override
-    protected boolean isFootviewVisible() {
-        return false;
+    protected int getItemResourceId() {
+        return R.layout.layout_current_play_list_adapter;
     }
 
     @Override

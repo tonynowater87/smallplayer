@@ -29,7 +29,7 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     }
 
     @Override
-    protected boolean isFootviewVisible() {
+    protected boolean isFootViewVisible() {
         return false;
     }
 

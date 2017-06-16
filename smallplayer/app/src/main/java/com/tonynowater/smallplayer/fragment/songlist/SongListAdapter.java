@@ -26,13 +26,13 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
     }
 
     @Override
-    protected int getItemResourceId() {
-        return R.layout.layout_songlistadapter_listitem;
+    protected boolean isFootViewVisible() {
+        return false;
     }
 
     @Override
-    protected boolean isFootviewVisible() {
-        return false;
+    protected int getItemResourceId() {
+        return R.layout.layout_songlistadapter_listitem;
     }
 
     @Override
