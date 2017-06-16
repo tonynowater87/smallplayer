@@ -65,7 +65,7 @@ public class DialogUtil {
      */
     public static void showSelectPlaylistDialog(Context context, final Playable playable, final MediaControllerCompat.TransportControls transportControls) {
         final RealmUtils realmUtils = new RealmUtils();
-        final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayList();
+        final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
         builder.title(playable.getPlayListSongEntity().getTitle());
         builder.items(playListEntities);
