@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.base;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
@@ -107,6 +108,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
             }
 
             try {
+                startService(new Intent(BaseActivity.this, PlayMusicService.class));
                 if (!TextUtils.isEmpty(getSubscribeID())) {
                     mMediaBrowserCompat.subscribe(getSubscribeID(), mSubScriptionCallBack);
                 }

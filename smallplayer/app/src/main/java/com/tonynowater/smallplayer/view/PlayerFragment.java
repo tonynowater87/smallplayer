@@ -17,7 +17,6 @@ import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
-import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.concurrent.Executors;
@@ -25,7 +24,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-// TODO: 2017/6/12 刪除目前播放歌曲後，縮小返回歌曲資訊會不見
 /**
  * 畫面底部的播放Fragment
  * Created by tonynowater on 2017/5/20.
@@ -88,16 +86,6 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
         mBinding.buttonAction.setOnClickListener(mOnClickListener);
         mBinding.llSongInfoFragmentPlayer.setOnClickListener(mOnClickListener);
-    }
-
-    private void setUIByPlayListSongEntity(PlayListSongEntity playListSongEntity) {
-        mBinding.textViewSongNameValue.setText(playListSongEntity.getTitle());
-        mBinding.textViewSongArtistValue.setText(playListSongEntity.getArtist());
-        if (playListSongEntity.getAlbumArtUri() == null) {
-            Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
-        } else {
-            Glide.with(MyApplication.getContext()).load(playListSongEntity.getAlbumArtUri()).into(mBinding.imageviewThumb);
-        }
     }
 
     private void setUIWhenPlayListSongEntityNull() {

@@ -154,7 +154,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: ");
+        Log.d(TAG, "onStartCommand: " + intent);
+        if (intent == null) {
+            //關閉Service
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         return START_STICKY;
     }
 
@@ -223,6 +228,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                         case KeyEvent.KEYCODE_MEDIA_PAUSE:
                             onPause();
                             break;
+                        // TODO: 2017/6/15 停止按鈕事件還要加、車子播放暫停按鈕有問題
                     }
                 }
             }
