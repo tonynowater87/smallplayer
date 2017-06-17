@@ -177,6 +177,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         super.onStop();
     }
 
+    // TODO: 2017/6/17 播放歌曲若是已存在歌單的歌曲要可以直接切到當首播放
     /**
      * 「播放」動作
      * @param playListPosition

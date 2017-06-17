@@ -117,8 +117,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d(TAG, "onQueryTextChange: " + newText);
-                if (!TextUtils.isEmpty(newText.trim())) {
-                    if (mBaseViewPagerFragments[mCurrentViewPagerPosition] instanceof U2BSearchViewPagerFragment) {
+
+                if (mBaseViewPagerFragments[mCurrentViewPagerPosition] instanceof U2BSearchViewPagerFragment) {
+                    if (!TextUtils.isEmpty(newText.trim())) {
                         U2BApi.newInstance().queryU2BSUGGESTION(newText, new Callback() {
                             @Override
                             public void onFailure(Request request, IOException e) {
@@ -142,11 +143,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                 }
                             }
                         });
+                    } else {
+                        suggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
+                        initialSearchViewSuggestAdapter(suggestions, true);//改顯示歷史搜尋紀錄
                     }
-                } else {
-                    suggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
-                    initialSearchViewSuggestAdapter(suggestions, true);//改顯示歷史搜尋紀錄
+                } else if (mBaseViewPagerFragments[mCurrentViewPagerPosition] instanceof SongListViewPagerFragment) {
+                    mBaseViewPagerFragments[mCurrentViewPagerPosition].queryBySearchView(newText);
                 }
+
                 return false;
             }
 

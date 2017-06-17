@@ -2,6 +2,8 @@ package com.tonynowater.smallplayer.fragment.songlist;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.MyApplication;
@@ -13,16 +15,20 @@ import com.tonynowater.smallplayer.util.MediaUtils;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * 本地音樂Adapter
  * Created by tonyliao on 2017/4/27.
  */
-public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSonglistadapterListitemBinding> {
+public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSonglistadapterListitemBinding> implements Filterable{
+
+    private ArrayList<Song> mDuplicateList;
 
     public SongListAdapter(OnClickSomething mOnClickSongListener) {
         super(mOnClickSongListener);
         mDataList = MediaUtils.getSongList(MyApplication.getContext());
+        mDuplicateList = new ArrayList<>(mDataList);
     }
 
     @Override
@@ -46,4 +52,40 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
             Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
         }
     }
+
+    @Override
+    public Filter getFilter() {
+        return new SongListAdapterFilter();
+    }
+
+    private class SongListAdapterFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            ArrayList<Song> filterlist = new ArrayList<>();
+            for (int i = 0; i < mDuplicateList.size(); i++) {
+                Song song = mDuplicateList.get(i);
+                if (song.getmTitle().toLowerCase().contains(constraint.toString().toLowerCase())
+                    || song.getmArtist().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                    filterlist.add(song);
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.count = filterlist.size();
+            filterResults.values = filterlist;
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            if (results.count > 0) {
+                mDataList = (ArrayList<Song>) results.values;
+                notifyDataSetChanged();
+            } else {
+                mDataList = new ArrayList<>(mDuplicateList);
+                notifyDataSetChanged();
+            }
+        }
+    }
+
 }
