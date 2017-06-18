@@ -14,7 +14,6 @@ import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
-import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
@@ -74,13 +73,14 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
             DialogUtil.showActionDialog(this, u2bPlayListVideoItem.getPlayListSongEntity().getTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
-                    if (i == 0) {
-                        RealmUtils realmUtils = new RealmUtils();
-                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongEntity());
-                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
-                        realmUtils.close();
-                    } else {
-                        DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);
+                    switch (i) {
+                        case 0:
+                            mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), u2bPlayListVideoItem.getPlayListSongEntity());
+                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID());
+                            break;
+                        case 1:
+                            DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);
+                            break;
                     }
                 }
             });

@@ -43,7 +43,6 @@ import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
-import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -293,19 +292,20 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     public void onClick(final Object object) {
         // TODO: 2017/5/30 這邊要在簡化
-        final RealmUtils realmUtils = new RealmUtils();
         if (object instanceof Song) {
             final Song song = ((Song) object);
             DialogUtil.showActionDialog(this, song.getmTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                    if (i == 0) {
-                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
-                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
-                    } else {
-                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
+                    switch (i) {
+                        case 0:
+                            mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
+                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID());
+                            break;
+                        case 1:
+                            DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
+                            break;
                     }
-                    realmUtils.close();
                 }
             });
         } else if (object instanceof U2BVideoDTO.ItemsBean) {
@@ -313,13 +313,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             DialogUtil.showActionDialog(this, u2bVideoItem.getPlayListSongEntity().getTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
-                    if (i == 0) {
-                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
-                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
-                    } else {
-                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);
+                    switch (i) {
+                        case 0:
+                            mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
+                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID());
+                            break;
+                        case 1:
+                            DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);
+                            break;
                     }
-                    realmUtils.close();
                 }
             });
         } else if (object instanceof U2BPlayListDTO.ItemsBean) {

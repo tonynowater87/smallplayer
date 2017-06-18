@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.view.PlayerFragment;
@@ -33,6 +34,8 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     private PlaybackStateCompat mPlaybackStateCompat;
     protected MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
+    protected RealmUtils mRealmUtils;
+
     private MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -153,8 +156,15 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRealmUtils = new RealmUtils();
         mBinding = DataBindingUtil.setContentView(this, getLayoutResource());
         mMediaBrowserCompat = new MediaBrowserCompat(this, new ComponentName(this, PlayMusicService.class), mConnectionCallback, null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mRealmUtils.close();
+        super.onDestroy();
     }
 
     protected abstract int getLayoutResource();

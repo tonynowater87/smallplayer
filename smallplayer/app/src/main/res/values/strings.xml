@@ -45,6 +45,7 @@
     <string-array name="action_list">
         <item>播放</item>
         <item>加入清單</item>
+        <item>下載MP3</item>
     </string-array>
 
 </resources>

@@ -15,7 +15,6 @@ import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
 import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
 import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
-import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -89,18 +88,19 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
             mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);//展開toolbar
 
         } else if (object instanceof PlayListSongEntity){
-            final RealmUtils realmUtils = new RealmUtils();
             final PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
             DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                    if (i == 0) {
-                        realmUtils.addSongToPlayList(realmUtils.queryCurrentPlayListID(), playListSongEntity);
-                        sendActionPlayingNow(realmUtils.queryCurrentPlayListID());
-                    } else {
-                        DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
+                    switch (i) {
+                        case 0:
+                            mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), playListSongEntity);
+                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID());
+                            break;
+                        case 1:
+                            DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
+                            break;
                     }
-                    realmUtils.close();
                 }
             });
         }
