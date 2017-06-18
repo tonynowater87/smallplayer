@@ -11,4 +11,5 @@ public class U2BApiDefine {
     public static final String U2B_API_QUERY_PLAYLIST_VIDEO_URL = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&maxResults=%s&key=" + API_KEY + "&pageToken=%s";
     public static final String U2B_EXTRACT_VIDEO_URL = "http://youtube.com/watch?v=%s";
     public static final String U2B_API_SUGGESTION_URL = "http://suggestqueries.google.com/complete/search?q=%s&client=firefox&ds=yt&hl=zh";
+    public static final String DOWNLOAD_MP3_URL = "http://www.youtubeinmp3.com/fetch/?format=JSON&video=https://www.youtube.com/watch?v=%s";
 }

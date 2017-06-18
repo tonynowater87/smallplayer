@@ -47,6 +47,7 @@ import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
+import com.tonynowater.smallplayer.util.ToastUtil;
 import com.tonynowater.smallplayer.view.CustomSearchAdapter;
 
 import java.io.IOException;
@@ -320,6 +321,21 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);
+                            break;
+                        case 2:
+                            U2BApi.newInstance().downloadMP3FromU2B(u2bVideoItem, new U2BApi.OnU2BApiCallback() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    Log.d(TAG, "onSuccess: " + response);
+                                    ToastUtil.newInstance().showToast(response);
+                                }
+
+                                @Override
+                                public void onFailure(String errorMsg) {
+                                    Log.d(TAG, "onFailure: " + errorMsg);
+                                    ToastUtil.newInstance().showToast(errorMsg);
+                                }
+                            });
                             break;
                     }
                 }

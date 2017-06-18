@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -17,6 +18,7 @@ import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
 import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
@@ -99,6 +101,19 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
+                            break;
+                        case 2:
+                            U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnU2BApiCallback() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    Log.d(TAG, "onSuccess: " + response);
+                                }
+
+                                @Override
+                                public void onFailure(String errorMsg) {
+                                    Log.d(TAG, "onFailure: " + errorMsg);
+                                }
+                            });
                             break;
                     }
                 }

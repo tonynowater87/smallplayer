@@ -41,6 +41,7 @@
     <string name="delete_hint">確定要刪除 %s ?</string>
     <string name="default_list_can_not_delete">預設歌單不可刪除</string>
     <string name="normal_dialog_title">訊息</string>
+    <string name="downloadMP3_success_msg">%s下載成功</string>
 
     <string-array name="action_list">
         <item>播放</item>

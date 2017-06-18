@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -14,6 +15,7 @@ import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.List;
  * 顯示Youtube搜尋專輯裡的歌曲清單Activity
  */
 public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
+    private static final String TAG = PlayListActivity.class.getSimpleName();
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -80,6 +83,19 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);
+                            break;
+                        case 2:
+                            U2BApi.newInstance().downloadMP3FromU2B(u2bPlayListVideoItem, new U2BApi.OnU2BApiCallback() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    Log.d(TAG, "onSuccess: " + response);
+                                }
+
+                                @Override
+                                public void onFailure(String errorMsg) {
+                                    Log.d(TAG, "onFailure: " + errorMsg);
+                                }
+                            });
                             break;
                     }
                 }

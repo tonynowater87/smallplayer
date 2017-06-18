@@ -117,9 +117,11 @@ public class MediaUtils {
                     int iColumn = cursor.getColumnIndex(sColumn);
                     switch (cursor.getType(iColumn)) {
                         case Cursor.FIELD_TYPE_STRING:
+                            System.out.println("[" + sColumn + "] Album cursor = FIELD_TYPE_STRING [" + cursor.getString(iColumn) + "]");
                             bundle.putString(sColumn,cursor.getString(iColumn));
                             break;
                         case Cursor.FIELD_TYPE_INTEGER:
+                            System.out.println("[" + sColumn + "] Album cursor = FIELD_TYPE_INTEGER [" + cursor.getInt(iColumn) + "]");
                             bundle.putInt(sColumn,cursor.getInt(iColumn));
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:

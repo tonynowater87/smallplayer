@@ -16,7 +16,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.File;
 import java.util.ArrayList;
-
+// TODO: 2017/6/18 下載完歌曲，不會自動刷新的問題
 /**
  * 本地音樂Adapter
  * Created by tonyliao on 2017/4/27.
