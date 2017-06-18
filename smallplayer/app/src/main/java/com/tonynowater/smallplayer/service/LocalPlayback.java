@@ -255,8 +255,10 @@ public class LocalPlayback implements Playback
         }
 
         if (mYoutubeExtratorAsyncTask != null) {
-            Log.d(TAG, "play: mYoutubeExtratorAsyncTask.cancel(true)");
-            mYoutubeExtratorAsyncTask.cancel(true);
+            if (!mYoutubeExtratorAsyncTask.isCancelled()) {
+                Log.d(TAG, "play: mYoutubeExtratorAsyncTask.cancel(true)");
+                mYoutubeExtratorAsyncTask.cancel(true);
+            }
         }
 
         if (mCurrentTrackPosition != trackPosition) {
