@@ -1,38 +1,43 @@
 package com.tonynowater.smallplayer.util;
 
+import android.app.NotificationManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-// TODO: 2017/6/18 下載MP3還需要另外做通知顯示下載中的狀態
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
+
 /**
  * Created by tonynowater on 2017/6/18.
  */
-public class FileHelper extends AsyncTask<Void, Void, Boolean> {
+public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
     private static final String TAG = FileHelper.class.getSimpleName();
-    private static final int BYTE_READ = 1024 * 8;
+    private static final int BYTE_READ = 2048;
     private final String mPath;
     private final String mp3suffix = ".mp3";
     private PlayListSongEntity mPlayListSongEntity;
     private String mFileName;
-    private InputStream mInputStream;
+    private Response mResponse;
     private OnFileHelperCallback mCallback;
     private int mId;
 
@@ -41,10 +46,10 @@ public class FileHelper extends AsyncTask<Void, Void, Boolean> {
         void onFailure();
     }
 
-    public FileHelper(PlayListSongEntity mPlayListSongEntity, InputStream mInputStream, OnFileHelperCallback mCallback) {
+    public FileHelper(PlayListSongEntity mPlayListSongEntity, Response mResponse, OnFileHelperCallback mCallback) {
         this.mPlayListSongEntity = mPlayListSongEntity;
         this.mFileName = mPlayListSongEntity.getTitle() + mp3suffix;
-        this.mInputStream = mInputStream;
+        this.mResponse = mResponse;
         this.mCallback = mCallback;
         mPath = getFilePath();
         mId = (mPlayListSongEntity.getTitle() + mPlayListSongEntity.getId()).hashCode();
@@ -97,49 +102,56 @@ public class FileHelper extends AsyncTask<Void, Void, Boolean> {
                 file = new File(mPath + filePath + calendar.getTime().toString());
             }
 
-            FileOutputStream fileOutputStream = null;
             try {
-                fileOutputStream = new FileOutputStream(file);
-                byte[] bytes = new byte[BYTE_READ];
-                int available = mInputStream.available();
-                Log.d(TAG, "saveFile available : " + available);
                 long startTime = System.currentTimeMillis();
-                int sum = 0;
-                int len;
-                while ((len = mInputStream.read(bytes)) != -1) {
-                    sum += bytes.length;
-                    if (available != 0) {
-                        Log.d(TAG, "saveFile : " + ((sum / available) * 100));
-                    }
-
-                    Log.d(TAG, "saveFile len : " + len);
-                    fileOutputStream.write(bytes, 0, len);
-                }
-
-                fileOutputStream.flush();
-
-                Log.d(TAG, "saveFile finish in : " + (System.currentTimeMillis() - startTime));
+                BufferedSink bufferedSink = Okio.buffer(Okio.sink(file));
+                handleWrites(bufferedSink, mResponse.body().source(), mResponse.body().contentLength());
+                MiscellaneousUtil.calcRunningTime("下載"+mFileName,startTime);
+                bufferedSink.close();
             } catch (FileNotFoundException e) {
-                bRet = false;
                 e.printStackTrace();
-                Log.e(TAG, "saveFile: " + e.getMessage());
+                bRet = false;
+                Log.e(TAG, "saveFile : " + e.getMessage());
             } catch (IOException e) {
-                bRet = false;
                 e.printStackTrace();
-                Log.e(TAG, "saveFile: " + e.getMessage());
-            } finally {
-                if (fileOutputStream != null) {
-                    try {
-                        fileOutputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                bRet = false;
+                Log.e(TAG, "saveFile : " + e.getMessage());
             }
+
         }
 
         Log.d(TAG, "saveFile save success : " + bRet);
         return bRet;
+    }
+
+    /**
+     *
+     * @param bufferedSink
+     * @param source
+     * @param contentLength
+     */
+    private void handleWrites(BufferedSink bufferedSink, BufferedSource source, long contentLength) throws IOException {
+        long completeCount = 0;
+        long readCount = 0;
+        long limit = 10000;
+        Log.d(TAG, "handleWrites contentLengh : " + contentLength);
+        while (readCount != -1) {
+            readCount = source.read(bufferedSink.buffer(), BYTE_READ);
+            completeCount += readCount;
+
+            //show every 50kb
+            if (completeCount > limit) {
+                limit += 50000;
+                Log.d(TAG, "handleWrites total count : " + completeCount);
+                publishProgress((int) (100 * completeCount/contentLength));
+            }
+        }
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        Log.d(TAG, "onProgressUpdate: " + values[0]);
+        showProgressNotification(values[0]);
     }
 
     @Override
@@ -150,6 +162,7 @@ public class FileHelper extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean bResult) {
         Log.d(TAG, "onPostExecute: " + bResult);
+        dismissProgressNotification();
         if (bResult) {
             addFileToContentProvider();
             //addAlbumToContentProvider();
@@ -181,5 +194,28 @@ public class FileHelper extends AsyncTask<Void, Void, Boolean> {
         values.put(MediaStore.Audio.Albums.ALBUM_KEY, mId);
         values.put(MediaStore.Audio.Albums.ARTIST, mPlayListSongEntity.getArtist());
         MyApplication.getContext().getContentResolver().insert(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, values);
+    }
+
+    /**
+     * 關閉下載百分比的通知
+     */
+    private void dismissProgressNotification() {
+        NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(mPlayListSongEntity.getId());
+    }
+
+    /**
+     * 顯示下載百分比的通知
+     * @param percent 百分比
+     */
+    private void showProgressNotification(int percent) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext())
+                .setSmallIcon(android.R.drawable.arrow_down_float)
+                .setContentTitle(MyApplication.getContext().getString(R.string.app_name))
+                .setContentText(String.format(MyApplication.getContext().getString(R.string.downloadMP3_ing_msg), mFileName))
+                .setAutoCancel(false)
+                .setProgress(100, percent, false);
+        NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(mPlayListSongEntity.getId(), builder.build());
     }
 }

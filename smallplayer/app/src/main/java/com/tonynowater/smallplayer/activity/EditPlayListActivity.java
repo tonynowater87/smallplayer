@@ -20,6 +20,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.ToastUtil;
 
 import java.util.List;
 
@@ -107,11 +108,13 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                                 @Override
                                 public void onSuccess(String response) {
                                     Log.d(TAG, "onSuccess: " + response);
+                                    ToastUtil.showToast(EditPlayListActivity.this, response);
                                 }
 
                                 @Override
                                 public void onFailure(String errorMsg) {
                                     Log.d(TAG, "onFailure: " + errorMsg);
+                                    ToastUtil.showToast(EditPlayListActivity.this, errorMsg);
                                 }
                             });
                             break;

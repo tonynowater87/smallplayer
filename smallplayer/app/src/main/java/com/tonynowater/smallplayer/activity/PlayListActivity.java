@@ -17,6 +17,7 @@ import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.ToastUtil;
 
 import java.util.List;
 
@@ -89,11 +90,13 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                                 @Override
                                 public void onSuccess(String response) {
                                     Log.d(TAG, "onSuccess: " + response);
+                                    ToastUtil.showToast(PlayListActivity.this, response);
                                 }
 
                                 @Override
                                 public void onFailure(String errorMsg) {
                                     Log.d(TAG, "onFailure: " + errorMsg);
+                                    ToastUtil.showToast(PlayListActivity.this, errorMsg);
                                 }
                             });
                             break;

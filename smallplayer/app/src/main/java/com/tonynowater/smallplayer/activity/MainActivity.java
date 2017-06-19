@@ -327,13 +327,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                 @Override
                                 public void onSuccess(String response) {
                                     Log.d(TAG, "onSuccess: " + response);
-                                    ToastUtil.newInstance().showToast(response);
+                                    ToastUtil.showToast(MainActivity.this, response);
                                 }
 
                                 @Override
                                 public void onFailure(String errorMsg) {
                                     Log.d(TAG, "onFailure: " + errorMsg);
-                                    ToastUtil.newInstance().showToast(errorMsg);
+                                    ToastUtil.showToast(MainActivity.this, errorMsg);
                                 }
                             });
                             break;

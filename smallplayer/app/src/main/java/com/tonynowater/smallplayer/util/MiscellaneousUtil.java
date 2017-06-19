@@ -1,8 +1,8 @@
 package com.tonynowater.smallplayer.util;
 
 import android.content.Context;
-import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 
 import java.util.List;
@@ -12,8 +12,9 @@ import java.util.List;
  */
 
 public class MiscellaneousUtil {
-    private MiscellaneousUtil() {
-    }
+    private static final String TAG = MiscellaneousUtil.class.getSimpleName();
+
+    private MiscellaneousUtil() {}
 
     /** 檢查List */
     public static boolean isListOK(List<?> list) {
@@ -25,4 +26,12 @@ public class MiscellaneousUtil {
         imm.hideSoftInputFromInputMethod(token, 0);
     }
 
+    /**
+     * @param logName log要顯示的訊息
+     * @param startTime 開始時間
+     * @return 開始時間到call這個method的秒數
+     */
+    public static void calcRunningTime(String logName, long startTime) {
+        Log.d(TAG, logName + "花費 : " + (System.currentTimeMillis() - startTime) / 1000d + "秒");
+    }
 }

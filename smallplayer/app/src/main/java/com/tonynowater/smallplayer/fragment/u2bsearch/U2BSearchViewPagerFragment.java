@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
@@ -24,6 +25,7 @@ import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
+import com.tonynowater.smallplayer.util.ToastUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,7 +52,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
 
         @Override
         public void onResponse(Response response) throws IOException {
-            mToastUtil.cancelToast();
+            ToastUtil.cancelToast();
             if (response.isSuccessful()) {
                 String sResponse = response.body().string();
                 Log.d(TAG, "onResponse body: " + sResponse);
@@ -150,7 +152,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     };
 
     private void showFailToast() {
-        mToastUtil.showToast(getString(R.string.u2b_query_failure));
+        ToastUtil.showToast(getActivity(), getString(R.string.u2b_query_failure));
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

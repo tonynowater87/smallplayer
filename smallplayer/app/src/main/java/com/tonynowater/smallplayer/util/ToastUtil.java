@@ -1,36 +1,32 @@
 package com.tonynowater.smallplayer.util;
 
+import android.content.Context;
+import android.support.annotation.UiThread;
+import android.util.Log;
 import android.widget.Toast;
-
-import com.tonynowater.smallplayer.MyApplication;
 
 /**
  * Created by tonyliao on 2017/5/1.
  */
-
 public class ToastUtil {
-    private static ToastUtil mInstance = null;
-    private Toast mToast = null;
+    private static final String TAG = ToastUtil.class.getSimpleName();
 
-    private ToastUtil() {
-        mToast = Toast.makeText(MyApplication.getContext(), "", Toast.LENGTH_SHORT);
-    }
+    private static Toast mToast = null;
 
-    public static ToastUtil newInstance() {
-        if (mInstance == null) {
-            mInstance = new ToastUtil();
-        }
-
-        return mInstance;
-    }
-
-    public void showToast(String toastMsg) {
-        mToast.cancel();
-        mToast.setText(toastMsg);
+    // FIXME: 2017/6/19 呼叫端需要呼叫runOnMainThread ... java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()
+    @UiThread
+    public static void showToast(Context context, String toastMsg) {
+        mToast = Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT);
         mToast.show();
+        Log.d(TAG, "showToast : " +toastMsg);
     }
 
-    public void cancelToast() {
+    public static void cancelToast() {
+        if (mToast == null) {
+            Log.e(TAG, "cancelToast null ");
+            return;
+        }
         mToast.cancel();
+        Log.d(TAG, "cancelToast");
     }
 }

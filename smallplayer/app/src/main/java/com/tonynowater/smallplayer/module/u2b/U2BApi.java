@@ -4,10 +4,13 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.tonynowater.smallplayer.MyApplication;
+import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
@@ -155,7 +158,15 @@ public class U2BApi {
                     if (response.isSuccessful()) {
 
                         Gson gson = new Gson();
-                        U2BMP3LinkDTO u2BMP3LinkDTO = gson.fromJson(response.body().string(), U2BMP3LinkDTO.class);
+                        U2BMP3LinkDTO u2BMP3LinkDTO;
+                        try {
+                            u2BMP3LinkDTO = gson.fromJson(response.body().string(), U2BMP3LinkDTO.class);
+                        } catch (JsonSyntaxException e) {
+                            e.printStackTrace();
+                            // FIXME: 2017/6/19 有些歌曲無法下載，先不處理
+                            callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
+                            return;
+                        }
                         Request requestMp3 = sendHttpRequest(u2BMP3LinkDTO.getLink(), new Callback() {
                             @Override
                             public void onFailure(Request request, IOException e) {
@@ -167,7 +178,7 @@ public class U2BApi {
                                 if (response.isSuccessful()) {
                                     if (response.header("Content-Type").contains("audio")) {
                                         Log.d(TAG, "onResponse: audio");
-                                        new FileHelper(playListSongEntity, response.body().byteStream(), new FileHelper.OnFileHelperCallback() {
+                                        new FileHelper(playListSongEntity, response, new FileHelper.OnFileHelperCallback() {
                                             @Override
                                             public void onSuccess(String msg) {
                                                 callback.onSuccess(msg);
@@ -175,23 +186,24 @@ public class U2BApi {
 
                                             @Override
                                             public void onFailure() {
-                                                callback.onFailure(response.body().toString());
+                                                callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
                                             }
                                         }).execute();
                                     } else {
                                         Log.d(TAG, "onResponse: html");
-                                        // TODO: 2017/6/18 若是回html，還需要去解析mp3的下載位置
+                                        // TODO: 2017/6/18 若是回html，還需要去解析mp3的下載位置，先暫時回傳錯誤訊息
                                         XmlPullParser xmlPullParser;
+                                        callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
                                     }
 
                                 } else {
-                                    callback.onFailure(response.body().toString());
+                                    callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
                                 }
                             }
                         });
                         Log.d(TAG, "downloadMP3FromU2B phase 2: " + requestMp3.urlString());
                     } else {
-                        callback.onFailure(response.body().toString());
+                        callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
                     }
                 }
             });
