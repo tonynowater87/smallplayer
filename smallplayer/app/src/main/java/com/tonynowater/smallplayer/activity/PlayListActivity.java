@@ -86,6 +86,7 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
                             DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);
                             break;
                         case 2:
+                            ToastUtil.showToast(PlayListActivity.this, String.format(getString(R.string.downloadMP3_ing_msg), u2bPlayListVideoItem.getPlayListSongEntity().getTitle()));
                             U2BApi.newInstance().downloadMP3FromU2B(u2bPlayListVideoItem, new U2BApi.OnU2BApiCallback() {
                                 @Override
                                 public void onSuccess(String response) {

@@ -164,7 +164,7 @@ public class U2BApi {
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();
                             // FIXME: 2017/6/19 有些歌曲無法下載，先不處理
-                            callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
+                            callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                             return;
                         }
                         Request requestMp3 = sendHttpRequest(u2BMP3LinkDTO.getLink(), new Callback() {
@@ -186,24 +186,24 @@ public class U2BApi {
 
                                             @Override
                                             public void onFailure() {
-                                                callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
+                                                callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                                             }
                                         }).execute();
                                     } else {
                                         Log.d(TAG, "onResponse: html");
                                         // TODO: 2017/6/18 若是回html，還需要去解析mp3的下載位置，先暫時回傳錯誤訊息
                                         XmlPullParser xmlPullParser;
-                                        callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
+                                        callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                                     }
 
                                 } else {
-                                    callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
+                                    callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                                 }
                             }
                         });
                         Log.d(TAG, "downloadMP3FromU2B phase 2: " + requestMp3.urlString());
                     } else {
-                        callback.onFailure(MyApplication.getContext().getString(R.string.downloadMP3_error_msg));
+                        callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                     }
                 }
             });
