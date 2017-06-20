@@ -45,6 +45,7 @@
     <string name="downloadMP3_ing_msg">開始下載\n%s...</string>
     <string name="downloadMP3_error_msg">%s\n下載失敗，請再試試！</string>
     <string name="downloadMP3_banned_msg">很抱歉，此歌曲無法下載。</string>
+    <string name="refresh">重整</string>
 
     <string-array name="action_list">
         <item>播放</item>
