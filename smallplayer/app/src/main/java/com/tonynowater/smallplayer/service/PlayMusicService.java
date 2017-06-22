@@ -210,25 +210,33 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
             if (TextUtils.equals(Intent.ACTION_MEDIA_BUTTON, mediaButtonEvent.getAction())) {
                 KeyEvent keyEvent = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-                if (keyEvent != null) {
+                if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    //只處理按下時的ACTION，因為按一次按鈕會有ACTION_DONW & ACTION_UP兩個ACTION
                     switch (keyEvent.getKeyCode()) {
                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY_PAUSE");
+                            onPlay();
+                            break;
                         case KeyEvent.KEYCODE_HEADSETHOOK:
+                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_HEADSETHOOK");
                             onPlay();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_NEXT:
+                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_NEXT");
                             onSkipToNext();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PREVIOUS");
                             onSkipToPrevious();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PLAY:
+                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY");
                             onPlay();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PAUSE");
                             onPause();
                             break;
-                        // TODO: 2017/6/15 停止按鈕事件還要加、車子播放暫停按鈕有問題
                     }
                 }
             }
