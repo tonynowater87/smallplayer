@@ -211,8 +211,8 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
     private void showProgressNotification(int percent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext())
                 .setSmallIcon(android.R.drawable.arrow_down_float)
-                .setContentTitle(MyApplication.getContext().getString(R.string.app_name))
-                .setContentText(String.format(MyApplication.getContext().getString(R.string.downloadMP3_ing_msg), mFileName))
+                .setContentTitle(MyApplication.getContext().getString(R.string.app_name) + " " + MyApplication.getContext().getString(R.string.downloadMP3_ing_msg))
+                .setContentText(mFileName)
                 .setAutoCancel(false)
                 .setProgress(100, percent, false);
         NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);

@@ -104,7 +104,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                             DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
                             break;
                         case 2:
-                            ToastUtil.showToast(EditPlayListActivity.this, String.format(getString(R.string.downloadMP3_ing_msg), playListSongEntity.getTitle()));
+                            ToastUtil.showToast(EditPlayListActivity.this, String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
                             U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnU2BApiCallback() {
                                 @Override
                                 public void onSuccess(String response) {

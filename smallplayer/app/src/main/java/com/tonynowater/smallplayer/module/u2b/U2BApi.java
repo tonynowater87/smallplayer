@@ -16,8 +16,6 @@ import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.FileHelper;
 
-import org.xmlpull.v1.XmlPullParser;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -191,9 +189,8 @@ public class U2BApi {
                                         }).execute();
                                     } else {
                                         Log.d(TAG, "onResponse: html");
-                                        // TODO: 2017/6/18 若是回html，還需要去解析mp3的下載位置，先暫時回傳錯誤訊息
-                                        XmlPullParser xmlPullParser;
-                                        callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
+                                        //若是回html，還需要去解析mp3的下載位置
+                                        ParserMp3Helper.parserMp3UrlFromHtml(response.body().string(), playListSongEntity, callback);
                                     }
 
                                 } else {
@@ -209,6 +206,51 @@ public class U2BApi {
             });
             Log.d(TAG, "downloadMP3FromU2B phase 1: " + request.urlString());
         }
+    }
+
+    /**
+     * 若第一次下載回覆為html，這裡做第二次下載的動作
+     * @param url
+     * @param playListSongEntity
+     * @param callback
+     */
+    public void downloadMP3FromU2B(String url, final PlayListSongEntity playListSongEntity, final OnU2BApiCallback callback) {
+        url = String.format(U2BApiDefine.DOWNLOAD_MP3_API_URL, url);
+        Log.d(TAG, "downloadMP3FromU2B html : " + url);
+        sendHttpRequest(url, new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Log.d(TAG, "onResponse failure: ");
+                callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity));
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "onResponse success: ");
+                    if (response.header("Content-Type").contains("audio")) {
+                        Log.d(TAG, "onResponse audio : ");
+                        new FileHelper(playListSongEntity, response, new FileHelper.OnFileHelperCallback() {
+                            @Override
+                            public void onSuccess(String msg) {
+                                callback.onSuccess(msg);
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
+                            }
+                        }).execute();
+                    } else if (response.header("Content-Type").contains("html")){
+                        Log.d(TAG, "onResponse html : ");
+                        callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity));
+                    }
+                } else {
+                    Log.d(TAG, "onResponse fail: ");
+                    callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity));
+                }
+            }
+        });
     }
 
     /**

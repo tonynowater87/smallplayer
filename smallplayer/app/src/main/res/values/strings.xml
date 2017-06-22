@@ -42,7 +42,8 @@
     <string name="default_list_can_not_delete">預設歌單不可刪除</string>
     <string name="normal_dialog_title">訊息</string>
     <string name="downloadMP3_success_msg">%s\n下載成功</string>
-    <string name="downloadMP3_ing_msg">開始下載\n%s...</string>
+    <string name="downloadMP3_start_msg">開始下載\n%s...</string>
+    <string name="downloadMP3_ing_msg">下載歌曲中...</string>
     <string name="downloadMP3_error_msg">%s\n下載失敗，請再試試！</string>
     <string name="downloadMP3_banned_msg">很抱歉，此歌曲無法下載。</string>
     <string name="refresh">重整</string>
