@@ -19,9 +19,6 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -52,7 +49,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
         this.mResponse = mResponse;
         this.mCallback = mCallback;
         mPath = getFilePath();
-        mId = (mPlayListSongEntity.getTitle() + mPlayListSongEntity.getId()).hashCode();
+        mId = mPlayListSongEntity.hashCode();
     }
 
     /**
@@ -96,12 +93,6 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
             file = new File(filePath);
 
-            if (file.exists()) {
-                Log.d(TAG, "saveFile exist : " + filePath);
-                Calendar calendar = Calendar.getInstance(TimeZone.getDefault(), Locale.TAIWAN);
-                file = new File(mPath + filePath + calendar.getTime().toString());
-            }
-
             try {
                 long startTime = System.currentTimeMillis();
                 BufferedSink bufferedSink = Okio.buffer(Okio.sink(file));
@@ -116,6 +107,13 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
                 e.printStackTrace();
                 bRet = false;
                 Log.e(TAG, "saveFile : " + e.getMessage());
+            } finally {
+                if (!bRet) {
+                    if (file.exists()) {
+                        Log.e(TAG, "saveFile exist false delete file : " + mPath + mFileName);
+                        file.delete();
+                    }
+                }
             }
 
         }
@@ -175,14 +173,14 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
     private void addFileToContentProvider() {
         ContentValues values = new ContentValues(8);
-        values.put(MediaStore.Audio.Media._ID, mPlayListSongEntity.getId());
-        values.put(MediaStore.Audio.Media.ALBUM_ID, mId);
+        values.put(MediaStore.Audio.Media._ID, mId);
         values.put(MediaStore.Audio.Media.ARTIST, mPlayListSongEntity.getArtist());
         values.put(MediaStore.Audio.Media.TITLE, mPlayListSongEntity.getTitle());
         values.put(MediaStore.Audio.Media.DURATION, mPlayListSongEntity.getDuration());
         values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mp3");
         values.put(MediaStore.Audio.Media.IS_MUSIC, true);
         values.put(MediaStore.Audio.Media.DATA, mPath + mFileName);
+        values.put(MediaStore.Audio.Media.ALBUM_ID, mId);
         MyApplication.getContext().getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
     }
 

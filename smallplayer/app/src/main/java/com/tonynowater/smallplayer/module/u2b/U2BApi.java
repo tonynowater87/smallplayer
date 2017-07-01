@@ -162,6 +162,7 @@ public class U2BApi {
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();
                             // FIXME: 2017/6/19 有些歌曲無法下載，先不處理
+                            Log.e(TAG, "onResponse : JsonSyntaxException " + e.toString());
                             callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                             return;
                         }

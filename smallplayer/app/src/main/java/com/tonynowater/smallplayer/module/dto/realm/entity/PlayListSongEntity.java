@@ -125,4 +125,9 @@ public class PlayListSongEntity extends RealmObject implements Playable{
     public void setPosition(int position) {
         this.position = position;
     }
+
+    @Override
+    public int hashCode() {
+        return (getTitle() + getId()).hashCode();
+    }
 }

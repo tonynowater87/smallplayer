@@ -47,7 +47,9 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     private Callback mViedoSearchCallback = new Callback() {
         @Override
         public void onFailure(Request request, IOException e) {
-            showFailToast();
+            if (!isDetached()) {
+                showFailToast();
+            }
         }
 
         @Override
