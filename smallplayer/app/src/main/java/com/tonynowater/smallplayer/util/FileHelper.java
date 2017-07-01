@@ -214,7 +214,9 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
                 .setContentTitle(MyApplication.getContext().getString(R.string.app_name) + " " + MyApplication.getContext().getString(R.string.downloadMP3_ing_msg))
                 .setContentText(mFileName)
                 .setAutoCancel(false)
-                .setProgress(100, percent, false);
+                .setProgress(100, percent, false)
+                .setOngoing(true);//設置下載的通知不可被滑掉。
+
         NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(mPlayListSongEntity.getId(), builder.build());
     }
