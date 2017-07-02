@@ -29,7 +29,7 @@
     <string name="edit_play_list_name_dialog_title">編輯歌單名稱</string>
     <string name="menu_edit_title">編輯</string>
     <string name="title_edit_play_list">編輯播放清單</string>
-    <string name="title_edit_play_song">編輯 %s 裡的歌曲</string>
+    <string name="title_edit_play_song">編輯 %1$s 裡的歌曲</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
     <string name="list_iv_description">搜尋的音樂圖片</string>
     <string name="dash">-</string>
@@ -38,13 +38,13 @@
     <string name="search_bar_hint">最近搜尋紀錄</string>
     <string name="search_bar_clear_history">清除搜尋記錄</string>
     <string name="search_bar_clear_history_confirm_dialog_title">清空歷史記錄?</string>
-    <string name="delete_hint">確定要刪除 %s ?</string>
+    <string name="delete_hint">確定要刪除 %1$s ?</string>
     <string name="default_list_can_not_delete">預設歌單不可刪除</string>
     <string name="normal_dialog_title">訊息</string>
-    <string name="downloadMP3_success_msg">%s\n下載成功</string>
-    <string name="downloadMP3_start_msg">開始下載\n%s...</string>
+    <string name="downloadMP3_success_msg">%1$s\n下載成功</string>
+    <string name="downloadMP3_start_msg">開始下載\n%1$s...</string>
     <string name="downloadMP3_ing_msg">下載歌曲中...</string>
-    <string name="downloadMP3_error_msg">%s\n下載失敗，請再試試！</string>
+    <string name="downloadMP3_error_msg">%1$s\n下載失敗，請再試試！</string>
     <string name="downloadMP3_banned_msg">很抱歉，此歌曲無法下載。</string>
     <string name="refresh">重整</string>
 

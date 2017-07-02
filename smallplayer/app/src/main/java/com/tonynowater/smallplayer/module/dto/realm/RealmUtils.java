@@ -135,7 +135,7 @@ public class RealmUtils implements Closeable{
     }
 
     /**
-     * 刪除播放清單
+     * 刪除播放清單以及清單裡的所有歌曲
      * @param playListEntity
      */
     public void deletePlayList(PlayListEntity playListEntity) {
@@ -143,6 +143,7 @@ public class RealmUtils implements Closeable{
         params.put(PlayListSongDAO.COLUMN_LIST_ID, playListEntity.getId());
         List<PlayListSongEntity> playListSongEntities = playListSongDAO.queryNotCopy(params);
         for (PlayListSongEntity entity : playListSongEntities) {
+            //Log.d(TAG, "deletePlayList: " + entity.getTitle());
             playListSongDAO.delete(entity);
         }
         playListDAO.delete(playListEntity);

@@ -92,7 +92,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
                 initialPlayListAdapter();
                 break;
             case PlayListSongs:
-                getActivity().setTitle(String.format(getString(R.string.title_edit_play_song, mRealmUtils.queryPlayListById(mId).get(0).getPlayListName())));
+                getActivity().setTitle(String.format(getString(R.string.title_edit_play_song), mRealmUtils.queryPlayListById(mId).get(0).getPlayListName()));
                 initialPlayListSongAdapter();
                 break;
         }
@@ -158,7 +158,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
                         PlayListEntity playListEntity = mRealmUtils.queryPlayListById(mId).get(0);
                         playListEntity.setPlayListName(charSequence.toString());
                         mRealmUtils.updatePlayList(playListEntity);
-                        getActivity().setTitle(String.format(getString(R.string.title_edit_play_song, charSequence.toString())));
+                        getActivity().setTitle(String.format(getString(R.string.title_edit_play_song), charSequence.toString()));
                     }
                 });
                 return true;
