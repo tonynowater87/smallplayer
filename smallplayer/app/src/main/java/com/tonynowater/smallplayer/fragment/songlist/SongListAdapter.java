@@ -16,6 +16,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 // TODO: 2017/6/18 下載完歌曲，不會自動刷新的問題
 /**
  * 本地音樂Adapter
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  */
 public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSonglistadapterListitemBinding> implements Filterable{
 
-    private ArrayList<Song> mDuplicateList;
+    private ArrayList<Song> mDuplicateList;//所有歌曲的copy
 
     public SongListAdapter(OnClickSomething mOnClickSongListener) {
         super(mOnClickSongListener);
@@ -56,6 +57,12 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
     @Override
     public Filter getFilter() {
         return new SongListAdapterFilter();
+    }
+
+    @Override
+    public void setDataSource(List<Song> dataSource) {
+        super.setDataSource(dataSource);
+        mDuplicateList = new ArrayList<>(mDataList);
     }
 
     private class SongListAdapterFilter extends Filter {
