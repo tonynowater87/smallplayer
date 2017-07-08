@@ -71,6 +71,7 @@ public class MusicProvider {
         bundle.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
         bundle.putString(MediaMetadataCompat.METADATA_KEY_TITLE, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         bundle.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION));
+        bundle.putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL));
 
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
                 .setMediaId(String.valueOf(idIsPosition))

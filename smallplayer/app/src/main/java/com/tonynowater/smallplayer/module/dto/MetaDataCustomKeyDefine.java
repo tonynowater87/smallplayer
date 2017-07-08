@@ -19,4 +19,11 @@ public class MetaDataCustomKeyDefine {
     public static boolean isLocal(@NonNull MediaMetadataCompat mediaMetadataCompat) {
         return TextUtils.equals(mediaMetadataCompat.getString(CUSTOM_METADATA_KEY_IS_LOCAL), ISLOCAL);
     }
+
+    /**
+     * 檢查是否為本地音樂
+     */
+    public static boolean isLocal(String isLocal) {
+        return TextUtils.equals(isLocal, ISLOCAL);
+    }
 }

@@ -34,6 +34,7 @@ public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapte
     protected void onBindItem(BaseViewHolder holder, int position) {
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescriptionForList());
+        holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
         U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
         String sUrl = null;
         if (thumbnailsBean != null) {

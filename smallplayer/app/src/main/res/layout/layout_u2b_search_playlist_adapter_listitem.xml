@@ -15,12 +15,21 @@
             android:contentDescription="@string/list_iv_description"
             android:scaleType="centerCrop" />
 
+        <ImageView
+            android:id="@+id/iv_icon_type_songlistadapter"
+            android:layout_width="@dimen/list_image_icon_type_width"
+            android:layout_height="@dimen/list_image_icon_type_height"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_toEndOf="@+id/iv_songlistadapter"
+            android:layout_toStartOf="@+id/iv_icon_type_songlistadapter"
             android:orientation="vertical"
             android:weightSum="2">
 

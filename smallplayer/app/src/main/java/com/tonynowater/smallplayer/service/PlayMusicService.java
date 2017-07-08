@@ -190,7 +190,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         Log.d(TAG, "onLoadChildren: " + parentId);
-        // 目前沒用到, 在畫面端subcribe後，回傳項目回畫面
+        // 在畫面端subcribe後，回傳項目回畫面
         if (TextUtils.equals(parentId, GET_CURRENT_PLAY_LIST_ID)) {
             result.sendResult(mMusicProvider.getMediaItemList());
         }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/rl_root_songlistadapter"
@@ -11,28 +11,45 @@
             android:id="@+id/iv_songlistadapter"
             android:layout_width="@dimen/list_image_width"
             android:layout_height="@dimen/list_image_height"
-            android:scaleType="centerCrop"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/list_iv_description"/>
+            android:contentDescription="@string/list_iv_description"
+            android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/tv_duration_songlistadapter"
-            style="@style/TextAppearance.AppCompat.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="75dp"
-            android:layout_alignParentEnd="true"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textStyle="italic" />
+        <RelativeLayout
+            android:id="@+id/rl_type_duration_field"
+            android:layout_width="@dimen/list_image_icon_type_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:id="@+id/iv_icon_type_songlistadapter"
+                android:layout_width="@dimen/list_image_icon_type_width"
+                android:layout_height="@dimen/list_image_icon_type_height"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/tv_duration_songlistadapter"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:textColor="@android:color/black"
+                android:textStyle="italic"
+                tools:text="20:21" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp"
             android:layout_toEndOf="@+id/iv_songlistadapter"
-            android:layout_toStartOf="@id/tv_duration_songlistadapter"
+            android:layout_toStartOf="@id/rl_type_duration_field"
             android:orientation="vertical"
             android:weightSum="2">
 
@@ -42,9 +59,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true"
-                android:ellipsize="end"/>
+                android:singleLine="true" />
 
             <TextView
                 android:id="@+id/tv_song_title_songlistadapter"
@@ -52,9 +69,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true"
-                android:ellipsize="end"/>
+                android:singleLine="true" />
 
         </LinearLayout>
 

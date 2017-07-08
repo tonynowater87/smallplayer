@@ -13,6 +13,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBinding;
+import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.service.PlayMusicService;
@@ -21,7 +22,6 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowtaer87.myutil.TimeUtil;
 
 import java.util.Collections;
-// TODO: 2017/7/2 需要顯示可以區分本地或遠端音樂
 /**
  * Created by tonynowater on 2017/5/30.
  */
@@ -48,13 +48,19 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
 
     @Override
     protected void onBindItem(BaseViewHolder holder, int position) {
-        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getTitle());
-        holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getArtist());
-        holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration(mDataList.get(position).getDuration()));
-        if (!TextUtils.isEmpty(mDataList.get(position).getAlbumArtUri())) {
-            Glide.with(mContext).load(mDataList.get(position).getAlbumArtUri()).into(holder.getBinding().ivSonglistadapter);
+        PlayListSongEntity playListSongEntity = mDataList.get(position);
+        holder.getBinding().tvSongTitleSonglistadapter.setText(playListSongEntity.getTitle());
+        holder.getBinding().tvSongArtistSonglistadapter.setText(playListSongEntity.getArtist());
+        holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration(playListSongEntity.getDuration()));
+        if (!TextUtils.isEmpty(playListSongEntity.getAlbumArtUri())) {
+            Glide.with(mContext).load(playListSongEntity.getAlbumArtUri()).into(holder.getBinding().ivSonglistadapter);
         } else {
             Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+        }
+        if (MetaDataCustomKeyDefine.isLocal(playListSongEntity.getIsLocal())) {
+            holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
+        } else {
+            holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
         }
     }
 

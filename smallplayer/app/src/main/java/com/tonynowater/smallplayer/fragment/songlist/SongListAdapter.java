@@ -47,6 +47,7 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getmArtist());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getmTitle());
         holder.getBinding().tvDurationSonglistadapter.setText(mDataList.get(position).getFormatDuration());
+        holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
         if (!TextUtils.isEmpty(mDataList.get(position).getmAlbumObj().getmAlbumArt())) {
             Glide.with(mContext).load(Uri.fromFile(new File(mDataList.get(position).getmAlbumObj().getmAlbumArt()))).into(holder.getBinding().ivSonglistadapter);
         } else {
