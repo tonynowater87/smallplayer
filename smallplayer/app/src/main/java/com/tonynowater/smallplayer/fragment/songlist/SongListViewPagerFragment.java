@@ -73,7 +73,7 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ID_REFRESH:
-                mSongListAdapter.setDataSource(MediaUtils.getSongList(MyApplication.getContext()));
+                mSongListAdapter.setDataSource(MediaUtils.getSongList(MyApplication.getContext(), true));
                 mSongListAdapter.notifyDataSetChanged();
                 return true;
         }

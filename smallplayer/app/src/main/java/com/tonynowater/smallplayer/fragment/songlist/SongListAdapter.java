@@ -28,7 +28,7 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
 
     public SongListAdapter(OnClickSomething mOnClickSongListener) {
         super(mOnClickSongListener);
-        mDataList = MediaUtils.getSongList(MyApplication.getContext());
+        mDataList = MediaUtils.getSongList(MyApplication.getContext(), false);
         mDuplicateList = new ArrayList<>(mDataList);
     }
 

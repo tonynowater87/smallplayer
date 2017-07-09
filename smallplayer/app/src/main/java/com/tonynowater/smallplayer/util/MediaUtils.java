@@ -46,6 +46,8 @@ public class MediaUtils {
             MediaStore.Audio.Albums.LAST_YEAR,
     };
 
+    private static List<Song> mSongList;
+
     /**
      * 取得手機裡的音樂檔案列表
      */
@@ -141,9 +143,15 @@ public class MediaUtils {
     }
 
     /**
+     * @param bIsRefresh 是否要重讀本地歌曲列表
      * @return 將Album放進Song裡的本地歌單
      */
-    public static List<Song> getSongList(Context context) {
+    public static List<Song> getSongList(Context context, boolean bIsRefresh) {
+
+        if (mSongList != null && !bIsRefresh) {
+            return mSongList;
+        }
+
         List<Song> songList = MediaUtils.getAudioList(context);
         List<Album> albumList = MediaUtils.getAlbumList(context);
         SparseArray<Album> albumSparseArray = new SparseArray<>();
@@ -155,6 +163,7 @@ public class MediaUtils {
             song.setmAlbumObj(albumSparseArray.get(song.getmAlbumID()));
         }
 
-        return songList;
+        mSongList = new ArrayList<>(songList);
+        return mSongList;
     }
 }
