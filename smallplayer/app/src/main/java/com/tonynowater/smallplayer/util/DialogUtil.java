@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -11,16 +13,18 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by tonynowater on 2017/5/30.
  */
 public class DialogUtil {
-
+    private static final String TAG = DialogUtil.class.getSimpleName();
     /**
      * 顯示單欄輸入的Dialog
      * @param context
@@ -68,21 +72,83 @@ public class DialogUtil {
     public static void showSelectPlaylistDialog(Context context, final Playable playable, final MediaControllerCompat.TransportControls transportControls) {
         final RealmUtils realmUtils = new RealmUtils();
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
+        final List<PlayListSongEntity> songEntities = getSongInListCheckedList(playable, realmUtils);
+        Integer[] checkList = getCheckedList(playListEntities, songEntities);
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
         builder.title(playable.getPlayListSongEntity().getTitle());
         builder.items(playListEntities);
-        builder.itemsCallback(new MaterialDialog.ListCallback() {
+        builder.itemsCallbackMultiChoice(checkList, new MaterialDialog.ListCallbackMultiChoice() {
             @Override
-            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                int playlistID = playListEntities.get(i).getId();
-                realmUtils.addSongToPlayList(playlistID, playable.getPlayListSongEntity());
+            public boolean onSelection(MaterialDialog materialDialog, Integer[] integers, CharSequence[] charSequences) {
+
+                //先把要加入的歌曲全刪
+                for (int i = 0; i < songEntities.size(); i++) {
+                    realmUtils.deleteSongFromPlayList(songEntities.get(i));
+                }
+
+                //再把此次新增的歌曲加到各歌單裡
+                PlayListEntity playListEntity;
+                for (int i = 0; i < integers.length; i++) {
+                    playListEntity = playListEntities.get(integers[i]);
+                    Log.d(TAG, "onSelection : " + playListEntity.getPlayListName());
+                    realmUtils.addSongToPlayList(playListEntity.getId(), playable.getPlayListSongEntity());
+                    if (playListEntity.getId() == realmUtils.queryCurrentPlayListID()) {
+                        //若有加入目前播放歌單，則更新目前播放歌單
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListEntity.getId());
+                        transportControls.sendCustomAction(PlayMusicService.ACTION_ADD_SONG_TO_PLAYLIST, bundle);
+                    }
+                }
+
+                // TODO: 2017/7/9 若在這邊刪除歌曲，要即時更新歌單歌曲
+
+
                 realmUtils.close();
-                Bundle bundle = new Bundle();
-                bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playlistID);
-                transportControls.sendCustomAction(PlayMusicService.ACTION_ADD_SONG_TO_PLAYLIST, bundle);
+                return false;
             }
         });
+        builder.positiveText(context.getString(android.R.string.ok));
+        builder.positiveColor(context.getResources().getColor(R.color.colorAccent));
+        builder.negativeText(context.getString(android.R.string.cancel));
         builder.show();
+    }
+
+    /**
+     * @param playListEntities
+     * @param playListSongEntities
+     * @return 要加入的歌曲在哪幾個歌單的array
+     */
+    private static Integer[] getCheckedList(List<PlayListEntity> playListEntities, List<PlayListSongEntity> playListSongEntities) {
+        List<Integer> checkedlist = new ArrayList<>();
+
+        for (int i = 0; i < playListEntities.size(); i++) {
+            for (int j = 0; j < playListSongEntities.size(); j++) {
+                if (playListEntities.get(i).getId() == playListSongEntities.get(j).getListId()) {
+                    checkedlist.add(i);
+                    break;
+                }
+            }
+        }
+
+        return checkedlist.toArray(new Integer[checkedlist.size()]);
+    }
+
+    /**
+     * @param playable
+     * @param realmUtils
+     * @return 要加入的歌的所有Entity，可知道歌曲已加在哪些歌單裡了
+     */
+    private static List<PlayListSongEntity> getSongInListCheckedList(Playable playable, RealmUtils realmUtils) {
+        PlayListSongEntity playListSongEntity = playable.getPlayListSongEntity();
+        List<PlayListSongEntity> allPlayListSong = realmUtils.queryAllPlayListSong();
+        List<PlayListSongEntity> addSongInList = new ArrayList<>();
+        for (int i = 0; i < allPlayListSong.size(); i++) {
+            if (TextUtils.equals(playListSongEntity.getTitle(), allPlayListSong.get(i).getTitle())) {
+                addSongInList.add(allPlayListSong.get(i));
+            }
+        }
+
+        return addSongInList;
     }
 
     /**

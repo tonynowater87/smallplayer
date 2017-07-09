@@ -1,9 +1,13 @@
 package com.tonynowater.smallplayer.util;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
+
+import com.tonynowater.smallplayer.service.PlayMusicService;
 
 import java.util.List;
 
@@ -33,5 +37,20 @@ public class MiscellaneousUtil {
      */
     public static void calcRunningTime(String logName, long startTime) {
         Log.d(TAG, logName + "花費 : " + (System.currentTimeMillis() - startTime) / 1000d + "秒");
+    }
+
+    /**
+     * 送從歌單刪除歌曲的Action
+     * @param mPlayListId
+     * @param playListSongEntityId
+     * @param mTransportControls
+     */
+    public static void sendRemoveSongFromListAction(int mPlayListId, int playListSongEntityId, MediaControllerCompat.TransportControls mTransportControls) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, mPlayListId);
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_SONG_ID, playListSongEntityId);
+        if (mTransportControls != null) {
+            mTransportControls.sendCustomAction(PlayMusicService.ACTION_REMOVE_SONG_FROM_PLAYLIST, bundle);
+        }
     }
 }

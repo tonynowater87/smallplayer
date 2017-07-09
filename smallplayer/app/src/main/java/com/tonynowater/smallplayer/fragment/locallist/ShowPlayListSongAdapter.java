@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
@@ -16,8 +15,8 @@ import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBind
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
-import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowtaer87.myutil.TimeUtil;
 
@@ -74,7 +73,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
                         PlayListSongEntity playListSongEntity = mDataList.get(position);
                         realmUtils.deleteSongFromPlayList(playListSongEntity);
                         mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(mPlayListId);
-                        sendDeleteAction(playListSongEntity.getId());
+                        MiscellaneousUtil.sendRemoveSongFromListAction(mPlayListId, playListSongEntity.getId(), mTransportControls);
                         break;
                 }
 
@@ -86,15 +85,6 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
                 notifyDataSetChanged();
             }
         });
-    }
-
-    private void sendDeleteAction(int playListSongEntityId) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, mPlayListId);
-        bundle.putInt(PlayMusicService.BUNDLE_KEY_SONG_ID, playListSongEntityId);
-        if (mTransportControls != null) {
-            mTransportControls.sendCustomAction(PlayMusicService.ACTION_REMOVE_SONG_FROM_PLAYLIST, bundle);
-        }
     }
 
     @Override

@@ -76,6 +76,13 @@ public class RealmUtils implements Closeable{
                         .findAllSorted(PlayListSongDAO.COLUMN_POSITION, Sort.ASCENDING));
     }
 
+    /**
+     * @return 所有的歌曲
+     */
+    public List<PlayListSongEntity> queryAllPlayListSong() {
+        return playListSongDAO.queryAll();
+    }
+
     /** @return 現正播放的PlayListID */
     public int queryCurrentPlayListID() {
         return playFolderDAO.queryAll().get(0).getCurrentPlayListId();
