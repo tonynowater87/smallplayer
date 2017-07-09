@@ -22,13 +22,13 @@
     <string name="default_start_time">00:00</string>
     <string name="equlizer_set_finish_toast">等化器設定成%s</string>
     <string name="search_view_hint">請輸入要搜尋的內容...</string>
-    <string name="menu_playlist">編輯播放清單</string>
-    <string name="add_playlist">新增播放清單</string>
+    <string name="menu_playlist">編輯播放歌單</string>
+    <string name="add_playlist">新增播放歌單</string>
     <string name="input_play_list_name_dialog_hint">請輸入歌單名稱...</string>
     <string name="add_play_list_dialog_title">新增歌單</string>
     <string name="edit_play_list_name_dialog_title">編輯歌單名稱</string>
     <string name="menu_edit_title">編輯</string>
-    <string name="title_edit_play_list">編輯播放清單</string>
+    <string name="title_edit_play_list">編輯播放歌單</string>
     <string name="title_edit_play_song">編輯 %1$s 裡的歌曲</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
     <string name="list_iv_description">搜尋的音樂圖片</string>
@@ -50,12 +50,12 @@
 
     <string-array name="local_action_list">
         <item>播放</item>
-        <item>加入清單</item>
+        <item>加入歌單</item>
     </string-array>
 
     <string-array name="action_list">
         <item>播放</item>
-        <item>加入清單</item>
+        <item>加入歌單</item>
         <item>下載MP3</item>
     </string-array>
 
