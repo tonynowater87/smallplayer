@@ -92,7 +92,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         mBinding.textViewSongNameValue.setText(getString(R.string.dash));
         mBinding.textViewSongArtistValue.setText(getString(R.string.dash));
         mBinding.progressBar.setProgress(DEFAULT_PROGRESS);
-        Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
+        Glide.with(MyApplication.getContext()).load(R.drawable.ic_default_art).into(mBinding.imageviewThumb);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
         mBinding.textViewSongNameValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mBinding.textViewSongArtistValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
         if (metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) == null) {
-            Glide.with(MyApplication.getContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewThumb);
+            Glide.with(MyApplication.getContext()).load(R.drawable.ic_default_art).into(mBinding.imageviewThumb);
         } else {
             Glide.with(MyApplication.getContext()).load(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)).into(mBinding.imageviewThumb);
         }

@@ -284,7 +284,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 return;
             }
 
-            mMusicProvider.minusSongTrackPosition();
+            mMusicProvider.minusSongPosition();
             handlePlayRequest();
         }
 
@@ -330,7 +330,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
          * @param songPosition 要播放的歌曲位置
          */
         private void handlePlayExplicitSong(int songPosition) {
-            mMusicProvider.setmSongTrackPosition(songPosition);
+            mMusicProvider.setSongPosition(songPosition);
             if (mLocalPlayback.isPlaying()) {
                 //正在播放時換歌曲繼續播放
                 handlePlayRequest();
@@ -355,7 +355,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             }
 
             if (mMusicProvider.getCurrentPlayingMediaMetadata() == null) {
-                mMusicProvider.setmSongTrackPosition(0);
+                mMusicProvider.setSongPosition(0);
             }
 
             String currentSongId = mMusicProvider.getCurrentPlayingMediaMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
@@ -372,7 +372,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     handleStopRequest();
 
                     if (mMusicProvider.getCurrentPlayingMediaMetadata() == null) {
-                        mMusicProvider.setmSongTrackPosition(0);
+                        mMusicProvider.setSongPosition(0);
                     }
                 }
                 //給畫面更新歌曲UI
@@ -412,7 +412,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             Log.d(TAG, "handlePlayingNow: ");
             mMusicProvider.queryDBPlayList(playlistId);
             //播最新加的一首歌
-            mMusicProvider.setmSongTrackPosition(mMusicProvider.getPlayListSize() - 1);
+            mMusicProvider.setSongPosition(mMusicProvider.getPlayListSize() - 1);
             handlePlayRequest();
         }
 
@@ -422,11 +422,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             mMusicProvider.queryDBPlayList(playlistId);
             if (mCurrentPlayListId != playlistId) {
                 //切換歌單，從頭播放歌曲
-                mMusicProvider.setmSongTrackPosition(0);
+                mMusicProvider.setSongPosition(0);
             } else {
                 //切換原歌單就是播最新加的一首歌
                 if (mMusicProvider.getPlayListSize() != 0) {
-                    mMusicProvider.setmSongTrackPosition(mMusicProvider.getPlayListSize() - 1);
+                    mMusicProvider.setSongPosition(mMusicProvider.getPlayListSize() - 1);
                 }
             }
             mCurrentPlayListId = playlistId;
@@ -452,7 +452,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     }
 
     private void skipToNext() {
-        mMusicProvider.addSongTrackPosition();
+        mMusicProvider.addSongPosition();
         handlePlayRequest();
     }
 

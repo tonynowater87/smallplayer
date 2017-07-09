@@ -42,7 +42,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-// TODO: 2017/7/2 目前播放列表需要顯示目前播放歌曲
 public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPlayerBinding> implements View.OnClickListener{
     private static final String TAG = FullScreenPlayerActivity.class.getSimpleName();
     private static final long INITIAL_DELAY = 100;
@@ -53,20 +52,22 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     private List<MediaBrowserCompat.MediaItem> mCurrentPlayList = new ArrayList<>();
     private BottomSheetDialog mBottomSheetDialog;
     private EnumPlayMode mEnumPlayMode;
+    private CurrentPlayListAdapter mCurrentPlayListAdapter;
+    private MediaMetadataCompat mMediaMetaData;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
         Log.d(TAG, "onPlaybackStateChanged: ");
+        if (state == null) {
+            Log.d(TAG, "onPlaybackStateChanged: state == null");
+            return;
+        }
         updatePlaybackState(state);
     }
 
     private void updatePlaybackState(PlaybackStateCompat state) {
-        if (state == null) {
-            Log.d(TAG, "updatePlaybackState: state == null");
-            return;
-        }
+        Log.d(TAG, "updatePlaybackState: ");
         mLastPlaybackState = state;
-
         mBinding.ivPlayPauseActivityFullScreenPlayer.setVisibility(View.VISIBLE);
         mBinding.progressBar.setVisibility(View.GONE);
         switch (state.getState()) {
@@ -92,6 +93,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
                 Log.d(TAG, "updatePlaybackState: unhandle state " + state.getState());
         }
 
+        mCurrentPlayListAdapter.onPlaybackStateChanged(mLastPlaybackState);
         setShuffleButtonEnable(mLastPlaybackState.getExtras());
     }
 
@@ -136,6 +138,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     @Override
     protected void onMediaServiceConnected() {
+        mCurrentPlayListAdapter = new CurrentPlayListAdapter(this);
         setShuffleButtonEnable(mMediaBrowserCompat.getExtras());
     }
 
@@ -146,8 +149,13 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
+        Log.d(TAG, "onChildrenLoaded: ");
         mCurrentPlayList.clear();
         mCurrentPlayList = new ArrayList<>(children);
+        mCurrentPlayListAdapter.setDataSource(mCurrentPlayList);
+        if (mMediaMetaData != null) {
+            updateUI(mMediaMetaData);
+        }
     }
 
     @Override
@@ -157,6 +165,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     private void updateUI(MediaMetadataCompat metadata) {
         Log.d(TAG, "updateUI : " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        mMediaMetaData = metadata;
         mBinding.tvEndTextActivityFullScreenPlayer.setText(U2BApiUtil.formateU2BDurationToString(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         mBinding.tvTitleActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
@@ -165,8 +174,9 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         if (!TextUtils.isEmpty(ArtUrl)) {
             Glide.with(getApplicationContext()).load(ArtUrl).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
         } else {
-            Glide.with(getApplicationContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
+            Glide.with(getApplicationContext()).load(R.drawable.ic_default_art).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
         }
+        mCurrentPlayListAdapter.onMetadataChanged(metadata);
     }
 
     private SeekBar.OnSeekBarChangeListener mOnSeekChangedListener = new SeekBar.OnSeekBarChangeListener() {
@@ -223,7 +233,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     protected void onResume() {
         super.onResume();
         // TODO: 2017/6/8 讀取、預設圖還要在換
-        Glide.with(getApplicationContext()).load(R.mipmap.ic_launcher).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
+        Glide.with(getApplicationContext()).load(R.drawable.ic_default_art).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
     }
 
     @Override
@@ -325,11 +335,9 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         RecyclerView recyclerView = new RecyclerView(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         RecyclerViewDivideLineDecorator recyclerViewDivideLineDecorator = new RecyclerViewDivideLineDecorator(this);
-        CurrentPlayListAdapter currentPlayListAdapter = new CurrentPlayListAdapter(this);
-        recyclerView.setAdapter(currentPlayListAdapter);
+        recyclerView.setAdapter(mCurrentPlayListAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(recyclerViewDivideLineDecorator);
-        currentPlayListAdapter.setDataSource(mCurrentPlayList);
         mBottomSheetDialog.setContentView(recyclerView);
         mBottomSheetDialog.show();
     }

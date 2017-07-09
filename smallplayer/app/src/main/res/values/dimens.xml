@@ -11,6 +11,8 @@
     <dimen name="list_image_height">60dp</dimen>
     <dimen name="list_image_icon_type_width">45dp</dimen>
     <dimen name="list_image_icon_type_height">40dp</dimen>
+    <dimen name="list_image_equalizer_width">25dp</dimen>
+    <dimen name="list_image_equalizer_height">25dp</dimen>
     <dimen name="list_height">75dp</dimen>
     <dimen name="margin_gap_level_1">5dp</dimen>
     <dimen name="margin_gap_level_2">10dp</dimen>

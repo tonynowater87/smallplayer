@@ -51,7 +51,7 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
         if (!TextUtils.isEmpty(mDataList.get(position).getmAlbumObj().getmAlbumArt())) {
             Glide.with(mContext).load(Uri.fromFile(new File(mDataList.get(position).getmAlbumObj().getmAlbumArt()))).into(holder.getBinding().ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
         }
     }
 

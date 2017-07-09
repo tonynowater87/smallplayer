@@ -46,7 +46,7 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentA
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(mContext).load(sUrl).into(holder.getBinding().ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
         }
     }
 }

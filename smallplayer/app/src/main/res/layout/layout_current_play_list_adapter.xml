@@ -7,14 +7,31 @@
         android:layout_height="@dimen/list_height"
         android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/iv_songlistadapter"
+        <RelativeLayout
+            android:id="@+id/rl_songImageField"
             android:layout_width="@dimen/list_image_width"
             android:layout_height="@dimen/list_image_height"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/list_iv_description"
-            android:scaleType="centerCrop" />
+            android:layout_alignParentStart="true">
+
+            <ImageView
+                android:id="@+id/iv_songlistadapter"
+                android:layout_width="@dimen/list_image_width"
+                android:layout_height="@dimen/list_image_height"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/list_iv_description"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/iv_animation"
+                android:layout_width="@dimen/list_image_equalizer_width"
+                android:layout_height="@dimen/list_image_equalizer_height"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:scaleType="fitCenter"/>
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/rl_type_duration_field"
@@ -48,7 +65,7 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
-            android:layout_toEndOf="@+id/iv_songlistadapter"
+            android:layout_toEndOf="@+id/rl_songImageField"
             android:layout_toStartOf="@id/rl_type_duration_field"
             android:orientation="vertical"
             android:weightSum="2">

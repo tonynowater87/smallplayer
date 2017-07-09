@@ -15,7 +15,8 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:scaleType="fitCenter"
-        android:src="@android:drawable/ic_delete"
+        android:src="@drawable/ic_close_black_24dp"
+        android:tint="@color/colorAccent"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"/>
 

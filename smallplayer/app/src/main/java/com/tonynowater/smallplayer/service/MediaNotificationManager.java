@@ -307,7 +307,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             } else {
                 // TODO: 2017/6/3 這邊要改成本地音樂沒AlbumArt時的預設圖片
                 bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
-                        R.mipmap.ic_launcher);
+                        R.drawable.ic_default_art);
             }
         } else {
 

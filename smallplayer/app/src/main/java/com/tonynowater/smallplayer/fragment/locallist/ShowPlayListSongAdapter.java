@@ -55,7 +55,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
         if (!TextUtils.isEmpty(playListSongEntity.getAlbumArtUri())) {
             Glide.with(mContext).load(playListSongEntity.getAlbumArtUri()).into(holder.getBinding().ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
         }
         if (MetaDataCustomKeyDefine.isLocal(playListSongEntity.getIsLocal())) {
             holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
