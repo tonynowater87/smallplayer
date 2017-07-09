@@ -48,6 +48,11 @@
     <string name="downloadMP3_banned_msg">很抱歉，此歌曲無法下載。</string>
     <string name="refresh">重整</string>
 
+    <string-array name="local_action_list">
+        <item>播放</item>
+        <item>加入清單</item>
+    </string-array>
+
     <string-array name="action_list">
         <item>播放</item>
         <item>加入清單</item>

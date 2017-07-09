@@ -74,7 +74,7 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
     public void onClick(final Object object) {
         if (object instanceof U2bPlayListVideoDTO.ItemsBean) {
             final U2bPlayListVideoDTO.ItemsBean u2bPlayListVideoItem = ((U2bPlayListVideoDTO.ItemsBean) object);
-            DialogUtil.showActionDialog(this, u2bPlayListVideoItem.getPlayListSongEntity().getTitle(), new MaterialDialog.ListCallback() {
+            DialogUtil.showActionDialog(this, u2bPlayListVideoItem.getPlayListSongEntity().getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     switch (i) {

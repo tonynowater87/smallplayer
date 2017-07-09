@@ -46,14 +46,16 @@ public class DialogUtil {
     }
 
     /**
-     * 顯示播放及加入歌單的Dialog
+     * 顯示Action的Dialog
      * @param context
+     * @param title 對話框標題
+     * @param actionList 對話框的動作列表
      * @param callback
      */
-    public static void showActionDialog(Context context, String title, MaterialDialog.ListCallback callback) {
+    public static void showActionDialog(Context context, String title,int actionList, MaterialDialog.ListCallback callback) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
         builder.title(title);
-        builder.items(R.array.action_list);
+        builder.items(actionList);
         builder.itemsCallback(callback);
         builder.show();
     }

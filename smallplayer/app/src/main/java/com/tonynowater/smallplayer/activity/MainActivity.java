@@ -295,7 +295,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         // TODO: 2017/5/30 這邊要在簡化
         if (object instanceof Song) {
             final Song song = ((Song) object);
-            DialogUtil.showActionDialog(this, song.getmTitle(), new MaterialDialog.ListCallback() {
+            DialogUtil.showActionDialog(this, song.getmTitle(), R.array.local_action_list, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     switch (i) {
@@ -311,7 +311,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             });
         } else if (object instanceof U2BVideoDTO.ItemsBean) {
             final U2BVideoDTO.ItemsBean u2bVideoItem = ((U2BVideoDTO.ItemsBean) object);
-            DialogUtil.showActionDialog(this, u2bVideoItem.getPlayListSongEntity().getTitle(), new MaterialDialog.ListCallback() {
+            DialogUtil.showActionDialog(this, u2bVideoItem.getPlayListSongEntity().getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     switch (i) {

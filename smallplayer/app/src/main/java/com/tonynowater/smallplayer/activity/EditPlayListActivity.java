@@ -92,7 +92,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
 
         } else if (object instanceof PlayListSongEntity){
             final PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
-            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), new MaterialDialog.ListCallback() {
+            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     switch (i) {
