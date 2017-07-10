@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.gson.annotations.SerializedName;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
+import com.tonynowater.smallplayer.module.u2b.U2bConstDefince;
 
 import java.util.List;
 
@@ -110,6 +111,12 @@ public class U2bPlayListVideoDTO {
         private String url;
         private int durationToMilionSecond = -1;
 
+        /** @return 是否為已刪除或私人影片 */
+        public boolean isDeletedOrPrivatedVideo() {
+            return TextUtils.equals(U2bConstDefince.KEYWORD_DELETED_VIDEO,getSnippet().getTitle())
+                    || TextUtils.equals(U2bConstDefince.KEYWORD_PRIVATE_VIDEO,getSnippet().getTitle());
+        }
+
         public String getKind() {
             return kind;
         }
@@ -174,8 +181,13 @@ public class U2bPlayListVideoDTO {
          */
         private String getArtUrl() {
             String sArtUrl;
+            if (getSnippet().getThumbnails() == null) {
+                Log.e(TAG, "thumbnails null ");
+                return null;
+            }
+
             try {
-                sArtUrl = getSnippet().getThumbnails().getStandard().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
+                sArtUrl = getSnippet().getThumbnails().getStandard().getUrl();
                 if (TextUtils.isEmpty(sArtUrl)) {
                     sArtUrl = getSnippet().getThumbnails().getDefaultX().getUrl();
                 }

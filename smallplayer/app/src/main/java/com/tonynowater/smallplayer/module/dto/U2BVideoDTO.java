@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.module.dto;
 
 import android.support.v4.media.MediaMetadataCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
@@ -193,14 +194,7 @@ public class U2BVideoDTO {
             return durationToMilionSecond;
         }
 
-        //TODO
         public MediaMetadataCompat getMediaMetadata() {
-            String sArtUrl = "";
-            try {
-                sArtUrl = getSnippet().getThumbnails().getHigh().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
-            } catch (Exception e) {
-                Log.e(TAG, "getMediaMetadata: null url");
-            }
             return new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
                     .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getId().getVideoId())
@@ -208,28 +202,44 @@ public class U2BVideoDTO {
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, sArtUrl)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getArtUrl())
                     .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISNOTLOCAL)
                     .build();
         }
 
         @Override
         public PlayListSongEntity getPlayListSongEntity() {
-            String sArtUrl = "";
-            try {
-                sArtUrl = getSnippet().getThumbnails().getHigh().getUrl();// TODO: 2017/5/22 若查回沒URL會當機
-            } catch (Exception e) {
-                Log.e(TAG, "getPlayListSongEntity: null url");
-            }
             PlayListSongEntity playListSongEntity = new PlayListSongEntity();
             playListSongEntity.setId((int) getVideoDuration());// TODO: 2017/6/3 因為table結構id是int，所以先暫用Duration當id
             playListSongEntity.setSource(getId().getVideoId());
             playListSongEntity.setArtist(getSnippet().getTitle());
             playListSongEntity.setTitle(getSnippet().getTitle());
             playListSongEntity.setDuration((int) getVideoDuration());
-            playListSongEntity.setAlbumArtUri(sArtUrl);
+            playListSongEntity.setAlbumArtUri(getArtUrl());
             playListSongEntity.setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
             return playListSongEntity;
+        }
+
+        /**
+         * @return 畫面要顯示的Art圖
+         */
+        private String getArtUrl() {
+            String sArtUrl;
+            if (getSnippet().getThumbnails() == null) {
+                Log.e(TAG, "thumbnails null ");
+                return null;
+            }
+
+            try {
+                sArtUrl = getSnippet().getThumbnails().getHigh().getUrl();
+                if (TextUtils.isEmpty(sArtUrl)) {
+                    sArtUrl = getSnippet().getThumbnails().getDefaultX().getUrl();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "getStandard() null ");
+                sArtUrl = getSnippet().getThumbnails().getDefaultX().getUrl();
+            }
+            return sArtUrl;
         }
 
         public static class IdBean {
