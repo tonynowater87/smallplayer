@@ -7,6 +7,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
@@ -15,6 +16,7 @@ import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
+import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
 import java.util.ArrayList;
@@ -169,6 +171,43 @@ public class DialogUtil {
                 realmUtils.setCurrentPlayListID(playListId);
                 baseActivity.sendActionChangePlaylist(playListId);
                 realmUtils.close();
+                return true;
+            }
+        });
+        builder.show();
+    }
+
+    /**
+     * 顯示切換等化器風格的Dialog
+     * @param baseActivity
+     * @param equalizerType
+     * @param transportControls
+     */
+    public static void showChangeEqualizerDialog(final BaseActivity baseActivity, EqualizerType equalizerType, final MediaControllerCompat.TransportControls transportControls) {
+        final EqualizerType[] types = EqualizerType.values();
+        final String[] names = new String[types.length];
+        int currentEqPosition = 0;
+        for (int i = 0; i < types.length; i++) {
+            names[i] = types[i].getValue();
+            if (equalizerType == types[i]) {
+                currentEqPosition = i;
+            }
+        }
+
+        if (equalizerType == null) {
+            currentEqPosition = -1;
+        }
+
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseActivity);
+        builder.title(R.string.change_equalizer_dialog_title);
+        builder.items(names);
+        builder.itemsCallbackSingleChoice(currentEqPosition, new MaterialDialog.ListCallbackSingleChoice() {
+            @Override
+            public boolean onSelection(MaterialDialog materialDialog, View view, int position, CharSequence charSequence) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
+                transportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
+                Toast.makeText(baseActivity.getApplicationContext(), String.format(baseActivity.getString(R.string.equlizer_set_finish_toast), names[position]), Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

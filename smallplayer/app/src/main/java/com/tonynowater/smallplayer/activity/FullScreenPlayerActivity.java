@@ -1,13 +1,10 @@
 package com.tonynowater.smallplayer.activity;
 
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -18,13 +15,9 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
-import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
@@ -33,6 +26,7 @@ import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
+import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.view.CurrentPlayListAdapter;
 
 import java.util.ArrayList;
@@ -120,6 +114,13 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     private EnumPlayMode getPlayMode(Bundle bundle) {
         return (EnumPlayMode) bundle.getSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE);
+    }
+
+    private EqualizerType getEqualizerType() {
+        if (mLastPlaybackState.getExtras() == null) {
+            return null;
+        }
+        return (EqualizerType) mLastPlaybackState.getExtras().getSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE);
     }
 
     @Override
@@ -342,36 +343,9 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         mBottomSheetDialog.show();
     }
 
-    /** 顯示等化器設定 */
+    /** Show等化器風格設定Dialog */
     private void showEqList() {
-        mBottomSheetDialog = new BottomSheetDialog(this);
-        ListView listView = new ListView(this);
-        final EqualizerType[] types = EqualizerType.values();
-        final String[] names = new String[types.length];
-        for (int i = 0; i < types.length; i++) {
-            names[i] = types[i].getValue();
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MyApplication.getContext(), android.R.layout.simple_list_item_1, names);
-        listView.setBackgroundColor(Color.BLACK);
-        listView.setAdapter(arrayAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
-                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
-                mBottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        Snackbar.make(mBinding.rlRootActivityFullScreenPlayer, String.format(getString(R.string.equlizer_set_finish_toast), names[position]),Snackbar.LENGTH_SHORT).show();
-                    }
-                });
-                mBottomSheetDialog.dismiss();
-            }
-        });
-
-        mBottomSheetDialog.setContentView(listView);
-        mBottomSheetDialog.show();
+        DialogUtil.showChangeEqualizerDialog(this, getEqualizerType(), mTransportControls);
     }
 
     private void onPressPlayButton() {

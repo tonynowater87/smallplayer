@@ -86,6 +86,8 @@ public interface Playback {
 
     void setEqualizer(EqualizerType equalizerType);
 
+    EqualizerType getEqualizerType();
+
     interface Callback {
 
         void onCompletion();

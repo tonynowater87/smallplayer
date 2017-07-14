@@ -31,6 +31,7 @@
     <string name="title_edit_play_list">編輯播放歌單</string>
     <string name="title_edit_play_song">編輯 %1$s 裡的歌曲</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
+    <string name="change_equalizer_dialog_title">切換等化器風格</string>
     <string name="list_iv_description">搜尋的音樂圖片</string>
     <string name="dash">-</string>
     <string name="extract_youtube_error">無法獲取影音串流</string>

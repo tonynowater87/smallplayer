@@ -127,6 +127,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         Bundle bundle = new Bundle();
         bundle.putInt(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());
         bundle.putSerializable(BUNDLE_KEY_PLAYMODE, mMusicProvider.getmEnumPlayMode());
+        bundle.putSerializable(BUNDLE_KEY_EQUALIZER_TYPE, mLocalPlayback.getEqualizerType());
         stateBuilder.setExtras(bundle);
         mMediaSessionCompat.setPlaybackState(stateBuilder.build());
 
@@ -293,7 +294,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             Log.d(TAG, "onCustomAction: " + action);
             switch (action) {
                 case ACTION_CHANGE_EQUALIZER_TYPE:
-                    mLocalPlayback.setEqualizer((EqualizerType) extras.getSerializable(BUNDLE_KEY_EQUALIZER_TYPE));
+                    handleChangeEqualizerType((EqualizerType) extras.getSerializable(BUNDLE_KEY_EQUALIZER_TYPE));
                     break;
                 case ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST:
                     handlePlayExplicitSong(extras.getInt(BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION));
@@ -314,6 +315,14 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     handleChangePlayMode((EnumPlayMode) extras.getSerializable(BUNDLE_KEY_PLAYMODE));
                     break;
             }
+        }
+
+        /**
+         * @param equalizerType 等化器風格Type
+         */
+        private void handleChangeEqualizerType(EqualizerType equalizerType) {
+            mLocalPlayback.setEqualizer(equalizerType);
+            updatePlaybackState(null);
         }
 
         /**

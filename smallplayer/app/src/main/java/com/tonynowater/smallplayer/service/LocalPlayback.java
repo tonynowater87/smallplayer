@@ -65,6 +65,7 @@ public class LocalPlayback implements Playback
     };
     private boolean mPlayOnFocusGain;//獲取AudioFocus後是否繼續播放
     private String mCurrentPlayId;//目前正在播放歌曲的Id
+    private EqualizerType mEqualizerType = EqualizerType.STANDARD;
 
     public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
@@ -386,12 +387,9 @@ public class LocalPlayback implements Playback
     }
 
     @Override
-    public void setEqualizer(EqualizerType preset) {
-        if (!isPlaying()) {
-            Log.d(TAG, "setEqualizer: not playing can't setEqalizer");
-            return;
-        }
-        switch (preset) {
+    public void setEqualizer(EqualizerType equalizerType) {
+        mEqualizerType = equalizerType;
+        switch (equalizerType) {
             case STANDARD:
                 mEqualizer.setBandLevel((short) 0, provideBandLevel(0));
                 mEqualizer.setBandLevel((short) 1, provideBandLevel(0));
@@ -442,6 +440,11 @@ public class LocalPlayback implements Playback
                 mEqualizer.setBandLevel((short) 4, provideBandLevel(2.4));
                 break;
         }
+    }
+
+    @Override
+    public EqualizerType getEqualizerType() {
+        return mEqualizerType;
     }
 
     private short provideBandLevel(double dB) {
