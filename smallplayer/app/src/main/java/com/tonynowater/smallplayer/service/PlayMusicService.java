@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import com.tonynowater.smallplayer.BuildConfig;
+import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
 import java.lang.ref.WeakReference;
@@ -168,6 +169,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     /**
      * 這裡必須回傳BrowserRoot，畫面端才能成功連線Service
+     * 每個畫面啟動時都會觸發此事件
      * @param clientPackageName
      * @param clientUid
      * @param rootHints
@@ -185,11 +187,17 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             //這裡放的Bundle可從MediaBrowserCompat.getExtra取得
             Bundle bundle = new Bundle();
             bundle.putSerializable(BUNDLE_KEY_PLAYMODE, mMusicProvider.getmEnumPlayMode());
+            bundle.putSerializable(BUNDLE_KEY_EQUALIZER_TYPE, mLocalPlayback.getEqualizerType());
             return new BrowserRoot(ROOT_ID_TEST, bundle);
         }
         return null;
     }
 
+    /**
+     * 透過指定訂閱的ID，回傳不同的項目給畫面端
+     * @param parentId {@link BaseActivity#getSubscribeID()}
+     * @param result
+     */
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         Log.d(TAG, "onLoadChildren: " + parentId);

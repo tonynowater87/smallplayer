@@ -36,7 +36,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-// TODO: 2017/7/14 在目前播放清單畫面縮小返回後，等化器的風格也會清空不見了。
 public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPlayerBinding> implements View.OnClickListener{
     private static final String TAG = FullScreenPlayerActivity.class.getSimpleName();
     private static final long INITIAL_DELAY = 100;
@@ -46,9 +45,10 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     private PlaybackStateCompat mLastPlaybackState;
     private List<MediaBrowserCompat.MediaItem> mCurrentPlayList = new ArrayList<>();
     private BottomSheetDialog mBottomSheetDialog;
-    private EnumPlayMode mEnumPlayMode;
     private CurrentPlayListAdapter mCurrentPlayListAdapter;
     private MediaMetadataCompat mMediaMetaData;
+    private EnumPlayMode mEnumPlayMode;
+    private EqualizerType mLastEqualizerType;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -90,9 +90,11 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
         mCurrentPlayListAdapter.onPlaybackStateChanged(mLastPlaybackState);
         setShuffleButtonEnable(mLastPlaybackState.getExtras());
+        setLastEqualizerType();
     }
 
     /**
+     * 設定播放模式：一般NORMAL、隨機RANDOM
      * @param bundle
      */
     private void setShuffleButtonEnable(Bundle bundle) {
@@ -117,11 +119,12 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         return (EnumPlayMode) bundle.getSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE);
     }
 
-    private EqualizerType getEqualizerType() {
-        if (mLastPlaybackState.getExtras() == null) {
-            return null;
+    private void setLastEqualizerType() {
+        if (mLastPlaybackState.getExtras() != null) {
+            mLastEqualizerType = (EqualizerType) mLastPlaybackState.getExtras().getSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE);
+        } else {
+            mLastEqualizerType = (EqualizerType) mMediaBrowserCompat.getExtras().getSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE);
         }
-        return (EqualizerType) mLastPlaybackState.getExtras().getSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE);
     }
 
     @Override
@@ -347,7 +350,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     /** Show等化器風格設定Dialog */
     private void showEqList() {
-        DialogUtil.showChangeEqualizerDialog(this, getEqualizerType(), mTransportControls);
+        DialogUtil.showChangeEqualizerDialog(this, mLastEqualizerType, mTransportControls);
     }
 
     private void onPressPlayButton() {

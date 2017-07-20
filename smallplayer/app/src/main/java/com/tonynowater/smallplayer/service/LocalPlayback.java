@@ -388,6 +388,11 @@ public class LocalPlayback implements Playback
 
     @Override
     public void setEqualizer(EqualizerType equalizerType) {
+        if (mEqualizer == null) {
+            Log.d(TAG, "setEqualizer: you can't setEqualizer when mEqualizer is null");
+            return;
+        }
+
         mEqualizerType = equalizerType;
         switch (equalizerType) {
             case STANDARD:
@@ -444,7 +449,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public EqualizerType getEqualizerType() {
-        return mEqualizerType;
+        return mEqualizer == null ? null : mEqualizerType;
     }
 
     private short provideBandLevel(double dB) {
