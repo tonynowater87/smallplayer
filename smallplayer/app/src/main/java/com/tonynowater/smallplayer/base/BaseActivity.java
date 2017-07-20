@@ -15,6 +15,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
@@ -25,6 +26,10 @@ import com.tonynowater.smallplayer.view.PlayerFragment;
 import java.util.List;
 
 /**
+ * 事件觸發順序
+ *
+ * onStart => onConnected => onMediaServiceConnected => onPlaybackStateChanged => onMetadataChanged => onChildrenLoaded
+ *
  * Created by tonynowater on 2017/5/20.
  */
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity implements OnClickSomething {
@@ -35,6 +40,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     protected MediaBrowserCompat mMediaBrowserCompat;
     private MediaControllerCompat mMediaControllerCompat;
     protected RealmUtils mRealmUtils;
+    private Toast mToast = null;
 
     private MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -104,7 +110,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         @Override
         public void onConnected() {
             super.onConnected();
-            Log.d(TAG, "updateState: " + mMediaBrowserCompat.getSessionToken());
+            Log.d(TAG, "onConnected: " + mMediaBrowserCompat.getSessionToken());
 
             if (mMediaBrowserCompat.getSessionToken() == null) {
                 throw new IllegalArgumentException("No session token");
@@ -127,7 +133,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
             } catch (RemoteException e) {
                 e.printStackTrace();
-                Log.e(TAG, "updateState: " + e.toString());
+                Log.e(TAG, "onConnected: " + e.toString());
             }
         }
 
@@ -213,5 +219,14 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     @Override
     public void onClick(Object o) {
 
+    }
+
+    public void showToast(String toastMsg) {
+        if (mToast != null)
+        {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT);
+        mToast.show();
     }
 }

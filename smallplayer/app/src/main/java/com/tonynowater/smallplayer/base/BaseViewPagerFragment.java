@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends Fragment {
 
     protected T mBinding;
+    private BaseActivity baseActivity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,6 +28,20 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends F
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, getResourceId(), null, false);
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getActivity() instanceof BaseActivity) {
+            baseActivity = (BaseActivity) getActivity();
+        }
+    }
+
+    protected void showToast(String toastMsg) {
+        if (baseActivity != null) {
+            baseActivity.showToast(toastMsg);
+        }
     }
 
     protected abstract int getResourceId();

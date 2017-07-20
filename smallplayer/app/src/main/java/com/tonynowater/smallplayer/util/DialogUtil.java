@@ -7,7 +7,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
@@ -185,7 +184,7 @@ public class DialogUtil {
      */
     public static void showChangeEqualizerDialog(final BaseActivity baseActivity, EqualizerType equalizerType, final MediaControllerCompat.TransportControls transportControls) {
         if (equalizerType == null) {
-            Toast.makeText(baseActivity.getApplicationContext(), baseActivity.getString(R.string.equlizer_can_not_set_when_not_play_toast_msg), Toast.LENGTH_SHORT).show();
+            baseActivity.showToast(baseActivity.getString(R.string.equlizer_can_not_set_when_not_play_toast_msg));
             return;
         }
 
@@ -212,7 +211,7 @@ public class DialogUtil {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
                 transportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
-                Toast.makeText(baseActivity.getApplicationContext(), String.format(baseActivity.getString(R.string.equlizer_set_finish_toast), names[position]), Toast.LENGTH_SHORT).show();
+                baseActivity.showToast(String.format(baseActivity.getString(R.string.equlizer_set_finish_toast), names[position]));
                 return true;
             }
         });

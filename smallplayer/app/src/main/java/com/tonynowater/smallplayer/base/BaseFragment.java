@@ -23,6 +23,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     protected T mBinding;
     protected MediaControllerCompat.TransportControls mTransportControls;
     protected RealmUtils mRealmUtils;
+    private BaseActivity mBaseActivity;
 
     private MediaControllerCompat.Callback mMediaControllerCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -68,6 +69,9 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
         super.onStart();
         Log.d(TAG, "onStart: ");
         onConnected();
+        if (getActivity() instanceof BaseActivity) {
+            mBaseActivity = (BaseActivity) getActivity();
+        }
     }
 
     @Override
@@ -135,6 +139,12 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     protected void play() {
         if (mTransportControls != null) {
             mTransportControls.play();
+        }
+    }
+
+    public void showToast(String toastMsg) {
+        if (mBaseActivity != null) {
+            mBaseActivity.showToast(toastMsg);
         }
     }
 }

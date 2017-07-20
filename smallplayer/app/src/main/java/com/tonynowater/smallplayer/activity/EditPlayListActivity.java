@@ -20,7 +20,6 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
-import com.tonynowater.smallplayer.util.ToastUtil;
 
 import java.util.List;
 
@@ -104,18 +103,18 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
                             DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
                             break;
                         case 2:
-                            ToastUtil.showToast(EditPlayListActivity.this, String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
+                            showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
                             U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnU2BApiCallback() {
                                 @Override
                                 public void onSuccess(String response) {
                                     Log.d(TAG, "onSuccess: " + response);
-                                    ToastUtil.showToast(EditPlayListActivity.this, response);
+                                    showToast(response);
                                 }
 
                                 @Override
                                 public void onFailure(String errorMsg) {
                                     Log.d(TAG, "onFailure: " + errorMsg);
-                                    ToastUtil.showToast(EditPlayListActivity.this, errorMsg);
+                                    showToast(errorMsg);
                                 }
                             });
                             break;
