@@ -36,6 +36,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+// TODO: 2017/7/14 在目前播放清單畫面縮小返回後，等化器的風格也會清空不見了。
 public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPlayerBinding> implements View.OnClickListener{
     private static final String TAG = FullScreenPlayerActivity.class.getSimpleName();
     private static final long INITIAL_DELAY = 100;
@@ -139,7 +140,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
 
     @Override
     protected void onMediaServiceConnected() {
-        mCurrentPlayListAdapter = new CurrentPlayListAdapter(this);
+        Log.d(TAG, "onMediaServiceConnected: ");
         setShuffleButtonEnable(mMediaBrowserCompat.getExtras());
     }
 
@@ -228,6 +229,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
         mBinding.ivEqActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivModeActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivShuffleActivityFullScreenPlayer.setOnClickListener(this);
+        mCurrentPlayListAdapter = new CurrentPlayListAdapter(this);
     }
 
     @Override
