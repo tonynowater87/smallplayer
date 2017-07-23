@@ -19,7 +19,7 @@ import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseActivity;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
@@ -36,7 +36,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPlayerBinding> implements View.OnClickListener{
+public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityFullScreenPlayerBinding> implements View.OnClickListener{
     private static final String TAG = FullScreenPlayerActivity.class.getSimpleName();
     private static final long INITIAL_DELAY = 100;
     private static final long UPDATE_PERIOD = 1000;
@@ -206,7 +206,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     private ScheduledExecutorService mSceduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResourceId() {
         return R.layout.activity_full_screen_player;
     }
 
@@ -218,7 +218,7 @@ public class FullScreenPlayerActivity extends BaseActivity<ActivityFullScreenPla
     };
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         //設置不要顯示SystemStatusBar
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);

@@ -16,7 +16,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import com.tonynowater.smallplayer.BuildConfig;
-import com.tonynowater.smallplayer.base.BaseActivity;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
 import java.lang.ref.WeakReference;
@@ -195,7 +195,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     /**
      * 透過指定訂閱的ID，回傳不同的項目給畫面端
-     * @param parentId {@link BaseActivity#getSubscribeID()}
+     * @param parentId {@link BaseMediaControlActivity#getSubscribeID()}
      * @param result
      */
     @Override

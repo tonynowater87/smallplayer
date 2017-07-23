@@ -10,7 +10,7 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseActivity;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * 顯示Youtube搜尋專輯裡的歌曲清單Activity
  */
-public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
+public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListBinding> {
     private static final String TAG = PlayListActivity.class.getSimpleName();
 
     @Override
@@ -57,12 +57,12 @@ public class PlayListActivity extends BaseActivity<ActivityPlayListBinding> {
     }
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResourceId() {
         return R.layout.activity_play_list;
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
         U2BSearchViewPagerFragment u2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO, getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID));

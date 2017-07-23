@@ -48,7 +48,7 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
     }
 
     @Override
-    protected int getResourceId() {
+    protected int getLayoutResourceId() {
         return R.layout.layout_songlistfragment;
     }
 

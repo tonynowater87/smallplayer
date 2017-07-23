@@ -10,7 +10,7 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseActivity;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
@@ -154,21 +154,22 @@ public class DialogUtil {
 
     /**
      * 顯示切換歌單的Dialog
-     * @param baseActivity
+     * @param baseMediaControlActivity
      */
-    public static void showChangePlayListDialog(final BaseActivity baseActivity) {
+    public static void showChangePlayListDialog(final BaseMediaControlActivity baseMediaControlActivity) {
         final RealmUtils realmUtils = new RealmUtils();
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseActivity);
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseMediaControlActivity);
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
         int currentPlaylistPosition = realmUtils.queryCurrentPlayListPosition();
         builder.title(R.string.change_play_list_dialog_title);
         builder.items(playListEntities);
-        builder.itemsCallbackSingleChoice(currentPlaylistPosition, new MaterialDialog.ListCallbackSingleChoice() {
+        builder.itemsCallbackSingleChoice(currentPlaylistPosition,
+                new MaterialDialog.ListCallbackSingleChoice() {
             @Override
             public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                 int playListId = playListEntities.get(i).getId();
                 realmUtils.setCurrentPlayListID(playListId);
-                baseActivity.sendActionChangePlaylist(playListId);
+                baseMediaControlActivity.sendActionChangePlaylist(playListId);
                 realmUtils.close();
                 return true;
             }
@@ -178,13 +179,13 @@ public class DialogUtil {
 
     /**
      * 顯示切換等化器風格的Dialog
-     * @param baseActivity
+     * @param baseMediaControlActivity
      * @param equalizerType
      * @param transportControls
      */
-    public static void showChangeEqualizerDialog(final BaseActivity baseActivity, EqualizerType equalizerType, final MediaControllerCompat.TransportControls transportControls) {
+    public static void showChangeEqualizerDialog(final BaseMediaControlActivity baseMediaControlActivity, EqualizerType equalizerType, final MediaControllerCompat.TransportControls transportControls) {
         if (equalizerType == null) {
-            baseActivity.showToast(baseActivity.getString(R.string.equlizer_can_not_set_when_not_play_toast_msg));
+            baseMediaControlActivity.showToast(baseMediaControlActivity.getString(R.string.equlizer_can_not_set_when_not_play_toast_msg));
             return;
         }
 
@@ -202,7 +203,7 @@ public class DialogUtil {
             currentEqPosition = -1;
         }
 
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseActivity);
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseMediaControlActivity);
         builder.title(R.string.change_equalizer_dialog_title);
         builder.items(names);
         builder.itemsCallbackSingleChoice(currentEqPosition, new MaterialDialog.ListCallbackSingleChoice() {
@@ -211,7 +212,7 @@ public class DialogUtil {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
                 transportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
-                baseActivity.showToast(String.format(baseActivity.getString(R.string.equlizer_set_finish_toast), names[position]));
+                baseMediaControlActivity.showToast(String.format(baseMediaControlActivity.getString(R.string.equlizer_set_finish_toast), names[position]));
                 return true;
             }
         });

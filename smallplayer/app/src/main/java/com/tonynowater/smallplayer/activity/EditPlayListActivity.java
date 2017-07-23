@@ -12,7 +12,7 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseActivity;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
 import com.tonynowater.smallplayer.fragment.locallist.EditPlayListFragment;
 import com.tonynowater.smallplayer.fragment.locallist.EnumEditListType;
@@ -23,7 +23,7 @@ import com.tonynowater.smallplayer.util.DialogUtil;
 
 import java.util.List;
 
-public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBinding> {
+public class EditPlayListActivity extends BaseMediaControlActivity<ActivityEditPlayListBinding> {
     private static final String TAG = EditPlayListActivity.class.getSimpleName();
 
     public static void startActivity(Activity activity) {
@@ -62,7 +62,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
         replaceShowPlayListFragment();
@@ -75,7 +75,7 @@ public class EditPlayListActivity extends BaseActivity<ActivityEditPlayListBindi
     }
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResourceId() {
         return R.layout.activity_edit_play_list;
     }
 

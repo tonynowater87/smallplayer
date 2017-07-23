@@ -263,7 +263,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     }
 
     @Override
-    protected int getResourceId() {
+    protected int getLayoutResourceId() {
         return R.layout.layout_u2bsearchfragment;
     }
 

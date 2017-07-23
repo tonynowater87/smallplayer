@@ -14,8 +14,8 @@ import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
-import com.tonynowater.smallplayer.base.BaseActivity;
-import com.tonynowater.smallplayer.base.BaseFragment;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
+import com.tonynowater.smallplayer.base.BaseMediaControlFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * 畫面底部的播放Fragment
  * Created by tonynowater on 2017/5/20.
  */
-public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
+public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBinding> {
     private static final String TAG = PlayerFragment.class.getSimpleName();
 
     private static final long INITIAL_DELAY = 100;
@@ -68,7 +68,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
                     skipToPrevious();
                     break;
                 case R.id.buttonAction:
-                    DialogUtil.showChangePlayListDialog((BaseActivity) getActivity());
+                    DialogUtil.showChangePlayListDialog((BaseMediaControlActivity) getActivity());
                     break;
                 case R.id.ll_song_info_fragment_player:
                     startActivity(new Intent(getActivity(), FullScreenPlayerActivity.class));
@@ -96,7 +96,7 @@ public class PlayerFragment extends BaseFragment<FragmentPlayerBinding> {
     }
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResourceId() {
         return R.layout.fragment_player;
     }
 

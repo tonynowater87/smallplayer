@@ -19,6 +19,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,7 +34,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseActivity;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
 import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
@@ -53,7 +54,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> {
+public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT = 15;//最近搜尋記錄要顯示的筆數
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
@@ -61,6 +62,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private CustomSearchAdapter simpleCursorAdapter;
     private List<String> suggestions;
     private SearchRecentSuggestions searchRecentSuggestions;
+    private ActionBarDrawerToggle mActionBarDrawerToggle;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -93,9 +95,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerlayout, R.string.app_name, R.string.app_name);
+        mActionBarDrawerToggle.syncState();
         initialViewPager();
     }
 
@@ -256,7 +262,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResourceId() {
         return R.layout.activity_main;
     }
 

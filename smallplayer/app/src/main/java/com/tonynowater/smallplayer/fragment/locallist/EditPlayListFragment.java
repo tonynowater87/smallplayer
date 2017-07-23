@@ -13,7 +13,7 @@ import android.view.MenuItem;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseFragment;
+import com.tonynowater.smallplayer.base.BaseMediaControlFragment;
 import com.tonynowater.smallplayer.base.CustomItemTouchHelperCallback;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListFragmentBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
@@ -25,7 +25,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
  * Created by tonynowater on 2017/5/30.
  */
 
-public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmentBinding> {
+public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPlayListFragmentBinding> {
     public static final String BUNDLE_KEY_ENUM_EDITLISTTYPE = "BUNDLE_KEY_ENUM_EDITLISTTYPE";
     private static final String BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION";
     private EnumEditListType mEnumType;
@@ -34,7 +34,7 @@ public class EditPlayListFragment extends BaseFragment<LayoutShowPlayListFragmen
     private ShowPlayListSongAdapter mShowPlayListSongAdapter;
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResourceId() {
         return R.layout.layout_show_play_list_fragment;
     }
 
