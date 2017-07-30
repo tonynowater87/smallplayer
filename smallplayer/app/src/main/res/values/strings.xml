@@ -39,7 +39,7 @@
     <string name="playlist_create_date">自 %s 創建</string>
     <string name="search_bar_hint">最近搜尋紀錄</string>
     <string name="search_bar_clear_history">清除搜尋記錄</string>
-    <string name="search_bar_clear_history_confirm_dialog_title">清空歷史記錄?</string>
+    <string name="search_bar_clear_history_confirm_dialog_title">清空搜尋記錄?</string>
     <string name="delete_hint">確定要刪除 %1$s ?</string>
     <string name="default_list_can_not_delete">預設歌單不可刪除</string>
     <string name="normal_dialog_title">訊息</string>

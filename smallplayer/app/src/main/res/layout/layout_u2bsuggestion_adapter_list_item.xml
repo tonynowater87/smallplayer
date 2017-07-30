@@ -8,24 +8,30 @@
         android:background="@color/colorPrimary"
         android:orientation="vertical">
 
+        <ImageView
+            android:id="@+id/iv_layout_u2bsuggestion_adapter_list_icon"
+            android:layout_width="@dimen/list_search_icon_size"
+            android:layout_height="@dimen/list_search_icon_size"
+            android:scaleType="fitCenter"
+            android:layout_centerVertical="true"/>
+
         <TextView
             android:id="@+id/tv_layout_u2bsuggestion_adapter_list_item"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
             android:layout_margin="@dimen/margin_gap_level_1"
-            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@id/iv_layout_u2bsuggestion_adapter_list_icon"
+            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:textColor="@android:color/darker_gray"/>
 
         <TextView
             android:id="@+id/tv_right_layout_u2bsuggestion_adapter_list_item"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/margin_gap_level_1"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="top"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="@string/search_bar_clear_history"
             android:textColor="@android:color/holo_orange_light"
             android:visibility="gone"/>
