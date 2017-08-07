@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
@@ -371,10 +372,22 @@ public class MediaNotificationManager extends BroadcastReceiver {
         builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
     }
 
+    /**
+     * 清空原來的Activity Stack，再啟動設定的Activity Stack，陣列位置越後面的在Stack上面
+     *
+     * @return 點擊通知的PendingIntent
+     */
     private PendingIntent createContentIntent() {
+        Intent[] intents = new Intent[2];
+
         Intent intentMainActivity = new Intent(mPlayMusicService, MainActivity.class);
-        intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        return PendingIntent.getActivity(mPlayMusicService, REQUEST_CODE, intentMainActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+        intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intents[0] = intentMainActivity;
+
+        Intent intentFullScreenActivity = new Intent(mPlayMusicService, FullScreenPlayerActivity.class);
+        intents[1] = intentFullScreenActivity;
+
+        return PendingIntent.getActivities(mPlayMusicService, REQUEST_CODE, intents, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private void updatePlayPauseAction(NotificationCompat.Builder builder) {

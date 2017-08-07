@@ -23,7 +23,6 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 // TODO: 2017/7/16 疑似有異常會啟動兩次MediaPlayer播放歌曲的問題
-// TODO: 2017/7/16 點擊通知會一直疊加畫面
 public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private static final String TAG = PlayMusicService.class.getSimpleName();

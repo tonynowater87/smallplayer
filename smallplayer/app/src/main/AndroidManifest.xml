@@ -31,8 +31,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
         <activity android:name=".activity.PlayListActivity" />
+
         <activity android:name=".activity.FullScreenPlayerActivity" />
+
+        <activity android:name=".activity.EditPlayListActivity" />
 
         <service
             android:name=".service.PlayMusicService"
@@ -47,7 +51,6 @@
             android:name=".module.GoogleSearchSuggestionProvider"
             android:authorities="com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider" />
 
-        <activity android:name=".activity.EditPlayListActivity"></activity>
     </application>
 
 </manifest>
