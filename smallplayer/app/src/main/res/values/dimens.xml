@@ -19,5 +19,5 @@
     <dimen name="margin_gap_level_3">15dp</dimen>
     <dimen name="lottie_search_load_view_dimen">75dp</dimen>
     <dimen name="list_search_icon_size">30dp</dimen>
-
+    <dimen name="list_textview_duration_autosize_height">20dp</dimen>
 </resources>

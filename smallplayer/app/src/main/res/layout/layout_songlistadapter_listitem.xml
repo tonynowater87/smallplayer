@@ -5,7 +5,7 @@
         android:id="@+id/rl_root_songlistadapter"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
-        android:padding="5dp">
+        android:layout_margin="@dimen/margin_gap_level_1">
 
         <ImageView
             android:id="@+id/iv_songlistadapter"
@@ -30,15 +30,19 @@
                 android:layout_centerVertical="true"
                 android:scaleType="fitCenter" />
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/tv_duration_songlistadapter"
                 style="@style/TextAppearance.AppCompat.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/list_image_icon_type_width"
+                android:layout_height="@dimen/list_textview_duration_autosize_height"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
+                android:gravity="center"
                 android:textColor="@android:color/black"
                 android:textStyle="italic"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="6sp"
+                android:autoSizeMaxTextSize="14sp"
+                android:autoSizeStepGranularity="1sp"
                 tools:text="20:21" />
 
         </RelativeLayout>
