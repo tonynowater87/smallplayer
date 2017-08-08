@@ -29,4 +29,17 @@
         <item name="android:textColorHint">@android:color/darker_gray</item>
         <item name="android:editTextColor">@android:color/darker_gray</item>
     </style>
+
+    <style name="FloatingActionButtonStyle" parent="Widget.Design.FloatingActionButton">
+        <item name="android:layout_width">@dimen/floating_button_size</item>
+        <item name="android:layout_height">@dimen/floating_button_size</item>
+        <item name="android:layout_margin">@dimen/margin_gap_level_2</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:src">@drawable/ic_playlist_add_black_24px</item>
+        <item name="android:tint">@android:color/white</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="elevation">@dimen/margin_gap_level_3</item>
+        <item name="fabSize">normal</item>
+        <item name="layout_behavior">com.tonynowater.smallplayer.view.ScrollOffBottomBehavior</item>
+    </style>
 </resources>

@@ -1,7 +1,7 @@
 package com.tonynowater.smallplayer.fragment.u2bsearch;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +21,7 @@ import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
@@ -268,7 +269,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     }
 
     @Override
-    public CharSequence getPageTitle(Context context) {
+    public CharSequence getPageTitle() {
         return getArguments().getString(BUNDLE_KEY_TITLE);
     }
 
@@ -300,6 +301,19 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
 
             mBinding.lottieAnimationView.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Nullable
+    @Override
+    public List<? extends Playable> getPlayableList() {
+
+        if (mU2BPlayListDTO != null) {
+            //搜尋清單物件不可轉換成Playable
+            Log.w(TAG, "搜尋清單物件不可轉換成Playable");
+            return null;
+        }
+
+        return mSongListAdapter.getDataList();
     }
 
     @Override

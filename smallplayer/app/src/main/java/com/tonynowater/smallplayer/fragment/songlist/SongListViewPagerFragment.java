@@ -1,6 +1,5 @@
 package com.tonynowater.smallplayer.fragment.songlist;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,8 +13,11 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistfragmentBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.util.MediaUtils;
 import com.tonynowater.smallplayer.util.OnClickSomething;
+
+import java.util.List;
 
 /**
  * Created by tonyliao on 2017/4/27.
@@ -53,13 +55,22 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
     }
 
     @Override
-    public CharSequence getPageTitle(Context context) {
-        return context.getString(R.string.viewpager_title_local_music);
+    public CharSequence getPageTitle() {
+        if (isAdded()) {
+            return getString(R.string.viewpager_title_local_music);
+        } else {
+            return MyApplication.getContext().getString(R.string.viewpager_title_local_music);
+        }
     }
 
     @Override
     public void queryBySearchView(String query) {
         mSongListAdapter.getFilter().filter(query);
+    }
+
+    @Override
+    public List<? extends Playable> getPlayableList() {
+        return mSongListAdapter.getDataList();
     }
 
     @Override

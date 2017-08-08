@@ -11,10 +11,12 @@ import android.view.View;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
+import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
 
@@ -25,6 +27,7 @@ import java.util.List;
  */
 public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListBinding> {
     private static final String TAG = PlayListActivity.class.getSimpleName();
+    private BaseViewPagerFragment mU2BSearchViewPagerFragment;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -65,8 +68,22 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
-        U2BSearchViewPagerFragment u2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO, getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID));
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_playlist_video_activity, u2BSearchViewPagerFragment).commit();
+        mU2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO, getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID));
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_playlist_video_activity, mU2BSearchViewPagerFragment).commit();
+        initialFab();
+    }
+
+    /** 點擊飄浮按鈕 */
+    private void initialFab() {
+        mBinding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Playable> playableList = mU2BSearchViewPagerFragment.getPlayableList();
+                if (playableList != null) {
+                    DialogUtil.showAddPlayableListDialog(PlayListActivity.this, playableList);
+                }
+            }
+        });
     }
 
     @Override

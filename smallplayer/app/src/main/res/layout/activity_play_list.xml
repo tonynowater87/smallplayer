@@ -33,6 +33,12 @@
                 android:layout_width="wrap_content"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                style="@style/FloatingActionButtonStyle"
+                app:layout_anchor="@id/content_playlist_video_activity"
+                app:layout_anchorGravity="bottom|right" />
+
         </android.support.design.widget.CoordinatorLayout>
 
     </RelativeLayout>

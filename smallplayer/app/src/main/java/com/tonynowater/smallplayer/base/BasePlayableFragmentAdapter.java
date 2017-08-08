@@ -114,6 +114,11 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         }
     }
 
+    /** @return List資料 */
+    public List<K> getDataList() {
+        return mDataList;
+    }
+
     /**
      * @param footviewVisible 設置FootView是否可見
      */

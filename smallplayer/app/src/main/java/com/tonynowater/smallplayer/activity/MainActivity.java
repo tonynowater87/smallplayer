@@ -44,6 +44,7 @@ import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -56,6 +57,9 @@ import java.util.List;
 
 public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int LOCAL_POSITION = 0;
+    private static final int U2B_VIDEO_POSITION = 1;
+    private static final int U2B_LIST_POSITION = 2;
     private static final int DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT = 15;//最近搜尋記錄要顯示的筆數
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
     private int mCurrentViewPagerPosition = 0;
@@ -103,7 +107,21 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerlayout, mBinding.toolbar.toolbarMainActivity, R.string.app_name, R.string.app_name);
         mActionBarDrawerToggle.syncState();
+        initialFab();
         initialViewPager();
+    }
+
+    /** 點擊飄浮按鈕 */
+    private void initialFab() {
+        mBinding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Playable> playableList = mBaseViewPagerFragments[mCurrentViewPagerPosition].getPlayableList();
+                if (playableList != null) {
+                    DialogUtil.showAddPlayableListDialog(MainActivity.this, playableList);
+                }
+            }
+        });
     }
 
     @Override
@@ -285,6 +303,11 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 Log.d(TAG, "onPageSelected: " + position);
                 mCurrentViewPagerPosition = position;
                 mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
+                if (position == U2B_LIST_POSITION) {
+                    mBinding.fab.setVisibility(View.GONE);
+                } else {
+                    mBinding.fab.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -296,6 +319,10 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         mBinding.toolbar.tabLayoutMainActivity.setupWithViewPager(mBinding.viewpager);
     }
 
+    /**
+     * 點擊畫面ListItem的事件
+     * @param object 畫面List項目
+     */
     @Override
     public void onClick(final Object object) {
         // TODO: 2017/5/30 這邊要在簡化
@@ -382,7 +409,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mBaseViewPagerFragments[position].getPageTitle(MainActivity.this);
+            return mBaseViewPagerFragments[position].getPageTitle();
         }
     }
 }

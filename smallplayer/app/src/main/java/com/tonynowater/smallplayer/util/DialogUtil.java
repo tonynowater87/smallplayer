@@ -178,6 +178,33 @@ public class DialogUtil {
     }
 
     /**
+     * 顯示將歌曲List全部加到某個清單的對話框
+     * @param baseMediaControlActivity
+     * @param playableList 歌曲List
+     */
+    public static void showAddPlayableListDialog(final BaseMediaControlActivity baseMediaControlActivity, final List<Playable> playableList) {
+        final RealmUtils realmUtils = new RealmUtils();
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseMediaControlActivity);
+        final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
+        builder.title(R.string.add_playable_list_dialog_title);
+        builder.content(String.format(baseMediaControlActivity.getString(R.string.add_playable_list_dialog_content), String.valueOf(playableList.size())));
+        builder.items(playListEntities);
+        builder.itemsCallbackSingleChoice(-1,
+                new MaterialDialog.ListCallbackSingleChoice() {
+            @Override
+            public boolean onSelection(MaterialDialog materialDialog, View view, int position, CharSequence charSequence) {
+                int playListId = playListEntities.get(position).getId();
+                for (int i = 0; i < playableList.size(); i++) {
+                    realmUtils.addSongToPlayList(playListId, playableList.get(i).getPlayListSongEntity());
+                }
+                realmUtils.close();
+                return true;
+            }
+        });
+        builder.show();
+    }
+
+    /**
      * 顯示切換等化器風格的Dialog
      * @param baseMediaControlActivity
      * @param equalizerType

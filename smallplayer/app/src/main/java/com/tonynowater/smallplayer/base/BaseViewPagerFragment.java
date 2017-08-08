@@ -1,7 +1,10 @@
 package com.tonynowater.smallplayer.base;
 
-import android.content.Context;
 import android.databinding.ViewDataBinding;
+
+import com.tonynowater.smallplayer.module.u2b.Playable;
+
+import java.util.List;
 
 /**
  * 主畫面ViewPager的基底類別
@@ -9,6 +12,17 @@ import android.databinding.ViewDataBinding;
  */
 public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends BaseFragment<T> {
 
-    public abstract CharSequence getPageTitle(Context context);
+    /** @return ViewPager的Tab標題文字 */
+    public abstract CharSequence getPageTitle();
+
+    /**
+     * 供MainActivity搜尋ViewPager裡的List
+     * @param query ViewPager搜尋
+     */
     public abstract void queryBySearchView(String query);
+
+    /**
+     * @return ViewPager裡的List
+     */
+    public abstract List<? extends Playable> getPlayableList();
 }
