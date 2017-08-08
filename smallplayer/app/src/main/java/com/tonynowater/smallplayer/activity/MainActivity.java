@@ -63,6 +63,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     private List<String> suggestions;
     private SearchRecentSuggestions searchRecentSuggestions;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
+    private SearchView searchView;
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -100,7 +101,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerlayout, R.string.app_name, R.string.app_name);
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerlayout, mBinding.toolbar.toolbarMainActivity, R.string.app_name, R.string.app_name);
         mActionBarDrawerToggle.syncState();
         initialViewPager();
     }
@@ -110,7 +111,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         getMenuInflater().inflate(R.menu.menu_main, menu);
         searchRecentSuggestions = new SearchRecentSuggestions(getApplicationContext(), GoogleSearchSuggestionProvider.AUTHORITY, GoogleSearchSuggestionProvider.MODE);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
+        searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -347,6 +348,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 }
             });
         } else if (object instanceof U2BPlayListDTO.ItemsBean) {
+            invalidateOptionsMenu();//為了關閉SearchView
             U2BPlayListDTO.ItemsBean u2bVideoItem = ((U2BPlayListDTO.ItemsBean) object);
             Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
             intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getId().getPlaylistId());

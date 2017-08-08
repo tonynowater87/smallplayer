@@ -4,17 +4,15 @@
     <item
         android:id="@+id/menu_search"
         android:icon="@android:drawable/ic_menu_search"
-        android:orderInCategory="100"
         android:title="@string/search_view_hint"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always|collapseActionView"/>
+        app:showAsAction="always|collapseActionView" />
     <!-- showAsAction設定collapseActionView，才會出現←箭頭 -->
 
     <item
         android:id="@+id/menu_edit"
         android:icon="@android:drawable/ic_menu_edit"
-        android:orderInCategory="200"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/menu_edit_title" />
 
 </menu>

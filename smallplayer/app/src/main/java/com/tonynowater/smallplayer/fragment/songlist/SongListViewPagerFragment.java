@@ -66,7 +66,7 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.add(0, MENU_ID_REFRESH, MENU_ORDER_NUMBER, R.string.refresh)
                 .setIcon(android.R.drawable.ic_menu_rotate)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     }
 
     @Override
