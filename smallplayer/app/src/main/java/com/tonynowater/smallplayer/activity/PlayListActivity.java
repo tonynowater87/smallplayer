@@ -19,6 +19,7 @@ import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 import java.util.List;
 
@@ -68,7 +69,10 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
-        mU2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO, getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID));
+        setTitle(getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE));
+        mU2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO
+                , getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID)
+                , getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE));
         getSupportFragmentManager().beginTransaction().replace(R.id.content_playlist_video_activity, mU2BSearchViewPagerFragment).commit();
         initialFab();
     }
@@ -79,8 +83,10 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
             @Override
             public void onClick(View view) {
                 List<Playable> playableList = mU2BSearchViewPagerFragment.getPlayableList();
-                if (playableList != null) {
-                    DialogUtil.showAddPlayableListDialog(PlayListActivity.this, playableList);
+                if (MiscellaneousUtil.isListOK(playableList)) {
+                    DialogUtil.showAddPlayableListDialog(PlayListActivity.this, playableList, mU2BSearchViewPagerFragment.getPlayableListName());
+                } else {
+                    showToast(getString(R.string.add_playablelist_song_failed_toast_msg));
                 }
             }
         });

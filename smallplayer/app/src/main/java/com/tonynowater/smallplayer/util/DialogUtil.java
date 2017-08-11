@@ -181,22 +181,37 @@ public class DialogUtil {
      * 顯示將歌曲List全部加到某個清單的對話框
      * @param baseMediaControlActivity
      * @param playableList 歌曲List
+     * @param listName 歌單名稱
      */
-    public static void showAddPlayableListDialog(final BaseMediaControlActivity baseMediaControlActivity, final List<Playable> playableList) {
+    public static void showAddPlayableListDialog(final BaseMediaControlActivity baseMediaControlActivity, final List<Playable> playableList, final String listName) {
         final RealmUtils realmUtils = new RealmUtils();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(baseMediaControlActivity);
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
+        final List<String> listItems = MiscellaneousUtil.getPlayListTitles(playListEntities);
+        listItems.add(String.format(baseMediaControlActivity.getString(R.string.add_playlist_by_search), listName));
         builder.title(R.string.add_playable_list_dialog_title);
         builder.content(String.format(baseMediaControlActivity.getString(R.string.add_playable_list_dialog_content), String.valueOf(playableList.size())));
-        builder.items(playListEntities);
+        builder.items(listItems);
         builder.itemsCallbackSingleChoice(-1,
                 new MaterialDialog.ListCallbackSingleChoice() {
             @Override
             public boolean onSelection(MaterialDialog materialDialog, View view, int position, CharSequence charSequence) {
-                int playListId = playListEntities.get(position).getId();
-                for (int i = 0; i < playableList.size(); i++) {
-                    realmUtils.addSongToPlayList(playListId, playableList.get(i).getPlayListSongEntity());
+                int playlistId;
+                if (position == listItems.size() - 1) {
+                    //自動新建歌單
+                    playlistId = realmUtils.addNewPlayList(listName);
+//                    for (int i = 0; i < playableList.size(); i++) {
+//                        realmUtils.addSongToPlayList(newplaylistId, playableList.get(i).getPlayListSongEntity());
+//                    }
+                } else {
+                    //加入已有歌單
+                    playlistId = playListEntities.get(position).getId();
+//                    for (int i = 0; i < playableList.size(); i++) {
+//                        realmUtils.addSongToPlayList(playListId, playableList.get(i).getPlayListSongEntity());
+//                    }
                 }
+
+                realmUtils.addSongsToPlayList(playlistId, playableList);
                 realmUtils.close();
                 return true;
             }

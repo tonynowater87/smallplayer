@@ -7,20 +7,24 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by tonynowater on 2017/5/27.
  */
-
 public class MiscellaneousUtil {
     private static final String TAG = MiscellaneousUtil.class.getSimpleName();
 
     private MiscellaneousUtil() {}
 
-    /** 檢查List */
+    /**
+     * 檢查List
+     * @return true:OK false:不OK
+     */
     public static boolean isListOK(List<?> list) {
         return list != null && list.size() > 0;
     }
@@ -52,5 +56,17 @@ public class MiscellaneousUtil {
         if (mTransportControls != null) {
             mTransportControls.sendCustomAction(PlayMusicService.ACTION_REMOVE_SONG_FROM_PLAYLIST, bundle);
         }
+    }
+
+    /**
+     * @param playListEntities 本地儲存的歌單
+     * @return 只有本地儲存的歌單名稱的字串List
+     */
+    public static List<String> getPlayListTitles(List<PlayListEntity> playListEntities) {
+        List<String> listRet = new ArrayList<>();
+        for (int i = 0; i < playListEntities.size(); i++) {
+            listRet.add(playListEntities.get(i).getPlayListName());
+        }
+        return listRet;
     }
 }

@@ -9,6 +9,7 @@ import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayFolderEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.util.DateUtil;
 
 import java.io.Closeable;
@@ -105,13 +106,16 @@ public class RealmUtils implements Closeable{
         return playFolderDAO.update(playFolderEntity);
     }
 
-    /** 新增播放清單 */
-    public void addNewPlayList(final String playListName) {
+    /**
+     * 新增播放清單
+     * @return 新建歌單的id
+     */
+    public int addNewPlayList(final String playListName) {
         PlayListEntity playListEntity = new PlayListEntity();
         playListEntity.setFolderId(BaseDAO.DEFAULT_ID);
         playListEntity.setPlayListName(playListName);
         playListEntity.setCreateDate(DateUtil.getCurrentDate());
-        playListDAO.insert(playListEntity);
+        return playListDAO.insert(playListEntity);
     }
 
     /**
@@ -224,6 +228,17 @@ public class RealmUtils implements Closeable{
             playListEntity.setFolderId(playFolderDAO.insert(playFolderEntity));
             playListEntity.setCreateDate(DateUtil.getCurrentDate());
             playListDAO.insert(playListEntity);
+        }
+    }
+
+    /**
+     * 將歌曲List全部加到某個播放清單
+     * @param playlistId 播放清單ID
+     * @param playableList 歌曲List
+     */
+    public void addSongsToPlayList(int playlistId, List<Playable> playableList) {
+        for (int i = 0; i < playableList.size(); i++) {
+            addSongToPlayList(playlistId, playableList.get(i).getPlayListSongEntity());
         }
     }
 }

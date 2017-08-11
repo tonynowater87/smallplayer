@@ -25,4 +25,9 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends B
      * @return ViewPager裡的List
      */
     public abstract List<? extends Playable> getPlayableList();
+
+    /**
+     * @return 要自動新增的播放清單名稱
+     */
+    public abstract String getPlayableListName();
 }

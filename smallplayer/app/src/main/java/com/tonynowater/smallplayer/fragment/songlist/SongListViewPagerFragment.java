@@ -14,6 +14,7 @@ import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistfragmentBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.u2b.Playable;
+import com.tonynowater.smallplayer.util.DateUtil;
 import com.tonynowater.smallplayer.util.MediaUtils;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
@@ -56,11 +57,7 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
 
     @Override
     public CharSequence getPageTitle() {
-        if (isAdded()) {
-            return getString(R.string.viewpager_title_local_music);
-        } else {
-            return MyApplication.getContext().getString(R.string.viewpager_title_local_music);
-        }
+        return MyApplication.getContext().getString(R.string.viewpager_title_local_music);
     }
 
     @Override
@@ -71,6 +68,11 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
     @Override
     public List<? extends Playable> getPlayableList() {
         return mSongListAdapter.getDataList();
+    }
+
+    @Override
+    public String getPlayableListName() {
+        return MyApplication.getContext().getString(R.string.viewpager_title_local_music) + DateUtil.getFullLocaleDate();
     }
 
     @Override

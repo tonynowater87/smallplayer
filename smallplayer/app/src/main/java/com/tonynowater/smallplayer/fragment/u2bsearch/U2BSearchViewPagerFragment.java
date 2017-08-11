@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.fragment.u2bsearch;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +23,7 @@ import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.util.DateUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;
@@ -38,6 +38,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     private static final String BUNDLE_KEY_TITLE = "BUNDLE_KEY_TITLE";
     private static final String BUNDLE_KEY_SEARCH_TYPE = "BUNDLE_KEY_SEARCH_TYPE";
     public static final String BUNDLE_KEY_PLAYLISTID = "BUNDLE_KEY_PLAYLISTID";
+    public static final String BUNDLE_KEY_PLAYLIST_TITLE = "BUNDLE_KEY_PLAYLIST_TITLE";
 
     private U2BVideoDTO mU2BVideoDTO;
     private U2BPlayListDTO mU2BPlayListDTO;
@@ -254,11 +255,19 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         return fragment;
     }
 
-    public static U2BSearchViewPagerFragment newInstance(EnumU2BSearchType u2BSearchType, String playListVideoId) {
+    /**
+     * for 搜尋歌單用的建構子
+     * @param u2BSearchType
+     * @param playListVideoId
+     * @param playListTitle
+     * @return
+     */
+    public static U2BSearchViewPagerFragment newInstance(EnumU2BSearchType u2BSearchType, String playListVideoId, String playListTitle) {
         U2BSearchViewPagerFragment fragment = new U2BSearchViewPagerFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(BUNDLE_KEY_SEARCH_TYPE, u2BSearchType);
         bundle.putString(BUNDLE_KEY_PLAYLISTID, playListVideoId);
+        bundle.putString(BUNDLE_KEY_PLAYLIST_TITLE, playListTitle);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -314,6 +323,18 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         }
 
         return mSongListAdapter.getDataList();
+    }
+
+    @Override
+    public String getPlayableListName() {
+        switch (mEnumU2BSearchType) {
+            case VIDEO:
+                return mQuery.concat(DateUtil.getCurrentDateFullFormate());
+            case PLAYLISTVIDEO:
+                return getArguments().getString(BUNDLE_KEY_PLAYLIST_TITLE).concat(DateUtil.getCurrentDateFullFormate());
+        }
+
+        return "錯誤的情況，不應該出現！";
     }
 
     @Override

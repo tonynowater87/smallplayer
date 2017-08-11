@@ -117,8 +117,10 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             @Override
             public void onClick(View view) {
                 List<Playable> playableList = mBaseViewPagerFragments[mCurrentViewPagerPosition].getPlayableList();
-                if (playableList != null) {
-                    DialogUtil.showAddPlayableListDialog(MainActivity.this, playableList);
+                if (MiscellaneousUtil.isListOK(playableList)) {
+                    DialogUtil.showAddPlayableListDialog(MainActivity.this, playableList, mBaseViewPagerFragments[mCurrentViewPagerPosition].getPlayableListName());
+                } else {
+                    showToast(getString(R.string.add_playablelist_song_failed_toast_msg));
                 }
             }
         });
@@ -379,6 +381,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             U2BPlayListDTO.ItemsBean u2bVideoItem = ((U2BPlayListDTO.ItemsBean) object);
             Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
             intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getId().getPlaylistId());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.getSnippet().getTitle());
             startActivity(intent);
         }
     }

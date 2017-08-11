@@ -25,6 +25,7 @@
     <string name="search_view_hint">輸入要搜尋的內容...</string>
     <string name="menu_playlist">編輯播放歌單</string>
     <string name="add_playlist">新增播放歌單</string>
+    <string name="add_playlist_by_search">新增 %s</string>
     <string name="input_play_list_name_dialog_hint">請輸入歌單名稱...</string>
     <string name="add_play_list_dialog_title">新增歌單</string>
     <string name="edit_play_list_name_dialog_title">編輯歌單名稱</string>
@@ -51,6 +52,7 @@
     <string name="downloadMP3_error_msg">%1$s\n下載失敗，請再試試！</string>
     <string name="downloadMP3_banned_msg">很抱歉，此歌曲無法下載。</string>
     <string name="refresh">重整</string>
+    <string name="add_playablelist_song_failed_toast_msg">目前畫面沒有歌曲以可加入歌單~</string>
 
     <string-array name="local_action_list">
         <item>播放</item>
