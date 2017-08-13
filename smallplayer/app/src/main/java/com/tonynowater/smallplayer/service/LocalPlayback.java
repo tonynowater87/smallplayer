@@ -21,8 +21,10 @@ import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.io.IOException;
 
+// TODO: 2017/8/12 移動進度條時會有一直切換到下一首歌的問題
+// TODO: 2017/5/29 綁定Wifi待實做
 /**
- * // TODO: 2017/5/29 綁定Wifi待實做
+ *
  * Created by tonyliao on 2017/5/12.
  */
 public class LocalPlayback implements Playback

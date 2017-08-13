@@ -188,7 +188,7 @@ public class DialogUtil {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(baseMediaControlActivity);
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
         final List<String> listItems = MiscellaneousUtil.getPlayListTitles(playListEntities);
-        listItems.add(String.format(baseMediaControlActivity.getString(R.string.add_playlist_by_search), listName));
+        listItems.add(0, String.format(baseMediaControlActivity.getString(R.string.add_playlist_by_search), listName));
         builder.title(R.string.add_playable_list_dialog_title);
         builder.content(String.format(baseMediaControlActivity.getString(R.string.add_playable_list_dialog_content), String.valueOf(playableList.size())));
         builder.items(listItems);
@@ -197,18 +197,12 @@ public class DialogUtil {
             @Override
             public boolean onSelection(MaterialDialog materialDialog, View view, int position, CharSequence charSequence) {
                 int playlistId;
-                if (position == listItems.size() - 1) {
+                if (position == 0) {
                     //自動新建歌單
                     playlistId = realmUtils.addNewPlayList(listName);
-//                    for (int i = 0; i < playableList.size(); i++) {
-//                        realmUtils.addSongToPlayList(newplaylistId, playableList.get(i).getPlayListSongEntity());
-//                    }
                 } else {
                     //加入已有歌單
                     playlistId = playListEntities.get(position).getId();
-//                    for (int i = 0; i < playableList.size(); i++) {
-//                        realmUtils.addSongToPlayList(playListId, playableList.get(i).getPlayListSongEntity());
-//                    }
                 }
 
                 realmUtils.addSongsToPlayList(playlistId, playableList);

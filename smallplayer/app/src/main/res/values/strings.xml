@@ -25,7 +25,7 @@
     <string name="search_view_hint">輸入要搜尋的內容...</string>
     <string name="menu_playlist">編輯播放歌單</string>
     <string name="add_playlist">新增播放歌單</string>
-    <string name="add_playlist_by_search">新增 %s</string>
+    <string name="add_playlist_by_search">自動新增歌單「%s」</string>
     <string name="input_play_list_name_dialog_hint">請輸入歌單名稱...</string>
     <string name="add_play_list_dialog_title">新增歌單</string>
     <string name="edit_play_list_name_dialog_title">編輯歌單名稱</string>
@@ -34,7 +34,7 @@
     <string name="title_edit_play_song">編輯 %1$s 裡的歌曲</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
     <string name="add_playable_list_dialog_title">將歌曲加入歌單</string>
-    <string name="add_playable_list_dialog_content">選擇歌單將以下%s首歌曲加入</string>
+    <string name="add_playable_list_dialog_content">選擇歌單將目前畫面的%s首歌曲加入</string>
     <string name="change_equalizer_dialog_title">切換等化器風格</string>
     <string name="list_iv_description">搜尋的音樂圖片</string>
     <string name="dash">-</string>
