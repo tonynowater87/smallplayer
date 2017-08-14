@@ -5,5 +5,5 @@ package com.tonynowater.smallplayer.service;
  * Created by tonynowater on 2017/6/11.
  */
 public enum EnumPlayMode {
-    NORMAL, RANDOM
+    NORMAL, RANDOM_NO_SAME
 }

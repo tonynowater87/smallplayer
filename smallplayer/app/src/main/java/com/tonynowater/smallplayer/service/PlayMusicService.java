@@ -80,7 +80,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public void onCreate() {
         super.onCreate();
 
-        mLocalPlayback = new LocalPlayback(this, mMusicProvider, mPlaybackCallback);
+        mLocalPlayback = new LocalPlayback(this, mMusicProvider, mPlaybackCallback, mMusicProvider.getmEnumPlayMode());
 
         mMediaSessionCompat = new MediaSessionCompat(getApplicationContext(), TAG);
         // Enable callbacks from MediaButtons and TransportControls
@@ -340,6 +340,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
          */
         private void handleChangePlayMode(EnumPlayMode enumPlayMode) {
             mMusicProvider.setmEnumPlayMode(enumPlayMode);
+            mLocalPlayback.setEnumPlayMode(enumPlayMode);
             updatePlaybackState(null);
         }
 

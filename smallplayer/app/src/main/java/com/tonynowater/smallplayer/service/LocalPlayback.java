@@ -68,11 +68,13 @@ public class LocalPlayback implements Playback
     private boolean mPlayOnFocusGain;//獲取AudioFocus後是否繼續播放
     private String mCurrentPlayId;//目前正在播放歌曲的Id
     private EqualizerType mEqualizerType = EqualizerType.STANDARD;
+    private EnumPlayMode mEnumPlayMode;
 
-    public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
+    public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback, EnumPlayMode mEnumPlayMode) {
         this.mPlayMusicService = mPlayMusicService;
         this.mMusicProvider = mMusicProvider;
         this.mPlaybackCallback = mPlaybackCallback;
+        this.mEnumPlayMode = mEnumPlayMode;
         mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
         mWifiLock = ((WifiManager) mPlayMusicService.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     }
@@ -244,7 +246,7 @@ public class LocalPlayback implements Playback
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
 
-        final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayList(trackPosition);
+        final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayItemByIndex(trackPosition, mEnumPlayMode);
 
         if (mediaMetadataCompat == null) {
             stop(true);
@@ -252,11 +254,13 @@ public class LocalPlayback implements Playback
             return;
         }
 
+        //沒有取得播音樂焦點
         if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
             Log.d(TAG, "play: AudioManager.AUDIOFOCUS_REQUEST_FAILED");
             return;
         }
 
+        //取消前一首取Youtube的AsyncTask
         if (mYoutubeExtratorAsyncTask != null) {
             if (!mYoutubeExtratorAsyncTask.isCancelled()) {
                 Log.d(TAG, "play: mYoutubeExtratorAsyncTask.cancel(true)");
@@ -466,5 +470,9 @@ public class LocalPlayback implements Playback
             return minLevel;
         }
         return (short) dB;
+    }
+
+    public void setEnumPlayMode(EnumPlayMode mEnumPlayMode) {
+        this.mEnumPlayMode = mEnumPlayMode;
     }
 }

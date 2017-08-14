@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
@@ -11,6 +12,7 @@ import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,6 +21,7 @@ import java.util.List;
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
+    private ArrayList<MediaMetadataCompat> mRandomMusicPlayList;
     private int mSongPosition = 0;
     private EnumPlayMode mEnumPlayMode = EnumPlayMode.NORMAL;
 
@@ -30,6 +33,14 @@ public class MusicProvider {
         queryDBPlayList(playlistPosition);
     }
 
+    /**
+     * 產生亂數排序的歌單
+     */
+    private void generateRandomList() {
+        mRandomMusicPlayList = new ArrayList<>(mMusicPlayList);
+        Collections.shuffle(mRandomMusicPlayList);
+    }
+
     /** 切換歌單 */
     public void queryDBPlayList(int playlistId) {
         mMusicPlayList.clear();
@@ -39,10 +50,22 @@ public class MusicProvider {
             mMusicPlayList.add(playListSongEntities.get(i).getMediaMetadata());
         }
         realmUtils.close();
+        generateRandomList();
     }
 
-    public MediaMetadataCompat getPlayList(int index) {
-        return index < mMusicPlayList.size() && mMusicPlayList.size() >= 0 ? mMusicPlayList.get(index) : null;
+    /**
+     * @param index
+     * @return
+     */
+    public MediaMetadataCompat getPlayItemByIndex(int index, EnumPlayMode enumPlayMode) {
+        switch (enumPlayMode) {
+            case NORMAL:
+                return index < mMusicPlayList.size() && mMusicPlayList.size() >= 0 ? mMusicPlayList.get(index) : null;
+            case RANDOM_NO_SAME:
+                return index < mRandomMusicPlayList.size() && mRandomMusicPlayList.size() >= 0 ? mRandomMusicPlayList.get(index) : null;
+            default:
+                return null;
+        }
     }
 
     public int getPlayListSize() {
@@ -53,11 +76,28 @@ public class MusicProvider {
         return mMusicPlayList.size() > 0;
     }
 
+    /**
+     * @return 目前播放清單的List 給畫面UI端顯示
+     */
     public List<MediaBrowserCompat.MediaItem> getMediaItemList() {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-        for (int i = 0; i < mMusicPlayList.size(); i++) {
-            mediaItems.add(createMediaItem(i,mMusicPlayList.get(i)));
+        List<MediaMetadataCompat> list;
+        switch (mEnumPlayMode) {
+            case NORMAL:
+                list = mMusicPlayList;
+                break;
+            case RANDOM_NO_SAME:
+                list = mRandomMusicPlayList;
+                break;
+            default:
+                list = new ArrayList<>();
+                break;
         }
+
+        for (int i = 0; i < list.size(); i++) {
+            mediaItems.add(createMediaItem(i,list.get(i)));
+        }
+
         return mediaItems;
     }
 
@@ -83,20 +123,10 @@ public class MusicProvider {
     public void minusSongPosition() {
         switch (mEnumPlayMode) {
             case NORMAL:
+            case RANDOM_NO_SAME:
                 mSongPosition--;
                 if (mSongPosition < 0) {
                     mSongPosition = mMusicPlayList.size() - 1;
-                }
-                break;
-            case RANDOM:
-                int randomPosition = (int)(Math.random() * mMusicPlayList.size());
-                if (randomPosition == mSongPosition) {
-                    mSongPosition--;
-                    if (mSongPosition < 0) {
-                        mSongPosition = mMusicPlayList.size() - 1;
-                    }
-                } else {
-                    mSongPosition = randomPosition;
                 }
                 break;
         }
@@ -117,7 +147,7 @@ public class MusicProvider {
      * @return 目前正在播放的MediaMetaData
      */
     public MediaMetadataCompat getCurrentPlayingMediaMetadata() {
-        return getPlayList(mSongPosition);
+        return getPlayItemByIndex(mSongPosition, mEnumPlayMode);
     }
 
     /**
@@ -126,31 +156,65 @@ public class MusicProvider {
     public int getCurrentPlayingIndex() {
         Log.d(TAG, "getCurrentPlayingIndex: " + mSongPosition);
         Log.d(TAG, "getMediaItemList size: " + getMediaItemList().size());
-        if (getPlayList(mSongPosition) == null) {
-            mSongPosition = getMediaItemList().size() - 1;
+
+        switch (mEnumPlayMode) {
+            case NORMAL:
+                if (getPlayItemByIndex(mSongPosition, mEnumPlayMode) == null) {
+                    mSongPosition = getMediaItemList().size() - 1;
+                }
+                break;
+            case RANDOM_NO_SAME:
+                if (getPlayItemByIndex(mSongPosition, mEnumPlayMode) == null) {
+                    mSongPosition = getMediaItemList().size() - 1;
+                }
+                break;
         }
+
         return mSongPosition;
+    }
+
+    /**
+     * @return 切換模式後，原播放的歌曲在另一個模式的哪個位置
+     */
+    private int getPostionInByMode(EnumPlayMode enumPlayMode) {
+
+        MediaMetadataCompat normalModeMediaItem;
+        MediaMetadataCompat randomModeMediaItem;
+
+        switch (enumPlayMode) {
+            case NORMAL:
+                randomModeMediaItem = getPlayItemByIndex(mSongPosition, EnumPlayMode.RANDOM_NO_SAME);
+                for (int i = 0; i < mMusicPlayList.size(); i++) {
+                    normalModeMediaItem = mMusicPlayList.get(i);
+                    if (TextUtils.equals(normalModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                            , randomModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+                        return i;
+                    }
+
+                }
+                return 0;
+            case RANDOM_NO_SAME:
+                normalModeMediaItem = getPlayItemByIndex(mSongPosition, EnumPlayMode.NORMAL);
+                for (int i = 0; i < mRandomMusicPlayList.size(); i++) {
+                    randomModeMediaItem = mRandomMusicPlayList.get(i);
+                    if (TextUtils.equals(normalModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                            , randomModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+                        return i;
+                    }
+                }
+            default:
+                return 0;
+        }
     }
 
     public void addSongPosition() {
 
         switch (mEnumPlayMode) {
             case NORMAL:
+            case RANDOM_NO_SAME:
                 mSongPosition++;
                 if (mSongPosition >= getPlayListSize()) {
                     mSongPosition = 0;
-                }
-                break;
-            case RANDOM:
-                int randomPosition = (int) (Math.random() * mMusicPlayList.size());
-                Log.d(TAG, "addSongPosition randomPosition : " + randomPosition);
-                if (randomPosition == mSongPosition) {
-                    mSongPosition++;
-                    if (mSongPosition >= getPlayListSize()) {
-                        mSongPosition = 0;
-                    }
-                } else {
-                    mSongPosition = randomPosition;
                 }
                 break;
         }
@@ -165,5 +229,6 @@ public class MusicProvider {
 
     public void setmEnumPlayMode(EnumPlayMode mEnumPlayMode) {
         this.mEnumPlayMode = mEnumPlayMode;
+        mSongPosition = getPostionInByMode(mEnumPlayMode);
     }
 }

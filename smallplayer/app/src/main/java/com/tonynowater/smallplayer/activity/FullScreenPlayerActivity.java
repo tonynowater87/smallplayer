@@ -109,10 +109,13 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
             case NORMAL:
                 mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), android.R.color.white));
                 break;
-            case RANDOM:
+            case RANDOM_NO_SAME:
                 mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
                 break;
         }
+
+        // TODO: 2017/8/14 UI目前無法即時更新隨機後的歌單
+        //subscribe();
     }
 
     private EnumPlayMode getPlayMode(Bundle bundle) {
@@ -310,9 +313,9 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     private void sendChangePlayModeAction() {
         switch (mEnumPlayMode) {
             case NORMAL:
-                mEnumPlayMode = EnumPlayMode.RANDOM;
+                mEnumPlayMode = EnumPlayMode.RANDOM_NO_SAME;
                 break;
-            case RANDOM:
+            case RANDOM_NO_SAME:
                 mEnumPlayMode = EnumPlayMode.NORMAL;
                 break;
         }

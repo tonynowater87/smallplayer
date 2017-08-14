@@ -116,7 +116,7 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
             try {
                 startService(new Intent(BaseMediaControlActivity.this, PlayMusicService.class));
                 if (!TextUtils.isEmpty(getSubscribeID())) {
-                    mMediaBrowserCompat.subscribe(getSubscribeID(), mSubScriptionCallBack);
+                    subscribe();
                 }
                 mMediaControllerCompat = new MediaControllerCompat(BaseMediaControlActivity.this, mMediaBrowserCompat.getSessionToken());
                 mTransportControls = mMediaControllerCompat.getTransportControls();
@@ -146,6 +146,15 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
             Log.d(TAG, "onConnectionSuspended: ");
         }
     };
+
+    /**
+     * 供子類別重新訂閱取新的歌單資料
+     * @see BaseMediaControlActivity#onChildrenLoaded(List)
+     * @see BaseMediaControlActivity#onChildrenLoaded(List, Bundle)
+     */
+    protected void subscribe() {
+        mMediaBrowserCompat.subscribe(getSubscribeID(), mSubScriptionCallBack);
+    }
 
     private void connectPlayerFragment() {
         MediaControllerCompat.setMediaController(BaseMediaControlActivity.this, mMediaControllerCompat);//設定後，在Fragment可以用MediaControllerCompat.getMediaController取得
