@@ -35,6 +35,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String ACTION_CHANGE_PLAYMODE = "ACTION_CHANGE_PLAYMODE";
     public static final String BUNDLE_KEY_PLAYLIST_ID = "BUNDLE_KEY_PLAYLIST_ID";
     public static final String BUNDLE_KEY_SONG_ID = "BUNDLE_KEY_SONG_ID";
+    public static final String BUNDLE_KEY_CURRENT_PLAY_SONG_ID = "BUNDLE_KEY_CURRENT_PLAY_SONG_ID";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION = "BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION";
@@ -309,7 +310,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     handlePlayExplicitSong(extras.getInt(BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION));
                     break;
                 case ACTION_PLAYING_NOW:
-                    handlePlayingNow(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
+                    handlePlayingNow(extras.getInt(BUNDLE_KEY_PLAYLIST_ID), extras.getString(BUNDLE_KEY_CURRENT_PLAY_SONG_ID));
                     break;
                 case ACTION_ADD_SONG_TO_PLAYLIST:
                     handleAddSongToPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
@@ -426,12 +427,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         /**
          * 點畫面播放的動作處理
          * @param playlistId
+         * @param playingSongId
          */
-        private void handlePlayingNow(int playlistId) {
+        private void handlePlayingNow(int playlistId, String playingSongId) {
             Log.d(TAG, "handlePlayingNow: ");
             mMusicProvider.queryDBPlayList(playlistId);
-            //播最新加的一首歌
-            mMusicProvider.setSongPosition(mMusicProvider.getPlayListSize() - 1);
+            mMusicProvider.setSongPosition(playingSongId);//播指定加入歌曲的位置
             handlePlayRequest();
         }
 

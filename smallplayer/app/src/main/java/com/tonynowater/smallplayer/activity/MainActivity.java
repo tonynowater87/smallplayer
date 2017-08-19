@@ -336,7 +336,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                     switch (i) {
                         case 0:
                             mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
-                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID());
+                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), song);
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
@@ -352,7 +352,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                     switch (i) {
                         case 0:
                             mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
-                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID());
+                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), u2bVideoItem);
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);

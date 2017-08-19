@@ -139,6 +139,33 @@ public class MusicProvider {
         this.mSongPosition = mSongPosition;
     }
 
+    /**
+     * 跳到 指定歌曲的 位置
+     * @param songId
+     */
+    public void setSongPosition(String songId) {
+        switch (mEnumPlayMode) {
+            case NORMAL:
+                for (int i = 0; i < mMusicPlayList.size(); i++) {
+                    if (TextUtils.equals(mMusicPlayList.get(i).getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), songId)) {
+                        this.mSongPosition = i;
+                        return;
+                    }
+                }
+                break;
+            case RANDOM_NO_SAME:
+                for (int i = 0; i < mRandomMusicPlayList.size(); i++) {
+                    if (TextUtils.equals(mRandomMusicPlayList.get(i).getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), songId)) {
+                        this.mSongPosition = i;
+                        return;
+                    }
+                }
+                break;
+        }
+
+        this.mSongPosition = 0;
+    }
+
     public int getSongPosition() {
         return mSongPosition;
     }

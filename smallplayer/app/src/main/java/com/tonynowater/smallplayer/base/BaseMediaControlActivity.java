@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.view.PlayerFragment;
@@ -196,15 +197,15 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         super.onStop();
     }
 
-    // TODO: 2017/6/17 播放歌曲若是已存在歌單的歌曲要可以直接切到當首播放
     /**
      * 「播放」動作
      * @param playListPosition
      */
-    public void sendActionPlayingNow(int playListPosition) {
+    public void sendActionPlayingNow(int playListPosition, Playable playable) {
         Log.d(TAG, "sendActionPlayingNow: " + playListPosition);
         Bundle bundle = new Bundle();
         bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListPosition);
+        bundle.putString(PlayMusicService.BUNDLE_KEY_CURRENT_PLAY_SONG_ID, playable.getMediaMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
         mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAYING_NOW, bundle);
     }
 
