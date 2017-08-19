@@ -214,6 +214,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private final class MySessionCall extends MediaSessionCompat.Callback {
 
+
         /**
          * 處理線控按鈕事件
          */
@@ -310,7 +311,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     handlePlayExplicitSong(extras.getInt(BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION));
                     break;
                 case ACTION_PLAYING_NOW:
-                    handlePlayingNow(extras.getInt(BUNDLE_KEY_PLAYLIST_ID), extras.getString(BUNDLE_KEY_CURRENT_PLAY_SONG_ID));
+                    handlePlayingNow(extras.getInt(BUNDLE_KEY_PLAYLIST_ID), extras.getInt(BUNDLE_KEY_CURRENT_PLAY_SONG_ID));
                     break;
                 case ACTION_ADD_SONG_TO_PLAYLIST:
                     handleAddSongToPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
@@ -429,10 +430,10 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
          * @param playlistId
          * @param playingSongId
          */
-        private void handlePlayingNow(int playlistId, String playingSongId) {
+        private void handlePlayingNow(int playlistId, int playingSongId) {
             Log.d(TAG, "handlePlayingNow: ");
             mMusicProvider.queryDBPlayList(playlistId);
-            mMusicProvider.setSongPosition(playingSongId);//播指定加入歌曲的位置
+            mMusicProvider.setSongPositionNow(playingSongId);//播指定加入歌曲的位置
             handlePlayRequest();
         }
 

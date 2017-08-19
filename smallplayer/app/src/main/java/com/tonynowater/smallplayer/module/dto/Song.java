@@ -2,7 +2,6 @@ package com.tonynowater.smallplayer.module.dto;
 
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.media.MediaMetadataCompat;
 
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
@@ -121,25 +120,8 @@ public class Song implements Playable
     }
 
     @Override
-    public MediaMetadataCompat getMediaMetadata() {
-
-        return new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, String.valueOf(mId))
-                .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, mData)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mAlbum)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mArtist)
-                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mDuration)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, mAlbumObj.getmAlbumArt())
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mTitle)
-                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, mAlbumObj.getmAlbum())
-                .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISLOCAL)
-                .build();
-    }
-
-    @Override
     public PlayListSongEntity getPlayListSongEntity() {
         PlayListSongEntity playListSongEntity = new PlayListSongEntity();
-        playListSongEntity.setId(mId);
         playListSongEntity.setSource(mData);
         playListSongEntity.setArtist(mArtist);
         playListSongEntity.setTitle(mTitle);

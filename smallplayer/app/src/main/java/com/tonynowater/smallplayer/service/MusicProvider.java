@@ -143,11 +143,11 @@ public class MusicProvider {
      * 跳到 指定歌曲的 位置
      * @param songId
      */
-    public void setSongPosition(String songId) {
+    public void setSongPositionNow(int songId) {
         switch (mEnumPlayMode) {
             case NORMAL:
                 for (int i = 0; i < mMusicPlayList.size(); i++) {
-                    if (TextUtils.equals(mMusicPlayList.get(i).getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), songId)) {
+                    if (getSongIDFromList(mMusicPlayList, i) == songId) {
                         this.mSongPosition = i;
                         return;
                     }
@@ -155,7 +155,7 @@ public class MusicProvider {
                 break;
             case RANDOM_NO_SAME:
                 for (int i = 0; i < mRandomMusicPlayList.size(); i++) {
-                    if (TextUtils.equals(mRandomMusicPlayList.get(i).getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), songId)) {
+                    if (getSongIDFromList(mRandomMusicPlayList, i) == songId) {
                         this.mSongPosition = i;
                         return;
                     }
@@ -163,7 +163,18 @@ public class MusicProvider {
                 break;
         }
 
+        //若是沒找到就是跳到第一首，應該是不會發生
+        Log.e(TAG, "setSongPositionNow Song Id Not Found!! : " + songId);
         this.mSongPosition = 0;
+    }
+
+    /**
+     * @param listSongs
+     * @param position
+     * @return 歌曲的ID
+     */
+    private int getSongIDFromList(ArrayList<MediaMetadataCompat> listSongs, int position) {
+        return Integer.parseInt(listSongs.get(position).getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
     }
 
     public int getSongPosition() {

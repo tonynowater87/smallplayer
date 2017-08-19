@@ -120,21 +120,22 @@ public class RealmUtils implements Closeable{
 
     /**
      * 新增歌曲至播放清單
-     * @return 是否成功加入
+     * @return 成功加入 => 回傳 ID
+     *         重覆加入 => 回傳 已存在裡面的歌曲ID
      */
-    public boolean addSongToPlayList(final int playlistID, final PlayListSongEntity playListSong) {
+    public int addSongToPlayList(final int playlistID, final PlayListSongEntity playListSong) {
 
         HashMap<String, Object> param = new HashMap<>();
         param.put(PlayListSongDAO.COLUMN_LIST_ID, playlistID);
         param.put(PlayListSongDAO.COLUMN_TITLE, playListSong.getTitle());
-        if (playListSongDAO.queryForCopy(param).size() > 0) {
+        List<PlayListSongEntity> listSongEntities = playListSongDAO.queryForCopy(param);
+        if (listSongEntities.size() > 0) {
             Log.d(TAG, "addSongToPlayList: 重覆加入 " + playListSong.getTitle());
-            return false;
+            return listSongEntities.get(0).getId();
         }
 
         playListSong.setListId(playlistID);
-        playListSongDAO.insert(playListSong);
-        return true;
+        return playListSongDAO.insert(playListSong);
     }
 
     /**

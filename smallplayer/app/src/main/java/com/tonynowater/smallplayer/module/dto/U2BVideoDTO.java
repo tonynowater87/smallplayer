@@ -194,23 +194,9 @@ public class U2BVideoDTO {
             return durationToMilionSecond;
         }
 
-        public MediaMetadataCompat getMediaMetadata() {
-            return new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId().getVideoId())
-                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getId().getVideoId())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
-                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getArtUrl())
-                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISNOTLOCAL)
-                    .build();
-        }
-
         @Override
         public PlayListSongEntity getPlayListSongEntity() {
             PlayListSongEntity playListSongEntity = new PlayListSongEntity();
-            playListSongEntity.setId((int) getVideoDuration());// TODO: 2017/6/3 因為table結構id是int，所以先暫用Duration當id
             playListSongEntity.setSource(getId().getVideoId());
             playListSongEntity.setArtist(getSnippet().getTitle());
             playListSongEntity.setTitle(getSnippet().getTitle());

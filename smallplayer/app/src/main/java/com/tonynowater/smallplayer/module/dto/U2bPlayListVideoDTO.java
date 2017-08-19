@@ -149,24 +149,9 @@ public class U2bPlayListVideoDTO {
             this.snippet = snippet;
         }
 
-        //TODO
-        public MediaMetadataCompat getMediaMetadata() {
-            return new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, getId())
-                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, getSnippet().getResourceId().getVideoId())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getSnippet().getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, getSnippet().getDescription())
-                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getVideoDuration())
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getSnippet().getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getArtUrl())
-                    .putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL, MetaDataCustomKeyDefine.ISNOTLOCAL)
-                    .build();
-        }
-
         @Override
         public PlayListSongEntity getPlayListSongEntity() {
             PlayListSongEntity playListSongEntity = new PlayListSongEntity();
-            playListSongEntity.setId((int) getVideoDuration());
             playListSongEntity.setSource(getSnippet().getResourceId().getVideoId());
             playListSongEntity.setArtist(getSnippet().getTitle());
             playListSongEntity.setTitle(getSnippet().getTitle());

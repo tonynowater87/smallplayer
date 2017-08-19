@@ -328,6 +328,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     @Override
     public void onClick(final Object object) {
         // TODO: 2017/5/30 這邊要在簡化
+        final int currentPlayListId = mRealmUtils.queryCurrentPlayListID();
         if (object instanceof Song) {
             final Song song = ((Song) object);
             DialogUtil.showActionDialog(this, song.getmTitle(), R.array.local_action_list, new MaterialDialog.ListCallback() {
@@ -335,8 +336,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     switch (i) {
                         case 0:
-                            mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), song.getPlayListSongEntity());
-                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), song);
+                            sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, song.getPlayListSongEntity()));
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
@@ -351,8 +351,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     switch (i) {
                         case 0:
-                            mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), u2bVideoItem.getPlayListSongEntity());
-                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), u2bVideoItem);
+                            sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, u2bVideoItem.getPlayListSongEntity()));
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);

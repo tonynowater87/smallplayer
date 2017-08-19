@@ -13,7 +13,7 @@ import io.realm.annotations.Required;
  * Created by tonynowater on 2017/5/31.
  */
 
-public class PlayListSongEntity extends RealmObject implements Playable{
+public class PlayListSongEntity extends RealmObject implements Playable {
 
     @PrimaryKey
     private int id;
@@ -99,7 +99,7 @@ public class PlayListSongEntity extends RealmObject implements Playable{
         this.listId = listId;
     }
 
-    @Override
+    // TODO: 2017/8/20 METADATA_KEY_MEDIA_ID只能是字串，但Realm的ID是Long，先暫時這樣轉型處理
     public MediaMetadataCompat getMediaMetadata() {
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, String.valueOf(getId()))

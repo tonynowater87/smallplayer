@@ -96,8 +96,7 @@ public class EditPlayListActivity extends BaseMediaControlActivity<ActivityEditP
                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                     switch (i) {
                         case 0:
-                            mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), playListSongEntity);
-                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), playListSongEntity);
+                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), playListSongEntity));
                             break;
                         case 1:
                             DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);

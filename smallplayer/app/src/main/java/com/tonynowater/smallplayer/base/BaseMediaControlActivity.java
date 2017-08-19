@@ -16,7 +16,6 @@ import android.util.Log;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
-import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.view.PlayerFragment;
@@ -201,11 +200,11 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
      * 「播放」動作
      * @param playListPosition
      */
-    public void sendActionPlayingNow(int playListPosition, Playable playable) {
+    public void sendActionPlayingNow(int playListPosition, int playListSongEntityId) {
         Log.d(TAG, "sendActionPlayingNow: " + playListPosition);
         Bundle bundle = new Bundle();
         bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListPosition);
-        bundle.putString(PlayMusicService.BUNDLE_KEY_CURRENT_PLAY_SONG_ID, playable.getMediaMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_CURRENT_PLAY_SONG_ID, playListSongEntityId);
         mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAYING_NOW, bundle);
     }
 
