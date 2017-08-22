@@ -337,10 +337,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         }
 
         /**
-         *
+         * 點擊切換播放模式
          * @param enumPlayMode
          */
         private void handleChangePlayMode(EnumPlayMode enumPlayMode) {
+            if (enumPlayMode == EnumPlayMode.RANDOM_NO_SAME) {
+                mMusicProvider.generateRandomList();
+            }
             mMusicProvider.setmEnumPlayMode(enumPlayMode);
             mLocalPlayback.setEnumPlayMode(enumPlayMode);
             updatePlaybackState(null);

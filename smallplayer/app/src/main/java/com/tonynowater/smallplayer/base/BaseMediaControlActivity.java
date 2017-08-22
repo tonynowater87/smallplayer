@@ -148,11 +148,34 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
     };
 
     /**
-     * 供子類別重新訂閱取新的歌單資料
+     * 供子類別重新訂閱取新的歌單資料，必須重new Call帶入才會觸發
      * @see BaseMediaControlActivity#onChildrenLoaded(List)
      * @see BaseMediaControlActivity#onChildrenLoaded(List, Bundle)
      */
     protected void subscribe() {
+        mSubScriptionCallBack =  new MediaBrowserCompat.SubscriptionCallback() {
+            @Override
+            public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                super.onChildrenLoaded(parentId, children);
+                BaseMediaControlActivity.this.onChildrenLoaded(children);
+            }
+
+            @Override
+            public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children, @NonNull Bundle options) {
+                super.onChildrenLoaded(parentId, children, options);
+                BaseMediaControlActivity.this.onChildrenLoaded(children, options);
+            }
+
+            @Override
+            public void onError(@NonNull String parentId) {
+                super.onError(parentId);
+            }
+
+            @Override
+            public void onError(@NonNull String parentId, @NonNull Bundle options) {
+                super.onError(parentId, options);
+            }
+        };
         mMediaBrowserCompat.subscribe(getSubscribeID(), mSubScriptionCallBack);
     }
 

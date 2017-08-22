@@ -10,10 +10,12 @@ import android.util.Log;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by tonyliao on 2017/5/12.
@@ -36,9 +38,12 @@ public class MusicProvider {
     /**
      * 產生亂數排序的歌單
      */
-    private void generateRandomList() {
-        mRandomMusicPlayList = new ArrayList<>(mMusicPlayList);
-        Collections.shuffle(mRandomMusicPlayList);
+    public void generateRandomList() {
+        if (MiscellaneousUtil.isListOK(mMusicPlayList)) {
+            Log.d(TAG, "generateRandomList: ");
+            mRandomMusicPlayList = new ArrayList<>(mMusicPlayList);
+            Collections.shuffle(mRandomMusicPlayList, new Random(System.currentTimeMillis()));
+        }
     }
 
     /** 切換歌單 */

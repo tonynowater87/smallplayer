@@ -114,8 +114,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
                 break;
         }
 
-        // TODO: 2017/8/14 UI目前無法即時更新隨機後的歌單
-        //subscribe();
+        subscribe();
     }
 
     private EnumPlayMode getPlayMode(Bundle bundle) {
