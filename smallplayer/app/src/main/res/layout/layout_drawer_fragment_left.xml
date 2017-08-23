@@ -2,18 +2,29 @@
 <layout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ll_root_drawerlayout_left"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorFifth"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_drawerlayout_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="test"
-            android:textColor="@android:color/white" />
+        <FrameLayout
+            android:background="@color/colorFourth"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/drawerlayout_top_field">
+
+            <Button
+                android:id="@+id/button_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_drawerlayout_left"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 

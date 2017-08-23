@@ -54,6 +54,10 @@
     <string name="refresh">重整</string>
     <string name="add_playablelist_song_failed_toast_msg">目前畫面沒有歌曲以可加入歌單~</string>
     <string name="login">登入</string>
+    <string name="drawer_item_popular_music">熱門音樂</string>
+    <string name="drawer_item_search_music">搜尋音樂</string>
+    <string name="drawer_item_local_music">本地音樂</string>
+    <string name="drawer_item_setting">相關設定</string>
 
     <string-array name="local_action_list">
         <item>播放</item>

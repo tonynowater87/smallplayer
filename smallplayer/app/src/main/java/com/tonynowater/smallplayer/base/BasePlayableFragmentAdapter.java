@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * RecyclerView的基底類別
+ * RecyclerViewAdapter的基底類別
  * Created by tonynowater on 2017/5/20.
  */
 public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> extends RecyclerView.Adapter<BasePlayableFragmentAdapter.BaseViewHolder>{
@@ -30,6 +30,13 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     protected RealmUtils realmUtils;
     protected Context mContext;
     protected boolean mFootviewIsVisible = true;
+
+    public BasePlayableFragmentAdapter(List<K> mDataList, OnClickSomething<K> mOnClickSongListener) {
+        realmUtils = new RealmUtils();
+        this.mDataList = mDataList;
+        this.mOnClickSongListener = mOnClickSongListener;
+        mFootviewIsVisible = isFootViewVisible();
+    }
 
     protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();

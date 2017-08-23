@@ -61,13 +61,19 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     private static final int U2B_VIDEO_POSITION = 1;
     private static final int U2B_LIST_POSITION = 2;
     private static final int DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT = 15;//最近搜尋記錄要顯示的筆數
+
+    //===== Fields =====
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
     private int mCurrentViewPagerPosition = 0;
     private CustomSearchAdapter simpleCursorAdapter;
     private List<String> suggestions;
     private SearchRecentSuggestions searchRecentSuggestions;
+    //===== Fields =====
+
+    //===== Views =====
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private SearchView searchView;
+    //===== Views =====
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {

@@ -57,7 +57,7 @@
 
             <fragment
                 android:id="@+id/drawer_fragment_left"
-                android:name="com.tonynowater.smallplayer.fragment.DrawerFragment"
+                android:name="com.tonynowater.smallplayer.fragment.drawer.DrawerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 

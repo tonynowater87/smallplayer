@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
+ * 畫RecyclerView的分隔線
  * Created by tonyliao on 2017/4/30.
  */
 public class RecyclerViewDivideLineDecorator extends RecyclerView.ItemDecoration {

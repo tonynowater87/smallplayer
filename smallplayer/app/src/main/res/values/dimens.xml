@@ -21,4 +21,5 @@
     <dimen name="list_search_icon_size">30dp</dimen>
     <dimen name="list_textview_duration_autosize_height">20dp</dimen>
     <dimen name="floating_button_size">45dp</dimen>
+    <dimen name="drawerlayout_top_field">100dp</dimen>
 </resources>
