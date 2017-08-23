@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SmallPlayer</string>
+    <string name="app_name">小小播放器</string>
     <string name="play_state_stop">已停止</string>
     <string name="play_state_pause">已暫停</string>
     <string name="play_state_playing">播放中</string>
@@ -53,6 +53,7 @@
     <string name="downloadMP3_banned_msg">很抱歉，此歌曲無法下載。</string>
     <string name="refresh">重整</string>
     <string name="add_playablelist_song_failed_toast_msg">目前畫面沒有歌曲以可加入歌單~</string>
+    <string name="login">登入</string>
 
     <string-array name="local_action_list">
         <item>播放</item>
