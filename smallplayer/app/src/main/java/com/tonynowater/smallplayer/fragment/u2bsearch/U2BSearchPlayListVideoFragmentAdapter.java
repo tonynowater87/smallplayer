@@ -22,12 +22,7 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentA
     }
 
     @Override
-    protected boolean isFootViewVisible() {
-        return true;
-    }
-
-    @Override
-    protected int getItemResourceId() {
+    protected int getNormalLayoutId() {
         return R.layout.layout_songlistadapter_listitem;
     }
 
@@ -48,6 +43,11 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentA
         } else {
             Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
         }
+    }
+
+    @Override
+    protected boolean supportFooter() {
+        return true;
     }
 }
 

@@ -36,12 +36,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
     }
 
     @Override
-    protected boolean isFootViewVisible() {
-        return false;
-    }
-
-    @Override
-    protected int getItemResourceId() {
+    protected int getNormalLayoutId() {
         return R.layout.layout_show_play_list_song_adapter;
     }
 
@@ -61,6 +56,11 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
         } else {
             holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
         }
+    }
+
+    @Override
+    protected boolean supportFooter() {
+        return false;
     }
 
     @Override

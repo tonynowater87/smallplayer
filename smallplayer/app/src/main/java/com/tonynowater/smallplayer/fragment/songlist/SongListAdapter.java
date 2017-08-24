@@ -33,12 +33,7 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
     }
 
     @Override
-    protected boolean isFootViewVisible() {
-        return false;
-    }
-
-    @Override
-    protected int getItemResourceId() {
+    protected int getNormalLayoutId() {
         return R.layout.layout_songlistadapter_listitem;
     }
 
@@ -53,6 +48,11 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
         } else {
             Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
         }
+    }
+
+    @Override
+    protected boolean supportFooter() {
+        return false;
     }
 
     @Override

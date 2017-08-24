@@ -36,12 +36,7 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
     }
 
     @Override
-    protected boolean isFootViewVisible() {
-        return false;
-    }
-
-    @Override
-    protected int getItemResourceId() {
+    protected int getNormalLayoutId() {
         return R.layout.layout_current_play_list_adapter;
     }
 
@@ -69,6 +64,11 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
         } else {
             holder.getBinding().ivAnimation.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    protected boolean supportFooter() {
+        return false;
     }
 
     /** 更新目前歌曲的播放狀態 */

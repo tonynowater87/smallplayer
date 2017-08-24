@@ -29,12 +29,7 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     }
 
     @Override
-    protected boolean isFootViewVisible() {
-        return false;
-    }
-
-    @Override
-    protected int getItemResourceId() {
+    protected int getNormalLayoutId() {
         return R.layout.layout_show_play_list_adapter;
     }
 
@@ -43,6 +38,11 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
         holder.getBinding().tvPlaylistName.setText(mDataList.get(position).getPlayListName());
         holder.getBinding().tvPlaylistCreateDate.setText(String.format(mContext.getString(R.string.playlist_create_date), mDataList.get(position).getCreateDate()));
         holder.getBinding().tvPlaylistSongCount.setText(String.valueOf(mSongCountArray[position]));
+    }
+
+    @Override
+    protected boolean supportFooter() {
+        return false;
     }
 
     @Override

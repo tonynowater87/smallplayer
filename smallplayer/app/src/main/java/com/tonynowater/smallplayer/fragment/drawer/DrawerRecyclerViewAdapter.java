@@ -19,12 +19,7 @@ public class DrawerRecyclerViewAdapter extends BasePlayableFragmentAdapter<Drawe
     }
 
     @Override
-    protected boolean isFootViewVisible() {
-        return false;
-    }
-
-    @Override
-    protected int getItemResourceId() {
+    protected int getNormalLayoutId() {
         return R.layout.layout_drawer_adapter_list_item;
     }
 
@@ -32,5 +27,10 @@ public class DrawerRecyclerViewAdapter extends BasePlayableFragmentAdapter<Drawe
     protected void onBindItem(BaseViewHolder holder, int position) {
         holder.getBinding().setVariable(BR.drawer_item, mDataList.get(position));
         holder.getBinding().executePendingBindings();
+    }
+
+    @Override
+    protected boolean supportFooter() {
+        return false;
     }
 }

@@ -35,17 +35,13 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         realmUtils = new RealmUtils();
         this.mDataList = mDataList;
         this.mOnClickSongListener = mOnClickSongListener;
-        mFootviewIsVisible = isFootViewVisible();
     }
 
     protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();
         this.mDataList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
-        mFootviewIsVisible = isFootViewVisible();
     }
-
-    protected abstract boolean isFootViewVisible();
 
     @Override
     public BasePlayableFragmentAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -54,7 +50,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         final BaseViewHolder baseViewHolder;
         switch (viewType) {
             case NORMAL_VIEWTYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(getItemResourceId(), parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(getNormalLayoutId(), parent, false);
                 baseViewHolder = new BaseViewHolder(view);
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -64,7 +60,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
                 });
                 return baseViewHolder;
             case FOOTER_VIEWTYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_footer, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(getFooterLayoutId(), parent, false);
                 if (!mFootviewIsVisible) {
                     view.setVisibility(View.GONE);
                 }
@@ -75,8 +71,13 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         }
     }
 
-    /** 設置ListItem的Layout */
-    protected abstract int getItemResourceId();
+    /** 設置ListItem的Normal Layout */
+    protected abstract int getNormalLayoutId();
+
+    /** 設置List的Footer Layout，要客制化Footer需Override*/
+    protected int getFooterLayoutId() {
+        return R.layout.list_footer;
+    };
 
     @Override
     public void onBindViewHolder(BasePlayableFragmentAdapter.BaseViewHolder holder, int position) {
@@ -91,7 +92,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     @Override
     public int getItemCount() {
 
-        if (hasData() && mFootviewIsVisible) {
+        if (supportFooter() && hasData() && mFootviewIsVisible) {
             return mDataList.size() + 1;
         } else {
             return mDataList.size();
@@ -105,12 +106,14 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     @Override
     public int getItemViewType(int position) {
-        if (hasData() && mFootviewIsVisible && position + 1 == getItemCount()) {
+        if (supportFooter() && hasData() && mFootviewIsVisible && position + 1 == getItemCount()) {
             return FOOTER_VIEWTYPE;
         }
 
         return NORMAL_VIEWTYPE;
     }
+
+    protected abstract boolean supportFooter();
 
     /** 設置要顯示的List資料 */
     public void setDataSource (List<K> dataSource) {
