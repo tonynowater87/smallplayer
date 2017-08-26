@@ -153,10 +153,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     };
 
     private void showFailToast() {
-        showToast(getString(R.string.u2b_query_failure));
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                showToast(getString(R.string.u2b_query_failure));
                 mBinding.lottieAnimationView.setVisibility(View.GONE);
             }
         });
