@@ -3,10 +3,13 @@ package com.tonynowater.smallplayer;
 import android.app.Application;
 import android.content.Context;
 
+import com.tonynowater.smallplayer.module.dto.realm.Migration;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
+import io.realm.DynamicRealm;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmMigration;
 
 /**
  * Created by tonyliao on 2017/4/30.
@@ -31,7 +34,8 @@ public class MyApplication extends Application {
         //初始化Ream設定
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().name("smallplayer.ream")
-                .deleteRealmIfMigrationNeeded()
+                .schemaVersion(1)
+                .migration(new Migration())
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
 
