@@ -2,6 +2,8 @@ package com.tonynowater.smallplayer.module.dto.realm.dao;
 
 import android.util.Log;
 
+import com.tonynowater.smallplayer.module.dto.realm.entity.EntityInterface;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Date;
@@ -16,7 +18,7 @@ import io.realm.RealmResults;
 /**
  * Created by tonynowater on 2017/5/31.
  */
-public abstract class BaseDAO<T extends RealmObject> implements Closeable{
+public abstract class BaseDAO<T extends RealmObject & EntityInterface> implements Closeable{
     private static final String TAG = BaseDAO.class.getSimpleName();
     public static final int DEFAULT_ID = 0;
 
@@ -38,6 +40,32 @@ public abstract class BaseDAO<T extends RealmObject> implements Closeable{
     }
 
     /**
+     * 插入一筆新資料，自動產生遞增ID
+     * @param T
+     * @return
+     */
+    public int insert(T T) {
+        T.setId(getNextKey());
+        inserOrUpdate(T);
+        return T.getId();
+    }
+
+    /**
+     * 更新一筆資料
+     * @return ID : 更新成功回傳
+     *         -1 : 更新失敗
+     */
+    public int update(T T) {
+        T entity = getQuery().equalTo(COLUMN_ID, T.getId()).findFirst();
+        if (entity != null) {
+            inserOrUpdate(T);
+            return T.getId();
+        } else {
+            return -1;
+        }
+    }
+
+    /**
      * 插入一筆或更新一筆資料
      *
      * @param item
@@ -48,12 +76,41 @@ public abstract class BaseDAO<T extends RealmObject> implements Closeable{
         realm.commitTransaction();
     }
 
+
+    /**
+     * 刪除一筆資料
+     * @return true : 刪除成功
+     *         false : 刪除失敗
+     */
+    public boolean delete(T T) {
+        T entity = getQuery().equalTo(COLUMN_ID, T.getId()).findFirst();
+        boolean bSuccess = false;
+        if (entity != null) {
+            try {
+                realm.beginTransaction();
+                entity.deleteFromRealm();
+                bSuccess = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (bSuccess) {
+                    realm.commitTransaction();
+                } else {
+                    realm.cancelTransaction();
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 刪除這個表的所有資料
      */
     public void deleteAll() {
         realm.beginTransaction();
         realm.delete(clazz);
+        realm.commitTransaction();
     }
 
     public RealmQuery<T> getQuery() {

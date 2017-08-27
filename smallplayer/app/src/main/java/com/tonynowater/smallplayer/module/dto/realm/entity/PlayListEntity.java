@@ -8,7 +8,7 @@ import io.realm.annotations.Required;
  * Created by tonynowater on 2017/5/31.
  */
 
-public class PlayListEntity extends RealmObject {
+public class PlayListEntity extends RealmObject implements EntityInterface {
 
     @PrimaryKey
     private int id;
@@ -28,6 +28,7 @@ public class PlayListEntity extends RealmObject {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

@@ -20,48 +20,11 @@ public class PlayListDAO extends BaseDAO<PlayListEntity> {
     /**
      * 插入一筆資料
      */
+    @Override
     public int insert(PlayListEntity playListEntity) {
         playListEntity.setId(getNextKey());
         playListEntity.setPosition(playListEntity.getId());
         inserOrUpdate(playListEntity);
         return playListEntity.getId();
-    }
-
-    /**
-     * 更新一筆資料
-     */
-    public int update(PlayListEntity playListEntity) {
-        PlayListEntity entity = getQuery().equalTo(COLUMN_ID, playListEntity.getId()).findFirst();
-        if (entity != null) {
-            inserOrUpdate(playListEntity);
-            return playListEntity.getId();
-        } else {
-            return -1;
-        }
-    }
-
-    /**
-     * 刪除一筆資料
-     */
-    public boolean delete(PlayListEntity playListEntity) {
-        PlayListEntity entity = getQuery().equalTo(COLUMN_ID, playListEntity.getId()).findFirst();
-        boolean bSuccess = false;
-        if (entity != null) {
-            try {
-                realm.beginTransaction();
-                entity.deleteFromRealm();
-                bSuccess = true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (bSuccess) {
-                    realm.commitTransaction();
-                } else {
-                    realm.cancelTransaction();
-                }
-            }
-        }
-
-        return false;
     }
 }

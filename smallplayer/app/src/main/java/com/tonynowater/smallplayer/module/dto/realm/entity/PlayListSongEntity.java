@@ -13,7 +13,7 @@ import io.realm.annotations.Required;
  * Created by tonynowater on 2017/5/31.
  */
 
-public class PlayListSongEntity extends RealmObject implements Playable {
+public class PlayListSongEntity extends RealmObject implements Playable, EntityInterface {
 
     @PrimaryKey
     private int id;
@@ -35,10 +35,12 @@ public class PlayListSongEntity extends RealmObject implements Playable {
 
     private String isLocal;
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

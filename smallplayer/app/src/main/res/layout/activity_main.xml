@@ -49,8 +49,9 @@
 
         <LinearLayout
             android:id="@+id/drawerlayout_left"
-            android:layout_width="250dp"
+            android:layout_width="@dimen/drawerlayout_width"
             android:layout_height="match_parent"
+            android:layout_marginTop="?android:attr/actionBarSize"
             android:layout_gravity="left"
             android:background="@color/colorAccent"
             android:orientation="vertical">

@@ -8,16 +8,18 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tonynowater on 2017/5/31.
  */
-public class PlayFolderEntity extends RealmObject {
+public class PlayFolderEntity extends RealmObject implements EntityInterface{
     @PrimaryKey
     private int id;
 
     private int currentPlayListId = BaseDAO.DEFAULT_ID;
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

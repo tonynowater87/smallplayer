@@ -6,9 +6,11 @@ import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayFolderDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
+import com.tonynowater.smallplayer.module.dto.realm.dao.PlayUserU2BListDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayFolderEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayUserU2BListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.util.DateUtil;
 
@@ -28,11 +30,13 @@ public class RealmUtils implements Closeable{
     private PlayFolderDAO playFolderDAO;
     private PlayListDAO playListDAO;
     private PlayListSongDAO playListSongDAO;
+    private PlayUserU2BListDAO playUserU2BListDAO;
 
     public RealmUtils() {
         playFolderDAO = new PlayFolderDAO();
         playListDAO = new PlayListDAO();
         playListSongDAO = new PlayListSongDAO();
+        playUserU2BListDAO = new PlayUserU2BListDAO();
         initialData();
     }
 
@@ -41,6 +45,16 @@ public class RealmUtils implements Closeable{
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListDAO.COLUMN_FOLDER_ID, BaseDAO.DEFAULT_ID);
         return playListDAO.queryForCopy(params);
+    }
+
+    /** @return 使用者的Youtube播放清單 */
+    public List<PlayUserU2BListEntity> queryUserU2BPlayList() {
+        return playUserU2BListDAO.queryAll();
+    }
+
+    /** 刪除查詢暫存使用者的Youtube播放清單 */
+    public void deleteAllUserU2BplayerList() {
+        playUserU2BListDAO.deleteAll();
     }
 
     /** @return 指定id的播放清單 */
@@ -116,6 +130,14 @@ public class RealmUtils implements Closeable{
         playListEntity.setPlayListName(playListName);
         playListEntity.setCreateDate(DateUtil.getCurrentDate());
         return playListDAO.insert(playListEntity);
+    }
+
+    /**
+     * 暫存查詢使用者的Youtube播放清單
+     * @return 成功儲存後的id
+     */
+    public int saveUserYoutubePlayList(PlayUserU2BListEntity playUserU2BListEntity) {
+        return playUserU2BListDAO.insert(playUserU2BListEntity);
     }
 
     /**

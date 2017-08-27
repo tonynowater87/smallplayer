@@ -36,6 +36,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
             android:text="@{drawer_item.title}"
+            android:textColor="@color/colorFourth"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_drawer_layout"

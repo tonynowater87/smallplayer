@@ -53,11 +53,13 @@
     <string name="downloadMP3_banned_msg">很抱歉，此歌曲無法下載。</string>
     <string name="refresh">重整</string>
     <string name="add_playablelist_song_failed_toast_msg">目前畫面沒有歌曲以可加入歌單~</string>
-    <string name="login">登入</string>
+    <string name="login_and_import_youtube_playlists">匯入你的Youtube播放清單</string>
     <string name="drawer_item_popular_music">熱門音樂</string>
     <string name="drawer_item_search_music">搜尋音樂</string>
     <string name="drawer_item_local_music">本地音樂</string>
     <string name="drawer_item_setting">相關設定</string>
+    <string name="query_user_playlist_error">查詢使用者歌單出現異常</string>
+    <string name="choose_user_youtube_playlist">請選擇你要匯入的歌單</string>
 
     <string-array name="local_action_list">
         <item>播放</item>

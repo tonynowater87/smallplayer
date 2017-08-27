@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.0'
         classpath "io.realm:realm-gradle-plugin:3.3.1"
+        classpath 'com.google.gms:google-services:3.0.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -27,6 +28,7 @@ task clean(type: Delete) {
 
 ext {
     espressoVer = '2.2.2'
+    junitVer = '4.12'
     androidSupLibVer = '26.0.0-beta2'
     okhttpVer = '2.4.0'
     gsonVer = '2.3.1'
@@ -34,4 +36,5 @@ ext {
     materialsearchviewVer = '1.4.0'
     materialdialogVer = '0.9.4.5'
     lottieVer = '2.0.0-rc2'
+    googleAuthLibVer = '10.2.1'
 }

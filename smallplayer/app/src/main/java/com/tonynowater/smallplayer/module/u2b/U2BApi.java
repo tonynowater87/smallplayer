@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -13,10 +14,14 @@ import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
+import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayUserU2BListEntity;
 import com.tonynowater.smallplayer.util.FileHelper;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -255,7 +260,48 @@ public class U2BApi {
     }
 
     /**
-     * 送HTTP POST
+     * 查使用者的歌單
+     * @param token
+     * @param callback
+     */
+    public void queryUserPlaylist (String token, final OnU2BApiCallback callback) {
+        Headers headers = new Headers.Builder().set("authorization", "Bearer " + token).build();
+        sendHttpRequest(U2BApiDefine.U2B_USER_PLAYLIST_QUERY_URL, headers, new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Log.e(TAG, "onFailure:" + e.toString());
+                callback.onFailure(MyApplication.getContext().getString(R.string.query_user_playlist_error));
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String res = response.body().string();
+                    Log.d(TAG, "onResponse: " + res);
+                    final RealmUtils realmUtils = new RealmUtils();
+                    realmUtils.deleteAllUserU2BplayerList();
+                    Gson gson = new Gson();
+                    U2BUserPlayListDTO userPlayListDTO = gson.fromJson(res, U2BUserPlayListDTO.class);
+                    List<U2BUserPlayListDTO.ItemsBean> list = userPlayListDTO.getItems();
+                    PlayUserU2BListEntity entity;
+                    for (int i = 0; i < list.size(); i++) {
+                        entity = new PlayUserU2BListEntity();
+                        entity.setTitle(list.get(i).getSnippet().getTitle());
+                        entity.setListId(list.get(i).getId());
+                        realmUtils.saveUserYoutubePlayList(entity);
+                    }
+                    realmUtils.close();
+                    callback.onSuccess(res);
+                } else {
+                    Log.e(TAG, "onFailure:" + response.message());
+                    callback.onFailure(MyApplication.getContext().getString(R.string.query_user_playlist_error));
+                }
+            }
+        });
+    }
+
+    /**
+     * 送HTTP GET
      * @param url
      * @param callback
      * @return
@@ -263,6 +309,24 @@ public class U2BApi {
     private Request sendHttpRequest(String url, Callback callback) {
         Request request = new Request.Builder()
                 .get()
+                .url(url)
+                .build();
+
+        mOkHttp.newCall(request).enqueue(callback);
+        return request;
+    }
+
+    /**
+     * 送HTTP GET 加 header
+     * @param url
+     * @param callback
+     * @param headers
+     * @return
+     */
+    private Request sendHttpRequest(String url, Headers headers, Callback callback) {
+        Request request = new Request.Builder()
+                .get()
+                .headers(headers)
                 .url(url)
                 .build();
 

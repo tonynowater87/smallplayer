@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.util;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,6 +15,7 @@ import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayUserU2BListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
@@ -315,6 +317,27 @@ public class DialogUtil {
         builder.content(msg);
         builder.positiveText(context.getString(android.R.string.ok));
         builder.onPositive(callback);
+        builder.show();
+    }
+
+    /**
+     * 顯示「選擇使用者的Youtube歌單匯入」的對話框
+     * @param context
+     */
+    public static void showImportUserPlayListDialog(Context context) {
+        final RealmUtils realmUtils = new RealmUtils();
+        final List<PlayUserU2BListEntity> userU2BListEntities = realmUtils.queryUserU2BPlayList();
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+        builder.title(context.getString(R.string.choose_user_youtube_playlist));
+        builder.items(userU2BListEntities);
+        builder.dividerColor(ContextCompat.getColor(context, android.R.color.darker_gray));//只有標題的分隔線
+        builder.itemsCallback(new MaterialDialog.ListCallback() {
+            @Override
+            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                Log.d(TAG, "onSelection: " + userU2BListEntities.get(i).toString());
+
+            }
+        });
         builder.show();
     }
 }

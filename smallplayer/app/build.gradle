@@ -30,10 +30,10 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestCompile('com.android.support.test.espresso:espresso-core:' + rootProject.espressoVer, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:' + rootProject.junitVer
 
     compile 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
     compile 'com.android.support:appcompat-v7:' + rootProject.androidSupLibVer
@@ -45,4 +45,10 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:' + rootProject.materialdialogVer
     compile 'com.airbnb.android:lottie:' + rootProject.lottieVer
 
+    // Google auth
+    compile 'com.google.android.gms:play-services-auth:' + rootProject.googleAuthLibVer
+    // Google auth
+
 }
+
+apply plugin: 'com.google.gms.google-services'
