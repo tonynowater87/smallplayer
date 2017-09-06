@@ -29,6 +29,14 @@ public class MiscellaneousUtil {
         return list != null && list.size() > 0;
     }
 
+    /**
+     * 檢查Null
+     * @return true:OK false:不OK
+     */
+    public static boolean isObjOK(Object object) {
+        return object != null;
+    }
+
     public static void hideKeyboard(Context context, IBinder token) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromInputMethod(token, 0);
@@ -68,5 +76,11 @@ public class MiscellaneousUtil {
             listRet.add(playListEntities.get(i).getPlayListName());
         }
         return listRet;
+    }
+
+    public static void logList(String[] strings) {
+        for (int i = 0; i < strings.length; i++) {
+            Log.d(TAG, "logList: " + strings[i]);
+        }
     }
 }

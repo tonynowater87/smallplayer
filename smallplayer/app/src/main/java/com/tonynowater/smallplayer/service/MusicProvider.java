@@ -39,7 +39,7 @@ public class MusicProvider {
      * 產生亂數排序的歌單
      */
     public void generateRandomList() {
-        if (MiscellaneousUtil.isListOK(mMusicPlayList)) {
+        if (MiscellaneousUtil.isObjOK(mMusicPlayList)) {
             Log.d(TAG, "generateRandomList: ");
             mRandomMusicPlayList = new ArrayList<>(mMusicPlayList);
             Collections.shuffle(mRandomMusicPlayList, new Random(System.currentTimeMillis()));
