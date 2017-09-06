@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -133,9 +134,12 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
             try {
                 token = GoogleAuthUtil.getToken(mGoogleApiClient.getContext(), accounts[0], scopes);
             } catch (IOException e) {
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, "IOException: " + e.getMessage());
+            } catch (UserRecoverableAuthException e) {
+                // TODO: 2017/9/1 出現此錯誤需要做重新登入的動作
+                Log.e(TAG, "UserRecoverableAuthException: " + e.getMessage());
             } catch (GoogleAuthException e) {
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, "GoogleAuthException: " + e.getMessage());
             }
             return token;
         }
@@ -144,7 +148,11 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
         protected void onPostExecute(String token) {
             super.onPostExecute(token);
             Log.d(TAG, "onActivityResult: getToken " + token);
-            mCallback.onGoogleLoginSuccess(token);
+            if (token != null) {
+                mCallback.onGoogleLoginSuccess(token);
+            } else {
+                mCallback.onGoogleLoginFailure();
+            }
         }
     }
 }
