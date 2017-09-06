@@ -204,7 +204,7 @@ public class DialogUtil {
                     playlistId = realmUtils.addNewPlayList(listName);
                 } else {
                     //加入已有歌單
-                    playlistId = playListEntities.get(position).getId();
+                    playlistId = playListEntities.get(position - 1).getId();
                 }
 
                 realmUtils.addSongsToPlayList(playlistId, playableList);
