@@ -275,7 +275,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         builder.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(new int[]{playPauseButtonPosition}).setMediaSession(mToken))
                 .setColor(mNotificationColor)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSmallIcon(R.mipmap.ic_launcher)//沒setSmallIcon，通知會直接沒有顯示
+                .setSmallIcon(R.drawable.local_music_icon)//沒setSmallIcon，通知會直接沒有顯示
                 .setUsesChronometer(true)//TODO
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())

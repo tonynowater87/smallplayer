@@ -75,10 +75,10 @@ public class DrawerFragment extends BaseFragment<LayoutDrawerFragmentLeftBinding
 
     private List<DrawerItem> generateDrawerItems() {
         List<DrawerItem> itemList = new ArrayList<>();
-        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_popular_music)));
-        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_search_music)));
-        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_local_music)));
-        itemList.add(new DrawerItem(android.R.drawable.ic_menu_set_as, getString(R.string.drawer_item_setting)));
+//        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_popular_music)));
+//        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_search_music)));
+//        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_local_music)));
+//        itemList.add(new DrawerItem(android.R.drawable.ic_menu_set_as, getString(R.string.drawer_item_setting)));
         itemList.add(new DrawerItem(android.R.drawable.ic_menu_upload_you_tube, getString(R.string.login_and_import_youtube_playlists)));
         return itemList;
     }

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="64dp"
+    xmlns:tool="http://schemas.android.com/tools"
     android:background="@color/colorPrimary">
 
     <ImageView
@@ -22,7 +23,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="64dp"
         android:layout_toEndOf="@+id/notification_image_icon"
         android:orientation="vertical"
         android:weightSum="5">
@@ -40,7 +41,8 @@
                 android:layout_height="match_parent"
                 android:singleLine="true"
                 android:ellipsize="end"
-                android:gravity="center"/>
+                android:gravity="center"
+                tool:text="五月天-有些事現在不做一輩子都不會做了"/>
 
         </LinearLayout>
 
