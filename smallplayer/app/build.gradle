@@ -29,26 +29,22 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:' + rootProject.espressoVer, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:' + rootProject.junitVer
-
     compile 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
     compile 'com.android.support:appcompat-v7:' + rootProject.androidSupLibVer
     compile 'com.android.support:design:' + rootProject.androidSupLibVer
     compile 'com.squareup.okhttp:okhttp:' + rootProject.okhttpVer
     compile 'com.google.code.gson:gson:' + rootProject.gsonVer
-    compile project(':myutil')
     compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
     compile 'com.afollestad.material-dialogs:core:' + rootProject.materialdialogVer
     compile 'com.airbnb.android:lottie:' + rootProject.lottieVer
-
     // Google auth
     compile 'com.google.android.gms:play-services-auth:' + rootProject.googleAuthLibVer
     // Google auth
-
 }
 
 apply plugin: 'com.google.gms.google-services'

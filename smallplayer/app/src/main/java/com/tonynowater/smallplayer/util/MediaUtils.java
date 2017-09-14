@@ -9,7 +9,6 @@ import android.util.SparseArray;
 
 import com.tonynowater.smallplayer.module.dto.Album;
 import com.tonynowater.smallplayer.module.dto.Song;
-import com.tonynowtaer87.myutil.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

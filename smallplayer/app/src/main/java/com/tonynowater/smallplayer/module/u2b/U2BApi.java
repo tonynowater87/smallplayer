@@ -32,7 +32,8 @@ public class U2BApi {
     private static final String TAG = U2BApi.class.getSimpleName();
 
     public static final int TIMEOUT = 10;
-    public static final int QUERY_MAX_RESULT = 25;
+    public static final int DEFAULT_QUERY_RESULT = 25;//預設每次查詢的比數(1-50)
+    public static final int MAX_QUERY_RESULT = 50;
     private static final String video =  "video";
     private static final String playlist = "playlist";
     private static final String channel = "channel";
@@ -65,13 +66,13 @@ public class U2BApi {
             return;
         }
 
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video, pageToken), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, pageToken), callback);
         Log.d(TAG, "queryU2BVideo: " + request.urlString());
     }
 
     /** 搜尋第一頁U2B的影片 */
     public void queryU2BVideo(String keyword, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, video, ""), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, ""), callback);
         Log.d(TAG, "queryU2BVideo: " + request.urlString());
     }
 
@@ -81,13 +82,13 @@ public class U2BApi {
             Log.d(TAG, "queryU2BPlayList: pageToken null");
         }
 
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, playlist, pageToken), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, playlist, pageToken), callback);
         Log.d(TAG, "queryU2BPlayList: " + request.urlString());
     }
 
     /** 搜尋第一頁U2B的播放清單 */
     public void queryU2BPlayList(String keyword, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, playlist, ""), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, playlist, ""), callback);
         Log.d(TAG, "queryU2BPlayList: " + request.urlString());
     }
 
@@ -97,7 +98,7 @@ public class U2BApi {
      * @param callback
      */
     public void queryU2BPlayListVideo(String playlistId, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, QUERY_MAX_RESULT, ""), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, ""), callback);
         Log.d(TAG, "queryU2BPlayListVideo: " + request.urlString());
     }
 
@@ -113,12 +114,12 @@ public class U2BApi {
             return;
         }
 
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, QUERY_MAX_RESULT, pageToken), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, pageToken), callback);
         Log.d(TAG, "queryU2BPlayListVideo: " + request.urlString());
     }
 
     public void queryU2BChannel(String keyword, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, QUERY_MAX_RESULT, channel), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, channel), callback);
         Log.d(TAG, "queryU2BChannel: " + request.urlString());
     }
 
@@ -138,7 +139,7 @@ public class U2BApi {
      * @param callback
      */
     public void queryU2BVedioDuration(String videoid, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL, videoid, QUERY_MAX_RESULT), callback);
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL, videoid, DEFAULT_QUERY_RESULT), callback);
         Log.d(TAG, "queryU2BVedioDuration: " + request.urlString());
     }
 

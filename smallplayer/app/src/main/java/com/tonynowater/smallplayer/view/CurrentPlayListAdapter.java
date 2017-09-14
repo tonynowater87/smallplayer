@@ -19,7 +19,7 @@ import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutCurrentPlayListAdapterBinding;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.OnClickSomething;
-import com.tonynowtaer87.myutil.TimeUtil;
+import com.tonynowater.smallplayer.util.TimeUtil;
 
 /**
  * 目前播放清單List Adapter

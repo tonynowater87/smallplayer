@@ -18,7 +18,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
-import com.tonynowtaer87.myutil.TimeUtil;
+import com.tonynowater.smallplayer.util.TimeUtil;
 
 import java.util.Collections;
 /**

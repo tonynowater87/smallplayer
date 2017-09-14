@@ -5,7 +5,7 @@ import android.provider.MediaStore;
 
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
-import com.tonynowtaer87.myutil.TimeUtil;
+import com.tonynowater.smallplayer.util.TimeUtil;
 
 /**
  * Created by tonynowater on 2017/3/23.

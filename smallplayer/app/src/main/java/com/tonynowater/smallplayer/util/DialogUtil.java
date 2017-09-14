@@ -336,6 +336,7 @@ public class DialogUtil {
             public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                 Log.d(TAG, "onSelection: " + userU2BListEntities.get(i).toString());
 
+
             }
         });
         builder.show();
