@@ -96,7 +96,7 @@ public class U2bPlayListVideoDTO {
         }
     }
 
-    public static class ItemsBean implements Playable {
+    public static class ItemsBean implements Playable, HasVideoId {
         /**
          * kind : youtube#playlistItem
          * etag : "m2yskBQFythfE4irbTIeOgYYfBU/b1Shpo8koxznnj7QFapNrFSG0Ng"
@@ -183,12 +183,19 @@ public class U2bPlayListVideoDTO {
             return sArtUrl;
         }
 
+        @Override
         public void setVideoDuration(int durationToMilionSecond) {
             this.durationToMilionSecond = durationToMilionSecond;
         }
 
+        @Override
         public long getVideoDuration() {
             return durationToMilionSecond;
+        }
+
+        @Override
+        public String getVideoId() {
+            return getSnippet().getResourceId().getVideoId();
         }
 
         public static class SnippetBean {

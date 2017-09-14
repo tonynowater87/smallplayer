@@ -22,12 +22,11 @@ import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
-import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DateUtil;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -101,13 +100,13 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             if (mU2bPlayListVideoDTO == null) {
                 //首次加載
                 mU2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
-                sVideoIds = getQueryDurationOfPlayListVideoIds(mU2bPlayListVideoDTO.getItems());
+                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(mU2bPlayListVideoDTO.getItems());
             } else {
                 //滑到底加載
                 U2bPlayListVideoDTO u2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
                 mU2bPlayListVideoDTO.setNextPageToken(u2bPlayListVideoDTO.getNextPageToken());
                 mU2bPlayListVideoDTO.getItems().addAll(mU2bPlayListVideoDTO.getItems().size(), u2bPlayListVideoDTO.getItems());
-                sVideoIds = getQueryDurationOfPlayListVideoIds(u2bPlayListVideoDTO.getItems());
+                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(u2bPlayListVideoDTO.getItems());
             }
 
             U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
@@ -118,37 +117,15 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             if (mU2BVideoDTO == null) {
                 //首次加載
                 mU2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
-                sVideoIds = getQueryDurationVideoIds(mU2BVideoDTO.getItems());
+                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(mU2BVideoDTO.getItems());
             } else {
                 //滑到底加載
                 U2BVideoDTO u2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
                 mU2BVideoDTO.setNextPageToken(u2BVideoDTO.getNextPageToken());
                 mU2BVideoDTO.getItems().addAll(mU2BVideoDTO.getItems().size(), u2BVideoDTO.getItems());
-                sVideoIds = getQueryDurationVideoIds(u2BVideoDTO.getItems());
+                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(u2BVideoDTO.getItems());
             }
             U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
-        }
-
-        private StringBuilder getQueryDurationVideoIds(List<U2BVideoDTO.ItemsBean> items) {
-            StringBuilder sVideoIds = new StringBuilder();
-            for (int i = 0; i < items.size(); i++) {
-                sVideoIds.append(items.get(i).getId().getVideoId());
-                if (i < items.size() - 1) {
-                    sVideoIds.append(",");
-                }
-            }
-            return sVideoIds;
-        }
-
-        private StringBuilder getQueryDurationOfPlayListVideoIds(List<U2bPlayListVideoDTO.ItemsBean> items) {
-            StringBuilder sVideoIds = new StringBuilder();
-            for (int i = 0; i < items.size(); i++) {
-                sVideoIds.append(items.get(i).getSnippet().getResourceId().getVideoId());
-                if (i < items.size() - 1) {
-                    sVideoIds.append(",");
-                }
-            }
-            return sVideoIds;
         }
     };
 
@@ -174,53 +151,20 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             });
         }
 
+        // FIXME: 2017/6/14 搜尋到一半，在搜尋會 java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.tonynowater.smallplayer.module.dto.U2BVideoDTO.getItems()' on a null object reference
         @Override
         public void onResponse(Response response) throws IOException {
             if (response.isSuccessful()) {
                 String sResponse = response.body().string();
                 Log.d(TAG, "onResponse body: " + sResponse);
                 U2BVideoDurationDTO u2BVideoDurationDTO = new Gson().fromJson(sResponse, U2BVideoDurationDTO.class);
-                U2BVideoDurationDTO.ItemsBean itemDuration;
                 switch (mEnumU2BSearchType) {
                     case VIDEO:
-                        HashMap<String, U2BVideoDTO.ItemsBean> hashMap = new HashMap<>();
-                        // FIXME: 2017/6/14 搜尋到一半，在搜尋會 java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.tonynowater.smallplayer.module.dto.U2BVideoDTO.getItems()' on a null object reference
-                        for (U2BVideoDTO.ItemsBean item : mU2BVideoDTO.getItems()) {
-                            if (item.getVideoDuration() == -1) {
-                                //沒Duration的才放
-                                hashMap.put(item.getId().getVideoId(), item);
-                            }
-                        }
-
-                        U2BVideoDTO.ItemsBean itemVideo;
-                        for (int i = 0; i < u2BVideoDurationDTO.getItems().size(); i++) {
-                            itemDuration = u2BVideoDurationDTO.getItems().get(i);
-                            itemVideo = hashMap.get(itemDuration.getId());
-                            if (itemVideo != null) {
-                                itemVideo.setVideoDuration(U2BApiUtil.formateU2BDurationToMilionSecond(itemDuration.getContentDetails().getDuration()));
-                            }
-                        }
-
+                        MiscellaneousUtil.processDuration(u2BVideoDurationDTO, mU2BVideoDTO.getItems());
                         mSongListAdapter.setDataSource(mU2BVideoDTO.getItems());
                         break;
                     case PLAYLISTVIDEO:
-                        HashMap<String, U2bPlayListVideoDTO.ItemsBean> hashMap2 = new HashMap<>();
-                        for (U2bPlayListVideoDTO.ItemsBean item : mU2bPlayListVideoDTO.getItems()) {
-                            if (item.getVideoDuration() == -1) {
-                                //沒Duration的才放
-                                hashMap2.put(item.getSnippet().getResourceId().getVideoId(), item);
-                            }
-                        }
-
-                        U2bPlayListVideoDTO.ItemsBean itemVideo2;
-                        for (int i = 0; i < u2BVideoDurationDTO.getItems().size(); i++) {
-                            itemDuration = u2BVideoDurationDTO.getItems().get(i);
-                            itemVideo2 = hashMap2.get(itemDuration.getId());
-                            if (itemVideo2 != null) {
-                                itemVideo2.setVideoDuration(U2BApiUtil.formateU2BDurationToMilionSecond(itemDuration.getContentDetails().getDuration()));
-                            }
-                        }
-
+                        MiscellaneousUtil.processDuration(u2BVideoDurationDTO, mU2bPlayListVideoDTO.getItems());
                         mSongListAdapter.setDataSource(mU2bPlayListVideoDTO.getItems());
                         break;
                 }

@@ -140,7 +140,7 @@ public class U2BVideoDTO {
         }
     }
 
-    public static class ItemsBean implements Playable {
+    public static class ItemsBean implements Playable, HasVideoId {
         /**
          * kind : youtube#searchResult
          * etag : "m2yskBQFythfE4irbTIeOgYYfBU/t1_TdQR_I1p8lifuPbrQOyZqFoo"
@@ -186,10 +186,12 @@ public class U2BVideoDTO {
             this.snippet = snippet;
         }
 
+        @Override
         public void setVideoDuration(int durationToMilionSecond) {
             this.durationToMilionSecond = durationToMilionSecond;
         }
 
+        @Override
         public long getVideoDuration() {
             return durationToMilionSecond;
         }
@@ -226,6 +228,11 @@ public class U2BVideoDTO {
                 sArtUrl = getSnippet().getThumbnails().getDefaultX().getUrl();
             }
             return sArtUrl;
+        }
+
+        @Override
+        public String getVideoId() {
+            return getId().getVideoId();
         }
 
         public static class IdBean {

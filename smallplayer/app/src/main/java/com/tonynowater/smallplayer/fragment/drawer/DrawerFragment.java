@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.LayoutDrawerFragmentLeftBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
@@ -45,7 +46,7 @@ public class DrawerFragment extends BaseFragment<LayoutDrawerFragmentLeftBinding
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                DialogUtil.showImportUserPlayListDialog(getContext());
+                                DialogUtil.showImportUserPlayListDialog((BaseActivity) getActivity());
                             }
                         });
                     }

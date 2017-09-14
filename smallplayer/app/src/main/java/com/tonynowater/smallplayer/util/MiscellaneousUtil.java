@@ -7,10 +7,14 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 
+import com.tonynowater.smallplayer.module.dto.HasVideoId;
+import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -81,6 +85,47 @@ public class MiscellaneousUtil {
     public static void logList(String[] strings) {
         for (int i = 0; i < strings.length; i++) {
             Log.d(TAG, "logList: " + strings[i]);
+        }
+    }
+
+    /**
+     * @param items
+     * @return 串起來的video id，為了搜尋歌曲的播放時間
+     */
+    public static StringBuilder getVideoIdsForQueryDuration(List<? extends HasVideoId> items) {
+        StringBuilder sVideoIds = new StringBuilder();
+        for (int i = 0; i < items.size(); i++) {
+            sVideoIds.append(items.get(i).getVideoId());
+            if (i < items.size() - 1) {
+                sVideoIds.append(",");
+            }
+        }
+        return sVideoIds;
+    }
+
+
+    /**
+     * 設定格式化後的歌曲播放時間
+     * @param u2BVideoDurationDTO
+     * @param items
+     */
+    public static void processDuration(U2BVideoDurationDTO u2BVideoDurationDTO, List<? extends HasVideoId> items) {
+        U2BVideoDurationDTO.ItemsBean itemDuration;
+        HashMap<String, HasVideoId> hashMap2 = new HashMap<>();
+        for (HasVideoId item : items) {
+            if (item.getVideoDuration() == -1) {
+                //沒Duration的才放
+                hashMap2.put(item.getVideoId(), item);
+            }
+        }
+
+        HasVideoId itemVideo2;
+        for (int i = 0; i < u2BVideoDurationDTO.getItems().size(); i++) {
+            itemDuration = u2BVideoDurationDTO.getItems().get(i);
+            itemVideo2 = hashMap2.get(itemDuration.getId());
+            if (itemVideo2 != null) {
+                itemVideo2.setVideoDuration(U2BApiUtil.formateU2BDurationToMilionSecond(itemDuration.getContentDetails().getDuration()));
+            }
         }
     }
 }

@@ -259,7 +259,7 @@ public class RealmUtils implements Closeable{
      * @param playlistId 播放清單ID
      * @param playableList 歌曲List
      */
-    public void addSongsToPlayList(int playlistId, List<Playable> playableList) {
+    public void addSongsToPlayList(int playlistId, List<? extends Playable> playableList) {
         for (int i = 0; i < playableList.size(); i++) {
             addSongToPlayList(playlistId, playableList.get(i).getPlayListSongEntity());
         }

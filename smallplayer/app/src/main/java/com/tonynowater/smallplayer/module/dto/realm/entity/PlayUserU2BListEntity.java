@@ -5,9 +5,9 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
+ * 暫存使用者Youtube的播放清單
  * Created by tonynowater on 2017/8/27.
  */
-
 public class PlayUserU2BListEntity extends RealmObject implements EntityInterface{
 
     @PrimaryKey
