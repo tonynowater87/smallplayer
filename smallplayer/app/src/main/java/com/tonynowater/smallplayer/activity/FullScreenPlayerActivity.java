@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
@@ -14,14 +15,18 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
+import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.EqualizerType;
@@ -339,14 +344,18 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     /** 顯示目前播放清單 */
     private void showCurrentPlayList() {
+        RealmUtils realmUtils = new RealmUtils();
         mBottomSheetDialog = new BottomSheetDialog(this);
-        RecyclerView recyclerView = new RecyclerView(this);
+        ConstraintLayout currenPlaylistRootView = (ConstraintLayout) LayoutInflater.from(this).inflate(R.layout.layout_current_play_list_root_dialog_root_view, null);
+        ((TextView)currenPlaylistRootView.findViewById(R.id.current_playlist_dialog_title_value)).setText(realmUtils.getCurrentPlayListName());
+        RecyclerView recyclerView = currenPlaylistRootView.findViewById(R.id.current_playlist_dialog_recyclerview);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         RecyclerViewDivideLineDecorator recyclerViewDivideLineDecorator = new RecyclerViewDivideLineDecorator(this);
         recyclerView.setAdapter(mCurrentPlayListAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(recyclerViewDivideLineDecorator);
-        mBottomSheetDialog.setContentView(recyclerView);
+        mBottomSheetDialog.setContentView(currenPlaylistRootView);
+        realmUtils.close();
         mBottomSheetDialog.show();
     }
 

@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: 2017/9/6 權限問題待處理
 public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOCAL_POSITION = 0;

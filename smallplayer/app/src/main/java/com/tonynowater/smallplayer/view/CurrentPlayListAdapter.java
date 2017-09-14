@@ -61,8 +61,14 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
         if (mPlayPosition == position) {//目前播放的位置
             holder.getBinding().ivAnimation.setVisibility(View.VISIBLE);
             holder.getBinding().ivAnimation.setImageDrawable(getDrawableByState(mContext, position));
+            holder.getBinding().tvSongArtistSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
+            holder.getBinding().tvSongTitleSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
+            holder.getBinding().tvDurationSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
         } else {
             holder.getBinding().ivAnimation.setVisibility(View.GONE);
+            holder.getBinding().tvSongArtistSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
+            holder.getBinding().tvSongTitleSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
+            holder.getBinding().tvDurationSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
         }
     }
 

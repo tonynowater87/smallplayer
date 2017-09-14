@@ -10,4 +10,5 @@
 
     <color name="icon_equalizer_playing">#00B8D4</color>
     <color name="icon_equalizer_not_playing">#ccc</color>
+    <color name="default_textview_color">#808080</color>
 </resources>

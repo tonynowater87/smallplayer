@@ -264,4 +264,11 @@ public class RealmUtils implements Closeable{
             addSongToPlayList(playlistId, playableList.get(i).getPlayListSongEntity());
         }
     }
+
+    /**
+     * @return 目前播放清單的名稱
+     */
+    public String getCurrentPlayListName() {
+        return queryAllPlayListSortByPosition().get(queryCurrentPlayListPosition()).getPlayListName();
+    }
 }
