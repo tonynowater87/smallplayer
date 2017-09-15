@@ -120,6 +120,11 @@ public class PlayListSongEntity extends RealmObject implements Playable, EntityI
         return this;
     }
 
+    @Override
+    public boolean isDeletedOrPrivatedVideo() {
+        return false;
+    }
+
     public int getPosition() {
         return position;
     }

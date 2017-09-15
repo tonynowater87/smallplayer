@@ -1,6 +1,5 @@
 package com.tonynowater.smallplayer.module.dto;
 
-import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -112,6 +111,7 @@ public class U2bPlayListVideoDTO {
         private int durationToMilionSecond = -1;
 
         /** @return 是否為已刪除或私人影片 */
+        @Override
         public boolean isDeletedOrPrivatedVideo() {
             return TextUtils.equals(U2bConstDefince.KEYWORD_DELETED_VIDEO,getSnippet().getTitle())
                     || TextUtils.equals(U2bConstDefince.KEYWORD_PRIVATE_VIDEO,getSnippet().getTitle());

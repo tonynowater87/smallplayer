@@ -130,4 +130,9 @@ public class Song implements Playable
         playListSongEntity.setIsLocal(MetaDataCustomKeyDefine.ISLOCAL);
         return playListSongEntity;
     }
+
+    @Override
+    public boolean isDeletedOrPrivatedVideo() {
+        return false;
+    }
 }

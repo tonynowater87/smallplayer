@@ -208,6 +208,11 @@ public class U2BVideoDTO {
             return playListSongEntity;
         }
 
+        @Override
+        public boolean isDeletedOrPrivatedVideo() {
+            return false;
+        }
+
         /**
          * @return 畫面要顯示的Art圖
          */

@@ -260,7 +260,14 @@ public class RealmUtils implements Closeable{
      * @param playableList 歌曲List
      */
     public void addSongsToPlayList(int playlistId, List<? extends Playable> playableList) {
+        Playable playable;
         for (int i = 0; i < playableList.size(); i++) {
+            playable = playableList.get(i);
+            if (playable.isDeletedOrPrivatedVideo()) {
+                //不要加入Private Video或Delete Video
+                Log.d(TAG, "addSongsToPlayList isDeletedOrPrivatedVideo : " + i);
+                continue;
+            }
             addSongToPlayList(playlistId, playableList.get(i).getPlayListSongEntity());
         }
     }
