@@ -30,6 +30,7 @@ public class U2BApiUtil {
         return list;
     }
 
+    // TODO: 2017/9/15 影片長度有H的轉換會有問題
     public static int formateU2BDurationToMilionSecond(String duration) {
         try {
             duration = duration.replace("PT","");

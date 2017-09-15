@@ -11,6 +11,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //***** 設定gradle.properties裡面的值 ******
+        buildConfigField('String', 'YoutubeDataAPIKey', YoutubeDataAPIKey)
+
     }
     buildTypes {
         release {

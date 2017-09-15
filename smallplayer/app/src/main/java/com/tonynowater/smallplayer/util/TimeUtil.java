@@ -3,7 +3,6 @@ package com.tonynowater.smallplayer.util;
 /**
  * Created by tonyliao on 2017/4/30.
  */
-
 public class TimeUtil {
     private static final String TAG = TimeUtil.class.getSimpleName();
 
