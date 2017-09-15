@@ -32,7 +32,7 @@
 
             <TextView
                 android:id="@+id/tv_duration_songlistadapter"
-                style="@style/TextAppearance.AppCompat.Small"
+                style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"

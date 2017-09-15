@@ -26,11 +26,11 @@ import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
-import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.TimeUtil;
 import com.tonynowater.smallplayer.view.CurrentPlayListAdapter;
 
 import java.util.ArrayList;
@@ -177,7 +177,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     private void updateUI(MediaMetadataCompat metadata) {
         Log.d(TAG, "updateUI : " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mMediaMetaData = metadata;
-        mBinding.tvEndTextActivityFullScreenPlayer.setText(U2BApiUtil.formateU2BDurationToString(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
+        mBinding.tvEndTextActivityFullScreenPlayer.setText(TimeUtil.formatSongDuration((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         mBinding.tvTitleActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mBinding.tvArtistActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));

@@ -30,7 +30,6 @@ public class U2BApiUtil {
         return list;
     }
 
-    // TODO: 2017/9/15 影片長度有H的轉換會有問題
     public static int formateU2BDurationToMilionSecond(String duration) {
         try {
             duration = duration.replace("PT","");
@@ -42,27 +41,22 @@ public class U2BApiUtil {
             int minute = 0;
             int minuteIndex = duration.indexOf("M");
             if (minuteIndex != -1) {
-                minute = Integer.parseInt(duration.substring(hourIndex+1, minuteIndex));
+                minute = Integer.parseInt(duration.substring(hourIndex + 1, minuteIndex));
             }
             int second = 0;
             int secondIndex = duration.indexOf("S");
-            if (secondIndex != -1) {
-                second = Integer.parseInt(duration.substring(minuteIndex+1, secondIndex));
+            if (minuteIndex == -1 && secondIndex != -1) {
+                //1H10S
+                second = Integer.parseInt(duration.substring(hourIndex + 1, secondIndex));
+            } else if (minuteIndex == -1 && secondIndex == -1) {
+                //6H
+            } else if (minuteIndex != -1 && secondIndex != -1) {
+                //有HMS正常情況
+                second = Integer.parseInt(duration.substring(minuteIndex + 1, secondIndex));
             }
             return (hour * 60 * 60 + minute * 60 + second) * 1000;
         } catch (Exception e) {
             return -1;
-        }
-    }
-
-    public static String formateU2BDurationToString(long duration) {
-        int seconds = (int) (duration / 1000 % 60);
-        int minutes = (int) ((duration / (1000*60)) % 60);
-        int hours   = (int) ((duration / (1000*60*60)) % 24);
-        if (hours > 0) {
-            return hours + ":" + minutes + ":" + (seconds <= 9 ? "0" + seconds : seconds);
-        } else {
-            return minutes + ":" + (seconds <= 9 ? "0" + seconds : seconds);
         }
     }
 }

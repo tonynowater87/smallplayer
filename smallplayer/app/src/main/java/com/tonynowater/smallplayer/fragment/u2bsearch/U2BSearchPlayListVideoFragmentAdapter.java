@@ -7,8 +7,8 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutSonglistadapterListitemBinding;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
-import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
+import com.tonynowater.smallplayer.util.TimeUtil;
 
 /**
  * 播放清單裡的歌曲列表
@@ -30,7 +30,7 @@ public class U2BSearchPlayListVideoFragmentAdapter extends BasePlayableFragmentA
     protected void onBindItem(BaseViewHolder holder, int position) {
         holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
         holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescription());
-        holder.getBinding().tvDurationSonglistadapter.setText(U2BApiUtil.formateU2BDurationToString(mDataList.get(position).getVideoDuration()));
+        holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration((int) mDataList.get(position).getVideoDuration()));
         holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
         U2bPlayListVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
         String sUrl = null;
