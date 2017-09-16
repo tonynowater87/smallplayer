@@ -20,6 +20,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 
 import java.util.List;
@@ -66,6 +67,7 @@ public class EditPlayListActivity extends BaseMediaControlActivity<ActivityEditP
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
+        MiscellaneousUtil.setToolBarMarquee(mBinding.toolbar.toolbarMainActivity);
         replaceShowPlayListFragment();
     }
 

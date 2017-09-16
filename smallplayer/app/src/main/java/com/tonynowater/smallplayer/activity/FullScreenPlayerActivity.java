@@ -30,6 +30,7 @@ import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.TimeUtil;
 import com.tonynowater.smallplayer.view.CurrentPlayListAdapter;
 
@@ -226,11 +227,12 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         //設置不要顯示SystemStatusBar
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-//        setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
-        mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);//隱藏ToolBar
+        setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
+        //mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);//隱藏ToolBar
+        setPlaylistNameToToolbarTitle();
+        MiscellaneousUtil.setToolBarMarquee(mBinding.toolbar.toolbarMainActivity);
         mBinding.seekbarActivityFullScreenPlayer.setOnSeekBarChangeListener(mOnSeekChangedListener);
         mBinding.ivPreviousActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
@@ -239,6 +241,12 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         mBinding.ivModeActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivShuffleActivityFullScreenPlayer.setOnClickListener(this);
         mCurrentPlayListAdapter = new CurrentPlayListAdapter(this);
+    }
+
+    private void setPlaylistNameToToolbarTitle() {
+        RealmUtils realmUtils = new RealmUtils();
+        setTitle(String.format(getString(R.string.fullplayer_toolbar_title), realmUtils.getCurrentPlayListName()));
+        realmUtils.close();
     }
 
     @Override

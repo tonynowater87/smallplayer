@@ -31,7 +31,7 @@
     <string name="edit_play_list_name_dialog_title">編輯歌單名稱</string>
     <string name="menu_edit_title">編輯</string>
     <string name="title_edit_play_list">編輯播放歌單</string>
-    <string name="title_edit_play_song">編輯 %1$s 裡的歌曲</string>
+    <string name="title_edit_play_song">編輯歌單「%1$s」</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
     <string name="add_playable_list_dialog_title">將歌曲加入歌單</string>
     <string name="add_playable_list_dialog_content">選擇歌單將目前畫面的%s首歌曲加入</string>
@@ -65,6 +65,7 @@
     <string name="import_user_youtube_playlist_error_msg">匯入Youtube歌單發生錯誤(%s)</string>
     <string name="current_playlist_dialog_title">目前播放清單:</string>
     <string name="no_permission_warning_msg">沒有開啟權限，不能使用本地音樂及下載音樂功能!</string>
+    <string name="fullplayer_toolbar_title">目前播放清單:%1$s</string>
 
     <string-array name="local_action_list">
         <item>播放</item>

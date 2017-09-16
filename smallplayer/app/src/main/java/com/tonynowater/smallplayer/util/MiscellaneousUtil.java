@@ -4,8 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import com.tonynowater.smallplayer.module.dto.HasVideoId;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
@@ -13,6 +16,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,6 +130,26 @@ public class MiscellaneousUtil {
             if (itemVideo2 != null) {
                 itemVideo2.setVideoDuration(U2BApiUtil.formateU2BDurationToMilionSecond(itemDuration.getContentDetails().getDuration()));
             }
+        }
+    }
+
+    /** 設定ToolBar文字為跑馬燈 */
+    public static void setToolBarMarquee(Toolbar toolbar) {
+        try {
+            Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
+            f.setAccessible(true);
+            TextView titleTextView = (TextView) f.get(toolbar);
+            titleTextView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            titleTextView.setFocusable(true);
+            titleTextView.setFocusableInTouchMode(true);
+            titleTextView.requestFocus();
+            titleTextView.setSingleLine(true);
+            titleTextView.setSelected(true);
+            titleTextView.setMarqueeRepeatLimit(-1);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }
