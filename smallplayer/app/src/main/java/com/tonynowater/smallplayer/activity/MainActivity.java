@@ -49,6 +49,7 @@ import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
+import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 import com.tonynowater.smallplayer.view.CustomSearchAdapter;
 
 import java.io.IOException;
@@ -69,6 +70,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     private CustomSearchAdapter simpleCursorAdapter;
     private List<String> suggestions;
     private SearchRecentSuggestions searchRecentSuggestions;
+    private PermissionGrantedUtil mPermissionUtil;
     //===== Fields =====
 
     //===== Views =====
@@ -92,9 +94,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     }
 
     @Override
-    protected void onMediaServiceConnected() {
-
-    }
+    protected void onMediaServiceConnected() {}
 
     @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
@@ -114,8 +114,35 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerlayout, mBinding.toolbar.toolbarMainActivity, R.string.app_name, R.string.app_name);
         mActionBarDrawerToggle.syncState();
-        initialFab();
-        initialViewPager();
+        mPermissionUtil = new PermissionGrantedUtil(this, new PermissionGrantedUtil.CallBack() {
+
+            @Override
+            public void onPermissionGranted() {
+                Log.d(TAG, "onPermissionGranted: ");
+                mBaseViewPagerFragments = new BaseViewPagerFragment[]{SongListViewPagerFragment.newInstance()
+                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
+                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)};
+                initialFab();
+                initialViewPager();
+            }
+
+            @Override
+            public void onPermissionNotGranted() {
+                Log.d(TAG, "onPermissionNotGranted: ");
+                showToast(getString(R.string.no_permission_warning_msg));
+                mBaseViewPagerFragments = new BaseViewPagerFragment[]{U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
+                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)};
+                initialFab();
+                initialViewPager();
+            }
+        });
+        mPermissionUtil.checkPermissiion(PermissionGrantedUtil.REQUEST_PERMISSIONS);//獲取權限
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mPermissionUtil.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     /** 點擊飄浮按鈕 */
@@ -295,9 +322,6 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     }
 
     private void initialViewPager() {
-        mBaseViewPagerFragments = new BaseViewPagerFragment[]{SongListViewPagerFragment.newInstance()
-                , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
-                , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)};
         // TODO: 2017/5/23 查頻道暫時先封住
         //, U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_channel), EnumU2BSearchType.CHANNEL)};
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
@@ -364,6 +388,10 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                             DialogUtil.showSelectPlaylistDialog(MainActivity.this, u2bVideoItem, mTransportControls);
                             break;
                         case 2:
+                            if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                                showToast(getString(R.string.no_permission_warning_msg));
+                                return;
+                            }
                             showToast(String.format(getString(R.string.downloadMP3_start_msg), u2bVideoItem.getPlayListSongEntity().getTitle()));
                             U2BApi.newInstance().downloadMP3FromU2B(u2bVideoItem, new U2BApi.OnU2BApiCallback() {
                                 @Override

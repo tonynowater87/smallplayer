@@ -45,7 +45,7 @@ public class MediaUtils {
             MediaStore.Audio.Albums.LAST_YEAR,
     };
 
-    private static List<Song> mSongList;
+    private static List<Song> mSongList = new ArrayList<>();
 
     /**
      * 取得手機裡的音樂檔案列表
@@ -147,7 +147,9 @@ public class MediaUtils {
      */
     public static List<Song> getSongList(Context context, boolean bIsRefresh) {
 
-        if (mSongList != null && !bIsRefresh) {
+        if (!PermissionGrantedUtil.isPermissionGranted(context, PermissionGrantedUtil.REQUEST_PERMISSIONS)
+                && mSongList != null
+                && !bIsRefresh) {
             return mSongList;
         }
 

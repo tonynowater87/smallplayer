@@ -20,6 +20,7 @@ import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
+import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 
 import java.util.List;
 
@@ -113,6 +114,10 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
                             DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);
                             break;
                         case 2:
+                            if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                                showToast(getString(R.string.no_permission_warning_msg));
+                                return;
+                            }
                             showToast(String.format(getString(R.string.downloadMP3_start_msg), u2bPlayListVideoItem.getPlayListSongEntity().getTitle()));
                             U2BApi.newInstance().downloadMP3FromU2B(u2bPlayListVideoItem, new U2BApi.OnU2BApiCallback() {
                                 @Override

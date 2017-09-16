@@ -64,6 +64,7 @@
     <string name="import_user_youtube_playlist_error_detail_msg">匯入Youtube歌單發生錯誤(%s)</string>
     <string name="import_user_youtube_playlist_error_msg">匯入Youtube歌單發生錯誤(%s)</string>
     <string name="current_playlist_dialog_title">目前播放清單:</string>
+    <string name="no_permission_warning_msg">沒有開啟權限，不能使用本地音樂及下載音樂功能!</string>
 
     <string-array name="local_action_list">
         <item>播放</item>
