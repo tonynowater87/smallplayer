@@ -21,13 +21,18 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         mBinding = DataBindingUtil.setContentView(this, getLayoutResourceId());
     }
 
-    public void showToast(String toastMsg) {
-        if (mToast != null)
-        {
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT);
-        mToast.show();
+    public void showToast(final String toastMsg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mToast != null)
+                {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(BaseActivity.this, toastMsg, Toast.LENGTH_SHORT);
+                mToast.show();
+            }
+        });
     }
 
     protected abstract int getLayoutResourceId();

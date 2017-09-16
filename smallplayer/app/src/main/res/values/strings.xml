@@ -62,7 +62,7 @@
     <string name="choose_user_youtube_playlist">請選擇你要匯入的歌單</string>
     <string name="import_user_youtube_playlist_success_detail_msg">成功匯入Youtube歌單(%s)</string>
     <string name="import_user_youtube_playlist_error_detail_msg">匯入Youtube歌單發生錯誤(%s)</string>
-    <string name="import_user_youtube_playlist_error_msg">匯入Youtube歌單發生錯誤(%s)</string>
+    <string name="import_user_youtube_playlist_error_msg">匯入Youtube歌單發生錯誤</string>
     <string name="no_permission_warning_msg">沒有開啟權限，不能使用本地音樂及下載音樂功能!</string>
 
     <string-array name="local_action_list">

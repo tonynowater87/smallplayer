@@ -355,6 +355,8 @@ public class DialogUtil {
         builder.show();
     }
 
+    // TODO: 2017/9/16 目前無法匯入自己私人的歌單
+    // TODO: 2017/9/16 Youtube一個歌單現在只能最多匯入50首
     /**
      * 顯示「選擇使用者的Youtube歌單匯入」的對話框
      * @param baseActivity
@@ -384,10 +386,10 @@ public class DialogUtil {
                             Log.d(TAG, "onResponse body: " + sResponse);
                             processPlayListVideoList(playlistName, sResponse);
                         } else {
-                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_detail_msg));
+                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_msg));
                         }
                     }
-                });
+                }, U2BApi.MAX_QUERY_RESULT);
             }
 
             private void processPlayListVideoList(final String playlistName, String sResponse) {
@@ -418,7 +420,7 @@ public class DialogUtil {
                                 }
                             });
                         } else {
-                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_detail_msg));
+                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_msg));
                         }
                     }
                 });

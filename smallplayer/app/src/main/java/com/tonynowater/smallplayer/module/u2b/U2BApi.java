@@ -98,7 +98,16 @@ public class U2BApi {
      * @param callback
      */
     public void queryU2BPlayListVideo(String playlistId, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, ""), callback);
+        queryU2BPlayListVideo(playlistId, callback, DEFAULT_QUERY_RESULT);
+    }
+
+    /**
+     * 搜尋播放清單裡第一頁的歌曲
+     * @param playlistId
+     * @param callback
+     */
+    public void queryU2BPlayListVideo(String playlistId, Callback callback, int queryCount) {
+        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, queryCount, ""), callback);
         Log.d(TAG, "queryU2BPlayListVideo: " + request.urlString());
     }
 
