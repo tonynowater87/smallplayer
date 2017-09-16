@@ -23,4 +23,5 @@
     <dimen name="floating_button_size">45dp</dimen>
     <dimen name="drawerlayout_top_field">100dp</dimen>
     <dimen name="drawerlayout_width">275dp</dimen>
+    <dimen name="full_player_gradient_height">144dp</dimen>
 </resources>

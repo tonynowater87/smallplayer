@@ -4,23 +4,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.databinding.ActivityFullScreenPlayerBinding;
@@ -49,7 +42,6 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     private Handler mHandler = new Handler();
     private PlaybackStateCompat mLastPlaybackState;
     private List<MediaBrowserCompat.MediaItem> mCurrentPlayList = new ArrayList<>();
-    private BottomSheetDialog mBottomSheetDialog;
     private CurrentPlayListAdapter mCurrentPlayListAdapter;
     private MediaMetadataCompat mMediaMetaData;
     private EnumPlayMode mEnumPlayMode;
@@ -180,14 +172,6 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         mMediaMetaData = metadata;
         mBinding.tvEndTextActivityFullScreenPlayer.setText(TimeUtil.formatSongDuration((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
-        mBinding.tvTitleActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
-        mBinding.tvArtistActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
-        String ArtUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
-        if (!TextUtils.isEmpty(ArtUrl)) {
-            Glide.with(getApplicationContext()).load(ArtUrl).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
-        } else {
-            Glide.with(getApplicationContext()).load(R.drawable.ic_default_art).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
-        }
         mCurrentPlayListAdapter.onMetadataChanged(metadata);
     }
 
@@ -238,11 +222,13 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         mBinding.ivPlayPauseActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivNextActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivEqActivityFullScreenPlayer.setOnClickListener(this);
-        mBinding.ivModeActivityFullScreenPlayer.setOnClickListener(this);
+        mBinding.ivChangePlaylistActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivShuffleActivityFullScreenPlayer.setOnClickListener(this);
         mCurrentPlayListAdapter = new CurrentPlayListAdapter(this);
+        initialCurrentPlayList();
     }
 
+    /** 設定Title為目前歌單名稱 */
     private void setPlaylistNameToToolbarTitle() {
         RealmUtils realmUtils = new RealmUtils();
         setTitle(String.format(getString(R.string.fullplayer_toolbar_title), realmUtils.getCurrentPlayListName()));
@@ -252,8 +238,6 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO: 2017/6/8 讀取、預設圖還要在換
-        Glide.with(getApplicationContext()).load(R.drawable.ic_default_art).into(mBinding.imageviewBackgroundActivityFullScreenPlayer);
     }
 
     @Override
@@ -312,8 +296,18 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
             case R.id.iv_eq_activity_full_screen_player:
                 showEqList();
                 break;
-            case R.id.iv_mode_activity_full_screen_player:
-                showCurrentPlayList();
+            case R.id.iv_change_playlist_activity_full_screen_player:
+                DialogUtil.showChangePlayListDialog(this, new DialogUtil.CallBack() {
+                    @Override
+                    public void onSubmit() {
+                        subscribe();
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
                 break;
             case R.id.iv_shuffle_activity_full_screen_player:
                 sendChangePlayModeAction();
@@ -338,32 +332,22 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     @Override
     public void onClick(Object o) {
-
         if (o instanceof MediaBrowserCompat.MediaItem) {
             MediaBrowserCompat.MediaItem mediaItem = (MediaBrowserCompat.MediaItem) o;
             Bundle bundle = new Bundle();
             bundle.putInt(PlayMusicService.BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION, Integer.parseInt(mediaItem.getMediaId()));
             mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST, bundle);
             mBinding.seekbarActivityFullScreenPlayer.setProgress(DEFAULT_PROGRESS);
-            mBottomSheetDialog.dismiss();
         }
     }
 
-    /** 顯示目前播放清單 */
-    private void showCurrentPlayList() {
-        RealmUtils realmUtils = new RealmUtils();
-        mBottomSheetDialog = new BottomSheetDialog(this);
-        ConstraintLayout currenPlaylistRootView = (ConstraintLayout) LayoutInflater.from(this).inflate(R.layout.layout_current_play_list_root_dialog_root_view, null);
-        ((TextView)currenPlaylistRootView.findViewById(R.id.current_playlist_dialog_title_value)).setText(realmUtils.getCurrentPlayListName());
-        RecyclerView recyclerView = currenPlaylistRootView.findViewById(R.id.current_playlist_dialog_recyclerview);
+    /** 設定目前播放清單RecyclerViewAdpater */
+    private void initialCurrentPlayList() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         RecyclerViewDivideLineDecorator recyclerViewDivideLineDecorator = new RecyclerViewDivideLineDecorator(this);
-        recyclerView.setAdapter(mCurrentPlayListAdapter);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(recyclerViewDivideLineDecorator);
-        mBottomSheetDialog.setContentView(currenPlaylistRootView);
-        realmUtils.close();
-        mBottomSheetDialog.show();
+        mBinding.recyclerviewFullplayer.setAdapter(mCurrentPlayListAdapter);
+        mBinding.recyclerviewFullplayer.setLayoutManager(linearLayoutManager);
+        mBinding.recyclerviewFullplayer.addItemDecoration(recyclerViewDivideLineDecorator);
     }
 
     /** Show等化器風格設定Dialog */

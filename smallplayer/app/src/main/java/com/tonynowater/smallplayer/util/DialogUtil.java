@@ -37,6 +37,12 @@ import java.util.List;
  */
 public class DialogUtil {
     private static final String TAG = DialogUtil.class.getSimpleName();
+
+    public interface CallBack {
+        void onSubmit();
+        void onCancel();
+    }
+
     /**
      * 顯示單欄輸入的Dialog
      * @param context
@@ -168,6 +174,15 @@ public class DialogUtil {
      * @param baseMediaControlActivity
      */
     public static void showChangePlayListDialog(final BaseMediaControlActivity baseMediaControlActivity) {
+        showChangePlayListDialog(baseMediaControlActivity, null);
+    }
+
+    /**
+     * 顯示切換歌單的Dialog
+     * @param baseMediaControlActivity
+     * @param callBack 確定/取消Listener
+     */
+    public static void showChangePlayListDialog(final BaseMediaControlActivity baseMediaControlActivity, final CallBack callBack) {
         final RealmUtils realmUtils = new RealmUtils();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(baseMediaControlActivity);
         final List<PlayListEntity> playListEntities = realmUtils.queryAllPlayListSortByPosition();
@@ -182,7 +197,18 @@ public class DialogUtil {
                 realmUtils.setCurrentPlayListID(playListId);
                 baseMediaControlActivity.sendActionChangePlaylist(playListId);
                 realmUtils.close();
+                if (callBack != null) {
+                    callBack.onSubmit();
+                }
                 return true;
+            }
+        });
+        builder.cancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if (callBack != null) {
+                    callBack.onCancel();
+                }
             }
         });
         builder.show();
