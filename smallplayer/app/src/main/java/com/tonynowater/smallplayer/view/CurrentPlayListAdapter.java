@@ -30,6 +30,7 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
     private ColorStateList sColorStatePlaying;
     private int mPlayPosition = 0;
     private boolean mIsPlaying = false;
+    private AnimationDrawable animation;
 
     public CurrentPlayListAdapter(OnClickSomething mOnClickSongListener) {
         super(mOnClickSongListener);
@@ -118,11 +119,14 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
         if (position == mPlayPosition) {
 
             if (mIsPlaying) {
-                AnimationDrawable animation = (AnimationDrawable) ContextCompat.getDrawable(context, R.drawable.ic_equalizer_white_36dp);
-                DrawableCompat.setTintList(animation, sColorStatePlaying);
-                animation.start();
+                if (animation == null) {
+                    animation = (AnimationDrawable) ContextCompat.getDrawable(context, R.drawable.ic_equalizer_white_36dp);
+                    DrawableCompat.setTintList(animation, sColorStatePlaying);
+                    animation.start();
+                }
                 return animation;
             } else {
+                animation = null;
                 Drawable playDrawable = ContextCompat.getDrawable(context, R.drawable.ic_equalizer1_white_36dp);
                 DrawableCompat.setTintList(playDrawable, sColorStatePlaying);
                 return playDrawable;

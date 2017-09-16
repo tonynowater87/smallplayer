@@ -7,6 +7,7 @@
     <dimen name="media_button_size">45dp</dimen>
     <dimen name="progress_bar_height">3dp</dimen>
     <dimen name="full_screen_player_activity_seekbar_field_height">48dp</dimen>
+    <dimen name="full_screen_player_activity_current_song_field_height">24dp</dimen>
     <dimen name="list_image_width">75dp</dimen>
     <dimen name="list_image_height">60dp</dimen>
     <dimen name="list_image_icon_type_width">45dp</dimen>

@@ -125,7 +125,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             stateBuilder.setErrorMessage(PlaybackStateCompat.ERROR_CODE_UNKNOWN_ERROR,sError);
         }
 
-        stateBuilder.setState(state,position,1.0f, SystemClock.elapsedRealtime());
+        stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
 
         Bundle bundle = new Bundle();
         bundle.putInt(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());

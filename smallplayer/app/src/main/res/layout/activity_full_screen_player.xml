@@ -32,6 +32,24 @@
                 android:layout_weight="1"
                 android:scrollbars="vertical"/>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/full_screen_player_activity_current_song_field_height">
+
+                <TextView
+                    android:id="@+id/tv_current_song_activity_full_screen_player"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal|bottom"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:shadowColor="@android:color/black"
+                    android:shadowRadius="20"
+                    tool:text="Something just like this" />
+
+            </RelativeLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/full_screen_player_activity_seekbar_field_height"
@@ -76,12 +94,20 @@
                 android:weightSum="6">
 
                 <ImageView
-                    android:id="@+id/iv_change_playlist_activity_full_screen_player"
+                    android:id="@+id/iv_eq_activity_full_screen_player"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/ic_queue_music_white" />
+                    android:src="@drawable/ic_equalizer2_white_36dp" />
+
+                <ImageView
+                    android:id="@+id/iv_shuffle_activity_full_screen_player"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:src="@drawable/ic_shuffle_white_24px" />
 
                 <ImageView
                     android:id="@+id/iv_previous_activity_full_screen_player"
@@ -115,20 +141,12 @@
                     android:src="@android:drawable/ic_media_next" />
 
                 <ImageView
-                    android:id="@+id/iv_shuffle_activity_full_screen_player"
+                    android:id="@+id/iv_change_playlist_activity_full_screen_player"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/ic_shuffle_white_24px" />
-
-                <ImageView
-                    android:id="@+id/iv_eq_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@drawable/ic_equalizer2_white_36dp" />
+                    android:src="@drawable/ic_queue_music_white" />
 
             </LinearLayout>
 

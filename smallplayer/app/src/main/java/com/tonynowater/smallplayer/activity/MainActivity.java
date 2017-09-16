@@ -56,7 +56,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: 2017/9/6 權限問題待處理
 public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOCAL_POSITION = 0;
@@ -312,6 +311,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             String query = getIntent().getStringExtra(SearchManager.QUERY);
             Log.d(TAG, "onNewIntent: " + query);
             searchRecentSuggestions.saveRecentQuery(query, null);//儲存最近搜尋紀錄
+            searchView.clearFocus();//防搜尋完鍵盤會彈起來
             mBaseViewPagerFragments[mCurrentViewPagerPosition].queryBySearchView(query);
         }
     }

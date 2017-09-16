@@ -154,9 +154,11 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
         Log.d(TAG, "onChildrenLoaded: ");
+        setPlaylistNameToToolbarTitle();
         mCurrentPlayList.clear();
         mCurrentPlayList = new ArrayList<>(children);
         mCurrentPlayListAdapter.setDataSource(mCurrentPlayList);
+        mCurrentPlayListAdapter.notifyDataSetChanged();
         if (mMediaMetaData != null) {
             updateUI(mMediaMetaData);
         }
@@ -170,6 +172,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     private void updateUI(MediaMetadataCompat metadata) {
         Log.d(TAG, "updateUI : " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mMediaMetaData = metadata;
+        mBinding.tvCurrentSongActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mBinding.tvEndTextActivityFullScreenPlayer.setText(TimeUtil.formatSongDuration((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         mCurrentPlayListAdapter.onMetadataChanged(metadata);
@@ -215,7 +218,6 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
         //mBinding.toolbar.toolbarMainActivity.setVisibility(View.GONE);//隱藏ToolBar
-        setPlaylistNameToToolbarTitle();
         MiscellaneousUtil.setToolBarMarquee(mBinding.toolbar.toolbarMainActivity);
         mBinding.seekbarActivityFullScreenPlayer.setOnSeekBarChangeListener(mOnSeekChangedListener);
         mBinding.ivPreviousActivityFullScreenPlayer.setOnClickListener(this);
@@ -231,7 +233,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     /** 設定Title為目前歌單名稱 */
     private void setPlaylistNameToToolbarTitle() {
         RealmUtils realmUtils = new RealmUtils();
-        setTitle(String.format(getString(R.string.fullplayer_toolbar_title), realmUtils.getCurrentPlayListName()));
+        setTitle(realmUtils.getCurrentPlayListName());
         realmUtils.close();
     }
 
