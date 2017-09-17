@@ -11,6 +11,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
 
@@ -365,5 +367,21 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
             mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
             mTransportControls.play();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_full_screen_player, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_edit:
+                EditPlayListActivity.startActivity(this);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
