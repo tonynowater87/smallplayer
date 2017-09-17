@@ -36,5 +36,6 @@ ext {
     materialsearchviewVer = '1.4.0'
     materialdialogVer = '0.9.4.5'
     lottieVer = '2.0.0-rc2'
-    googleAuthLibVer = '10.2.1'
+    googleAuthLibVer = '11.2.2'
+    firebaseVer = '11.2.2'
 }

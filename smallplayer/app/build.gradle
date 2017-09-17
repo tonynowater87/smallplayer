@@ -45,9 +45,9 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
     compile 'com.afollestad.material-dialogs:core:' + rootProject.materialdialogVer
     compile 'com.airbnb.android:lottie:' + rootProject.lottieVer
-    // Google auth
-    compile 'com.google.android.gms:play-services-auth:' + rootProject.googleAuthLibVer
-    // Google auth
+    compile 'com.google.firebase:firebase-core:' + rootProject.firebaseVer //analytics
+    compile 'com.google.firebase:firebase-crash:' + rootProject.firebaseVer
+    compile 'com.google.android.gms:play-services-auth:' + rootProject.googleAuthLibVer // Google auth
 }
 
 apply plugin: 'com.google.gms.google-services'
