@@ -384,4 +384,10 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.anim_fade_in, R.anim.anim_top_to_bottom);
+    }
 }

@@ -70,8 +70,10 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
                 case R.id.buttonAction:
                     DialogUtil.showChangePlayListDialog((BaseMediaControlActivity) getActivity());
                     break;
+                case R.id.imageview_thumb:
                 case R.id.ll_song_info_fragment_player:
                     startActivity(new Intent(getActivity(), FullScreenPlayerActivity.class));
+                    getActivity().overridePendingTransition(R.anim.anim_bottom_to_top, R.anim.anim_fade_out);
                     break;
             }
         }
@@ -85,6 +87,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
         mBinding.buttonNext.setOnClickListener(mOnClickListener);
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
         mBinding.buttonAction.setOnClickListener(mOnClickListener);
+        mBinding.imageviewThumb.setOnClickListener(mOnClickListener);
         mBinding.llSongInfoFragmentPlayer.setOnClickListener(mOnClickListener);
     }
 
