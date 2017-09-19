@@ -101,7 +101,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
             return;
         }
 
-        mEnumPlayMode = getPlayMode(bundle);
+        mEnumPlayMode = MiscellaneousUtil.getPlayModeFromBundle(bundle);
         switch (mEnumPlayMode) {
             case NORMAL:
                 mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), android.R.color.white));
@@ -112,10 +112,6 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         }
 
         subscribe();
-    }
-
-    private EnumPlayMode getPlayMode(Bundle bundle) {
-        return (EnumPlayMode) bundle.getSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE);
     }
 
     private void setLastEqualizerType() {

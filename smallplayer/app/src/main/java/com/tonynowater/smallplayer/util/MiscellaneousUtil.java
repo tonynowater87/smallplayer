@@ -14,8 +14,10 @@ import com.tonynowater.smallplayer.module.dto.HasVideoId;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
+import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -151,5 +153,22 @@ public class MiscellaneousUtil {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 從PlaybackStateCompat的extra裡取得EnumPlayMode
+     * @param bundle
+     * @return
+     */
+    public static EnumPlayMode getPlayModeFromBundle(Bundle bundle) {
+        return (EnumPlayMode) bundle.getSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE);
+    }
+
+
+    public static Serializable getNextMode(EnumPlayMode playMode) {
+        if (playMode == EnumPlayMode.NORMAL)
+            return EnumPlayMode.RANDOM_NO_SAME;
+        else
+            return EnumPlayMode.NORMAL;
     }
 }

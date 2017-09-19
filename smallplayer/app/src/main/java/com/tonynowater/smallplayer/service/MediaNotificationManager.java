@@ -10,7 +10,9 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -27,6 +29,7 @@ import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 // FIXME: 2017/6/12 播到一半縮小會有通知失效的問題以及廣播未解註冊的錯誤
 // FIXME: 2017/6/12 疑似Service沒有Start過，所以畫面縮小就Destroy的關係
@@ -92,7 +95,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private static final String ACTION_PAUSE = "com.tonynowater.smallplayer.pause";
     private static final String ACTION_NEXT = "com.tonynowater.smallplayer.next";
     private static final String ACTION_PREVIOUS = "com.tonynowater.smallplayer.previous";
-    private static final String ACTION_STOP = "com.tonynowater.smallplayer.sop";
+    private static final String ACTION_STOP = "com.tonynowater.smallplayer.stop";
+    private static final String ACTION_MODE = "com.tonynowater.smallplayer.mode";
 
     private PlayMusicService mPlayMusicService;
     private NotificationManager mNotificationManager;
@@ -172,6 +176,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private PendingIntent mNextIntent;
     private PendingIntent mPreviousIntent;
     private PendingIntent mStopIntent;
+    private PendingIntent mModeIntent;
 
     private boolean mStarted = false;
     private int mNotificationColor;
@@ -189,6 +194,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mNextIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_NEXT).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mPreviousIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_PREVIOUS).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mStopIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_STOP).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
+        mModeIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_MODE).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Cancel all notifications to handle the case where the Service was killed and
         // restarted by the system.
@@ -233,6 +239,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             intentFilter.addAction(ACTION_PREVIOUS);
             intentFilter.addAction(ACTION_NEXT);
             intentFilter.addAction(ACTION_STOP);
+            intentFilter.addAction(ACTION_MODE);
             mPlayMusicService.registerReceiver(this, intentFilter);
             // The notification must be updated after setting started to true
             Notification notification = createNofification();
@@ -331,7 +338,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_shuffle, mModeIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
+        setShuffleButtonColor(remoteViews);
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
             remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
             remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
@@ -344,6 +353,21 @@ public class MediaNotificationManager extends BroadcastReceiver {
         remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
         remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
         return remoteViews;
+    }
+
+    /**
+     * 依播放模式設定Notification按鈕的顏色
+     */
+    private void setShuffleButtonColor(RemoteViews remoteViews) {
+        EnumPlayMode enumPlayMode = MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras());
+        switch (enumPlayMode) {
+            case NORMAL:
+                remoteViews.setInt(R.id.notification_image_view_shuffle, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), android.R.color.white));
+                break;
+            case RANDOM_NO_SAME:
+                remoteViews.setInt(R.id.notification_image_view_shuffle, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), R.color.colorAccent));
+                break;
+        }
     }
 
     private void setNotificationPlayState(NotificationCompat.Builder builder) {
@@ -427,6 +451,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 break;
             case ACTION_STOP:
                 mTransportControls.stop();
+                break;
+            case ACTION_MODE:
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE, MiscellaneousUtil.getNextMode((MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras()))));
+                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYMODE, bundle);
                 break;
             default:
                 Log.d(TAG, "onReceive: unknow " + action);
