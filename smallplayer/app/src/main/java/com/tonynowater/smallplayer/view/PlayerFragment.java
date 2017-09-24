@@ -193,6 +193,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
         }
 
         mBinding.progressView.setmMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+        updateProgress();
         mBinding.textViewSongNameValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mBinding.textViewSongArtistValue.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
         if (metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) == null) {

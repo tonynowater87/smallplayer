@@ -172,6 +172,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         mBinding.tvEndTextActivityFullScreenPlayer.setText(TimeUtil.formatSongDuration((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         mCurrentPlayListAdapter.onMetadataChanged(metadata);
+        updateProgress();
     }
 
     private SeekBar.OnSeekBarChangeListener mOnSeekChangedListener = new SeekBar.OnSeekBarChangeListener() {
