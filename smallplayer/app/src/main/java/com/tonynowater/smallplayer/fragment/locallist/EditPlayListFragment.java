@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlFragment;
@@ -139,7 +141,7 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        final PlayListEntity playListEntity;
         switch (item.getItemId()) {
             case R.id.menu_add:
                 DialogUtil.showInputDialog(getContext(), getString(R.string.add_play_list_dialog_title), getString(R.string.input_play_list_name_dialog_hint),new MaterialDialog.InputCallback() {
@@ -151,7 +153,7 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
                 });
                 return true;
             case R.id.menu_edit_playlist_name:
-                PlayListEntity playListEntity = mRealmUtils.queryPlayListById(mId).get(0);
+                playListEntity = mRealmUtils.queryPlayListById(mId).get(0);
                 DialogUtil.showInputDialog(getContext(), getString(R.string.edit_play_list_name_dialog_title), getString(R.string.input_play_list_name_dialog_hint), playListEntity.getPlayListName(), new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
@@ -160,6 +162,23 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
                         mRealmUtils.updatePlayList(playListEntity);
                         getActivity().setTitle(String.format(getString(R.string.title_edit_play_song), charSequence.toString()));
                     }
+                });
+                return true;
+            case R.id.menu_edit_playlist_delete_all:
+                playListEntity = mRealmUtils.queryPlayListById(mId).get(0);
+                DialogUtil.showYesNoDialog(getContext(), getString(R.string.delete_all_dialog_check_title), new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                        switch (dialogAction) {
+                            case POSITIVE:
+                                mRealmUtils.deleteAllSongsFromPlaylist(playListEntity);
+                                initialPlayListSongAdapter();
+                                break;
+                        }
+                    }
+                }, new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {}
                 });
                 return true;
         }

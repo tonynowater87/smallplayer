@@ -169,6 +169,17 @@ public class RealmUtils implements Closeable{
     }
 
     /**
+     * 從播放清單刪除清單裡的所有歌曲
+     * @param playListEntity
+     */
+    public void deleteAllSongsFromPlaylist(PlayListEntity playListEntity) {
+        List<PlayListSongEntity> listSongEntities = queryPlayListSongByListId(playListEntity.getId());
+        for (int i = 0; i < listSongEntities.size(); i++) {
+            deleteSongFromPlayList(listSongEntities.get(i));
+        }
+    }
+
+    /**
      * 刪除播放清單以及清單裡的所有歌曲
      * @param playListEntity
      */

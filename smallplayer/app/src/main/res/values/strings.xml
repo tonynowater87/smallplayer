@@ -30,6 +30,7 @@
     <string name="add_play_list_dialog_title">新增歌單</string>
     <string name="edit_play_list_name_dialog_title">編輯歌單名稱</string>
     <string name="menu_edit_title">編輯</string>
+    <string name="menu_edit_delete_all">全刪</string>
     <string name="title_edit_play_list">編輯播放歌單</string>
     <string name="title_edit_play_song">編輯歌單「%1$s」</string>
     <string name="change_play_list_dialog_title">切換歌單</string>
@@ -64,6 +65,7 @@
     <string name="import_user_youtube_playlist_error_detail_msg">匯入Youtube歌單發生錯誤(%s)</string>
     <string name="import_user_youtube_playlist_error_msg">匯入Youtube歌單發生錯誤</string>
     <string name="no_permission_warning_msg">沒有開啟權限，不能使用本地音樂及下載音樂功能!</string>
+    <string name="delete_all_dialog_check_title">是否要刪除全部的歌曲</string>
 
     <string-array name="local_action_list">
         <item>播放</item>
