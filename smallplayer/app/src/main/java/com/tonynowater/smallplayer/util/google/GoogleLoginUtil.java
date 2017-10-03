@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.util;
+package com.tonynowater.smallplayer.util.google;
 
 import android.accounts.Account;
 import android.content.Context;

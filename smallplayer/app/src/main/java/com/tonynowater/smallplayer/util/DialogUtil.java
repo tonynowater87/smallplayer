@@ -355,13 +355,13 @@ public class DialogUtil {
         builder.show();
     }
 
-    // TODO: 2017/9/16 目前無法匯入自己私人的歌單
     // TODO: 2017/9/16 Youtube一個歌單現在只能最多匯入50首
     /**
      * 顯示「選擇使用者的Youtube歌單匯入」的對話框
      * @param baseActivity
+     * @param authToken 匯入私人歌單需要使用
      */
-    public static void showImportUserPlayListDialog(final BaseActivity baseActivity) {
+    public static void showImportUserPlayListDialog(final BaseActivity baseActivity, final String authToken) {
         final RealmUtils realmUtils = new RealmUtils();
         final List<PlayUserU2BListEntity> userU2BListEntities = realmUtils.queryUserU2BPlayList();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(baseActivity);
@@ -373,7 +373,7 @@ public class DialogUtil {
             public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                 final String playlistName = userU2BListEntities.get(i).toString();
                 Log.d(TAG, "onSelection: " + playlistName);
-                U2BApi.newInstance().queryU2BPlayListVideo(userU2BListEntities.get(i).getListId(), new Callback() {
+                U2BApi.newInstance().queryU2BPlayListVideo(userU2BListEntities.get(i).getListId(), authToken, new Callback() {
                     @Override
                     public void onFailure(Request request, IOException e) {
                         baseActivity.showToast(String.format(baseActivity.getString(R.string.import_user_youtube_playlist_error_detail_msg), e.toString()));
@@ -381,9 +381,9 @@ public class DialogUtil {
 
                     @Override
                     public void onResponse(Response response) throws IOException {
+                        String sResponse = response.body().string();
+                        Log.d(TAG, "onResponse body: " + sResponse);
                         if (response.isSuccessful()) {
-                            String sResponse = response.body().string();
-                            Log.d(TAG, "onResponse body: " + sResponse);
                             processPlayListVideoList(playlistName, sResponse);
                         } else {
                             baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_msg));

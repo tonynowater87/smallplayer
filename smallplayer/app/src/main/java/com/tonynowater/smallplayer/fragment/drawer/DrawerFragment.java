@@ -12,7 +12,7 @@ import com.tonynowater.smallplayer.databinding.LayoutDrawerFragmentLeftBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
-import com.tonynowater.smallplayer.util.GoogleLoginUtil;
+import com.tonynowater.smallplayer.util.google.GoogleLoginUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.ArrayList;
@@ -39,14 +39,14 @@ public class DrawerFragment extends BaseFragment<LayoutDrawerFragmentLeftBinding
         mGoogleLoginUtil = new GoogleLoginUtil(getContext(), getActivity(), new GoogleLoginUtil.OnGoogleLoginCallBack() {
 
             @Override
-            public void onGoogleLoginSuccess(String authToken) {
+            public void onGoogleLoginSuccess(final String authToken) {
                 U2BApi.newInstance().queryUserPlaylist(authToken, new U2BApi.OnU2BApiCallback() {
                     @Override
                     public void onSuccess(String response) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                DialogUtil.showImportUserPlayListDialog((BaseActivity) getActivity());
+                                DialogUtil.showImportUserPlayListDialog((BaseActivity) getActivity(), authToken);
                             }
                         });
                     }

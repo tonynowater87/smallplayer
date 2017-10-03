@@ -62,34 +62,27 @@ public class U2BApi {
     /** 搜尋下一頁U2B的影片 */
     public void queryU2BVideo(String keyword, String pageToken, Callback callback) {
         if (pageToken == null) {
-            Log.d(TAG, "queryU2BVideo: pageToken null");
             return;
         }
-
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, pageToken), callback);
-        Log.d(TAG, "queryU2BVideo: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, pageToken), callback);
     }
 
     /** 搜尋第一頁U2B的影片 */
     public void queryU2BVideo(String keyword, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, ""), callback);
-        Log.d(TAG, "queryU2BVideo: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, ""), callback);
     }
 
     /** 搜尋下一頁U2B的播放清單 */
     public void queryU2BPlayList(String keyword, String pageToken, Callback callback) {
         if (pageToken == null) {
-            Log.d(TAG, "queryU2BPlayList: pageToken null");
         }
 
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, playlist, pageToken), callback);
-        Log.d(TAG, "queryU2BPlayList: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, playlist, pageToken), callback);
     }
 
     /** 搜尋第一頁U2B的播放清單 */
     public void queryU2BPlayList(String keyword, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, playlist, ""), callback);
-        Log.d(TAG, "queryU2BPlayList: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, playlist, ""), callback);
     }
 
     /**
@@ -107,8 +100,20 @@ public class U2BApi {
      * @param callback
      */
     public void queryU2BPlayListVideo(String playlistId, Callback callback, int queryCount) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, queryCount, ""), callback);
-        Log.d(TAG, "queryU2BPlayListVideo: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, queryCount, ""), callback);
+    }
+
+    /**
+     * 搜尋播放清單裡第一頁的歌曲
+     * @param playlistId
+     * @param token
+     * @param callback
+     */
+    public void queryU2BPlayListVideo(String playlistId, String token, Callback callback, int queryCount) {
+        Headers headers = new Headers.Builder().add("Authorization", "Bearer " + token).build();
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, queryCount, "")
+                , headers
+                , callback);
     }
 
     /**
@@ -119,17 +124,13 @@ public class U2BApi {
      */
     public void queryU2BPlayListVideo(String playlistId, String pageToken, Callback callback) {
         if (pageToken == null) {
-            Log.d(TAG, "queryU2BPlayListVideo: pageToken null");
             return;
         }
-
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, pageToken), callback);
-        Log.d(TAG, "queryU2BPlayListVideo: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, pageToken), callback);
     }
 
     public void queryU2BChannel(String keyword, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, channel), callback);
-        Log.d(TAG, "queryU2BChannel: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, channel), callback);
     }
 
     /**
@@ -138,8 +139,7 @@ public class U2BApi {
      * @param callback
      */
     public void queryU2BSUGGESTION(String keyword, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_SUGGESTION_URL, keyword), callback);
-        Log.d(TAG, "queryU2BSUGGESTION: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_SUGGESTION_URL, keyword), callback);
     }
 
     /**
@@ -148,8 +148,7 @@ public class U2BApi {
      * @param callback
      */
     public void queryU2BVedioDuration(String videoid, Callback callback) {
-        Request request = sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL, videoid, DEFAULT_QUERY_RESULT), callback);
-        Log.d(TAG, "queryU2BVedioDuration: " + request.urlString());
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL, videoid, DEFAULT_QUERY_RESULT), callback);
     }
 
     /**
@@ -160,7 +159,7 @@ public class U2BApi {
     public void downloadMP3FromU2B(Playable playable, final OnU2BApiCallback callback) {
         final PlayListSongEntity playListSongEntity = playable.getPlayListSongEntity();
         if (TextUtils.equals(MetaDataCustomKeyDefine.ISNOTLOCAL,playListSongEntity.getIsLocal())) {
-            final Request request = sendHttpRequest(String.format(U2BApiDefine.DOWNLOAD_MP3_URL, playListSongEntity.getSource()), new Callback() {
+            sendHttpRequest(String.format(U2BApiDefine.DOWNLOAD_MP3_URL, playListSongEntity.getSource()), new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
                     callback.onFailure(e.getMessage());
@@ -181,7 +180,7 @@ public class U2BApi {
                             callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                             return;
                         }
-                        Request requestMp3 = sendHttpRequest(u2BMP3LinkDTO.getLink(), new Callback() {
+                        sendHttpRequest(u2BMP3LinkDTO.getLink(), new Callback() {
                             @Override
                             public void onFailure(Request request, IOException e) {
                                 callback.onFailure(e.getMessage());
@@ -214,13 +213,11 @@ public class U2BApi {
                                 }
                             }
                         });
-                        Log.d(TAG, "downloadMP3FromU2B phase 2: " + requestMp3.urlString());
                     } else {
                         callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
                     }
                 }
             });
-            Log.d(TAG, "downloadMP3FromU2B phase 1: " + request.urlString());
         }
     }
 
@@ -232,7 +229,6 @@ public class U2BApi {
      */
     public void downloadMP3FromU2B(String url, final PlayListSongEntity playListSongEntity, final OnU2BApiCallback callback) {
         url = String.format(U2BApiDefine.DOWNLOAD_MP3_API_URL, url);
-        Log.d(TAG, "downloadMP3FromU2B html : " + url);
         sendHttpRequest(url, new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -275,7 +271,7 @@ public class U2BApi {
      * @param callback
      */
     public void queryUserPlaylist (String token, final OnU2BApiCallback callback) {
-        Headers headers = new Headers.Builder().set("authorization", "Bearer " + token).build();
+        Headers headers = new Headers.Builder().set("Authorization", "Bearer " + token).build();
         sendHttpRequest(U2BApiDefine.U2B_USER_PLAYLIST_QUERY_URL, headers, new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -316,31 +312,47 @@ public class U2BApi {
      * @param callback
      * @return
      */
-    private Request sendHttpRequest(String url, Callback callback) {
-        Request request = new Request.Builder()
-                .get()
-                .url(url)
-                .build();
-
-        mOkHttp.newCall(request).enqueue(callback);
-        return request;
+    private void sendHttpRequest(String url, Callback callback) {
+        Headers headers = new Headers.Builder().build();
+        sendHttpRequest(url, headers, callback);
     }
 
     /**
      * 送HTTP GET 加 header
      * @param url
-     * @param callback
      * @param headers
+     * @param callback
      * @return
      */
-    private Request sendHttpRequest(String url, Headers headers, Callback callback) {
+    private void sendHttpRequest(String url, Headers headers, Callback callback) {
         Request request = new Request.Builder()
                 .get()
                 .headers(headers)
                 .url(url)
                 .build();
 
+        Log.d(TAG, "sendHttpRequest:" + request.toString());
         mOkHttp.newCall(request).enqueue(callback);
-        return request;
     }
 }
+
+
+//另一種方式取Access Token的方式
+//    public void getYoutubeToken(String authCode, Callback callback) {
+//        String AUTH_SERVER_TOKEN = "https://www.googleapis.com/oauth2/v4/token";
+//        RequestBody requestBody = new FormEncodingBuilder()
+//                .add("grant_type", "authorization_code")
+//                .add("client_id", MyApplication.getContext().getString(R.string.default_web_client_id))
+//                .add("redirect_uri", "https://smallplayer-166212.firebaseapp.com/__/auth/handler")
+//                .add("client_secret", "xvQXNCJUcDrCv72RC0tn9N4u")
+//                .add("code", authCode)
+//                .build();
+//
+//        Request request = new Request.Builder()
+//                .post(requestBody)
+//                .url(AUTH_SERVER_TOKEN)
+//                .build();
+//
+//        Log.d(TAG, "getYoutubeToken: " + request.toString());
+//        mOkHttp.newCall(request).enqueue(callback);
+//    }
