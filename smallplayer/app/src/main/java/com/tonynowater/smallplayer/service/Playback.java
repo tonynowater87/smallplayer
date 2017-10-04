@@ -76,8 +76,9 @@ public interface Playback {
 
     /**
      * Pause the current playing item
+     * @param bAudoPlayWhenGetFocus 暫停後獲取焦點後是否要自動播放
      */
-    void pause();
+    void pause(boolean bAudoPlayWhenGetFocus);
 
     /**
      * Seek to the given position

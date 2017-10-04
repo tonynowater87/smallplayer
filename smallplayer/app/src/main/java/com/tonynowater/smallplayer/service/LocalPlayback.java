@@ -62,7 +62,7 @@ public class LocalPlayback implements Playback
                 //耳機拔掉的事件
                 Log.d(TAG, "onReceive: " + isPlaying());
                 if (isPlaying()) {
-                    pause();
+                    pause(false);
                 }
             }
         }
@@ -126,7 +126,12 @@ public class LocalPlayback implements Playback
          || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS
          || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
             if (isPlaying()) {
-                pause();
+                if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                    //電話播打進來會進這一個
+                    pause(true);
+                } else {
+                    pause(false);
+                }
             }
         } else {
             if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
@@ -146,23 +151,25 @@ public class LocalPlayback implements Playback
     @Override
     public void onAudioFocusChange(int focusChange) {
         Log.d(TAG, "onAudioFocusChange: " + focusChange);
-        if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            mAudioFocus = AudioManager.AUDIOFOCUS_GAIN;
-            if (mPlayOnFocusGain) {
-                play(mCurrentTrackPosition);
-            }
-        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS
-                || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
-                || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
-            mAudioFocus = focusChange;
 
-            if (mState == PlaybackStateCompat.STATE_PLAYING) {
-                mPlayOnFocusGain = true;
-                mCurrentPosition = mMediaPlayer.getCurrentPosition();
-            }
-
-        } else {
-            Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_GAIN:
+                mAudioFocus = AudioManager.AUDIOFOCUS_GAIN;
+                if (mPlayOnFocusGain) {
+                    play(mCurrentTrackPosition);
+                }
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                mAudioFocus = focusChange;
+                if (mState == PlaybackStateCompat.STATE_PLAYING) {
+                    mPlayOnFocusGain = true;
+                    mCurrentPosition = mMediaPlayer.getCurrentPosition();
+                }
+                break;
+            default:
+                Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
         }
 
         configureMediaPlayerByAudioFocus();
@@ -245,7 +252,6 @@ public class LocalPlayback implements Playback
     // TODO: 2017/6/3 從Youtube音樂切回播本地音樂，會有不是播放本地音樂的問題
     @Override
     public void play(final int trackPosition) {
-        mPlayOnFocusGain = true;
         tryToGetAudioFocus();
 
         final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayItemByIndex(trackPosition, mEnumPlayMode);
@@ -349,15 +355,15 @@ public class LocalPlayback implements Playback
     }
 
     @Override
-    public void pause() {
+    public void pause(boolean bAudoPlayWhenGetFocus) {
         if (mState == PlaybackStateCompat.STATE_PLAYING) {
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentPosition = mMediaPlayer.getCurrentPosition();
-                mPlayOnFocusGain = false;
             }
         }
 
+        mPlayOnFocusGain = bAudoPlayWhenGetFocus;
         mState = PlaybackStateCompat.STATE_PAUSED;
         mPlaybackCallback.onPlaybackStateChanged();
     }
