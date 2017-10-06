@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.util.google;
 
 import android.accounts.Account;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -23,6 +22,7 @@ import com.google.android.gms.common.api.Status;
 
 import java.io.IOException;
 
+// TODO: 2017/10/6 Release版的Google登入會失敗 (因為SHA1不一樣)
 /**
  * Google登入並取得可供存取資料的token
  * Created by tonynowater on 2017/8/26.
@@ -30,7 +30,7 @@ import java.io.IOException;
 public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = GoogleLoginUtil.class.getSimpleName();
     private static final int RC_GOOGLE_LOGIN = 100;
-    public static final String AUTH_YOUTUBE = "https://www.googleapis.com/auth/youtube";
+    private static final String AUTH_YOUTUBE = "https://www.googleapis.com/auth/youtube";
 
     public interface OnGoogleLoginCallBack {
         void onGoogleLoginSuccess(String authToken);
@@ -41,11 +41,10 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
     private OnGoogleLoginCallBack mCallback;
 
     /**
-     * @param context
      * @param mFragmentActivity
      * @param mCallback
      */
-    public GoogleLoginUtil(Context context, FragmentActivity mFragmentActivity, OnGoogleLoginCallBack mCallback) {
+    public GoogleLoginUtil(FragmentActivity mFragmentActivity, OnGoogleLoginCallBack mCallback) {
         this.mCallback = mCallback;
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -56,7 +55,7 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
         //Log.d(TAG, "GoogleLoginUtil google_app_id : " + context.getString(R.string.google_app_id));
         //Log.d(TAG, "GoogleLoginUtil google_api_key : " + context.getString(R.string.google_api_key));
 
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
+        mGoogleApiClient = new GoogleApiClient.Builder(mFragmentActivity)
                 .enableAutoManage(mFragmentActivity, this)//此行啟用表示會自動在onStart及onStop中做connect()及disconnect()的動作
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();

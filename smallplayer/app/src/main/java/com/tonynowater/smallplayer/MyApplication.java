@@ -2,7 +2,9 @@ package com.tonynowater.smallplayer;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.tonynowater.smallplayer.module.dto.realm.Migration;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
@@ -25,6 +27,9 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+        Log.d(TAG, "onCreate: " + BuildConfig.DEBUG);
+        //測試版不做錯誤報告
+        FirebaseCrash.setCrashCollectionEnabled(BuildConfig.DEBUG ? false : true);
         initalRealm();
     }
 

@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias Key_Alias
+            keyPassword Key_Password
+            storeFile file(Store_File)
+            storePassword Key_Password
+        }
+    }
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
     defaultConfig {
@@ -11,7 +19,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        //***** 設定gradle.properties裡面的值 ******
+        //***** 設定gradle.properties裡面的值到BuildConfig ******
         buildConfigField('String', 'YoutubeDataAPIKey', YoutubeDataAPIKey)
 
     }
@@ -19,6 +27,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     dataBinding {
@@ -45,9 +54,11 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
     compile 'com.afollestad.material-dialogs:core:' + rootProject.materialdialogVer
     compile 'com.airbnb.android:lottie:' + rootProject.lottieVer
-    compile 'com.google.firebase:firebase-core:' + rootProject.firebaseVer //analytics
+    compile 'com.google.firebase:firebase-core:' + rootProject.firebaseVer
+    //analytics
     compile 'com.google.firebase:firebase-crash:' + rootProject.firebaseVer
-    compile 'com.google.android.gms:play-services-auth:' + rootProject.googleAuthLibVer // Google auth
+    compile 'com.google.android.gms:play-services-auth:' + rootProject.googleAuthLibVer
+    // Google auth
 }
 
 apply plugin: 'com.google.gms.google-services'
