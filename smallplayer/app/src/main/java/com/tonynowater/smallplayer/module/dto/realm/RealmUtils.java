@@ -2,6 +2,7 @@ package com.tonynowater.smallplayer.module.dto.realm;
 
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayFolderDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListDAO;
@@ -286,7 +287,16 @@ public class RealmUtils implements Closeable{
     /**
      * @return 目前播放清單的名稱
      */
+    // TODO: 2017/10/10 這邊有可能會出現IndexOutOfBoundsException，先暫時這樣處理
     public String getCurrentPlayListName() {
-        return queryAllPlayListSortByPosition().get(queryCurrentPlayListPosition()).getPlayListName();
+        List<PlayListEntity> listEntities = queryAllPlayListSortByPosition();
+        int currentPlayListPosition = queryCurrentPlayListPosition();
+        if (currentPlayListPosition < listEntities.size()) {
+            return listEntities.get(currentPlayListPosition).getPlayListName();
+        } else {
+            String msg = String.format("current pos:%s, all list size:%s" + listEntities.size());
+            FirebaseCrash.logcat(Log.ERROR, "RealmUtils", msg);
+            return "";
+        }
     }
 }
