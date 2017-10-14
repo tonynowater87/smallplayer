@@ -361,71 +361,71 @@ public class DialogUtil {
      * @param baseActivity
      * @param authToken 匯入私人歌單需要使用
      */
-    public static void showImportUserPlayListDialog(final BaseActivity baseActivity, final String authToken) {
-        final RealmUtils realmUtils = new RealmUtils();
-        final List<PlayUserU2BListEntity> userU2BListEntities = realmUtils.queryUserU2BPlayList();
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseActivity);
-        builder.title(baseActivity.getString(R.string.choose_user_youtube_playlist));
-        builder.items(userU2BListEntities);
-        builder.dividerColor(ContextCompat.getColor(baseActivity, android.R.color.darker_gray));//只有標題的分隔線
-        builder.itemsCallback(new MaterialDialog.ListCallback() {
-            @Override
-            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                final String playlistName = userU2BListEntities.get(i).toString();
-                Log.d(TAG, "onSelection: " + playlistName);
-                U2BApi.newInstance().queryU2BPlayListVideo(userU2BListEntities.get(i).getListId(), authToken, new Callback() {
-                    @Override
-                    public void onFailure(Request request, IOException e) {
-                        baseActivity.showToast(String.format(baseActivity.getString(R.string.import_user_youtube_playlist_error_detail_msg), e.toString()));
-                    }
-
-                    @Override
-                    public void onResponse(Response response) throws IOException {
-                        String sResponse = response.body().string();
-                        Log.d(TAG, "onResponse body: " + sResponse);
-                        if (response.isSuccessful()) {
-                            processPlayListVideoList(playlistName, sResponse);
-                        } else {
-                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_msg));
-                        }
-                    }
-                }, U2BApi.MAX_QUERY_RESULT);
-            }
-
-            private void processPlayListVideoList(final String playlistName, String sResponse) {
-                StringBuilder sVideoIds;
-                final U2bPlayListVideoDTO mU2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
-                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(mU2bPlayListVideoDTO.getItems());
-                U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), new Callback() {
-                    @Override
-                    public void onFailure(Request request, IOException e) {
-                        baseActivity.showToast(String.format(baseActivity.getString(R.string.import_user_youtube_playlist_error_detail_msg), e.toString()));
-                    }
-
-                    // FIXME: 2017/6/14 搜尋到一半，在搜尋會 java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.tonynowater.smallplayer.module.dto.U2BVideoDTO.getItems()' on a null object reference
-                    @Override
-                    public void onResponse(Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            String sResponse = response.body().string();
-                            Log.d(TAG, "onResponse body: " + sResponse);
-                            U2BVideoDurationDTO u2BVideoDurationDTO = new Gson().fromJson(sResponse, U2BVideoDurationDTO.class);
-                            MiscellaneousUtil.processDuration(u2BVideoDurationDTO, mU2bPlayListVideoDTO.getItems());
-                            baseActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    int playlistId = realmUtils.addNewPlayList(playlistName);
-                                    realmUtils.addSongsToPlayList(playlistId, mU2bPlayListVideoDTO.getItems());
-                                    baseActivity.showToast(String.format(baseActivity.getString(R.string.import_user_youtube_playlist_success_detail_msg), playlistName));
-                                    realmUtils.close();
-                                }
-                            });
-                        } else {
-                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_msg));
-                        }
-                    }
-                });
-            }
-        });
-        builder.show();
-    }
+//    public static void showImportUserPlayListDialog(final BaseActivity baseActivity, final String authToken) {
+//        final RealmUtils realmUtils = new RealmUtils();
+//        final List<PlayUserU2BListEntity> userU2BListEntities = realmUtils.queryUserU2BPlayList();
+//        MaterialDialog.Builder builder = new MaterialDialog.Builder(baseActivity);
+//        builder.title(baseActivity.getString(R.string.choose_user_youtube_playlist));
+//        builder.items(userU2BListEntities);
+//        builder.dividerColor(ContextCompat.getColor(baseActivity, android.R.color.darker_gray));//只有標題的分隔線
+//        builder.itemsCallback(new MaterialDialog.ListCallback() {
+//            @Override
+//            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+//                final String playlistName = userU2BListEntities.get(i).toString();
+//                Log.d(TAG, "onSelection: " + playlistName);
+//                U2BApi.newInstance().queryU2BPlayListVideo(userU2BListEntities.get(i).getListId(), authToken, new Callback() {
+//                    @Override
+//                    public void onFailure(Request request, IOException e) {
+//                        baseActivity.showToast(String.format(baseActivity.getString(R.string.import_user_youtube_playlist_error_detail_msg), e.toString()));
+//                    }
+//
+//                    @Override
+//                    public void onResponse(Response response) throws IOException {
+//                        String sResponse = response.body().string();
+//                        Log.d(TAG, "onResponse body: " + sResponse);
+//                        if (response.isSuccessful()) {
+//                            processPlayListVideoList(playlistName, sResponse);
+//                        } else {
+//                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_msg));
+//                        }
+//                    }
+//                }, U2BApi.MAX_QUERY_RESULT);
+//            }
+//
+//            private void processPlayListVideoList(final String playlistName, String sResponse) {
+//                StringBuilder sVideoIds;
+//                final U2bPlayListVideoDTO mU2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
+//                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(mU2bPlayListVideoDTO.getItems());
+//                U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), new Callback() {
+//                    @Override
+//                    public void onFailure(Request request, IOException e) {
+//                        baseActivity.showToast(String.format(baseActivity.getString(R.string.import_user_youtube_playlist_error_detail_msg), e.toString()));
+//                    }
+//
+//                    // FIXME: 2017/6/14 搜尋到一半，在搜尋會 java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.tonynowater.smallplayer.module.dto.U2BVideoDTO.getItems()' on a null object reference
+//                    @Override
+//                    public void onResponse(Response response) throws IOException {
+//                        if (response.isSuccessful()) {
+//                            String sResponse = response.body().string();
+//                            Log.d(TAG, "onResponse body: " + sResponse);
+//                            U2BVideoDurationDTO u2BVideoDurationDTO = new Gson().fromJson(sResponse, U2BVideoDurationDTO.class);
+//                            MiscellaneousUtil.processDuration(u2BVideoDurationDTO, mU2bPlayListVideoDTO.getItems());
+//                            baseActivity.runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    int playlistId = realmUtils.addNewPlayList(playlistName);
+//                                    realmUtils.addSongsToPlayList(playlistId, mU2bPlayListVideoDTO.getItems());
+//                                    baseActivity.showToast(String.format(baseActivity.getString(R.string.import_user_youtube_playlist_success_detail_msg), playlistName));
+//                                    realmUtils.close();
+//                                }
+//                            });
+//                        } else {
+//                            baseActivity.showToast(baseActivity.getString(R.string.import_user_youtube_playlist_error_msg));
+//                        }
+//                    }
+//                });
+//            }
+//        });
+//        builder.show();
+//    }
 }

@@ -20,6 +20,7 @@ import java.util.Random;
 /**
  * Created by tonyliao on 2017/5/12.
  */
+// TODO: 2017/10/8 待實作重覆播放同一首歌的功能
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     private ArrayList<MediaMetadataCompat> mMusicPlayList;

@@ -25,6 +25,7 @@ import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DateUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
+import com.tonynowater.smallplayer.util.SPManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,10 +35,6 @@ import java.util.List;
  */
 public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
-    private static final String BUNDLE_KEY_TITLE = "BUNDLE_KEY_TITLE";
-    private static final String BUNDLE_KEY_SEARCH_TYPE = "BUNDLE_KEY_SEARCH_TYPE";
-    public static final String BUNDLE_KEY_PLAYLISTID = "BUNDLE_KEY_PLAYLISTID";
-    public static final String BUNDLE_KEY_PLAYLIST_TITLE = "BUNDLE_KEY_PLAYLIST_TITLE";
 
     private U2BVideoDTO mU2BVideoDTO;
     private U2BPlayListDTO mU2BPlayListDTO;
@@ -244,7 +241,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 case PLAYLISTVIDEO:
                     Log.d(TAG, "queryBySearchView: search playlistvideo" );
                     mU2bPlayListVideoDTO = null;
-                    U2BApi.newInstance().queryU2BPlayListVideo(query, mViedoSearchCallback);
+                    U2BApi.newInstance().queryU2BPlayListVideo(query, SPManager.getInstance(getContext()).getAccessToken(), mViedoSearchCallback);
                     break;
                 case CHANNEL:
                     Log.d(TAG, "queryBySearchView: search channel" );
@@ -347,7 +344,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
-                                    U2BApi.newInstance().queryU2BPlayListVideo(mQuery, mU2bPlayListVideoDTO.getNextPageToken(), mViedoSearchCallback);
+                                    U2BApi.newInstance().queryU2BPlayListVideo(mQuery, SPManager.getInstance(getContext()).getAccessToken(), mU2bPlayListVideoDTO.getNextPageToken(), mViedoSearchCallback);
                                     isLoad = true;
                                 }
                                 break;

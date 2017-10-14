@@ -26,7 +26,7 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 /**
  * Created by tonynowater on 2017/5/30.
  */
-
+// TODO: 2017/10/7 未來可增加可選取的刪除模式
 public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPlayListFragmentBinding> {
     public static final String BUNDLE_KEY_ENUM_EDITLISTTYPE = "BUNDLE_KEY_ENUM_EDITLISTTYPE";
     private static final String BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION";

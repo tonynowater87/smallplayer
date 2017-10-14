@@ -41,7 +41,6 @@ public class MyApplication extends Application {
                 .migration(new Migration())
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
-
         RealmUtils realmUtils = new RealmUtils();
         realmUtils.close();
     }

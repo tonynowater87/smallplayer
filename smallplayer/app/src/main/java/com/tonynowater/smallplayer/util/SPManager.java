@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 public class SPManager {
 
     public static final String SHARED_PREFERENCE_COMMON = "SHARED_PREFERENCE_COMMON";
+    private static final String SP_KEY_LOGIN = "SP_KEY_LOGIN";
+    private static final String SP_KEY_ACCESS_TOKEN = "SP_KEY_ACCESS_TOKEN";
 
     private static SPManager mInstance = null;
 
@@ -23,5 +25,21 @@ public class SPManager {
 
     public SPManager(Context context) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCE_COMMON, Context.MODE_PRIVATE);
+    }
+
+    public void setIsGoogleLogin(boolean login) {
+        sharedPreferences.edit().putBoolean(SP_KEY_LOGIN, login).commit();
+    }
+
+    public boolean getIsGoogleLogin() {
+        return sharedPreferences.getBoolean(SP_KEY_LOGIN, false);
+    }
+
+    public void setAccessToken(String token) {
+        sharedPreferences.edit().putString(SP_KEY_ACCESS_TOKEN, token).commit();
+    }
+
+    public String getAccessToken() {
+        return sharedPreferences.getString(SP_KEY_ACCESS_TOKEN, "");
     }
 }

@@ -39,13 +39,23 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
 
     private GoogleApiClient mGoogleApiClient;
     private OnGoogleLoginCallBack mCallback;
+    private FragmentActivity mFragmentActivity;
 
     /**
      * @param mFragmentActivity
      * @param mCallback
      */
     public GoogleLoginUtil(FragmentActivity mFragmentActivity, OnGoogleLoginCallBack mCallback) {
+        this(mFragmentActivity, null, mCallback);
+    }
+
+    /**
+     * @param mFragmentActivity
+     * @param mCallback
+     */
+    public GoogleLoginUtil(FragmentActivity mFragmentActivity, Fragment fragment, OnGoogleLoginCallBack mCallback) {
         this.mCallback = mCallback;
+        this.mFragmentActivity = mFragmentActivity;
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 //.requestIdToken(context.getString(R.string.default_web_client_id))//加這行登入成功後才取得到IdToken，但不知用來做什麼，先註解
@@ -56,7 +66,7 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
         //Log.d(TAG, "GoogleLoginUtil google_api_key : " + context.getString(R.string.google_api_key));
 
         mGoogleApiClient = new GoogleApiClient.Builder(mFragmentActivity)
-                .enableAutoManage(mFragmentActivity, this)//此行啟用表示會自動在onStart及onStop中做connect()及disconnect()的動作
+                .enableAutoManage(mFragmentActivity, fragment == null ? 0 : fragment.hashCode(), this)//此行啟用表示會自動在onStart及onStop中做connect()及disconnect()的動作
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }
@@ -67,38 +77,53 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
         mCallback.onGoogleLoginFailure();
     }
 
+    public void onStop() {
+        mGoogleApiClient.stopAutoManage(mFragmentActivity);
+        mGoogleApiClient.disconnect();
+    }
+
     /** For Activity Google登入 */
     public void googleSignIn(final FragmentActivity fragmentActivity) {
         Log.d(TAG, "googleSignIn: ");
-        //每次登入前都先登出
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if (status.isSuccess()) {
-                    Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                    fragmentActivity.startActivityForResult(intent, RC_GOOGLE_LOGIN);
-                } else {
-                    mCallback.onGoogleLoginFailure();
+        if (mGoogleApiClient.isConnected()) {
+            //若有登入就先登出
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(@NonNull Status status) {
+                    if (status.isSuccess()) {
+                        Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                        fragmentActivity.startActivityForResult(intent, RC_GOOGLE_LOGIN);
+                    } else {
+                        mCallback.onGoogleLoginFailure();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            fragmentActivity.startActivityForResult(intent, RC_GOOGLE_LOGIN);
+        }
     }
 
     /** For Fragment Google登入 */
     public void googleSignIn(final Fragment fragment) {
         Log.d(TAG, "googleSignIn: ");
-        //每次登入前都先登出
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if (status.isSuccess()) {
-                    Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                    fragment.startActivityForResult(intent, RC_GOOGLE_LOGIN);
-                } else {
-                    mCallback.onGoogleLoginFailure();
+        if (mGoogleApiClient.isConnected()) {
+            //若有登入就先登出
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(@NonNull Status status) {
+                    if (status.isSuccess()) {
+                        Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                        fragment.startActivityForResult(intent, RC_GOOGLE_LOGIN);
+                    } else {
+                        mCallback.onGoogleLoginFailure();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            fragment.startActivityForResult(intent, RC_GOOGLE_LOGIN);
+        }
     }
 
     /**

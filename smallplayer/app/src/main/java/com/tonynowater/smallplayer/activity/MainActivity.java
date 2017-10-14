@@ -40,9 +40,11 @@ import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
 import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
+import com.tonynowater.smallplayer.fragment.u2bsearch.U2BUserListViewPagerFragment;
 import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
+import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
@@ -61,6 +63,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     private static final int LOCAL_POSITION = 0;
     private static final int U2B_VIDEO_POSITION = 1;
     private static final int U2B_LIST_POSITION = 2;
+    private static final int U2B_USERLIST_POSITION = 3;
     private static final int DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT = 15;//最近搜尋記錄要顯示的筆數
 
     //===== Fields =====
@@ -120,7 +123,8 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 Log.d(TAG, "onPermissionGranted: ");
                 mBaseViewPagerFragments = new BaseViewPagerFragment[]{SongListViewPagerFragment.newInstance()
                         , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
-                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)};
+                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
+                        , U2BUserListViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_user_playlist))};
                 initialFab();
                 initialViewPager();
             }
@@ -336,7 +340,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 Log.d(TAG, "onPageSelected: " + position);
                 mCurrentViewPagerPosition = position;
                 mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
-                if (position == U2B_LIST_POSITION) {
+                if (position == U2B_LIST_POSITION || position == U2B_USERLIST_POSITION) {
                     mBinding.fab.setVisibility(View.GONE);
                 } else {
                     mBinding.fab.setVisibility(View.VISIBLE);
@@ -415,6 +419,13 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             U2BPlayListDTO.ItemsBean u2bVideoItem = ((U2BPlayListDTO.ItemsBean) object);
             Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
             intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getId().getPlaylistId());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.getSnippet().getTitle());
+            startActivity(intent);
+        } else if (object instanceof U2BUserPlayListDTO.ItemsBean) {
+            invalidateOptionsMenu();//為了關閉SearchView
+            U2BUserPlayListDTO.ItemsBean u2bVideoItem = ((U2BUserPlayListDTO.ItemsBean) object);
+            Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getId());
             intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.getSnippet().getTitle());
             startActivity(intent);
         }

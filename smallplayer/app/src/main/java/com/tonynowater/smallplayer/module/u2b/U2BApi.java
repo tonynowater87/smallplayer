@@ -88,30 +88,12 @@ public class U2BApi {
     /**
      * 搜尋播放清單裡第一頁的歌曲
      * @param playlistId
+     * @param authToken
      * @param callback
      */
-    public void queryU2BPlayListVideo(String playlistId, Callback callback) {
-        queryU2BPlayListVideo(playlistId, callback, DEFAULT_QUERY_RESULT);
-    }
-
-    /**
-     * 搜尋播放清單裡第一頁的歌曲
-     * @param playlistId
-     * @param callback
-     */
-    public void queryU2BPlayListVideo(String playlistId, Callback callback, int queryCount) {
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, queryCount, ""), callback);
-    }
-
-    /**
-     * 搜尋播放清單裡第一頁的歌曲
-     * @param playlistId
-     * @param token
-     * @param callback
-     */
-    public void queryU2BPlayListVideo(String playlistId, String token, Callback callback, int queryCount) {
-        Headers headers = new Headers.Builder().add("Authorization", "Bearer " + token).build();
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, queryCount, "")
+    public void queryU2BPlayListVideo(String playlistId, String authToken, Callback callback) {
+        Headers headers = new Headers.Builder().add("Authorization", "Bearer " + authToken).build();
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, "")
                 , headers
                 , callback);
     }
@@ -120,12 +102,14 @@ public class U2BApi {
      * 搜尋播放清單裡下一頁的歌曲
      * @param playlistId
      * @param callback
+     * @param authToken
      * @param pageToken
      */
-    public void queryU2BPlayListVideo(String playlistId, String pageToken, Callback callback) {
+    public void queryU2BPlayListVideo(String playlistId, String authToken, String pageToken, Callback callback) {
         if (pageToken == null) {
             return;
         }
+        Headers headers = new Headers.Builder().add("Authorization", "Bearer " + authToken).build();
         sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, pageToken), callback);
     }
 
@@ -266,7 +250,7 @@ public class U2BApi {
     }
 
     /**
-     * 查使用者的歌單
+     * 查使用者Youtube的歌單
      * @param token
      * @param callback
      */
