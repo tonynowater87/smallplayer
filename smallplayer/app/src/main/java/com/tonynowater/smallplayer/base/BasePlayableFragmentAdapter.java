@@ -55,7 +55,10 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mOnClickSongListener.onClick(mDataList.get(baseViewHolder.getAdapterPosition()));
+                        int position = baseViewHolder.getAdapterPosition();
+                        if (position != -1) {
+                            mOnClickSongListener.onClick(mDataList.get(position));
+                        }
                     }
                 });
                 return baseViewHolder;
