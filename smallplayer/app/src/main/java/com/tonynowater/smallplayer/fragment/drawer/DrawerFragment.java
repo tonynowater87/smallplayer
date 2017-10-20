@@ -53,6 +53,5 @@ public class DrawerFragment extends BaseFragment<LayoutDrawerFragmentLeftBinding
 
     @Override
     public void onClick(DrawerItem drawerItem) {
-        ((MainActivity)getActivity()).changeFragment(drawerItem);
     }
 }

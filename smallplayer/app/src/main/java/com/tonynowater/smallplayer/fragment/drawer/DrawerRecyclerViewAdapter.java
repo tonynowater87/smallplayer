@@ -9,9 +9,9 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 import java.util.List;
 
 /**
+ * 側邊選單Adapter
  * Created by tonynowater on 2017/8/23.
  */
-
 public class DrawerRecyclerViewAdapter extends BasePlayableFragmentAdapter<DrawerItem, LayoutDrawerAdapterListItemBinding> {
 
     public DrawerRecyclerViewAdapter(List<DrawerItem> mDataList, OnClickSomething<DrawerItem> mOnClickSongListener) {
