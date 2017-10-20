@@ -22,9 +22,13 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
 
     public interface OnMainFunctionViewPagerFragmentCallback {
         void onPageSelected(int position);
-
         BaseViewPagerFragment[] getViewPagerItems();
     }
+
+    public static final int LOCAL_POSITION = 0;
+    public static final int U2B_VIDEO_POSITION = 1;
+    public static final int U2B_LIST_POSITION = 2;
+    public static final int U2B_USERLIST_POSITION = 3;
 
     private OnMainFunctionViewPagerFragmentCallback mOnMainFunctionViewPagerFragmentCallback;
 

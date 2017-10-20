@@ -26,6 +26,7 @@ import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
+import com.tonynowater.smallplayer.fragment.u2bsearch.MainFunctionViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
@@ -51,17 +52,17 @@ public class SearchViewComponent {
 
     private SearchRecentSuggestions mSearchRecentSuggestions;
     private SearchView mSearchView;
-    private CustomSearchAdapter simpleCursorAdapter;
+    private CustomSearchAdapter mSimpleCursorAdapter;
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
     private Activity mActivity;
     private OnSearchViewComponentCallback mOnSearchViewComponentCallback;
-    private List<String> suggestions;
+    private List<String> mSuggestions;
 
     public SearchViewComponent(Activity activity, Menu menu, BaseViewPagerFragment[] baseViewPagerFragments, ComponentName componentName, OnSearchViewComponentCallback onSearchViewComponentCallback) {
         mActivity = activity;
         mBaseViewPagerFragments = baseViewPagerFragments;
         mOnSearchViewComponentCallback = onSearchViewComponentCallback;
-        final SearchManager searchManager = (SearchManager) mActivity.getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) mActivity.getSystemService(Context.SEARCH_SERVICE);
         mSearchRecentSuggestions = new SearchRecentSuggestions(mActivity, GoogleSearchSuggestionProvider.AUTHORITY, GoogleSearchSuggestionProvider.MODE);
         mSearchView =  (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
@@ -93,9 +94,9 @@ public class SearchViewComponent {
                                 @Override
                                 public void run() {
                                     Log.d(TAG, "suggesion response: " + sResponse);
-                                    suggestions = U2BApiUtil.getSuggestionStringList(sResponse);
-                                    if (MiscellaneousUtil.isListOK(suggestions)) {
-                                        initialSearchViewSuggestAdapter(suggestions, false);
+                                    mSuggestions = U2BApiUtil.getSuggestionStringList(sResponse);
+                                    if (MiscellaneousUtil.isListOK(mSuggestions)) {
+                                        initialSearchViewSuggestAdapter(mSuggestions, false);
                                     }
                                 }
                             });
@@ -103,8 +104,8 @@ public class SearchViewComponent {
                     }
                 });
             } else {
-                suggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
-                initialSearchViewSuggestAdapter(suggestions, true);//改顯示歷史搜尋紀錄
+                mSuggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
+                initialSearchViewSuggestAdapter(mSuggestions, true);//改顯示歷史搜尋紀錄
             }
         } else if (mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()] instanceof SongListViewPagerFragment) {
             mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()].queryBySearchView(newText);
@@ -129,13 +130,14 @@ public class SearchViewComponent {
 
         Uri uri = uriBuilder.build();
 
-        Cursor cursor = mActivity.getApplicationContext().getContentResolver().query(uri, null, null, selArgs, null);
-
         List<String> listRecentSearch = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            listRecentSearch.add(cursor.getString(SearchRecentSuggestions.QUERIES_PROJECTION_DISPLAY1_INDEX));
+        Cursor cursor = mActivity.getApplicationContext().getContentResolver().query(uri, null, null, selArgs, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                listRecentSearch.add(cursor.getString(SearchRecentSuggestions.QUERIES_PROJECTION_DISPLAY1_INDEX));
+            }
+            cursor.close();
         }
-
         return listRecentSearch;
     }
 
@@ -151,14 +153,17 @@ public class SearchViewComponent {
             matrixCursor.addRow(new Object[] {i, suggestionStringList.get(i)});
         }
 
-        simpleCursorAdapter = new CustomSearchAdapter(mActivity, matrixCursor, true);
-
-        mSearchView.setSuggestionsAdapter(simpleCursorAdapter);
+        if (mSearchView.getSuggestionsAdapter() == null) {
+            mSimpleCursorAdapter = new CustomSearchAdapter(mActivity, matrixCursor, true);
+            mSearchView.setSuggestionsAdapter(mSimpleCursorAdapter);
+        } else {
+            mSearchView.getSuggestionsAdapter().changeCursor(matrixCursor);
+        }
     }
 
     public boolean onSuggestionClick(int position) {
-        if (MiscellaneousUtil.isListOK(suggestions)) {
-            if (TextUtils.equals(mActivity.getString(R.string.search_bar_hint), suggestions.get(position))) {
+        if (MiscellaneousUtil.isListOK(mSuggestions)) {
+            if (TextUtils.equals(mActivity.getString(R.string.search_bar_hint), mSuggestions.get(position))) {
                 //若是點擊最近搜尋列，清空搜尋記錄
                 DialogUtil.showYesNoDialog(mActivity, mActivity.getString(R.string.search_bar_clear_history_confirm_dialog_title),new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -174,8 +179,8 @@ public class SearchViewComponent {
                     }
                 });
             } else {
-                mSearchRecentSuggestions.saveRecentQuery(suggestions.get(position), null);//儲存最近搜尋紀錄
-                mSearchView.setQuery(suggestions.get(position), true);
+                mSearchRecentSuggestions.saveRecentQuery(mSuggestions.get(position), null);//儲存最近搜尋紀錄
+                mSearchView.setQuery(mSuggestions.get(position), true);
             }
         }
         return true;
@@ -187,11 +192,16 @@ public class SearchViewComponent {
      */
     public void onNewIntent(Intent intent) {
         if (TextUtils.equals(intent.getAction(), Intent.ACTION_SEARCH)) {
+            if (mOnSearchViewComponentCallback.getCurrentPagerPosition() == MainFunctionViewPagerFragment.LOCAL_POSITION
+                || mOnSearchViewComponentCallback.getCurrentPagerPosition() == MainFunctionViewPagerFragment.U2B_USERLIST_POSITION) {
+                return;
+            }
+
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.d(TAG, "onNewIntent: " + query);
+            mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()].queryBySearchView(query);
             mSearchRecentSuggestions.saveRecentQuery(query, null);
             mSearchView.clearFocus();//防搜尋完鍵盤會彈起來
-            mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()].queryBySearchView(query);
         }
     }
 }

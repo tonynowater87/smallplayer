@@ -39,10 +39,6 @@ import java.util.List;
 // TODO: 2017/5/23 目前無法查YoutubleChannel
 public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int LOCAL_POSITION = 0;
-    private static final int U2B_VIDEO_POSITION = 1;
-    private static final int U2B_LIST_POSITION = 2;
-    private static final int U2B_USERLIST_POSITION = 3;
     public static final int FLAG_PAGE_MAIN_FUNCTION = 0;
     public static final int FLAG_PAGE_SETTING = 1;
     //===== Fields =====
@@ -300,7 +296,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                     Log.d(TAG, "onPageSelected: " + position);
                     mCurrentViewPagerPosition = position;
                     mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
-                    if (position == U2B_LIST_POSITION || position == U2B_USERLIST_POSITION) {
+                    if (position == MainFunctionViewPagerFragment.U2B_LIST_POSITION || position == MainFunctionViewPagerFragment.U2B_USERLIST_POSITION) {
                         mBinding.fab.setVisibility(View.GONE);
                     } else {
                         mBinding.fab.setVisibility(View.VISIBLE);
