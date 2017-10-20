@@ -4,13 +4,13 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorFifth"
         android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_drawerlayout_left"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/colorFifth"/>
 
     </LinearLayout>
 

@@ -3,8 +3,10 @@ package com.tonynowater.smallplayer.fragment.drawer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.base.BaseFragment;
 import com.tonynowater.smallplayer.databinding.LayoutDrawerFragmentLeftBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
@@ -41,16 +43,16 @@ public class DrawerFragment extends BaseFragment<LayoutDrawerFragmentLeftBinding
 
     private List<DrawerItem> generateDrawerItems() {
         List<DrawerItem> itemList = new ArrayList<>();
-//        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_popular_music)));
+        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_popular_music)));
 //        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_search_music)));
 //        itemList.add(new DrawerItem(android.R.drawable.ic_menu_month, getString(R.string.drawer_item_local_music)));
-//        itemList.add(new DrawerItem(android.R.drawable.ic_menu_set_as, getString(R.string.drawer_item_setting)));
+        itemList.add(new DrawerItem(android.R.drawable.ic_menu_set_as, getString(R.string.drawer_item_setting)));
 //        itemList.add(new DrawerItem(android.R.drawable.ic_menu_upload_you_tube, getString(R.string.login_and_import_youtube_playlists)));
         return itemList;
     }
 
     @Override
     public void onClick(DrawerItem drawerItem) {
-
+        ((MainActivity)getActivity()).changeFragment(drawerItem);
     }
 }
