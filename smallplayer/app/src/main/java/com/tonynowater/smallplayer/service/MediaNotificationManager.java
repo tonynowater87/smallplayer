@@ -405,7 +405,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         Intent[] intents = new Intent[2];
 
         Intent intentMainActivity = new Intent(mPlayMusicService, MainActivity.class);
-        intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intentMainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intents[0] = intentMainActivity;
 
         Intent intentFullScreenActivity = new Intent(mPlayMusicService, FullScreenPlayerActivity.class);
