@@ -148,6 +148,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu: ");
         getMenuInflater().inflate(R.menu.menu_main, menu);
         mSearchViewComponent = new SearchViewComponent(this, menu, mBaseViewPagerFragments, getComponentName(), mOnSearchViewComponentCallback);
         mSearchViewComponent.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -191,8 +192,12 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        Log.d(TAG, "onNewIntent:");
         setIntent(intent);//一定要先setIntent才能收到
-        mSearchViewComponent.onNewIntent(intent);
+        if (mSearchViewComponent != null) {
+            // FIXME: 2017/10/21 因為OnNewIntent有可能會比OnCreateOptionMenu早執行，先暫時這樣處理防NPE
+            mSearchViewComponent.onNewIntent(intent);
+        } 
     }
 
     @Override
