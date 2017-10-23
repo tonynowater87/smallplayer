@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -37,7 +38,7 @@ import com.tonynowater.smallplayer.view.SearchViewComponent;
 import java.util.List;
 
 // TODO: 2017/5/23 目前無法查YoutubleChannel
-public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> {
+public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> implements MainFunctionViewPagerFragment.OnMainFunctionViewPagerFragmentInterface {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final int FLAG_PAGE_MAIN_FUNCTION = 0;
     public static final int FLAG_PAGE_SETTING = 1;
@@ -117,11 +118,6 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         });
         mPermissionUtil.checkPermissiion(PermissionGrantedUtil.REQUEST_PERMISSIONS);//獲取權限
         initialFab();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         changeFragment(m_iFlag);
     }
 
@@ -295,31 +291,33 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     private void initialViewPager() {
         if (getSupportFragmentManager().findFragmentByTag(MainFunctionViewPagerFragment.class.getSimpleName()) == null) {
             MainFunctionViewPagerFragment mainFunctionViewPagerFragment = new MainFunctionViewPagerFragment();
-            mainFunctionViewPagerFragment.setCallback(new MainFunctionViewPagerFragment.OnMainFunctionViewPagerFragmentCallback() {
-                @Override
-                public void onPageSelected(int position) {
-                    Log.d(TAG, "onPageSelected: " + position);
-                    mCurrentViewPagerPosition = position;
-                    mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
-                    if (position == MainFunctionViewPagerFragment.U2B_LIST_POSITION || position == MainFunctionViewPagerFragment.U2B_USERLIST_POSITION) {
-                        mBinding.fab.setVisibility(View.GONE);
-                    } else {
-                        mBinding.fab.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                @Override
-                public BaseViewPagerFragment[] getViewPagerItems() {
-                    return mBaseViewPagerFragments;
-                }
-            });
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.activity_main_content, mainFunctionViewPagerFragment, MainFunctionViewPagerFragment.class.getSimpleName())
                     .commit();
-            getSupportFragmentManager().executePendingTransactions();
-            mBinding.toolbar.tabLayoutMainActivity.setupWithViewPager(mainFunctionViewPagerFragment.getViewPager());
         }
         mBinding.toolbar.tabLayoutMainActivity.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        Log.d(TAG, "onPageSelected: " + position);
+        mCurrentViewPagerPosition = position;
+        mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
+        if (position == MainFunctionViewPagerFragment.U2B_LIST_POSITION || position == MainFunctionViewPagerFragment.U2B_USERLIST_POSITION) {
+            mBinding.fab.setVisibility(View.GONE);
+        } else {
+            mBinding.fab.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public BaseViewPagerFragment[] getViewPagerItems() {
+        return mBaseViewPagerFragments;
+    }
+
+    @Override
+    public TabLayout getTabLayout() {
+        return mBinding.toolbar.tabLayoutMainActivity;
     }
 }
