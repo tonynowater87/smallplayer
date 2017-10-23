@@ -13,7 +13,7 @@ public class ParserMp3Helper {
 //    public static final int INDEX_OF_END_DOWNLOADURL = 37;
     public static final int INDEX_OF_END_DOWNLOADURL = 51;
 
-    public static void parserMp3UrlFromHtml(String xml, PlayListSongEntity playListSongEntity, U2BApi.OnU2BApiCallback callback) {
+    public static void parserMp3UrlFromHtml(String xml, PlayListSongEntity playListSongEntity, U2BApi.OnMsgRequestCallback callback) {
         int index = xml.indexOf(DOWNLOADURL);
         if (index != -1) {
             String getUrl = xml.substring(index, index + DOWNLOADURL.length() + INDEX_OF_END_DOWNLOADURL);

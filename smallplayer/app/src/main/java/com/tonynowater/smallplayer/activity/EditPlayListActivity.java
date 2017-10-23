@@ -108,7 +108,7 @@ public class EditPlayListActivity extends BaseMediaControlActivity<ActivityEditP
                                 return;
                             }
                             showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
-                            U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnU2BApiCallback() {
+                            U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
                                 @Override
                                 public void onSuccess(String response) {
                                     Log.d(TAG, "onSuccess: " + response);

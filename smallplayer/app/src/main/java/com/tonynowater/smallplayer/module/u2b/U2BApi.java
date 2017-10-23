@@ -45,6 +45,11 @@ public class U2BApi {
         void onFailure(String errorMsg);
     }
 
+    public interface OnMsgRequestCallback {
+        void onSuccess(String response);
+        void onFailure(String errorMsg);
+    }
+
     private U2BApi() {
         mOkHttp = new OkHttpClient();
         mOkHttp.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
@@ -140,7 +145,7 @@ public class U2BApi {
      * @param playable
      * @param callback
      */
-    public void downloadMP3FromU2B(Playable playable, final OnU2BApiCallback callback) {
+    public void downloadMP3FromU2B(Playable playable, final OnMsgRequestCallback callback) {
         final PlayListSongEntity playListSongEntity = playable.getPlayListSongEntity();
         if (TextUtils.equals(MetaDataCustomKeyDefine.ISNOTLOCAL,playListSongEntity.getIsLocal())) {
             sendHttpRequest(String.format(U2BApiDefine.DOWNLOAD_MP3_URL, playListSongEntity.getSource()), new Callback() {
@@ -211,7 +216,7 @@ public class U2BApi {
      * @param playListSongEntity
      * @param callback
      */
-    public void downloadMP3FromU2B(String url, final PlayListSongEntity playListSongEntity, final OnU2BApiCallback callback) {
+    public void downloadMP3FromU2B(String url, final PlayListSongEntity playListSongEntity, final OnMsgRequestCallback callback) {
         url = String.format(U2BApiDefine.DOWNLOAD_MP3_API_URL, url);
         sendHttpRequest(url, new Callback() {
             @Override
