@@ -26,20 +26,20 @@ public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapte
     }
 
     @Override
-    protected void onBindItem(BaseViewHolder holder, int position) {
-        holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
-        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescriptionForList());
-        holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
-        U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
+    protected void onBindItem(LayoutU2bSearchPlaylistAdapterListitemBinding binding, U2BPlayListDTO.ItemsBean item, int position) {
+        binding.tvSongArtistSonglistadapter.setText(item.getSnippet().getTitle());
+        binding.tvSongTitleSonglistadapter.setText(item.getSnippet().getDescriptionForList());
+        binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
+        U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = item.getSnippet().getThumbnails();
         String sUrl = null;
         if (thumbnailsBean != null) {
             //防呆，因為thumbnailsBean有可能為空
             sUrl = thumbnailsBean.getDefaultX().getUrl();
         }
         if (!TextUtils.isEmpty(sUrl)) {
-            Glide.with(mContext).load(sUrl).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(sUrl).into(binding.ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
         }
     }
 

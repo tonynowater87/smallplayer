@@ -34,10 +34,10 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     }
 
     @Override
-    protected void onBindItem(BaseViewHolder holder, int position) {
-        holder.getBinding().tvPlaylistName.setText(mDataList.get(position).getPlayListName());
-        holder.getBinding().tvPlaylistCreateDate.setText(String.format(mContext.getString(R.string.playlist_create_date), mDataList.get(position).getCreateDate()));
-        holder.getBinding().tvPlaylistSongCount.setText(String.valueOf(mSongCountArray[position]));
+    protected void onBindItem(LayoutShowPlayListAdapterBinding binding, PlayListEntity item, int position) {
+        binding.tvPlaylistName.setText(item.getPlayListName());
+        binding.tvPlaylistCreateDate.setText(String.format(mContext.getString(R.string.playlist_create_date), item.getCreateDate()));
+        binding.tvPlaylistSongCount.setText(String.valueOf(mSongCountArray[position]));
     }
 
     @Override

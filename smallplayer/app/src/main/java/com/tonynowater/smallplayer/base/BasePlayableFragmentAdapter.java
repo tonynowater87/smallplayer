@@ -20,6 +20,7 @@ import java.util.List;
  * RecyclerViewAdapter的基底類別
  * Created by tonynowater on 2017/5/20.
  */
+// TODO: 2017/10/23 DataBinding還可以用得更簡化
 public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> extends RecyclerView.Adapter<BasePlayableFragmentAdapter.BaseViewHolder>{
 
     protected static final int NORMAL_VIEWTYPE = 1;
@@ -46,13 +47,13 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     @Override
     public BasePlayableFragmentAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        View view;
+        ViewDataBinding viewDataBinding;
         final BaseViewHolder baseViewHolder;
         switch (viewType) {
             case NORMAL_VIEWTYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(getNormalLayoutId(), parent, false);
-                baseViewHolder = new BaseViewHolder(view);
-                view.setOnClickListener(new View.OnClickListener() {
+                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getNormalLayoutId(), parent, false);
+                baseViewHolder = new BaseViewHolder(viewDataBinding.getRoot());
+                viewDataBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         int position = baseViewHolder.getAdapterPosition();
@@ -63,14 +64,14 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
                 });
                 return baseViewHolder;
             case FOOTER_VIEWTYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(getFooterLayoutId(), parent, false);
+                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getFooterLayoutId(), parent, false);
                 if (!mFootviewIsVisible) {
-                    view.setVisibility(View.GONE);
+                    viewDataBinding.getRoot().setVisibility(View.GONE);
                 }
-                baseViewHolder = new BaseViewHolder(view);
+                baseViewHolder = new BaseViewHolder(viewDataBinding.getRoot());
                 return baseViewHolder;
             default:
-                throw new RuntimeException("wrong view type");
+                throw new RuntimeException("wrong viewDataBinding type");
         }
     }
 
@@ -85,12 +86,13 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     @Override
     public void onBindViewHolder(BasePlayableFragmentAdapter.BaseViewHolder holder, int position) {
         if (getItemViewType(position) == NORMAL_VIEWTYPE) {
-            onBindItem(holder, position);
+            T binding = DataBindingUtil.getBinding(holder.itemView);
+            onBindItem(binding, mDataList.get(position), position);
         }
     }
 
     /** 設定ListItem的UI */
-    protected abstract void onBindItem(BaseViewHolder holder, int position);
+    protected abstract void onBindItem(T binding, K item, int position);
 
     @Override
     public int getItemCount() {
@@ -140,14 +142,8 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     }
 
     public class BaseViewHolder extends RecyclerView.ViewHolder {
-        private T mBinding;
         public BaseViewHolder(View itemView) {
             super(itemView);
-            mBinding = DataBindingUtil.bind(itemView);
-        }
-
-        public T getBinding() {
-            return mBinding;
         }
     }
 }

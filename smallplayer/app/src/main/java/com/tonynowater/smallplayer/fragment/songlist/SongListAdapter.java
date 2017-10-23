@@ -38,16 +38,17 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
     }
 
     @Override
-    protected void onBindItem(BaseViewHolder holder, int position) {
-        holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getmArtist());
-        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getmTitle());
-        holder.getBinding().tvDurationSonglistadapter.setText(mDataList.get(position).getFormatDuration());
-        holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
-        if (!TextUtils.isEmpty(mDataList.get(position).getmAlbumObj().getmAlbumArt())) {
-            Glide.with(mContext).load(Uri.fromFile(new File(mDataList.get(position).getmAlbumObj().getmAlbumArt()))).into(holder.getBinding().ivSonglistadapter);
+    protected void onBindItem(LayoutSonglistadapterListitemBinding binding, Song item, int position) {
+        binding.tvSongArtistSonglistadapter.setText(item.getmArtist());
+        binding.tvSongTitleSonglistadapter.setText(item.getmTitle());
+        binding.tvDurationSonglistadapter.setText(item.getFormatDuration());
+        binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
+        if (!TextUtils.isEmpty(item.getmAlbumObj().getmAlbumArt())) {
+            Glide.with(mContext).load(Uri.fromFile(new File(item.getmAlbumObj().getmAlbumArt()))).into(binding.ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
         }
+
     }
 
     @Override

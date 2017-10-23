@@ -42,34 +42,34 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
     }
 
     @Override
-    protected void onBindItem(BaseViewHolder holder, int position) {
-        Bundle extras = mDataList.get(position).getDescription().getExtras();
-        holder.getBinding().tvSongTitleSonglistadapter.setText(extras.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
-        holder.getBinding().tvSongArtistSonglistadapter.setText(extras.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
-        holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration((int) extras.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
+    protected void onBindItem(LayoutCurrentPlayListAdapterBinding binding, MediaBrowserCompat.MediaItem item, int position) {
+        Bundle extras = item.getDescription().getExtras();
+        binding.tvSongTitleSonglistadapter.setText(extras.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        binding.tvSongArtistSonglistadapter.setText(extras.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        binding.tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration((int) extras.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
         if (!TextUtils.isEmpty(extras.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))) {
-            Glide.with(mContext).load(extras.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(extras.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)).into(binding.ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
         }
 
         if (MetaDataCustomKeyDefine.isLocal(extras.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL))) {
-            holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
+            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
         } else {
-            holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
+            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
         }
 
         if (mPlayPosition == position) {//目前播放的位置
-            holder.getBinding().ivAnimation.setVisibility(View.VISIBLE);
-            holder.getBinding().ivAnimation.setImageDrawable(getDrawableByState(mContext, position));
-            holder.getBinding().tvSongArtistSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
-            holder.getBinding().tvSongTitleSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
-            holder.getBinding().tvDurationSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
+            binding.ivAnimation.setVisibility(View.VISIBLE);
+            binding.ivAnimation.setImageDrawable(getDrawableByState(mContext, position));
+            binding.tvSongArtistSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
+            binding.tvSongTitleSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
+            binding.tvDurationSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
         } else {
-            holder.getBinding().ivAnimation.setVisibility(View.GONE);
-            holder.getBinding().tvSongArtistSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
-            holder.getBinding().tvSongTitleSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
-            holder.getBinding().tvDurationSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
+            binding.ivAnimation.setVisibility(View.GONE);
+            binding.tvSongArtistSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
+            binding.tvSongTitleSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
+            binding.tvDurationSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.default_textview_color));
         }
     }
 

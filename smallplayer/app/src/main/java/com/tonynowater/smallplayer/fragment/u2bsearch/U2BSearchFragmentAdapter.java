@@ -27,20 +27,20 @@ public class U2BSearchFragmentAdapter extends BasePlayableFragmentAdapter<U2BVid
     }
 
     @Override
-    protected void onBindItem(BaseViewHolder holder, int position) {
-        holder.getBinding().tvSongArtistSonglistadapter.setText(mDataList.get(position).getSnippet().getTitle());
-        holder.getBinding().tvSongTitleSonglistadapter.setText(mDataList.get(position).getSnippet().getDescription());
-        holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration((int) mDataList.get(position).getVideoDuration()));
-        holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
-        U2BVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = mDataList.get(position).getSnippet().getThumbnails();
+    protected void onBindItem(LayoutSonglistadapterListitemBinding binding, U2BVideoDTO.ItemsBean item, int position) {
+        binding.tvSongArtistSonglistadapter.setText(item.getSnippet().getTitle());
+        binding.tvSongTitleSonglistadapter.setText(item.getSnippet().getDescription());
+        binding.tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration((int) item.getVideoDuration()));
+        binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
+        U2BVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = item.getSnippet().getThumbnails();
         String sUrl = null;
         if (thumbnailsBean != null) {
             sUrl = thumbnailsBean.getDefaultX().getUrl();
         }
         if (!TextUtils.isEmpty(sUrl)) {
-            Glide.with(mContext).load(sUrl).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(sUrl).into(binding.ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
         }
     }
 

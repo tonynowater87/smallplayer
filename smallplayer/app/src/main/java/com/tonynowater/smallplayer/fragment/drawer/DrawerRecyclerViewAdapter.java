@@ -24,9 +24,9 @@ public class DrawerRecyclerViewAdapter extends BasePlayableFragmentAdapter<Drawe
     }
 
     @Override
-    protected void onBindItem(BaseViewHolder holder, int position) {
-        holder.getBinding().setVariable(BR.drawer_item, mDataList.get(position));
-        holder.getBinding().executePendingBindings();
+    protected void onBindItem(LayoutDrawerAdapterListItemBinding binding, DrawerItem item, int position) {
+        binding.setVariable(BR.drawer_item, mDataList.get(position));
+        binding.executePendingBindings();
     }
 
     @Override

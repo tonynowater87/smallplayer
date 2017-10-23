@@ -41,20 +41,19 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
     }
 
     @Override
-    protected void onBindItem(BaseViewHolder holder, int position) {
-        PlayListSongEntity playListSongEntity = mDataList.get(position);
-        holder.getBinding().tvSongTitleSonglistadapter.setText(playListSongEntity.getTitle());
-        holder.getBinding().tvSongArtistSonglistadapter.setText(playListSongEntity.getArtist());
-        holder.getBinding().tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration(playListSongEntity.getDuration()));
-        if (!TextUtils.isEmpty(playListSongEntity.getAlbumArtUri())) {
-            Glide.with(mContext).load(playListSongEntity.getAlbumArtUri()).into(holder.getBinding().ivSonglistadapter);
+    protected void onBindItem(LayoutShowPlayListSongAdapterBinding binding, PlayListSongEntity item, int position) {
+        binding.tvSongTitleSonglistadapter.setText(item.getTitle());
+        binding.tvSongArtistSonglistadapter.setText(item.getArtist());
+        binding.tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration(item.getDuration()));
+        if (!TextUtils.isEmpty(item.getAlbumArtUri())) {
+            Glide.with(mContext).load(item.getAlbumArtUri()).into(binding.ivSonglistadapter);
         } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(holder.getBinding().ivSonglistadapter);
+            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
         }
-        if (MetaDataCustomKeyDefine.isLocal(playListSongEntity.getIsLocal())) {
-            holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
+        if (MetaDataCustomKeyDefine.isLocal(item.getIsLocal())) {
+            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
         } else {
-            holder.getBinding().ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
+            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
         }
     }
 
