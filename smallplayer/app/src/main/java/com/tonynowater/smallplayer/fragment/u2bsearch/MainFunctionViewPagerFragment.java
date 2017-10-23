@@ -2,6 +2,7 @@ package com.tonynowater.smallplayer.fragment.u2bsearch;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -14,8 +15,16 @@ import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseFragment;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutMainFunctionViewPagerFragmentBinding;
+import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
+import com.tonynowater.smallplayer.module.u2b.Playable;
+import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
+import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
+
+import java.util.List;
 
 /**
  * Created by tonynowater on 2017/10/14.
@@ -23,9 +32,10 @@ import com.tonynowater.smallplayer.databinding.LayoutMainFunctionViewPagerFragme
 
 public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFunctionViewPagerFragmentBinding> {
 
+    private static final String TAG = MainFunctionViewPagerFragment.class.getSimpleName();
+
     public interface OnMainFunctionViewPagerFragmentInterface {
         void onPageSelected(int position);
-        BaseViewPagerFragment[] getViewPagerItems();
         TabLayout getTabLayout();
     }
 
@@ -34,6 +44,9 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
     public static final int U2B_LIST_POSITION = 2;
     public static final int U2B_USERLIST_POSITION = 3;
 
+    private int mCurrentViewPagerPosition = 0;
+    private BaseViewPagerFragment[] mBaseViewPagerFragments;
+    private PermissionGrantedUtil mPermissionUtil;
     private OnMainFunctionViewPagerFragmentInterface mOnMainFunctionViewPagerFragmentInterface;
 
     @Override
@@ -45,7 +58,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnMainFunctionViewPagerFragmentInterface) {
-            Log.d("TAG", "onAttach: ");
+            Log.d(TAG, "onAttach: ");
             mOnMainFunctionViewPagerFragmentInterface = (OnMainFunctionViewPagerFragmentInterface) context;
         }
     }
@@ -53,19 +66,46 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mPermissionUtil = new PermissionGrantedUtil(this, new PermissionGrantedUtil.CallBack() {
+
+            @Override
+            public void onPermissionGranted() {
+                Log.d(TAG, "onPermissionGranted: ");
+                mBaseViewPagerFragments = new BaseViewPagerFragment[]{SongListViewPagerFragment.newInstance()
+                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
+                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
+                        , U2BUserListViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_user_playlist))};
+                initialView();
+            }
+
+            @Override
+            public void onPermissionNotGranted() {
+                Log.d(TAG, "onPermissionNotGranted: ");
+                showToast(getString(R.string.no_permission_warning_msg));
+                mBaseViewPagerFragments = new BaseViewPagerFragment[]{U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
+                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
+                        , U2BUserListViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_user_playlist))};
+                initialView();
+            }
+        });
+        mPermissionUtil.checkPermissiion(PermissionGrantedUtil.REQUEST_PERMISSIONS);//獲取權限
+    }
+
+    private void initialView() {
         mBinding.viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {}
 
             @Override
-            public void onPageSelected(int i) {
-                mOnMainFunctionViewPagerFragmentInterface.onPageSelected(i);
+            public void onPageSelected(int position) {
+                mCurrentViewPagerPosition = position;
+                mOnMainFunctionViewPagerFragmentInterface.onPageSelected(position);
             }
 
             @Override
             public void onPageScrollStateChanged(int i) {}
         });
-        mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getFragmentManager(), mOnMainFunctionViewPagerFragmentInterface.getViewPagerItems()));
+        mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getFragmentManager(), mBaseViewPagerFragments));
         mOnMainFunctionViewPagerFragmentInterface.getTabLayout().setupWithViewPager(mBinding.viewpager);
     }
 
@@ -100,5 +140,24 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
         public CharSequence getPageTitle(int position) {
             return mBaseViewPagerFragments[position].getPageTitle();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mPermissionUtil.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public void onClickFab() {
+        List<Playable> playableList = mBaseViewPagerFragments[mCurrentViewPagerPosition].getPlayableList();
+        if (MiscellaneousUtil.isListOK(playableList)) {
+            DialogUtil.showAddPlayableListDialog((BaseMediaControlActivity) getActivity(), playableList, mBaseViewPagerFragments[mCurrentViewPagerPosition].getPlayableListName());
+        } else {
+            showToast(getString(R.string.add_playablelist_song_failed_toast_msg));
+        }
+    }
+
+    public BaseViewPagerFragment getBaseViewPagerFragment() {
+        return mBaseViewPagerFragments[mCurrentViewPagerPosition];
     }
 }

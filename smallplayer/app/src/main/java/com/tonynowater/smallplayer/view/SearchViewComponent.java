@@ -26,7 +26,6 @@ import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
-import com.tonynowater.smallplayer.fragment.u2bsearch.MainFunctionViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
@@ -44,7 +43,7 @@ import java.util.List;
 public class SearchViewComponent {
 
     public interface OnSearchViewComponentCallback {
-        int getCurrentPagerPosition();
+        BaseViewPagerFragment getCurrentBaseViewPagerFragment();
     }
 
     public static final String TAG = SearchViewComponent.class.getSimpleName();
@@ -53,32 +52,35 @@ public class SearchViewComponent {
     private SearchRecentSuggestions mSearchRecentSuggestions;
     private SearchView mSearchView;
     private CustomSearchAdapter mSimpleCursorAdapter;
-    private BaseViewPagerFragment[] mBaseViewPagerFragments;
     private Activity mActivity;
     private OnSearchViewComponentCallback mOnSearchViewComponentCallback;
     private List<String> mSuggestions;
 
-    public SearchViewComponent(Activity activity, Menu menu, BaseViewPagerFragment[] baseViewPagerFragments, ComponentName componentName, OnSearchViewComponentCallback onSearchViewComponentCallback) {
+    public SearchViewComponent(Activity activity, Menu menu, ComponentName componentName) {
         mActivity = activity;
-        mBaseViewPagerFragments = baseViewPagerFragments;
-        mOnSearchViewComponentCallback = onSearchViewComponentCallback;
+
+        if (mActivity instanceof OnSearchViewComponentCallback) {
+            mOnSearchViewComponentCallback = (OnSearchViewComponentCallback) activity;
+        }
+
         SearchManager searchManager = (SearchManager) mActivity.getSystemService(Context.SEARCH_SERVICE);
         mSearchRecentSuggestions = new SearchRecentSuggestions(mActivity, GoogleSearchSuggestionProvider.AUTHORITY, GoogleSearchSuggestionProvider.MODE);
-        mSearchView =  (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
     }
 
-    public void setOnQueryTextListener (SearchView.OnQueryTextListener onQueryTextListener) {
+    public void setOnQueryTextListener(SearchView.OnQueryTextListener onQueryTextListener) {
         mSearchView.setOnQueryTextListener(onQueryTextListener);
     }
 
-    public void setOnSuggestionListener (SearchView.OnSuggestionListener onSuggestionListener) {
+    public void setOnSuggestionListener(SearchView.OnSuggestionListener onSuggestionListener) {
         mSearchView.setOnSuggestionListener(onSuggestionListener);
     }
 
     public boolean onQueryTextChange(String newText) {
         Log.d(TAG, "onQueryTextChange: " + newText);
-        if (mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()] instanceof U2BSearchViewPagerFragment) {
+        BaseViewPagerFragment baseViewPagerFragment = mOnSearchViewComponentCallback.getCurrentBaseViewPagerFragment();
+        if (baseViewPagerFragment instanceof U2BSearchViewPagerFragment) {
             if (!TextUtils.isEmpty(newText.trim())) {
                 U2BApi.newInstance().queryU2BSUGGESTION(newText, new Callback() {
                     @Override
@@ -107,14 +109,16 @@ public class SearchViewComponent {
                 mSuggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);
                 initialSearchViewSuggestAdapter(mSuggestions, true);//改顯示歷史搜尋紀錄
             }
-        } else if (mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()] instanceof SongListViewPagerFragment) {
-            mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()].queryBySearchView(newText);
+        } else if (baseViewPagerFragment instanceof SongListViewPagerFragment) {
+            baseViewPagerFragment.queryBySearchView(newText);
         }
 
         return false;
     }
 
-    /** 取得SearchView的最近搜尋紀錄 */
+    /**
+     * 取得SearchView的最近搜尋紀錄
+     */
     private List<String> getRecentSearchList(int limit) {
         Uri.Builder uriBuilder = new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_CONTENT)
@@ -122,7 +126,7 @@ public class SearchViewComponent {
 
         uriBuilder.appendPath(SearchManager.SUGGEST_URI_PATH_QUERY);
 
-        String[] selArgs = new String[] { null };
+        String[] selArgs = new String[]{null};
 
         if (limit > 0) {
             uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT, String.valueOf(limit));
@@ -142,7 +146,7 @@ public class SearchViewComponent {
     }
 
     private void initialSearchViewSuggestAdapter(List<String> suggestionStringList, boolean bAddFirstRow) {
-        String [] columns = new String[] {BaseColumns._ID, CustomSearchAdapter.COLUMN_SUGGESTION};
+        String[] columns = new String[]{BaseColumns._ID, CustomSearchAdapter.COLUMN_SUGGESTION};
         MatrixCursor matrixCursor = new MatrixCursor(columns);
 
         if (suggestionStringList.size() > 0 && bAddFirstRow) {
@@ -150,7 +154,7 @@ public class SearchViewComponent {
         }
 
         for (int i = 0; i < suggestionStringList.size(); i++) {
-            matrixCursor.addRow(new Object[] {i, suggestionStringList.get(i)});
+            matrixCursor.addRow(new Object[]{i, suggestionStringList.get(i)});
         }
 
         if (mSearchView.getSuggestionsAdapter() == null) {
@@ -165,7 +169,7 @@ public class SearchViewComponent {
         if (MiscellaneousUtil.isListOK(mSuggestions)) {
             if (TextUtils.equals(mActivity.getString(R.string.search_bar_hint), mSuggestions.get(position))) {
                 //若是點擊最近搜尋列，清空搜尋記錄
-                DialogUtil.showYesNoDialog(mActivity, mActivity.getString(R.string.search_bar_clear_history_confirm_dialog_title),new MaterialDialog.SingleButtonCallback() {
+                DialogUtil.showYesNoDialog(mActivity, mActivity.getString(R.string.search_bar_clear_history_confirm_dialog_title), new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
                         switch (dialogAction) {
@@ -192,16 +196,18 @@ public class SearchViewComponent {
      */
     public void onNewIntent(Intent intent) {
         if (TextUtils.equals(intent.getAction(), Intent.ACTION_SEARCH)) {
-            if (mOnSearchViewComponentCallback.getCurrentPagerPosition() == MainFunctionViewPagerFragment.LOCAL_POSITION
-                || mOnSearchViewComponentCallback.getCurrentPagerPosition() == MainFunctionViewPagerFragment.U2B_USERLIST_POSITION) {
+
+            BaseViewPagerFragment baseViewPagerFragment = mOnSearchViewComponentCallback.getCurrentBaseViewPagerFragment();
+            if (baseViewPagerFragment instanceof SongListViewPagerFragment)
                 return;
-            }
 
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.d(TAG, "onNewIntent: " + query);
-            mBaseViewPagerFragments[mOnSearchViewComponentCallback.getCurrentPagerPosition()].queryBySearchView(query);
+            baseViewPagerFragment.queryBySearchView(query);
             mSearchRecentSuggestions.saveRecentQuery(query, null);
             mSearchView.clearFocus();//防搜尋完鍵盤會彈起來
         }
     }
 }
+
+

@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/5/1.
  */
+// TODO: 2017/10/23 搜尋完不會自動捲到最上面
 public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
 

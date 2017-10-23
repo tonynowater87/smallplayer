@@ -1,11 +1,12 @@
 package com.tonynowater.smallplayer.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -20,11 +21,20 @@ public class PermissionGrantedUtil {
     public static final String[] REQUEST_PERMISSIONS = new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
     public static final int PERMISTTION_REQUEST_CODE = 100;
 
-    private AppCompatActivity activity;
+    private Context context;
+    private Activity activity;
+    private Fragment fragment;
     private CallBack callBack;
 
-    public PermissionGrantedUtil(AppCompatActivity activity, CallBack callBack) {
+    public PermissionGrantedUtil(Activity activity, CallBack callBack) {
         this.activity = activity;
+        this.context = activity.getApplicationContext();
+        this.callBack = callBack;
+    }
+
+    public PermissionGrantedUtil(Fragment fragment, CallBack callBack) {
+        this.fragment = fragment;
+        this.context = fragment.getContext();
         this.callBack = callBack;
     }
 
@@ -35,14 +45,18 @@ public class PermissionGrantedUtil {
             ArrayList<String> permissions = new ArrayList<>();
 
             for (int i = 0; i < requestPermission.length; i++) {
-                if (ContextCompat.checkSelfPermission(activity, requestPermission[i]) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(context, requestPermission[i]) != PackageManager.PERMISSION_GRANTED) {
                     permissions.add(requestPermission[i]);
                 }
             }
 
             Log.d(TAG, "checkPermissiion: " + permissions.size());
             if (permissions.size() > 0) {
-                activity.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISTTION_REQUEST_CODE);
+                if (activity != null) {
+                    activity.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISTTION_REQUEST_CODE);
+                } else {
+                    fragment.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISTTION_REQUEST_CODE);
+                }
             } else {
                 callBack.onPermissionGranted();
             }

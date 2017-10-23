@@ -2,7 +2,6 @@ package com.tonynowater.smallplayer.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -19,47 +18,34 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
-import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
-import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.MainFunctionViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
-import com.tonynowater.smallplayer.fragment.u2bsearch.U2BUserListViewPagerFragment;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
-import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
-import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 import com.tonynowater.smallplayer.view.SearchViewComponent;
 
 import java.util.List;
 
 // TODO: 2017/5/23 目前無法查YoutubleChannel
-public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> implements MainFunctionViewPagerFragment.OnMainFunctionViewPagerFragmentInterface {
+public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> implements MainFunctionViewPagerFragment.OnMainFunctionViewPagerFragmentInterface
+, SearchViewComponent.OnSearchViewComponentCallback {
+
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final int FLAG_PAGE_MAIN_FUNCTION = 0;
     public static final int FLAG_PAGE_SETTING = 1;
     //===== Fields =====
     private int m_iFlag = FLAG_PAGE_MAIN_FUNCTION;
-    private BaseViewPagerFragment[] mBaseViewPagerFragments;
-    private int mCurrentViewPagerPosition = 0;
-    private PermissionGrantedUtil mPermissionUtil;
     //===== Fields =====
 
     //===== Views =====
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private SearchViewComponent mSearchViewComponent;
     //===== Views =====
-
-    private SearchViewComponent.OnSearchViewComponentCallback mOnSearchViewComponentCallback = new SearchViewComponent.OnSearchViewComponentCallback() {
-        @Override
-        public int getCurrentPagerPosition() {
-            return mCurrentViewPagerPosition;
-        }
-    };
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -97,34 +83,8 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerlayout, mBinding.toolbar.toolbarMainActivity, R.string.app_name, R.string.app_name);
         mActionBarDrawerToggle.syncState();
-        mPermissionUtil = new PermissionGrantedUtil(this, new PermissionGrantedUtil.CallBack() {
-
-            @Override
-            public void onPermissionGranted() {
-                Log.d(TAG, "onPermissionGranted: ");
-                mBaseViewPagerFragments = new BaseViewPagerFragment[]{SongListViewPagerFragment.newInstance()
-                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
-                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
-                        , U2BUserListViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_user_playlist))};
-            }
-
-            @Override
-            public void onPermissionNotGranted() {
-                Log.d(TAG, "onPermissionNotGranted: ");
-                showToast(getString(R.string.no_permission_warning_msg));
-                mBaseViewPagerFragments = new BaseViewPagerFragment[]{U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
-                        , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)};
-            }
-        });
-        mPermissionUtil.checkPermissiion(PermissionGrantedUtil.REQUEST_PERMISSIONS);//獲取權限
         initialFab();
         changeFragment(m_iFlag);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mPermissionUtil.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     /** 點擊飄浮按鈕 */
@@ -132,11 +92,13 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         mBinding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<Playable> playableList = mBaseViewPagerFragments[mCurrentViewPagerPosition].getPlayableList();
-                if (MiscellaneousUtil.isListOK(playableList)) {
-                    DialogUtil.showAddPlayableListDialog(MainActivity.this, playableList, mBaseViewPagerFragments[mCurrentViewPagerPosition].getPlayableListName());
-                } else {
-                    showToast(getString(R.string.add_playablelist_song_failed_toast_msg));
+
+                switch (m_iFlag) {
+                    case FLAG_PAGE_MAIN_FUNCTION:
+                        ((MainFunctionViewPagerFragment) getSupportFragmentManager()
+                                .findFragmentByTag(MainFunctionViewPagerFragment.class.getSimpleName()))
+                                .onClickFab();
+                        break;
                 }
             }
         });
@@ -146,7 +108,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "onCreateOptionsMenu: ");
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        mSearchViewComponent = new SearchViewComponent(this, menu, mBaseViewPagerFragments, getComponentName(), mOnSearchViewComponentCallback);
+        mSearchViewComponent = new SearchViewComponent(this, menu, getComponentName());
         mSearchViewComponent.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -302,7 +264,6 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     @Override
     public void onPageSelected(int position) {
         Log.d(TAG, "onPageSelected: " + position);
-        mCurrentViewPagerPosition = position;
         mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
         if (position == MainFunctionViewPagerFragment.U2B_LIST_POSITION || position == MainFunctionViewPagerFragment.U2B_USERLIST_POSITION) {
             mBinding.fab.setVisibility(View.GONE);
@@ -312,12 +273,18 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     }
 
     @Override
-    public BaseViewPagerFragment[] getViewPagerItems() {
-        return mBaseViewPagerFragments;
+    public TabLayout getTabLayout() {
+        return mBinding.toolbar.tabLayoutMainActivity;
     }
 
     @Override
-    public TabLayout getTabLayout() {
-        return mBinding.toolbar.tabLayoutMainActivity;
+    public BaseViewPagerFragment getCurrentBaseViewPagerFragment() {
+        switch (m_iFlag) {
+            case FLAG_PAGE_MAIN_FUNCTION:
+                return ((MainFunctionViewPagerFragment) getSupportFragmentManager()
+                        .findFragmentByTag(MainFunctionViewPagerFragment.class.getSimpleName()))
+                        .getBaseViewPagerFragment();
+        }
+        return null;
     }
 }
