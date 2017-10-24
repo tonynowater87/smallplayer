@@ -16,12 +16,14 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
-import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
+import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
+import com.tonynowater.smallplayer.module.u2b.util.IOnU2BQuery;
+import com.tonynowater.smallplayer.module.u2b.util.U2BPlayListQueryArray;
 import com.tonynowater.smallplayer.util.DateUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
@@ -34,12 +36,12 @@ import java.util.List;
  * Created by tonynowater on 2017/5/1.
  */
 // TODO: 2017/10/23 搜尋完不會自動捲到最上面
-public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> {
+public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements IOnU2BQuery {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
 
     private U2BVideoDTO mU2BVideoDTO;
-    private U2BPlayListDTO mU2BPlayListDTO;
     private U2bPlayListVideoDTO mU2bPlayListVideoDTO;
+    private U2BPlayListQueryArray<U2BUserPlayListEntity> u2BPlayListQueryArray;
 
     private Callback mViedoSearchCallback = new Callback() {
         @Override
@@ -54,13 +56,9 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             if (response.isSuccessful()) {
                 String sResponse = response.body().string();
                 Log.d(TAG, "onResponse body: " + sResponse);
-
                 switch (mEnumU2BSearchType) {
                     case VIDEO:
                         initialVideoList(sResponse);
-                        break;
-                    case PLAYLIST:
-                        initialPlayListDTO(sResponse);
                         break;
                     case PLAYLISTVIDEO:
                         initialPlayListVideoList(sResponse);
@@ -71,26 +69,6 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             } else {
                 showFailToast();
             }
-        }
-
-        private void initialPlayListDTO(String sResponse) {
-            if (mU2BPlayListDTO == null) {
-                mU2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
-            } else {
-                U2BPlayListDTO u2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
-                mU2BPlayListDTO.nextPageToken = u2BPlayListDTO.nextPageToken;
-                mU2BPlayListDTO.items.addAll(mU2BPlayListDTO.items.size(), u2BPlayListDTO.items);
-            }
-
-            mSongListAdapter.setDataSource(mU2BPlayListDTO.items);
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mSongListAdapter.notifyDataSetChanged();
-                    isLoad = false;
-                    mBinding.lottieAnimationView.setVisibility(View.GONE);
-                }
-            });
         }
 
         private void initialPlayListVideoList(String sResponse) {
@@ -236,8 +214,12 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     break;
                 case PLAYLIST:
                     Log.d(TAG, "queryBySearchView: search playlist" );
-                    mU2BPlayListDTO = null;
-                    U2BApi.newInstance().queryU2BPlayList(query, mViedoSearchCallback);
+                    if (u2BPlayListQueryArray == null) {
+                        u2BPlayListQueryArray = new U2BPlayListQueryArray<>(this);
+                    } else {
+                        u2BPlayListQueryArray.clear();
+                    }
+                    u2BPlayListQueryArray.query(query);
                     break;
                 case PLAYLISTVIDEO:
                     Log.d(TAG, "queryBySearchView: search playlistvideo" );
@@ -258,7 +240,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     @Override
     public List<? extends Playable> getPlayableList() {
 
-        if (mU2BPlayListDTO != null) {
+        if (u2BPlayListQueryArray != null) {
             //搜尋清單物件不可轉換成Playable
             Log.w(TAG, "搜尋清單物件不可轉換成Playable");
             return null;
@@ -330,12 +312,12 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                 }
                                 break;
                             case PLAYLIST:
-                                if (TextUtils.isEmpty(mU2BPlayListDTO.nextPageToken)) {
+                                if (TextUtils.isEmpty(u2BPlayListQueryArray.getNextPageToken())) {
                                     Log.d(TAG, "onScrollStateChanged: token null");
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
-                                    U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BPlayListDTO.nextPageToken, mViedoSearchCallback);
+                                    u2BPlayListQueryArray.queryNextPage();
                                     isLoad = true;
                                 }
                                 break;
@@ -363,5 +345,23 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+    }
+
+    @Override
+    public void onQuerySuccess() {
+        mSongListAdapter.setDataSource(u2BPlayListQueryArray);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSongListAdapter.notifyDataSetChanged();
+                isLoad = false;
+                mBinding.lottieAnimationView.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public void onQueryFail(String errMsg) {
+        showFailToast();
     }
 }

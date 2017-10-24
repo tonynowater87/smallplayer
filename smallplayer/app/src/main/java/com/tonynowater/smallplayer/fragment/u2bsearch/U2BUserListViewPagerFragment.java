@@ -16,7 +16,7 @@ import com.tonynowater.smallplayer.databinding.LayoutU2bUserPlaylistFragmentBind
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.util.IOnU2BQuery;
-import com.tonynowater.smallplayer.module.u2b.util.U2BQueryArrayList;
+import com.tonynowater.smallplayer.module.u2b.util.U2BUserListQueryArrayList;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SPManager;
 import com.tonynowater.smallplayer.util.google.GoogleLoginUtil;
@@ -27,7 +27,7 @@ import java.util.List;
  * 使用者Youtube播放清單畫面
  * Created by tonynowater on 2017/10/3.
  */
-
+// TODO: 2017/10/24 下滑更新
 public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2bUserPlaylistFragmentBinding> implements IOnU2BQuery {
 
     private static final String TAG = U2BUserListViewPagerFragment.class.getSimpleName();
@@ -35,7 +35,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     private GoogleLoginUtil mGoogleLoginUtil;
     private int lastCompletelyVisibleItemPosition;
     private boolean isLoad = false;
-    private U2BQueryArrayList<U2BUserPlayListEntity> mAlU2BQuery;
+    private U2BUserListQueryArrayList<U2BUserPlayListEntity> mAlU2BQuery;
     private BasePlayableFragmentAdapter mSongListAdapter;
 
     @Override
@@ -84,7 +84,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
             mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, new GoogleLoginUtil.OnGoogleLoginCallBack() {
                 @Override
                 public void onGoogleLoginSuccess(String authToken) {
-                    mAlU2BQuery = new U2BQueryArrayList(authToken, U2BUserListViewPagerFragment.this);
+                    mAlU2BQuery = new U2BUserListQueryArrayList(authToken, U2BUserListViewPagerFragment.this);
                     SPManager.getInstance(getContext()).setAccessToken(authToken);
                     queryYoutubeUserPlaylist();
                 }

@@ -8,11 +8,19 @@ import java.util.ArrayList;
 
 public abstract class BaseQueryArrayList extends ArrayList {
 
+    protected String mNextPageToken = null;
+    protected String mKeyword = null;
+
     public BaseQueryArrayList(IOnU2BQuery callback) {
         super();
         this.callback = callback;
     }
 
     protected IOnU2BQuery callback;
+
     public abstract void query();
+
+    public String getNextPageToken() {
+        return mNextPageToken;
+    }
 }

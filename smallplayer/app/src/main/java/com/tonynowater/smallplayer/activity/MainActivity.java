@@ -21,7 +21,6 @@ import com.tonynowater.smallplayer.databinding.ActivityMainBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.MainFunctionViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.dto.Song;
-import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
@@ -221,13 +220,6 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                     }
                 }
             });
-        } else if (object instanceof U2BPlayListDTO.ItemsBean) {
-            invalidateOptionsMenu();//為了關閉SearchView
-            U2BPlayListDTO.ItemsBean u2bVideoItem = ((U2BPlayListDTO.ItemsBean) object);
-            Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.id.playlistId);
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.snippet.title);
-            startActivity(intent);
         } else if (object instanceof U2BUserPlayListEntity) {
             invalidateOptionsMenu();//為了關閉SearchView
             U2BUserPlayListEntity u2bVideoItem = ((U2BUserPlayListEntity) object);

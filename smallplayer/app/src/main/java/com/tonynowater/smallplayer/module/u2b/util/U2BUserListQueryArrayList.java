@@ -8,12 +8,11 @@ import java.util.List;
  * Created by tonynowater on 2017/10/23.
  */
 
-public class U2BQueryArrayList<U2BUserPlayListEntity> extends BaseQueryArrayList {
+public class U2BUserListQueryArrayList<U2BUserPlayListEntity> extends BaseQueryArrayList {
 
-    private String mNextPageToken;
     private String mUserToken;
 
-    public U2BQueryArrayList(String mUserToken, IOnU2BQuery callback) {
+    public U2BUserListQueryArrayList(String mUserToken, IOnU2BQuery callback) {
         super(callback);
         this.mUserToken = mUserToken;
         mNextPageToken = "";

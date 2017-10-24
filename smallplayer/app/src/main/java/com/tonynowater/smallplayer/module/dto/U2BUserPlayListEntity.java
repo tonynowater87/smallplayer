@@ -18,6 +18,22 @@ public class U2BUserPlayListEntity {
         setArtUrl(processThumbnails(itemsBean.getSnippet().getThumbnails()));
     }
 
+    public U2BUserPlayListEntity(U2BPlayListDTO.ItemsBean itemsBean) {
+        setPlaylistId(itemsBean.id.playlistId);
+        setTitle(itemsBean.snippet.title);
+        setDescription(itemsBean.snippet.description);
+        setChannelTitle(itemsBean.snippet.channelTitle);
+        setArtUrl(processThumbnails(itemsBean.snippet.thumbnails));
+    }
+
+    private String processThumbnails(U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnails) {
+        String sUrl = null;
+        if (thumbnails != null && thumbnails.high != null) {
+            sUrl = thumbnails.high.url;
+        }
+        return sUrl;
+    }
+
     private String processThumbnails(U2BUserPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnails) {
         String sUrl = null;
         if (thumbnails != null && thumbnails.getHigh() != null) {
