@@ -8,65 +8,17 @@ import java.util.List;
  * Created by tonynowtaer on 2017/8/27.
  */
 public class U2BUserPlayListDTO {
-
-//    {
-//        "kind": "youtube#playlistListResponse",
-//            "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/rCVPoPj-rXm4YlW_al8-yS2tsAk\"",
-//            "pageInfo": {
-//        "totalResults": 13,
-//                "resultsPerPage": 25
-//    },
-//        "items": [
-//        {
-//            "kind": "youtube#playlist",
-//                "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/sZpPxYajHWhxjXJ3ho-Qll87Gag\"",
-//                "id": "PLnGsZNJO89LJhcUR9Ly66PI3X7Zh-Rqcq",
-//                "snippet": {
-//            "publishedAt": "2017-05-07T08:58:43.000Z",
-//                    "channelId": "UCWXPvBBrvOZi2KZ-9YBEagA",
-//                    "title": "英文歌單",
-//                    "description": "",
-//                    "thumbnails": {
-//                "default": {
-//                    "url": "https://i.ytimg.com/vi/7Qp5vcuMIlk/default.jpg",
-//                            "width": 120,
-//                            "height": 90
-//                },
-//                "medium": {
-//                    "url": "https://i.ytimg.com/vi/7Qp5vcuMIlk/mqdefault.jpg",
-//                            "width": 320,
-//                            "height": 180
-//                },
-//                "high": {
-//                    "url": "https://i.ytimg.com/vi/7Qp5vcuMIlk/hqdefault.jpg",
-//                            "width": 480,
-//                            "height": 360
-//                },
-//                "standard": {
-//                    "url": "https://i.ytimg.com/vi/7Qp5vcuMIlk/sddefault.jpg",
-//                            "width": 640,
-//                            "height": 480
-//                }
-//            },
-//            "channelTitle": "liao tony",
-//                    "localized": {
-//                "title": "英文歌單",
-//                        "description": ""
-//            }
-//        }
-//        }
-//    ]
-//    }
-
     /**
      * kind : youtube#playlistListResponse
      * etag : "m2yskBQFythfE4irbTIeOgYYfBU/rCVPoPj-rXm4YlW_al8-yS2tsAk"
+     * nextPageToken : CBkQAA
      * pageInfo : {"totalResults":13,"resultsPerPage":25}
      * items : [{"kind":"youtube#playlist","etag":"\"m2yskBQFythfE4irbTIeOgYYfBU/sZpPxYajHWhxjXJ3ho-Qll87Gag\"","id":"PLnGsZNJO89LJhcUR9Ly66PI3X7Zh-Rqcq","snippet":{"publishedAt":"2017-05-07T08:58:43.000Z","channelId":"UCWXPvBBrvOZi2KZ-9YBEagA","title":"英文歌單","description":"","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/7Qp5vcuMIlk/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/7Qp5vcuMIlk/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/7Qp5vcuMIlk/hqdefault.jpg","width":480,"height":360},"standard":{"url":"https://i.ytimg.com/vi/7Qp5vcuMIlk/sddefault.jpg","width":640,"height":480}},"channelTitle":"liao tony","localized":{"title":"英文歌單","description":""}}}]
      */
 
     private String kind;
     private String etag;
+    private String nextPageToken;
     private PageInfoBean pageInfo;
     private List<ItemsBean> items;
 
@@ -84,6 +36,14 @@ public class U2BUserPlayListDTO {
 
     public void setEtag(String etag) {
         this.etag = etag;
+    }
+
+    public String getNextPageToken() {
+        return nextPageToken;
+    }
+
+    public void setNextPageToken(String nextPageToken) {
+        this.nextPageToken = nextPageToken;
     }
 
     public PageInfoBean getPageInfo() {

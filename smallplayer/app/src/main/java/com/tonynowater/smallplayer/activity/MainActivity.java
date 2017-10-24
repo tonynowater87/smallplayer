@@ -22,7 +22,7 @@ import com.tonynowater.smallplayer.fragment.u2bsearch.MainFunctionViewPagerFragm
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
-import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
+import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -225,15 +225,15 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             invalidateOptionsMenu();//為了關閉SearchView
             U2BPlayListDTO.ItemsBean u2bVideoItem = ((U2BPlayListDTO.ItemsBean) object);
             Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getId().getPlaylistId());
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.getSnippet().getTitle());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.id.playlistId);
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.snippet.title);
             startActivity(intent);
-        } else if (object instanceof U2BUserPlayListDTO.ItemsBean) {
+        } else if (object instanceof U2BUserPlayListEntity) {
             invalidateOptionsMenu();//為了關閉SearchView
-            U2BUserPlayListDTO.ItemsBean u2bVideoItem = ((U2BUserPlayListDTO.ItemsBean) object);
+            U2BUserPlayListEntity u2bVideoItem = ((U2BUserPlayListEntity) object);
             Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getId());
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.getSnippet().getTitle());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getPlaylistId());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.getTitle());
             startActivity(intent);
         }
     }

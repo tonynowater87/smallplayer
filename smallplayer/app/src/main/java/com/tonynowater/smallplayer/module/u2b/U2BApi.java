@@ -15,12 +15,12 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
-import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
-import com.tonynowater.smallplayer.module.dto.realm.entity.PlayUserU2BListEntity;
 import com.tonynowater.smallplayer.util.FileHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +42,11 @@ public class U2BApi {
 
     public interface OnU2BApiCallback {
         void onSuccess(String response);
+        void onFailure(String errorMsg);
+    }
+
+    public interface OnNewCallback<T> {
+        void onSuccess(List<T> response, String nextPageToken);
         void onFailure(String errorMsg);
     }
 
@@ -259,7 +264,7 @@ public class U2BApi {
      * @param token
      * @param callback
      */
-    public void queryUserPlaylist (String token, final OnU2BApiCallback callback) {
+    public void queryUserPlaylist (String token, final OnNewCallback<U2BUserPlayListEntity> callback) {
         Headers headers = new Headers.Builder().set("Authorization", "Bearer " + token).build();
         sendHttpRequest(U2BApiDefine.U2B_USER_PLAYLIST_QUERY_URL, headers, new Callback() {
             @Override
@@ -273,20 +278,13 @@ public class U2BApi {
                 if (response.isSuccessful()) {
                     String res = response.body().string();
                     Log.d(TAG, "onResponse: " + res);
-                    final RealmUtils realmUtils = new RealmUtils();
-                    realmUtils.deleteAllUserU2BplayerList();
                     Gson gson = new Gson();
                     U2BUserPlayListDTO userPlayListDTO = gson.fromJson(res, U2BUserPlayListDTO.class);
-                    List<U2BUserPlayListDTO.ItemsBean> list = userPlayListDTO.getItems();
-                    PlayUserU2BListEntity entity;
-                    for (int i = 0; i < list.size(); i++) {
-                        entity = new PlayUserU2BListEntity();
-                        entity.setTitle(list.get(i).getSnippet().getTitle());
-                        entity.setListId(list.get(i).getId());
-                        realmUtils.saveUserYoutubePlayList(entity);
+                    List<U2BUserPlayListEntity> listEntities = new ArrayList<>();
+                    for (int i = 0; i < userPlayListDTO.getItems().size(); i++) {
+                        listEntities.add(new U2BUserPlayListEntity(userPlayListDTO.getItems().get(i)));
                     }
-                    realmUtils.close();
-                    callback.onSuccess(res);
+                    callback.onSuccess(listEntities, userPlayListDTO.getNextPageToken());
                 } else {
                     Log.e(TAG, "onFailure:" + response.message());
                     callback.onFailure(MyApplication.getContext().getString(R.string.query_user_playlist_error));

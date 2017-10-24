@@ -78,11 +78,11 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 mU2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
             } else {
                 U2BPlayListDTO u2BPlayListDTO = new Gson().fromJson(sResponse, U2BPlayListDTO.class);
-                mU2BPlayListDTO.setNextPageToken(u2BPlayListDTO.getNextPageToken());
-                mU2BPlayListDTO.getItems().addAll(mU2BPlayListDTO.getItems().size(), u2BPlayListDTO.getItems());
+                mU2BPlayListDTO.nextPageToken = u2BPlayListDTO.nextPageToken;
+                mU2BPlayListDTO.items.addAll(mU2BPlayListDTO.items.size(), u2BPlayListDTO.items);
             }
 
-            mSongListAdapter.setDataSource(mU2BPlayListDTO.getItems());
+            mSongListAdapter.setDataSource(mU2BPlayListDTO.items);
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -330,12 +330,12 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                 }
                                 break;
                             case PLAYLIST:
-                                if (TextUtils.isEmpty(mU2BPlayListDTO.getNextPageToken())) {
+                                if (TextUtils.isEmpty(mU2BPlayListDTO.nextPageToken)) {
                                     Log.d(TAG, "onScrollStateChanged: token null");
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
-                                    U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BPlayListDTO.getNextPageToken(), mViedoSearchCallback);
+                                    U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BPlayListDTO.nextPageToken, mViedoSearchCallback);
                                     isLoad = true;
                                 }
                                 break;

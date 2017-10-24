@@ -27,14 +27,14 @@ public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapte
 
     @Override
     protected void onBindItem(LayoutU2bSearchPlaylistAdapterListitemBinding binding, U2BPlayListDTO.ItemsBean item, int position) {
-        binding.tvSongArtistSonglistadapter.setText(item.getSnippet().getTitle());
-        binding.tvSongTitleSonglistadapter.setText(item.getSnippet().getDescriptionForList());
+        binding.tvSongArtistSonglistadapter.setText(item.snippet.title);
+        binding.tvSongTitleSonglistadapter.setText(item.snippet.description);
         binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
-        U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = item.getSnippet().getThumbnails();
+        U2BPlayListDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnailsBean = item.snippet.thumbnails;
         String sUrl = null;
         if (thumbnailsBean != null) {
             //防呆，因為thumbnailsBean有可能為空
-            sUrl = thumbnailsBean.getDefaultX().getUrl();
+            sUrl = thumbnailsBean.defaultX.url;
         }
         if (!TextUtils.isEmpty(sUrl)) {
             Glide.with(mContext).load(sUrl).into(binding.ivSonglistadapter);
