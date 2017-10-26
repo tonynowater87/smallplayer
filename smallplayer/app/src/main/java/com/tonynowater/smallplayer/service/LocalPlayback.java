@@ -298,12 +298,14 @@ public class LocalPlayback implements Playback
             //播放Youtube音樂
             mYoutubeExtratorAsyncTask = new YoutubeExtratorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtratorUtil.CallBack() {
                 @Override
-                public void getU2BUrl(String url) {
-                    if (TextUtils.isEmpty(url)) {
-                        mPlaybackCallback.onError(mPlayMusicService.getString(R.string.extract_youtube_error));
-                        return;
-                    }
+                public void onSuccess(String url) {
                     play(trackPosition, url, mediaMetadataCompat);
+                }
+
+                @Override
+                public void onFailed() {
+                    //歌曲有問題就跳下一首
+                    mPlaybackCallback.onCompletion();
                 }
             });
 
@@ -323,7 +325,9 @@ public class LocalPlayback implements Playback
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "play error: " + e.toString() );// TODO: 2017/5/24 錯誤事件需要接到畫面處理
+            Log.e(TAG, "play error: " + e.toString() );
+            //歌曲有問題就跳下一首
+            mPlaybackCallback.onCompletion();
         }
     }
 

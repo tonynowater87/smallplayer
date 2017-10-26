@@ -15,6 +15,11 @@ public class YoutubeExtratorUtil extends YouTubeExtractor{
 
     private static final String TAG = YouTubeExtractor.class.getSimpleName();
 
+    public interface CallBack {
+        void onSuccess(String url);
+        void onFailed();
+    }
+
     private CallBack callBack;
 
     public YoutubeExtratorUtil(Context context, CallBack callBack) {
@@ -29,18 +34,13 @@ public class YoutubeExtratorUtil extends YouTubeExtractor{
                 itag = ytFiles.keyAt(i);
                 YtFile ytFile = ytFiles.get(itag);// ytFile represents one file with its url and meta data
                 if (ytFile.getMeta().getHeight() == -1 || ytFile.getMeta().getHeight() >= 360) {// Just add videos in a decent format => height -1 = audio
-                    callBack.getU2BUrl(ytFile.getUrl());
+                    callBack.onSuccess(ytFile.getUrl());
                     break;
                 }
             }
         } else {
-
             Log.e(TAG, "onExtractionComplete: Get StreamUrl failed");
-            callBack.getU2BUrl("");
+            callBack.onFailed();
         }
-    }
-
-    public interface CallBack {
-        void getU2BUrl(String url);
     }
 }
