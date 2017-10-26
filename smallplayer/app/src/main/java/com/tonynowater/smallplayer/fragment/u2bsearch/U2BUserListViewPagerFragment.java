@@ -16,6 +16,7 @@ import com.tonynowater.smallplayer.databinding.LayoutU2bUserPlaylistFragmentBind
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.util.IOnU2BQuery;
+import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
 import com.tonynowater.smallplayer.module.u2b.util.U2BUserListQueryArrayList;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SPManager;
@@ -84,7 +85,8 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
             mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, new GoogleLoginUtil.OnGoogleLoginCallBack() {
                 @Override
                 public void onGoogleLoginSuccess(String authToken) {
-                    mAlU2BQuery = new U2BUserListQueryArrayList(authToken, U2BUserListViewPagerFragment.this);
+                    U2BQueryParamsItem u2BQueryParamsItem = new U2BQueryParamsItem(EnumU2BSearchType.USER_LIST, "", true);
+                    mAlU2BQuery = new U2BUserListQueryArrayList(u2BQueryParamsItem, U2BUserListViewPagerFragment.this);
                     SPManager.getInstance(getContext()).setAccessToken(authToken);
                     queryYoutubeUserPlaylist();
                 }
@@ -110,16 +112,6 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: ");
         mGoogleLoginUtil.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void showFailToast() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                showToast(getString(R.string.u2b_query_failure));
-                mBinding.lottieAnimationView.setVisibility(View.GONE);
-            }
-        });
     }
 
     private void initialU2BSearchAdapter() {
@@ -168,19 +160,34 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onQuerySuccess() {
         mSongListAdapter.setDataSource(mAlU2BQuery);
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSongListAdapter.notifyDataSetChanged();
-                isLoad = false;
-                mBinding.lottieAnimationView.setVisibility(View.GONE);
-                mBinding.googleSignInButton.setVisibility(View.GONE);
-            }
-        });
+        if (isAdded()) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSongListAdapter.notifyDataSetChanged();
+                    isLoad = false;
+                    mBinding.lottieAnimationView.setVisibility(View.GONE);
+                    mBinding.googleSignInButton.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 
     @Override
     public void onQueryFail(String errMsg) {
-        showToast(errMsg);
+        if (!isDetached()) {
+            showFailToast();
+        }
     }
+
+    private void showFailToast() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showToast(getString(R.string.u2b_query_failure));
+                mBinding.lottieAnimationView.setVisibility(View.GONE);
+            }
+        });
+    }
+
 }

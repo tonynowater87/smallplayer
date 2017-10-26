@@ -10,20 +10,15 @@ import java.util.List;
 
 public class U2BUserListQueryArrayList<U2BUserPlayListEntity> extends BaseQueryArrayList {
 
-    private String mUserToken;
-
-    public U2BUserListQueryArrayList(String mUserToken, IOnU2BQuery callback) {
-        super(callback);
-        this.mUserToken = mUserToken;
-        mNextPageToken = "";
+    public U2BUserListQueryArrayList(U2BQueryParamsItem u2BQueryParamsItem, IOnU2BQuery callback) {
+        super(u2BQueryParamsItem, callback);
     }
 
-    @Override
     public void query() {
-        U2BApi.newInstance().queryUserPlaylist(mUserToken, new U2BApi.OnNewCallback<com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity>() {
+        U2BApi.newInstance().queryUserPlaylist(ueryParamsItem, new U2BApi.OnNewCallback<com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity>() {
             @Override
             public void onSuccess(List<com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity> response, String nextPageToken) {
-                mNextPageToken = nextPageToken;
+                ueryParamsItem.setNextPageToken(nextPageToken);
                 for (int i = 0; i < response.size(); i++) {
                     add(response.get(i));
                 }

@@ -8,19 +8,22 @@ import java.util.ArrayList;
 
 public abstract class BaseQueryArrayList extends ArrayList {
 
-    protected String mNextPageToken = null;
-    protected String mKeyword = null;
+    protected U2BQueryParamsItem ueryParamsItem;
+    protected IOnU2BQuery callback;
 
-    public BaseQueryArrayList(IOnU2BQuery callback) {
+    public BaseQueryArrayList(U2BQueryParamsItem u2BQueryParamsItem, IOnU2BQuery callback) {
         super();
+        this.ueryParamsItem = u2BQueryParamsItem;
         this.callback = callback;
     }
 
-    protected IOnU2BQuery callback;
-
-    public abstract void query();
+    public void setKeyword(String keyword) {
+        ueryParamsItem.setKeyword(keyword);
+    }
 
     public String getNextPageToken() {
-        return mNextPageToken;
+        return ueryParamsItem.getNextPageToken();
     }
+
+    public abstract void query();
 }

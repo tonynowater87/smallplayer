@@ -225,10 +225,12 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             });
         } else if (object instanceof U2BUserPlayListEntity) {
             invalidateOptionsMenu();//為了關閉SearchView
-            U2BUserPlayListEntity u2bVideoItem = ((U2BUserPlayListEntity) object);
+            U2BUserPlayListEntity playListEntity = ((U2BUserPlayListEntity) object);
             Intent intent = new Intent(MainActivity.this, PlayListActivity.class);
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, u2bVideoItem.getPlaylistId());
-            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, u2bVideoItem.getTitle());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, playListEntity.getPlaylistId());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID, playListEntity.getPlaylistId());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE, playListEntity.getTitle());
+            intent.putExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_IS_NEED_AUTH_TOKEN, playListEntity.isNeedAuthToken());
             startActivity(intent);
         }
     }

@@ -19,10 +19,10 @@ import com.tonynowater.smallplayer.module.u2b.util.BaseQueryArrayList;
 import com.tonynowater.smallplayer.module.u2b.util.IOnU2BQuery;
 import com.tonynowater.smallplayer.module.u2b.util.U2BPlayListQueryArray;
 import com.tonynowater.smallplayer.module.u2b.util.U2BPlayListVideoQueryArray;
+import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
 import com.tonynowater.smallplayer.module.u2b.util.U2BVideoQUeryArray;
 import com.tonynowater.smallplayer.util.DateUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
-import com.tonynowater.smallplayer.util.SPManager;
 
 import java.util.List;
 
@@ -40,6 +40,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     private BasePlayableFragmentAdapter mSongListAdapter;
     private EnumU2BSearchType mEnumU2BSearchType;
     private int lastCompletelyVisibleItemPosition;
+    private boolean mIsNeedAuthToken = false;
     private boolean isLoad = false;
     private String mQuery;
 
@@ -59,12 +60,16 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
      * @param playListTitle
      * @return
      */
-    public static U2BSearchViewPagerFragment newInstance(EnumU2BSearchType u2BSearchType, String playListVideoId, String playListTitle) {
+    public static U2BSearchViewPagerFragment newInstance(EnumU2BSearchType u2BSearchType
+            , String playListVideoId
+            , String playListTitle
+            , Boolean isNeedAuthToken) {
         U2BSearchViewPagerFragment fragment = new U2BSearchViewPagerFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(BUNDLE_KEY_SEARCH_TYPE, u2BSearchType);
         bundle.putString(BUNDLE_KEY_PLAYLISTID, playListVideoId);
         bundle.putString(BUNDLE_KEY_PLAYLIST_TITLE, playListTitle);
+        bundle.putBoolean(BUNDLE_KEY_IS_NEED_AUTH_TOKEN, isNeedAuthToken);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -83,33 +88,37 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     public void queryBySearchView(String query) {
         if (!TextUtils.isEmpty(query)) {
             mQuery = query;
+            U2BQueryParamsItem queryParamsItem = new U2BQueryParamsItem(mEnumU2BSearchType, query, mIsNeedAuthToken);
             switch (mEnumU2BSearchType) {
                 case VIDEO:
                     Log.d(TAG, "queryBySearchView: search video" );
                     if (u2BVideoQUeryArray == null) {
-                        u2BVideoQUeryArray = new U2BVideoQUeryArray<>(this);
+                        u2BVideoQUeryArray = new U2BVideoQUeryArray<>(queryParamsItem, this);
                     } else {
+                        u2BVideoQUeryArray.setKeyword(query);
                         u2BVideoQUeryArray.clear();
                     }
-                    u2BVideoQUeryArray.query(query);
+                    u2BVideoQUeryArray.query();
                     break;
                 case PLAYLIST:
                     Log.d(TAG, "queryBySearchView: search playlist" );
                     if (u2BPlayListQueryArray == null) {
-                        u2BPlayListQueryArray = new U2BPlayListQueryArray<>(this);
+                        u2BPlayListQueryArray = new U2BPlayListQueryArray<>(queryParamsItem, this);
                     } else {
+                        u2BVideoQUeryArray.setKeyword(query);
                         u2BPlayListQueryArray.clear();
                     }
-                    u2BPlayListQueryArray.query(query);
+                    u2BPlayListQueryArray.query();
                     break;
                 case PLAYLISTVIDEO:
                     Log.d(TAG, "queryBySearchView: search playlistvideo" );
                     if (u2BPlayListVideoQueryArray == null) {
-                        u2BPlayListVideoQueryArray = new U2BPlayListVideoQueryArray<>(this);
+                        u2BPlayListVideoQueryArray = new U2BPlayListVideoQueryArray<>(queryParamsItem, this);
                     } else {
+                        u2BVideoQUeryArray.setKeyword(query);
                         u2BPlayListVideoQueryArray.clear();
                     }
-                    u2BPlayListVideoQueryArray.query(query, SPManager.getInstance(getContext()).getAccessToken());
+                    u2BPlayListVideoQueryArray.query();
                     break;
             }
 
@@ -148,6 +157,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         mEnumU2BSearchType = (EnumU2BSearchType) getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE);
         initialU2BSearchAdapter();
         if (mEnumU2BSearchType == EnumU2BSearchType.PLAYLISTVIDEO) {
+            mIsNeedAuthToken = getArguments().getBoolean(BUNDLE_KEY_IS_NEED_AUTH_TOKEN);
             queryBySearchView(getArguments().getString(BUNDLE_KEY_PLAYLISTID));
         }
     }
@@ -182,7 +192,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
-                                    u2BVideoQUeryArray.queryNextPage();
+                                    u2BVideoQUeryArray.query();
                                     isLoad = true;
                                 }
                                 break;
@@ -192,7 +202,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
-                                    u2BPlayListQueryArray.queryNextPage();
+                                    u2BPlayListQueryArray.query();
                                     isLoad = true;
                                 }
                                 break;
@@ -202,7 +212,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
-                                    u2BPlayListVideoQueryArray.queryNextPage();
+                                    u2BPlayListVideoQueryArray.query();
                                     isLoad = true;
                                 }
                                 break;

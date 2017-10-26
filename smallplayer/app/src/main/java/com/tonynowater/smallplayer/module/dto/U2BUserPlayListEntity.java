@@ -9,6 +9,7 @@ public class U2BUserPlayListEntity {
     private String description;
     private String channelTitle;
     private String artUrl;
+    private boolean isNeedAuthToken = false;
 
     public U2BUserPlayListEntity(U2BUserPlayListDTO.ItemsBean itemsBean) {
         setPlaylistId(itemsBean.getId());
@@ -80,5 +81,13 @@ public class U2BUserPlayListEntity {
 
     public void setPlaylistId(String playlistId) {
         this.playlistId = playlistId;
+    }
+
+    public boolean isNeedAuthToken() {
+        return isNeedAuthToken;
+    }
+
+    public void setNeedAuthToken(boolean needAuthToken) {
+        isNeedAuthToken = needAuthToken;
     }
 }

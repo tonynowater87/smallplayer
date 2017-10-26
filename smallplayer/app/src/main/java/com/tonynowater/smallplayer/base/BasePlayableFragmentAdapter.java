@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
-import com.tonynowater.smallplayer.module.u2b.U2BApi;
+import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.ArrayList;
@@ -126,7 +126,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
             return;
         }
         mDataList = new ArrayList<>(dataSource);
-        if (mDataList.size() < U2BApi.DEFAULT_QUERY_RESULT) {
+        if (mDataList.size() < U2BApiDefine.DEFAULT_QUERY_RESULT) {
             //資料小於查詢的最小筆數25筆，不要顯示FootView
             setFootviewVisible(false);
         }

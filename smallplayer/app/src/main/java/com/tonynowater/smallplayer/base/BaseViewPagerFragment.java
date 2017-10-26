@@ -16,6 +16,7 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends B
     public static final String BUNDLE_KEY_SEARCH_TYPE = "BUNDLE_KEY_SEARCH_TYPE";
     public static final String BUNDLE_KEY_PLAYLISTID = "BUNDLE_KEY_PLAYLISTID";
     public static final String BUNDLE_KEY_PLAYLIST_TITLE = "BUNDLE_KEY_PLAYLIST_TITLE";
+    public static final String BUNDLE_KEY_IS_NEED_AUTH_TOKEN = "BUNDLE_KEY_IS_NEED_AUTH_TOKEN";
 
     /** @return ViewPager的Tab標題文字 */
     public abstract CharSequence getPageTitle();

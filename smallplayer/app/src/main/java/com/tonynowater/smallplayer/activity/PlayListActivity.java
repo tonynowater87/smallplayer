@@ -73,7 +73,8 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
         setTitle(getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE));
         mU2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO
                 , getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID)
-                , getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE));
+                , getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE)
+                , getIntent().getBooleanExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_IS_NEED_AUTH_TOKEN, false));
         getSupportFragmentManager().beginTransaction().replace(R.id.content_playlist_video_activity, mU2BSearchViewPagerFragment).commit();
         initialFab();
     }
