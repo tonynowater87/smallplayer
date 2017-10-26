@@ -30,7 +30,6 @@ import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
-
 // FIXME: 2017/6/12 播到一半縮小會有通知失效的問題以及廣播未解註冊的錯誤
 // FIXME: 2017/6/12 疑似Service沒有Start過，所以畫面縮小就Destroy的關係
 //06-12 21:56:32.843 5702-5702/com.tonynowater.smallplayer D/PlayMusicService: updatePlaybackState: 3

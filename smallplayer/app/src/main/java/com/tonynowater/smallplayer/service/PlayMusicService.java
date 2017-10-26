@@ -297,7 +297,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             }
 
             mMusicProvider.minusSongPosition();
-            handlePlayRequest();
+            updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 
         @Override
@@ -477,7 +477,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private void skipToNext() {
         mMusicProvider.addSongPosition();
-        handlePlayRequest();
+        updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
     }
 
     private void handlePauseRequest() {
