@@ -53,6 +53,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         public void onCompletion() {
             Log.d(TAG, "onCompletion: ");
             skipToNext();
+            handlePlayRequest();
         }
 
         @Override
