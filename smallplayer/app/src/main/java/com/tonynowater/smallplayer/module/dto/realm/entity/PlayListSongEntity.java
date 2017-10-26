@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.module.dto.realm.entity;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 
 import io.realm.RealmObject;
@@ -34,6 +35,26 @@ public class PlayListSongEntity extends RealmObject implements Playable, EntityI
     private int duration;
 
     private String isLocal;
+
+    public PlayListSongEntity() {}
+
+    public PlayListSongEntity(U2BVideoDTO.ItemsBean itemsBean) {
+        setSource(itemsBean.getVideoId());
+        setArtist(itemsBean.getSnippet().getDescription());
+        setTitle(itemsBean.getSnippet().getTitle());
+        setDuration((int) itemsBean.getVideoDuration());
+        setAlbumArtUri(processThumbnails(itemsBean.getSnippet().getThumbnails()));
+        setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
+    }
+
+    private String processThumbnails(U2BVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnails) {
+        String sUrl = null;
+        if (thumbnails != null && thumbnails.getHigh() != null) {
+            sUrl = thumbnails.getHigh().getUrl();
+        }
+        return sUrl;
+    }
+
 
     @Override
     public int getId() {

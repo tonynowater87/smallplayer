@@ -5,12 +5,12 @@ import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import java.util.List;
 
 /**
- * Created by tonynowater on 2017/10/24.
+ * Created by tonynowater on 2017/10/26.
  */
 
-public class U2BPlayListQueryArray<U2BUserPlayListEntity> extends BaseQueryArrayList {
+public class U2BVideoQUeryArray<PlayListSongEntity> extends BaseQueryArrayList {
 
-    public U2BPlayListQueryArray(IOnU2BQuery callback) {
+    public U2BVideoQUeryArray(IOnU2BQuery callback) {
         super(callback);
     }
 
@@ -20,9 +20,9 @@ public class U2BPlayListQueryArray<U2BUserPlayListEntity> extends BaseQueryArray
     }
 
     public void query(final String keyword) {
-        U2BApi.newInstance().queryU2BPlayList(keyword, new U2BApi.OnNewCallback<com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity>() {
+        U2BApi.newInstance().queryU2BVideo(keyword, new U2BApi.OnNewCallback<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity>() {
             @Override
-            public void onSuccess(List<com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity> response, String nextPageToken) {
+            public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response, String nextPageToken) {
                 mNextPageToken = nextPageToken;
                 mKeyword = keyword;
                 for (int i = 0; i < response.size(); i++) {
@@ -39,9 +39,9 @@ public class U2BPlayListQueryArray<U2BUserPlayListEntity> extends BaseQueryArray
     }
 
     public void queryNextPage() {
-        U2BApi.newInstance().queryU2BPlayList(mKeyword, mNextPageToken, new U2BApi.OnNewCallback<com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity>() {
+        U2BApi.newInstance().queryU2BVideo(mKeyword, mNextPageToken, new U2BApi.OnNewCallback<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity>() {
             @Override
-            public void onSuccess(List<com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity> response, String nextPageToken) {
+            public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response, String nextPageToken) {
                 mNextPageToken = nextPageToken;
                 for (int i = 0; i < response.size(); i++) {
                     add(response.get(i));

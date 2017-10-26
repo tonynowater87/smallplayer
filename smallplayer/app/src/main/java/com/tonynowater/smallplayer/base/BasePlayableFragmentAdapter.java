@@ -122,6 +122,9 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     /** 設置要顯示的List資料 */
     public void setDataSource (List<K> dataSource) {
+        if (dataSource == null) {
+            return;
+        }
         mDataList = new ArrayList<>(dataSource);
         if (mDataList.size() < U2BApi.DEFAULT_QUERY_RESULT) {
             //資料小於查詢的最小筆數25筆，不要顯示FootView

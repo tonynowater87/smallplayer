@@ -17,6 +17,7 @@ import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
+import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.FileHelper;
 
@@ -71,16 +72,39 @@ public class U2BApi {
     }
 
     /** 搜尋下一頁U2B的影片 */
-    public void queryU2BVideo(String keyword, String pageToken, Callback callback) {
-        if (pageToken == null) {
-            return;
+    public void queryU2BVideo(String keyword, String pageToken, final OnNewCallback<PlayListSongEntity> callback) {
+        if (pageToken != null) {
+            sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, pageToken), new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String res = response.body().string();
+                        Log.d(TAG, "onResponse: " + res);
+                        Gson gson = new Gson();
+                        U2BVideoDTO u2BVideoDTO = gson.fromJson(res, U2BVideoDTO.class);
+                        List<PlayListSongEntity> listEntities = new ArrayList<>();
+                        for (int i = 0; i < u2BVideoDTO.getItems().size(); i++) {
+                            listEntities.add(new PlayListSongEntity(u2BVideoDTO.getItems().get(i)));
+                        }
+                        callback.onSuccess(listEntities, u2BVideoDTO.getNextPageToken());
+                    } else {
+                        callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                    }
+                }
+            });
+        } else {
+            callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
         }
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, pageToken), callback);
     }
 
     /** 搜尋第一頁U2B的影片 */
-    public void queryU2BVideo(String keyword, Callback callback) {
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, video, ""), callback);
+    public void queryU2BVideo(String keyword, OnNewCallback<PlayListSongEntity> callback) {
+        queryU2BVideo(keyword, "", callback);
     }
 
     /** 搜尋下一頁U2B的播放清單 */
