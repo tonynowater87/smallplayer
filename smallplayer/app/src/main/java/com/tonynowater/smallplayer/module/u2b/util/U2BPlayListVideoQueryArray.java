@@ -9,9 +9,7 @@ import java.util.List;
  */
 
 public class U2BPlayListVideoQueryArray<PlayListSongEntity> extends BaseQueryArrayList {
-
-    private String mAuthToken = null;
-
+    
     public U2BPlayListVideoQueryArray(U2BQueryParamsItem u2BQueryParamsItem, IOnU2BQuery callback) {
         super(u2BQueryParamsItem, callback);
     }

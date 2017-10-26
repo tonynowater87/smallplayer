@@ -16,7 +16,6 @@ import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.util.BaseQueryArrayList;
-import com.tonynowater.smallplayer.module.u2b.util.IOnU2BQuery;
 import com.tonynowater.smallplayer.module.u2b.util.U2BPlayListQueryArray;
 import com.tonynowater.smallplayer.module.u2b.util.U2BPlayListVideoQueryArray;
 import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
@@ -30,7 +29,7 @@ import java.util.List;
  * Created by tonynowater on 2017/5/1.
  */
 // TODO: 2017/10/23 搜尋完不會自動捲到最上面
-public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements IOnU2BQuery {
+public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements BaseQueryArrayList.IOnU2BQuery {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
 
     private U2BPlayListQueryArray<U2BUserPlayListEntity> u2BPlayListQueryArray;

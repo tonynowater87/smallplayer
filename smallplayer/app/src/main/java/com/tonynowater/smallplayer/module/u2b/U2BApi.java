@@ -39,17 +39,9 @@ import static com.tonynowater.smallplayer.module.u2b.U2BApiDefine.DEFAULT_QUERY_
 // TODO: 2017/10/16 Youtube AccessToken過期的問題待處理
 public class U2BApi {
     private static final String TAG = U2BApi.class.getSimpleName();
-
     public static final int TIMEOUT = 10;
-    public static final int MAX_QUERY_RESULT = 50;
-    private static final String channel = "channel";
     private static U2BApi mInstance = null;
     private OkHttpClient mOkHttp;
-
-    public interface OnU2BApiCallback {
-        void onSuccess(String response);
-        void onFailure(String errorMsg);
-    }
 
     public interface OnNewCallback<T> {
         void onSuccess(List<T> response, String nextPageToken);

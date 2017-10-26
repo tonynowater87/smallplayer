@@ -1,11 +1,13 @@
 package com.tonynowater.smallplayer.module.dto.realm.entity;
 
 import android.support.v4.media.MediaMetadataCompat;
+import android.text.TextUtils;
 
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
+import com.tonynowater.smallplayer.module.u2b.U2bConstDefince;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -161,7 +163,8 @@ public class PlayListSongEntity extends RealmObject implements Playable, EntityI
 
     @Override
     public boolean isDeletedOrPrivatedVideo() {
-        return false;
+        return TextUtils.equals(U2bConstDefince.KEYWORD_DELETED_VIDEO,getTitle())
+                || TextUtils.equals(U2bConstDefince.KEYWORD_PRIVATE_VIDEO,getTitle());
     }
 
     public int getPosition() {

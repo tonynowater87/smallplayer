@@ -15,7 +15,7 @@ import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bUserPlaylistFragmentBinding;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
-import com.tonynowater.smallplayer.module.u2b.util.IOnU2BQuery;
+import com.tonynowater.smallplayer.module.u2b.util.BaseQueryArrayList;
 import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
 import com.tonynowater.smallplayer.module.u2b.util.U2BUserListQueryArrayList;
 import com.tonynowater.smallplayer.util.OnClickSomething;
@@ -29,7 +29,7 @@ import java.util.List;
  * Created by tonynowater on 2017/10/3.
  */
 // TODO: 2017/10/24 下滑更新
-public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2bUserPlaylistFragmentBinding> implements IOnU2BQuery {
+public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2bUserPlaylistFragmentBinding> implements BaseQueryArrayList.IOnU2BQuery {
 
     private static final String TAG = U2BUserListViewPagerFragment.class.getSimpleName();
 
@@ -189,5 +189,4 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
             }
         });
     }
-
 }

@@ -8,6 +8,11 @@ import java.util.ArrayList;
 
 public abstract class BaseQueryArrayList extends ArrayList {
 
+    public interface IOnU2BQuery {
+        void onQuerySuccess();
+        void onQueryFail(String errMsg);
+    }
+
     protected U2BQueryParamsItem ueryParamsItem;
     protected IOnU2BQuery callback;
 
