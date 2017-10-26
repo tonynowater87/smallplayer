@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -28,7 +29,6 @@ import java.util.List;
  * 使用者Youtube播放清單畫面
  * Created by tonynowater on 2017/10/3.
  */
-// TODO: 2017/10/24 下滑更新
 public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2bUserPlaylistFragmentBinding> implements BaseQueryArrayList.IOnU2BQuery {
 
     private static final String TAG = U2BUserListViewPagerFragment.class.getSimpleName();
@@ -115,7 +115,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     private void initialU2BSearchAdapter() {
-        mSongListAdapter = new U2BUserListViewAdapter((OnClickSomething) getActivity());
+        mSongListAdapter = new U2BSearchPlayListFragmentAdapter((OnClickSomething) getActivity());
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mBinding.recyclerviewU2bsearchfragment.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
@@ -129,15 +129,14 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
                 //滑到底部的時候做加載
                 if (lastCompletelyVisibleItemPosition + 5 >= mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (!isLoad) {
-                        // TODO: 2017/10/3 私人歌單加載再處理
-//                        if (TextUtils.isEmpty(mU2BUserPlayListDTO.getNextPageToken())) {
-//                            Log.d(TAG, "onScrollStateChanged: token null");
-//                            mSongListAdapter.setFootviewVisible(false);
-//                            mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
-//                        } else {
-//                            U2BApi.newInstance().queryU2BPlayList(mQuery, mU2BUserPlayListDTO.getNextPageToken(), mViedoSearchCallback);
-//                            isLoad = true;
-//                        }
+                        if (TextUtils.isEmpty(mAlU2BQuery.getNextPageToken())) {
+                            Log.d(TAG, "onScrollStateChanged: token null");
+                            mSongListAdapter.setFootviewVisible(false);
+                            mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
+                        } else {
+                            mAlU2BQuery.query();
+                            isLoad = true;
+                        }
                     }
                 }
             }
