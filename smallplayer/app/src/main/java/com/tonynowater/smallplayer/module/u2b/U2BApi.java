@@ -18,6 +18,7 @@ import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.FileHelper;
 
@@ -149,11 +150,8 @@ public class U2BApi {
      * @param authToken
      * @param callback
      */
-    public void queryU2BPlayListVideo(String playlistId, String authToken, Callback callback) {
-        Headers headers = new Headers.Builder().add("Authorization", "Bearer " + authToken).build();
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, "")
-                , headers
-                , callback);
+    public void queryU2BPlayListVideo(String playlistId, String authToken, OnNewCallback<PlayListSongEntity> callback) {
+        queryU2BPlayListVideo(playlistId, authToken, "", callback);
     }
 
     /**
@@ -163,16 +161,39 @@ public class U2BApi {
      * @param authToken
      * @param pageToken
      */
-    public void queryU2BPlayListVideo(String playlistId, String authToken, String pageToken, Callback callback) {
-        if (pageToken == null) {
-            return;
+    public void queryU2BPlayListVideo(String playlistId, String authToken, String pageToken, final OnNewCallback<PlayListSongEntity> callback) {
+        if (pageToken != null) {
+            Headers headers = new Headers.Builder().add("Authorization", "Bearer " + authToken).build();
+            sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, pageToken)
+                    , headers
+                    , new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                String res = response.body().string();
+                                Log.d(TAG, "onResponse: " + res);
+                                Gson gson = new Gson();
+                                U2bPlayListVideoDTO u2bPlayListVideoDTO = gson.fromJson(res, U2bPlayListVideoDTO.class);
+                                List<PlayListSongEntity> listEntities = new ArrayList<>();
+                                for (int i = 0; i < u2bPlayListVideoDTO.getItems().size(); i++) {
+                                    listEntities.add(new PlayListSongEntity(u2bPlayListVideoDTO.getItems().get(i)));
+                                }
+                                callback.onSuccess(listEntities, u2bPlayListVideoDTO.getNextPageToken());
+                            } else {
+                                callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                            }
+                        }
+                    });
         }
-        Headers headers = new Headers.Builder().add("Authorization", "Bearer " + authToken).build();
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_PLAYLIST_VIDEO_URL, playlistId, DEFAULT_QUERY_RESULT, pageToken), callback);
     }
 
     public void queryU2BChannel(String keyword, Callback callback) {
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, channel), callback);
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_URL, keyword, DEFAULT_QUERY_RESULT, channel) ,callback);
     }
 
     /**

@@ -15,7 +15,7 @@ import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.ActivityPlayListBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.EnumU2BSearchType;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
-import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -95,31 +95,31 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
 
     @Override
     public void onClick(final Object object) {
-        if (object instanceof U2bPlayListVideoDTO.ItemsBean) {
-            final U2bPlayListVideoDTO.ItemsBean u2bPlayListVideoItem = ((U2bPlayListVideoDTO.ItemsBean) object);
+        if (object instanceof PlayListSongEntity) {
+            final PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
 
-            if (u2bPlayListVideoItem.isDeletedOrPrivatedVideo()) {
+            if (playListSongEntity.isDeletedOrPrivatedVideo()) {
                 return;
             }
 
-            DialogUtil.showActionDialog(this, u2bPlayListVideoItem.getPlayListSongEntity().getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
+            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
                     switch (i) {
                         case 0:
                             int currentPlayListId = mRealmUtils.queryCurrentPlayListID();
-                            sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, u2bPlayListVideoItem.getPlayListSongEntity()));
+                            sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, playListSongEntity));
                             break;
                         case 1:
-                            DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, u2bPlayListVideoItem, mTransportControls);
+                            DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, playListSongEntity, mTransportControls);
                             break;
                         case 2:
                             if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
                                 showToast(getString(R.string.no_permission_warning_msg));
                                 return;
                             }
-                            showToast(String.format(getString(R.string.downloadMP3_start_msg), u2bPlayListVideoItem.getPlayListSongEntity().getTitle()));
-                            U2BApi.newInstance().downloadMP3FromU2B(u2bPlayListVideoItem, new U2BApi.OnMsgRequestCallback() {
+                            showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
+                            U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
                                 @Override
                                 public void onSuccess(String response) {
                                     Log.d(TAG, "onSuccess: " + response);

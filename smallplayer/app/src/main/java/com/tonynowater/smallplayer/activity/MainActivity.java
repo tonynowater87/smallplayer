@@ -187,6 +187,9 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             });
         } else if (object instanceof PlayListSongEntity) {
             final PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
+            if (playListSongEntity.isDeletedOrPrivatedVideo()) {
+                return;
+            }
             DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {

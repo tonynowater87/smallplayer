@@ -4,6 +4,7 @@ import android.support.v4.media.MediaMetadataCompat;
 
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 
 import io.realm.RealmObject;
@@ -45,6 +46,23 @@ public class PlayListSongEntity extends RealmObject implements Playable, EntityI
         setDuration((int) itemsBean.getVideoDuration());
         setAlbumArtUri(processThumbnails(itemsBean.getSnippet().getThumbnails()));
         setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
+    }
+
+    public PlayListSongEntity(U2bPlayListVideoDTO.ItemsBean itemsBean) {
+        setSource(itemsBean.getVideoId());
+        setArtist(itemsBean.getSnippet().getDescription());
+        setTitle(itemsBean.getSnippet().getTitle());
+        setDuration((int) itemsBean.getVideoDuration());
+        setAlbumArtUri(processThumbnails(itemsBean.getSnippet().getThumbnails()));
+        setIsLocal(MetaDataCustomKeyDefine.ISNOTLOCAL);
+    }
+
+    private String processThumbnails(U2bPlayListVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnails) {
+        String sUrl = null;
+        if (thumbnails != null && thumbnails.getHigh() != null) {
+            sUrl = thumbnails.getHigh().getUrl();
+        }
+        return sUrl;
     }
 
     private String processThumbnails(U2BVideoDTO.ItemsBean.SnippetBean.ThumbnailsBean thumbnails) {
