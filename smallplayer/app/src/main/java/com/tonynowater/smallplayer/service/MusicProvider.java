@@ -201,17 +201,8 @@ public class MusicProvider {
         Log.d(TAG, "getCurrentPlayingIndex: " + mSongPosition);
         Log.d(TAG, "getMediaItemList size: " + getMediaItemList().size());
 
-        switch (mEnumPlayMode) {
-            case NORMAL:
-                if (getPlayItemByIndex(mSongPosition, mEnumPlayMode) == null) {
-                    mSongPosition = getMediaItemList().size() - 1;
-                }
-                break;
-            case RANDOM_NO_SAME:
-                if (getPlayItemByIndex(mSongPosition, mEnumPlayMode) == null) {
-                    mSongPosition = getMediaItemList().size() - 1;
-                }
-                break;
+        if (getPlayItemByIndex(mSongPosition, mEnumPlayMode) == null) {
+            mSongPosition = getMediaItemList().size() - 1;
         }
 
         return mSongPosition;

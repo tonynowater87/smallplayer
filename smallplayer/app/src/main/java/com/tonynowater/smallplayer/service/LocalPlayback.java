@@ -276,11 +276,6 @@ public class LocalPlayback implements Playback
             }
         }
 
-        if (mCurrentTrackPosition != trackPosition) {
-            Log.d(TAG, String.format("before track : %s \t coming track : %s",mCurrentTrackPosition,trackPosition));
-            mCurrentPosition = 0;
-        }
-
         if (mCurrentPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
             //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
             Log.d(TAG, "pause and play position : " + trackPosition);
