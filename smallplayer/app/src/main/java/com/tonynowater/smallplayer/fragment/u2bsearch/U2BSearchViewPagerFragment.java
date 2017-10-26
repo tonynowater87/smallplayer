@@ -8,16 +8,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import com.google.gson.Gson;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
-import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.util.BaseQueryArrayList;
@@ -29,7 +24,6 @@ import com.tonynowater.smallplayer.util.DateUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SPManager;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -42,94 +36,6 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     private U2BPlayListQueryArray<U2BUserPlayListEntity> u2BPlayListQueryArray;
     private U2BVideoQUeryArray<PlayListSongEntity> u2BVideoQUeryArray;
     private U2BPlayListVideoQueryArray<PlayListSongEntity> u2BPlayListVideoQueryArray;
-
-//        private void initialPlayListVideoList(String sResponse) {
-//            StringBuilder sVideoIds;
-//            if (mU2bPlayListVideoDTO == null) {
-//                //首次加載
-//                mU2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
-//                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(mU2bPlayListVideoDTO.getItems());
-//            } else {
-//                //滑到底加載
-//                U2bPlayListVideoDTO u2bPlayListVideoDTO = new Gson().fromJson(sResponse, U2bPlayListVideoDTO.class);
-//                mU2bPlayListVideoDTO.setNextPageToken(u2bPlayListVideoDTO.getNextPageToken());
-//                mU2bPlayListVideoDTO.getItems().addAll(mU2bPlayListVideoDTO.getItems().size(), u2bPlayListVideoDTO.getItems());
-//                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(u2bPlayListVideoDTO.getItems());
-//            }
-//
-//            U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
-//        }
-
-//        private void initialVideoList(String sResponse) {
-//            StringBuilder sVideoIds;
-//            if (mU2BVideoDTO == null) {
-//                //首次加載
-//                mU2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
-//                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(mU2BVideoDTO.getItems());
-//            } else {
-//                //滑到底加載
-//                U2BVideoDTO u2BVideoDTO = new Gson().fromJson(sResponse, U2BVideoDTO.class);
-//                mU2BVideoDTO.setNextPageToken(u2BVideoDTO.getNextPageToken());
-//                mU2BVideoDTO.getItems().addAll(mU2BVideoDTO.getItems().size(), u2BVideoDTO.getItems());
-//                sVideoIds = MiscellaneousUtil.getVideoIdsForQueryDuration(u2BVideoDTO.getItems());
-//            }
-//            U2BApi.newInstance().queryU2BVedioDuration(sVideoIds.toString(), mDurationSearchCallback);
-//        }
-
-    private void showFailToast() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                showToast(getString(R.string.u2b_query_failure));
-                mBinding.lottieAnimationView.setVisibility(View.GONE);
-            }
-        });
-    }
-
-
-    private Callback mDurationSearchCallback = new Callback() {
-        @Override
-        public void onFailure(Request request, IOException e) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mBinding.lottieAnimationView.setVisibility(View.GONE);
-                }
-            });
-        }
-
-        // FIXME: 2017/6/14 搜尋到一半，在搜尋會 java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.tonynowater.smallplayer.module.dto.U2BVideoDTO.getItems()' on a null object reference
-        @Override
-        public void onResponse(Response response) throws IOException {
-            if (response.isSuccessful()) {
-                String sResponse = response.body().string();
-                Log.d(TAG, "onResponse body: " + sResponse);
-                U2BVideoDurationDTO u2BVideoDurationDTO = new Gson().fromJson(sResponse, U2BVideoDurationDTO.class);
-                switch (mEnumU2BSearchType) {
-                    case VIDEO:
-//                        MiscellaneousUtil.processDuration(u2BVideoDurationDTO, mU2BVideoDTO.getItems());
-//                        mSongListAdapter.setDataSource(mU2BVideoDTO.getItems());
-                        break;
-                    case PLAYLISTVIDEO:
-//                        MiscellaneousUtil.processDuration(u2BVideoDurationDTO, mU2bPlayListVideoDTO.getItems());
-//                        mSongListAdapter.setDataSource(mU2bPlayListVideoDTO.getItems());
-                        break;
-                }
-
-                if (isAdded()) {
-                    //防止還沒補完，退出當機
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSongListAdapter.notifyDataSetChanged();
-                            isLoad = false;
-                            mBinding.lottieAnimationView.setVisibility(View.GONE);
-                        }
-                    });
-                }
-            }
-        }
-    };
 
     private BasePlayableFragmentAdapter mSongListAdapter;
     private EnumU2BSearchType mEnumU2BSearchType;
@@ -255,10 +161,6 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             case PLAYLIST:
                 mSongListAdapter = new U2BSearchPlayListFragmentAdapter((OnClickSomething) getActivity());
                 break;
-            case CHANNEL:
-                // TODO: 2017/5/20 not finished
-                mSongListAdapter = new U2BSearchFragmentAdapter((OnClickSomething) getActivity());
-                break;
         }
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mBinding.recyclerviewU2bsearchfragment.setLayoutManager(layoutManager);
@@ -337,14 +239,16 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         }
 
         mSongListAdapter.setDataSource(baseQueryArrayList);
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSongListAdapter.notifyDataSetChanged();
-                isLoad = false;
-                mBinding.lottieAnimationView.setVisibility(View.GONE);
-            }
-        });
+        if (isAdded()) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSongListAdapter.notifyDataSetChanged();
+                    isLoad = false;
+                    mBinding.lottieAnimationView.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 
     @Override
@@ -352,5 +256,15 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         if (!isDetached()) {
             showFailToast();
         }
+    }
+
+    private void showFailToast() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showToast(getString(R.string.u2b_query_failure));
+                mBinding.lottieAnimationView.setVisibility(View.GONE);
+            }
+        });
     }
 }

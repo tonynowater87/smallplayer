@@ -10,9 +10,9 @@ import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import com.tonynowater.smallplayer.module.dto.HasVideoId;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.PlayMusicService;
@@ -98,15 +98,15 @@ public class MiscellaneousUtil {
      * @param items
      * @return 串起來的video id，為了搜尋歌曲的播放時間
      */
-    public static StringBuilder getVideoIdsForQueryDuration(List<? extends HasVideoId> items) {
+    public static String getVideoIdsForQueryDuration(List<PlayListSongEntity> items) {
         StringBuilder sVideoIds = new StringBuilder();
         for (int i = 0; i < items.size(); i++) {
-            sVideoIds.append(items.get(i).getVideoId());
+            sVideoIds.append(items.get(i).getSource());
             if (i < items.size() - 1) {
                 sVideoIds.append(",");
             }
         }
-        return sVideoIds;
+        return sVideoIds.toString();
     }
 
 
@@ -115,22 +115,22 @@ public class MiscellaneousUtil {
      * @param u2BVideoDurationDTO
      * @param items
      */
-    public static void processDuration(U2BVideoDurationDTO u2BVideoDurationDTO, List<? extends HasVideoId> items) {
+    public static void processDuration(U2BVideoDurationDTO u2BVideoDurationDTO, List<PlayListSongEntity> items) {
         U2BVideoDurationDTO.ItemsBean itemDuration;
-        HashMap<String, HasVideoId> hashMap2 = new HashMap<>();
-        for (HasVideoId item : items) {
-            if (item.getVideoDuration() == -1) {
+        HashMap<String, PlayListSongEntity> hashMap2 = new HashMap<>();
+        for (PlayListSongEntity item : items) {
+            if (item.getDuration() == -1) {
                 //沒Duration的才放
-                hashMap2.put(item.getVideoId(), item);
+                hashMap2.put(item.getSource(), item);
             }
         }
 
-        HasVideoId itemVideo2;
+        PlayListSongEntity itemVideo2;
         for (int i = 0; i < u2BVideoDurationDTO.getItems().size(); i++) {
             itemDuration = u2BVideoDurationDTO.getItems().get(i);
             itemVideo2 = hashMap2.get(itemDuration.getId());
             if (itemVideo2 != null) {
-                itemVideo2.setVideoDuration(U2BApiUtil.formateU2BDurationToMilionSecond(itemDuration.getContentDetails().getDuration()));
+                itemVideo2.setDuration(U2BApiUtil.formateU2BDurationToMilionSecond(itemDuration.getContentDetails().getDuration()));
             }
         }
     }

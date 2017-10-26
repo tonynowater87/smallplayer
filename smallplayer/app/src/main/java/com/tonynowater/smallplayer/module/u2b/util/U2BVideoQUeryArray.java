@@ -25,10 +25,22 @@ public class U2BVideoQUeryArray<PlayListSongEntity> extends BaseQueryArrayList {
             public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response, String nextPageToken) {
                 mKeyword = keyword;
                 mNextPageToken = nextPageToken;
-                for (int i = 0; i < response.size(); i++) {
-                    add(response.get(i));
-                }
-                callback.onQuerySuccess();
+
+
+                U2BApi.newInstance().queryU2BVedioDuration(response, new U2BApi.OnDurationNewCallback<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity>() {
+                    @Override
+                    public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response) {
+                        for (int i = 0; i < response.size(); i++) {
+                            add(response.get(i));
+                        }
+                        callback.onQuerySuccess();
+                    }
+
+                    @Override
+                    public void onFailure(String errorMsg) {
+                        callback.onQueryFail(errorMsg);
+                    }
+                });
             }
 
             @Override
@@ -43,10 +55,21 @@ public class U2BVideoQUeryArray<PlayListSongEntity> extends BaseQueryArrayList {
             @Override
             public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response, String nextPageToken) {
                 mNextPageToken = nextPageToken;
-                for (int i = 0; i < response.size(); i++) {
-                    add(response.get(i));
-                }
-                callback.onQuerySuccess();
+
+                U2BApi.newInstance().queryU2BVedioDuration(response, new U2BApi.OnDurationNewCallback<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity>() {
+                    @Override
+                    public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response) {
+                        for (int i = 0; i < response.size(); i++) {
+                            add(response.get(i));
+                        }
+                        callback.onQuerySuccess();
+                    }
+
+                    @Override
+                    public void onFailure(String errorMsg) {
+                        callback.onQueryFail(errorMsg);
+                    }
+                });
             }
 
             @Override

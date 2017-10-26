@@ -18,9 +18,11 @@ import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.util.FileHelper;
+import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +52,11 @@ public class U2BApi {
 
     public interface OnNewCallback<T> {
         void onSuccess(List<T> response, String nextPageToken);
+        void onFailure(String errorMsg);
+    }
+
+    public interface OnDurationNewCallback<T> {
+        void onSuccess(List<T> response);
         void onFailure(String errorMsg);
     }
 
@@ -207,11 +214,31 @@ public class U2BApi {
 
     /**
      * 查影片的播放時間
-     * @param videoid
+     * @param listSongEntities
      * @param callback
      */
-    public void queryU2BVedioDuration(String videoid, Callback callback) {
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL, videoid, DEFAULT_QUERY_RESULT), callback);
+    public void queryU2BVedioDuration(final List<PlayListSongEntity> listSongEntities, final OnDurationNewCallback<PlayListSongEntity> callback) {
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL
+                , MiscellaneousUtil.getVideoIdsForQueryDuration(listSongEntities)
+                , DEFAULT_QUERY_RESULT)
+                , new Callback() {
+                    @Override
+                    public void onFailure(Request request, IOException e) {
+                        callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                    }
+
+                    @Override
+                    public void onResponse(Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            String sResponse = response.body().string();
+                            U2BVideoDurationDTO u2BVideoDurationDTO = new Gson().fromJson(sResponse, U2BVideoDurationDTO.class);
+                            MiscellaneousUtil.processDuration(u2BVideoDurationDTO, listSongEntities);
+                            callback.onSuccess(listSongEntities);
+                        } else {
+                            callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                        }
+                    }
+                });
     }
 
     /**
