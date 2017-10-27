@@ -52,8 +52,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         @Override
         public void onCompletion() {
             Log.d(TAG, "onCompletion: ");
-            skipToNext();
-            handlePlayRequest();
+            mSessionCallBack.onSkipToNext();
         }
 
         @Override
@@ -90,7 +89,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
 
         // MySessionCallback() has methods that handle callbacks from a media controller
-        mMediaSessionCompat.setCallback(new MySessionCall());
+        mMediaSessionCompat.setCallback(mSessionCallBack);
         mMediaSessionCompat.setActive(true);
         setSessionToken(mMediaSessionCompat.getSessionToken());
 
@@ -213,9 +212,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         super.onLoadChildren(parentId, result, options);
     }
 
-    private final class MySessionCall extends MediaSessionCompat.Callback {
-
-
+    private MediaSessionCompat.Callback mSessionCallBack = new MediaSessionCompat.Callback() {
         /**
          * 處理線控按鈕事件
          */
@@ -288,7 +285,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             if (!mMusicProvider.isPlayListAvailable()) {
                 return;
             }
-            skipToNext();
+
+            mMusicProvider.addSongPosition();
+            if (mLocalPlayback.isPlaying()) {
+                handlePlayRequest();
+            }
+            updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 
         @Override
@@ -298,6 +300,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             }
 
             mMusicProvider.minusSongPosition();
+            if (mLocalPlayback.isPlaying()) {
+                handlePlayRequest();
+            }
             updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 
@@ -474,12 +479,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             Log.d(TAG, "onSeekTo: " + pos);
             mLocalPlayback.seekTo((int) pos);
         }
-    }
-
-    private void skipToNext() {
-        mMusicProvider.addSongPosition();
-        updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
-    }
+    };
 
     private void handlePauseRequest() {
         Log.d(TAG, "handlePauseRequest: " + mLocalPlayback.getState());
