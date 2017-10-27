@@ -104,7 +104,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     if (u2BPlayListQueryArray == null) {
                         u2BPlayListQueryArray = new U2BPlayListQueryArray<>(queryParamsItem, this);
                     } else {
-                        u2BVideoQUeryArray.setKeyword(query);
+                        u2BPlayListQueryArray.setKeyword(query);
                         u2BPlayListQueryArray.clear();
                     }
                     u2BPlayListQueryArray.query();
@@ -114,7 +114,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     if (u2BPlayListVideoQueryArray == null) {
                         u2BPlayListVideoQueryArray = new U2BPlayListVideoQueryArray<>(queryParamsItem, this);
                     } else {
-                        u2BVideoQUeryArray.setKeyword(query);
+                        u2BPlayListVideoQueryArray.setKeyword(query);
                         u2BPlayListVideoQueryArray.clear();
                     }
                     u2BPlayListVideoQueryArray.query();
