@@ -36,7 +36,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     private GoogleLoginUtil mGoogleLoginUtil;
     private int lastCompletelyVisibleItemPosition;
     private boolean isLoad = false;
-    private U2BUserListQueryArrayList<U2BUserPlayListEntity> mAlU2BQuery;
+    private U2BUserListQueryArrayList<U2BUserPlayListEntity> mU2BUserListQueryArray;
     private BasePlayableFragmentAdapter mSongListAdapter;
 
     @Override
@@ -86,7 +86,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
                 @Override
                 public void onGoogleLoginSuccess(String authToken) {
                     U2BQueryParamsItem u2BQueryParamsItem = new U2BQueryParamsItem(EnumU2BSearchType.USER_LIST, "", true);
-                    mAlU2BQuery = new U2BUserListQueryArrayList(u2BQueryParamsItem, U2BUserListViewPagerFragment.this);
+                    mU2BUserListQueryArray = new U2BUserListQueryArrayList(u2BQueryParamsItem, U2BUserListViewPagerFragment.this);
                     SPManager.getInstance(getContext()).setAccessToken(authToken);
                     queryYoutubeUserPlaylist();
                 }
@@ -104,7 +104,9 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     private void queryYoutubeUserPlaylist() {
-        mAlU2BQuery.query();
+        mU2BUserListQueryArray.query();
+        mBinding.googleSignInButton.setVisibility(View.GONE);
+        mBinding.lottieAnimationView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -129,12 +131,12 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
                 //滑到底部的時候做加載
                 if (lastCompletelyVisibleItemPosition + 5 >= mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (!isLoad) {
-                        if (TextUtils.isEmpty(mAlU2BQuery.getNextPageToken())) {
+                        if (TextUtils.isEmpty(mU2BUserListQueryArray.getNextPageToken())) {
                             Log.d(TAG, "onScrollStateChanged: token null");
                             mSongListAdapter.setFootviewVisible(false);
                             mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                         } else {
-                            mAlU2BQuery.query();
+                            mU2BUserListQueryArray.query();
                             isLoad = true;
                         }
                     }
@@ -158,7 +160,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
 
     @Override
     public void onQuerySuccess() {
-        mSongListAdapter.setDataSource(mAlU2BQuery);
+        mSongListAdapter.setDataSource(mU2BUserListQueryArray);
         if (isAdded()) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
@@ -166,7 +168,6 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
                     mSongListAdapter.notifyDataSetChanged();
                     isLoad = false;
                     mBinding.lottieAnimationView.setVisibility(View.GONE);
-                    mBinding.googleSignInButton.setVisibility(View.GONE);
                 }
             });
         }
@@ -185,6 +186,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
             public void run() {
                 showToast(getString(R.string.u2b_query_failure));
                 mBinding.lottieAnimationView.setVisibility(View.GONE);
+                mBinding.googleSignInButton.setVisibility(View.VISIBLE);
             }
         });
     }
