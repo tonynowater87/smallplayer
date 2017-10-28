@@ -164,6 +164,42 @@ public abstract class BaseDAO<T extends RealmObject & EntityInterface> implement
      * @param params
      * @return
      */
+    public List<T> queryGreaterOrEqualForCopy(Map<String, Object> params) {
+        RealmQuery<T> query = getQuery();
+        for (String key : params.keySet()) {
+            Object value = params.get(key);
+            if (value instanceof Integer) {
+                query = query.greaterThanOrEqualTo(key, (Integer) value);
+                continue;
+            } else if (value instanceof Long) {
+                query = query.greaterThanOrEqualTo(key, (Long) value);
+                continue;
+            } else if (value instanceof Float) {
+                query = query.greaterThanOrEqualTo(key, (Float) value);
+                continue;
+            } else if (value instanceof Double) {
+                query = query.greaterThanOrEqualTo(key, (Double) value);
+                continue;
+            } else if (value instanceof Byte) {
+                query = query.greaterThanOrEqualTo(key, (Byte) value);
+                continue;
+            } else if (value instanceof Short) {
+                query = query.greaterThanOrEqualTo(key, (Short) value);
+                continue;
+            } else if (value instanceof Date) {
+                query = query.greaterThanOrEqualTo(key, (Date) value);
+                continue;
+            }
+        }
+
+        return copyFromRealm(query.findAll());
+    }
+
+    /**
+     * 查詢加參數
+     * @param params
+     * @return
+     */
     public List<T> queryNotCopy(Map<String, Object> params) {
         RealmQuery<T> query = getQuery();
         for (String key : params.keySet()) {

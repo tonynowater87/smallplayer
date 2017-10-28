@@ -162,6 +162,7 @@ public class RealmUtils implements Closeable{
      * 刪除播放清單以及清單裡的所有歌曲
      * @param playListEntity
      */
+    // FIXME: 2017/10/27 刪除歌單後，位置比刪除歌單大的歌單位置要更新，否則選不到
     public void deletePlayList(PlayListEntity playListEntity) {
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListSongDAO.COLUMN_LIST_ID, playListEntity.getId());
@@ -170,7 +171,17 @@ public class RealmUtils implements Closeable{
             //Log.d(TAG, "deletePlayList: " + entity.getTitle());
             playListSongDAO.delete(entity);
         }
+
         playListDAO.delete(playListEntity);
+
+        int size = queryAllPlayList().size();
+        HashMap<String, Object> param = new HashMap<>();
+        param.put(PlayListDAO.COLUMN_POSITION, size);
+        List<PlayListEntity> playListEntities = playListDAO.queryGreaterOrEqualForCopy(param);
+        for (PlayListEntity entity : playListEntities) {
+            entity.setPosition(entity.getPosition() - 1);
+            playListDAO.update(entity);
+        }
     }
 
     /**
