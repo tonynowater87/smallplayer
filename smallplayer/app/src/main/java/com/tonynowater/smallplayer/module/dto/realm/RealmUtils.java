@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
+import com.tonynowater.smallplayer.module.dto.realm.dao.DBQueryCondition;
+import com.tonynowater.smallplayer.module.dto.realm.dao.DBQueryResult;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayFolderDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.PlayListSongDAO;
@@ -41,14 +43,14 @@ public class RealmUtils implements Closeable{
     public List<PlayListEntity> queryAllPlayList() {
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListDAO.COLUMN_FOLDER_ID, BaseDAO.DEFAULT_ID);
-        return playListDAO.queryForCopy(params);
+        return playListDAO.query(DBQueryResult.Copy, DBQueryCondition.EqualTo, params);
     }
     
     /** @return 指定id的播放清單 */
     public List<PlayListEntity> queryPlayListById(int id) {
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListDAO.COLUMN_ID, id);
-        return playListDAO.queryForCopy(params);
+        return playListDAO.query(DBQueryResult.Copy, DBQueryCondition.EqualTo, params);
     }
 
     /** @return 所有的播放清單依Position排序 */
@@ -65,7 +67,7 @@ public class RealmUtils implements Closeable{
     public List<PlayListSongEntity> queryPlayListSongByListId(int listID) {
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListSongDAO.COLUMN_LIST_ID, listID);
-        return playListSongDAO.queryForCopy(params);
+        return playListSongDAO.query(DBQueryResult.Copy, DBQueryCondition.EqualTo, params);
     }
 
     /**
@@ -129,7 +131,7 @@ public class RealmUtils implements Closeable{
         HashMap<String, Object> param = new HashMap<>();
         param.put(PlayListSongDAO.COLUMN_LIST_ID, playlistID);
         param.put(PlayListSongDAO.COLUMN_TITLE, playListSong.getTitle());
-        List<PlayListSongEntity> listSongEntities = playListSongDAO.queryForCopy(param);
+        List<PlayListSongEntity> listSongEntities = playListSongDAO.query(DBQueryResult.Copy, DBQueryCondition.EqualTo, param);
         if (listSongEntities.size() > 0) {
             Log.d(TAG, "addSongToPlayList: 重覆加入 " + playListSong.getTitle());
             return listSongEntities.get(0).getId();
@@ -166,7 +168,7 @@ public class RealmUtils implements Closeable{
     public void deletePlayList(PlayListEntity playListEntity) {
         HashMap<String, Object> params = new HashMap<>();
         params.put(PlayListSongDAO.COLUMN_LIST_ID, playListEntity.getId());
-        List<PlayListSongEntity> playListSongEntities = playListSongDAO.queryNotCopy(params);
+        List<PlayListSongEntity> playListSongEntities = playListSongDAO.query(DBQueryResult.NotCopy, DBQueryCondition.EqualTo, params);
         for (PlayListSongEntity entity : playListSongEntities) {
             //Log.d(TAG, "deletePlayList: " + entity.getTitle());
             playListSongDAO.delete(entity);
@@ -174,13 +176,18 @@ public class RealmUtils implements Closeable{
 
         playListDAO.delete(playListEntity);
 
+        //以下處理刪除後歌單的位置
+        int deletePosition = playListEntity.getPosition();
         int size = queryAllPlayList().size();
         HashMap<String, Object> param = new HashMap<>();
         param.put(PlayListDAO.COLUMN_POSITION, size);
-        List<PlayListEntity> playListEntities = playListDAO.queryGreaterOrEqualForCopy(param);
+        List<PlayListEntity> playListEntities = playListDAO.query(DBQueryResult.Copy, DBQueryCondition.GreaterThanOrEqualTo, param);
         for (PlayListEntity entity : playListEntities) {
-            entity.setPosition(entity.getPosition() - 1);
-            playListDAO.update(entity);
+            if (deletePosition < size) {
+                //刪除目前歌單位置
+                entity.setPosition(entity.getPosition() - 1);
+                playListDAO.update(entity);
+            }
         }
     }
 

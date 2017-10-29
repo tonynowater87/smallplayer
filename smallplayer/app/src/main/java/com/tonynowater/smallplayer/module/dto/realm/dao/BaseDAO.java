@@ -118,123 +118,127 @@ public abstract class BaseDAO<T extends RealmObject & EntityInterface> implement
     }
 
     /**
-     * 查詢加參數
-     * @param params
+     * 查詢
+     * @param dbQueryResult 回傳結果是否要Copy
+     * @param queryCondition 比對的條件
+     * @param params 要比對的欄位
      * @return
      */
-    public List<T> queryForCopy(Map<String, Object> params) {
+    public List<T> query(DBQueryResult dbQueryResult, DBQueryCondition queryCondition, Map<String, Object> params) {
         RealmQuery<T> query = getQuery();
         for (String key : params.keySet()) {
             Object value = params.get(key);
-            if (value instanceof String) {
-                query = query.equalTo(key, (String) value);
-                continue;
-            } else if (value instanceof Integer) {
-                query = query.equalTo(key, (Integer) value);
-                continue;
-            } else if (value instanceof Long) {
-                query = query.equalTo(key, (Long) value);
-                continue;
-            } else if (value instanceof Float) {
-                query = query.equalTo(key, (Float) value);
-                continue;
-            } else if (value instanceof Double) {
-                query = query.equalTo(key, (Double) value);
-                continue;
-            } else if (value instanceof Byte) {
-                query = query.equalTo(key, (Byte) value);
-                continue;
-            } else if (value instanceof Short) {
-                query = query.equalTo(key, (Short) value);
-                continue;
-            } else if (value instanceof Boolean) {
-                query = query.equalTo(key, (Boolean) value);
-                continue;
-            } else if (value instanceof Date) {
-                query = query.equalTo(key, (Date) value);
-                continue;
+
+            switch (queryCondition) {
+                case EqualTo:
+                    query = equalTo(query, key, value);
+                    break;
+                case LessThan:
+                    query = lessThan(query, key, value);
+                    break;
+                case LessThanOrEqualTo:
+                    query = lessThanOrEqualTo(query, key, value);
+                    break;
+                case GreaterThan:
+                    query = greaterThan(query, key, value);
+                    break;
+                case GreaterThanOrEqualTo:
+                    query = greaterThanOrEqualTo(query, key, value);
+                    break;
             }
         }
 
-        return copyFromRealm(query.findAll());
+        switch (dbQueryResult) {
+            case Copy:
+                return copyFromRealm(query.findAll());
+            case NotCopy:
+                return query.findAll();
+            default:
+                return query.findAll();
+        }
     }
 
-    /**
-     * 查詢加參數
-     * @param params
-     * @return
-     */
-    public List<T> queryGreaterOrEqualForCopy(Map<String, Object> params) {
-        RealmQuery<T> query = getQuery();
-        for (String key : params.keySet()) {
-            Object value = params.get(key);
-            if (value instanceof Integer) {
-                query = query.greaterThanOrEqualTo(key, (Integer) value);
-                continue;
-            } else if (value instanceof Long) {
-                query = query.greaterThanOrEqualTo(key, (Long) value);
-                continue;
-            } else if (value instanceof Float) {
-                query = query.greaterThanOrEqualTo(key, (Float) value);
-                continue;
-            } else if (value instanceof Double) {
-                query = query.greaterThanOrEqualTo(key, (Double) value);
-                continue;
-            } else if (value instanceof Byte) {
-                query = query.greaterThanOrEqualTo(key, (Byte) value);
-                continue;
-            } else if (value instanceof Short) {
-                query = query.greaterThanOrEqualTo(key, (Short) value);
-                continue;
-            } else if (value instanceof Date) {
-                query = query.greaterThanOrEqualTo(key, (Date) value);
-                continue;
-            }
+    private RealmQuery<T> greaterThanOrEqualTo(RealmQuery<T> query, String key, Object value) {
+        if (value instanceof Integer) {
+            query = query.greaterThanOrEqualTo(key, (Integer) value);
+        } else if (value instanceof Long) {
+            query = query.greaterThanOrEqualTo(key, (Long) value);
+        } else if (value instanceof Float) {
+            query = query.greaterThanOrEqualTo(key, (Float) value);
+        } else if (value instanceof Double) {
+            query = query.greaterThanOrEqualTo(key, (Double) value);
+        } else if (value instanceof Date) {
+            query = query.greaterThanOrEqualTo(key, (Date) value);
         }
-
-        return copyFromRealm(query.findAll());
+        return query;
     }
 
-    /**
-     * 查詢加參數
-     * @param params
-     * @return
-     */
-    public List<T> queryNotCopy(Map<String, Object> params) {
-        RealmQuery<T> query = getQuery();
-        for (String key : params.keySet()) {
-            Object value = params.get(key);
-            if (value instanceof String) {
-                query = query.equalTo(key, (String) value);
-                continue;
-            } else if (value instanceof Integer) {
-                query = query.equalTo(key, (Integer) value);
-                continue;
-            } else if (value instanceof Long) {
-                query = query.equalTo(key, (Long) value);
-                continue;
-            } else if (value instanceof Float) {
-                query = query.equalTo(key, (Float) value);
-                continue;
-            } else if (value instanceof Double) {
-                query = query.equalTo(key, (Double) value);
-                continue;
-            } else if (value instanceof Byte) {
-                query = query.equalTo(key, (Byte) value);
-                continue;
-            } else if (value instanceof Short) {
-                query = query.equalTo(key, (Short) value);
-                continue;
-            } else if (value instanceof Boolean) {
-                query = query.equalTo(key, (Boolean) value);
-                continue;
-            } else if (value instanceof Date) {
-                query = query.equalTo(key, (Date) value);
-                continue;
-            }
+    private RealmQuery<T> greaterThan(RealmQuery<T> query, String key, Object value) {
+        if (value instanceof Integer) {
+            query = query.greaterThan(key, (Integer) value);
+        } else if (value instanceof Long) {
+            query = query.greaterThan(key, (Long) value);
+        } else if (value instanceof Float) {
+            query = query.greaterThan(key, (Float) value);
+        } else if (value instanceof Double) {
+            query = query.greaterThan(key, (Double) value);
+        } else if (value instanceof Date) {
+            query = query.greaterThan(key, (Date) value);
         }
+        return query;
+    }
 
-        return query.findAll();
+    private RealmQuery<T> lessThanOrEqualTo(RealmQuery<T> query, String key, Object value) {
+        if (value instanceof Integer) {
+            query = query.lessThanOrEqualTo(key, (Integer) value);
+        } else if (value instanceof Long) {
+            query = query.lessThanOrEqualTo(key, (Long) value);
+        } else if (value instanceof Float) {
+            query = query.lessThanOrEqualTo(key, (Float) value);
+        } else if (value instanceof Double) {
+            query = query.lessThanOrEqualTo(key, (Double) value);
+        } else if (value instanceof Date) {
+            query = query.lessThanOrEqualTo(key, (Date) value);
+        }
+        return query;
+    }
+
+    private RealmQuery<T> lessThan(RealmQuery<T> query, String key, Object value) {
+        if (value instanceof Integer) {
+            query = query.lessThan(key, (Integer) value);
+        } else if (value instanceof Long) {
+            query = query.lessThan(key, (Long) value);
+        } else if (value instanceof Float) {
+            query = query.lessThan(key, (Float) value);
+        } else if (value instanceof Double) {
+            query = query.lessThan(key, (Double) value);
+        } else if (value instanceof Date) {
+            query = query.lessThan(key, (Date) value);
+        }
+        return query;
+    }
+
+    private RealmQuery<T> equalTo(RealmQuery<T> query, String key, Object value) {
+        if (value instanceof String) {
+            query = query.equalTo(key, (String) value);
+        } else if (value instanceof Integer) {
+            query = query.equalTo(key, (Integer) value);
+        } else if (value instanceof Long) {
+            query = query.equalTo(key, (Long) value);
+        } else if (value instanceof Float) {
+            query = query.equalTo(key, (Float) value);
+        } else if (value instanceof Double) {
+            query = query.equalTo(key, (Double) value);
+        } else if (value instanceof Byte) {
+            query = query.equalTo(key, (Byte) value);
+        } else if (value instanceof Short) {
+            query = query.equalTo(key, (Short) value);
+        } else if (value instanceof Boolean) {
+            query = query.equalTo(key, (Boolean) value);
+        } else if (value instanceof Date) {
+            query = query.equalTo(key, (Date) value);
+        }
+        return query;
     }
 
     /**
