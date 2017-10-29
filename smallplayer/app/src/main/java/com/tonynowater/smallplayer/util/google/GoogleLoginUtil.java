@@ -24,13 +24,16 @@ import java.io.IOException;
 
 // TODO: 2017/10/6 Release版的Google登入會失敗 (因為SHA1不一樣)
 /**
- * Google登入並取得可供存取資料的token
+ * Google登入並取得可存取資料的token
  * Created by tonynowater on 2017/8/26.
  */
 public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = GoogleLoginUtil.class.getSimpleName();
     private static final int RC_GOOGLE_LOGIN = 100;
+    private static final int RC_UserRecoverableAuth = 200;
     private static final String AUTH_YOUTUBE = "https://www.googleapis.com/auth/youtube";
+    private static final int ACTIVITY_LOGIN = 0;
+    public static final int FRAGMENT_LOGIN = 1;
 
     public interface OnGoogleLoginCallBack {
         void onGoogleLoginSuccess(String authToken);
@@ -40,22 +43,26 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
     private GoogleApiClient mGoogleApiClient;
     private OnGoogleLoginCallBack mCallback;
     private FragmentActivity mFragmentActivity;
+    private Fragment mFragment;
+    private int mLoginMode;
 
     /**
      * @param mFragmentActivity
      * @param mCallback
      */
     public GoogleLoginUtil(FragmentActivity mFragmentActivity, OnGoogleLoginCallBack mCallback) {
-        this(mFragmentActivity, null, mCallback);
+        this(mFragmentActivity, null, 0, mCallback);
     }
 
     /**
      * @param mFragmentActivity
      * @param mCallback
      */
-    public GoogleLoginUtil(FragmentActivity mFragmentActivity, Fragment fragment, OnGoogleLoginCallBack mCallback) {
+    public GoogleLoginUtil(FragmentActivity mFragmentActivity, Fragment fragment, int mLoginMode, OnGoogleLoginCallBack mCallback) {
+        this.mLoginMode = mLoginMode;
         this.mCallback = mCallback;
         this.mFragmentActivity = mFragmentActivity;
+        this.mFragment = fragment;
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 //.requestIdToken(context.getString(R.string.default_web_client_id))//加這行登入成功後才取得到IdToken，但不知用來做什麼，先註解
@@ -133,15 +140,31 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
      * @param data
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_GOOGLE_LOGIN && resultCode == FragmentActivity.RESULT_OK) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                GoogleSignInAccount account = result.getSignInAccount();
-                Log.d(TAG, "onActivityResult google login success : " + account.getEmail() + "\n" + account.getIdToken());
-                new GetTokenAyncTask().execute(account.getAccount());
-            } else {
-                Log.e(TAG, "onActivityResult: " + result.getStatus().getStatusMessage());
-                mCallback.onGoogleLoginFailure();
+        if (resultCode == FragmentActivity.RESULT_OK) {
+            switch (requestCode) {
+                case RC_GOOGLE_LOGIN:
+                    GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                    if (result.isSuccess()) {
+                        GoogleSignInAccount account = result.getSignInAccount();
+                        Log.d(TAG, "onActivityResult google login success : " + account.getEmail() + "\n" + account.getIdToken());
+                        new GetTokenAyncTask().execute(account.getAccount());
+                    } else {
+                        Log.e(TAG, "onActivityResult: " + result.getStatus().getStatusMessage());
+                        mCallback.onGoogleLoginFailure();
+                    }
+                    break;
+                case RC_UserRecoverableAuth:
+                    switch (mLoginMode) {
+                        case ACTIVITY_LOGIN:
+                            googleSignIn(mFragmentActivity);
+                            break;
+                        case FRAGMENT_LOGIN:
+                            googleSignIn(mFragment);
+                            break;
+                        default:
+                            mCallback.onGoogleLoginFailure();
+                    }
+                    break;
             }
         } else {
             Log.e(TAG, "onActivityResult:RC_CODE OR RESULT_CODE Not right");
@@ -150,7 +173,6 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
     }
 
     private class GetTokenAyncTask extends AsyncTask<Account, Void, String> {
-
         @Override
         protected String doInBackground(Account... accounts) {
             String scopes = "oauth2:" + AUTH_YOUTUBE;
@@ -160,8 +182,9 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
             } catch (IOException e) {
                 Log.e(TAG, "IOException: " + e.getMessage());
             } catch (UserRecoverableAuthException e) {
-                // TODO: 2017/9/1 出現此錯誤需要做重新登入的動作
                 Log.e(TAG, "UserRecoverableAuthException: " + e.getMessage());
+                mFragment.startActivityForResult(e.getIntent(), RC_UserRecoverableAuth);
+
             } catch (GoogleAuthException e) {
                 Log.e(TAG, "GoogleAuthException: " + e.getMessage());
             }

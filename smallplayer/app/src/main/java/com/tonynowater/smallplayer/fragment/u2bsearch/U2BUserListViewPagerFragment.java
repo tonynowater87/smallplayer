@@ -82,7 +82,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
             }
         });
         if (!SPManager.getInstance(MyApplication.getContext()).getIsGoogleLogin()) {
-            mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, new GoogleLoginUtil.OnGoogleLoginCallBack() {
+            mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, GoogleLoginUtil.FRAGMENT_LOGIN, new GoogleLoginUtil.OnGoogleLoginCallBack() {
                 @Override
                 public void onGoogleLoginSuccess(String authToken) {
                     U2BQueryParamsItem u2BQueryParamsItem = new U2BQueryParamsItem(EnumU2BSearchType.USER_LIST, "", true);
