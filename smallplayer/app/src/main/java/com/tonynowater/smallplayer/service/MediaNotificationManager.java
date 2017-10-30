@@ -317,12 +317,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                         R.drawable.ic_default_art);
             }
         } else {
-
-            bitmap = AlbumArtCache.getInstance().getIconImage(fetchArtUrl);
+            bitmap = AlbumArtCache.getInstance().getBigImage(fetchArtUrl);
             if (bitmap == null) {
-                // TODO: 2017/6/3 這邊要在改成下載中的讀取圖
+                // TODO: 2017/6/3 這邊改Loading的圖
                 bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
-                        R.mipmap.ic_launcher);
+                        R.drawable.ic_default_art);
             }
 
             fetchBitmapFromURLAsync(fetchArtUrl, builder);
@@ -473,15 +472,19 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     Log.d(TAG, "onFetched: 因為歌曲已刪除，所以就不更新通知了");
                     return;
                 }
-                builder.setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , icon))
-                        .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
-                                , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                                , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                                , bitmap));
-                mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+
+                if (TextUtils.equals(artUrl,mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))) {
+                    //抓回來的圖是播放歌曲的圖才去更新Nofification
+                    builder.setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
+                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                            , icon))
+                            .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
+                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                                    , bitmap));
+                    mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+                }
             }
         });
     }
