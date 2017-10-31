@@ -33,12 +33,14 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String ACTION_REMOVE_SONG_FROM_PLAYLIST = "ACTION_REMOVE_SONG_FROM_PLAYLIST";
     public static final String ACTION_CHANGE_PLAYLIST = "ACTION_CHANGE_PLAYLIST";
     public static final String ACTION_CHANGE_PLAYMODE = "ACTION_CHANGE_PLAYMODE";
+    public static final String ACTION_CHANGE_REPEAT = "ACTION_CHANGE_REPEAT";
     public static final String BUNDLE_KEY_PLAYLIST_ID = "BUNDLE_KEY_PLAYLIST_ID";
     public static final String BUNDLE_KEY_SONG_ID = "BUNDLE_KEY_SONG_ID";
     public static final String BUNDLE_KEY_CURRENT_PLAY_SONG_ID = "BUNDLE_KEY_CURRENT_PLAY_SONG_ID";
     public static final String BUNDLE_KEY_SONG_DURATION = "BUNDLE_KEY_SONG_DURATION";
     public static final String BUNDLE_KEY_EQUALIZER_TYPE = "BUNDLE_KEY_EQUALIZER_TYPE";
     public static final String BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION = "BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION";
+    public static final String BUNDLE_KEY_IS_REPEAT = "BUNDLE_KEY_IS_REPEAT";
     public static final String BUNDLE_KEY_PLAYMODE = "BUNDLE_KEY_PLAYMODE";
     public static final String GET_CURRENT_PLAY_LIST_ID = "GET_CURRENT_PLAY_LIST_ID";
     private static final String ROOT_ID_TEST = "ROOT_ID_TEST";
@@ -52,7 +54,15 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         @Override
         public void onCompletion() {
             Log.d(TAG, "onCompletion: ");
-            mSessionCallBack.onSkipToNext();
+            if (!mMusicProvider.isPlayListAvailable()) {
+                return;
+            }
+
+            mMusicProvider.addSongPosition(false);
+            if (mLocalPlayback.isPlaying()) {
+                handlePlayRequest();
+            }
+            updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 
         @Override
@@ -129,6 +139,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         Bundle bundle = new Bundle();
         bundle.putInt(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());
+        bundle.putBoolean(BUNDLE_KEY_IS_REPEAT, mMusicProvider.getIsReapeated());
         bundle.putSerializable(BUNDLE_KEY_PLAYMODE, mMusicProvider.getmEnumPlayMode());
         bundle.putSerializable(BUNDLE_KEY_EQUALIZER_TYPE, mLocalPlayback.getEqualizerType());
         stateBuilder.setExtras(bundle);
@@ -286,7 +297,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 return;
             }
 
-            mMusicProvider.addSongPosition();
+            mMusicProvider.addSongPosition(true);
             if (mLocalPlayback.isPlaying()) {
                 handlePlayRequest();
             }
@@ -299,7 +310,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 return;
             }
 
-            mMusicProvider.minusSongPosition();
+            mMusicProvider.minusSongPosition(true);
             if (mLocalPlayback.isPlaying()) {
                 handlePlayRequest();
             }
@@ -331,7 +342,15 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 case ACTION_CHANGE_PLAYMODE:
                     handleChangePlayMode((EnumPlayMode) extras.getSerializable(BUNDLE_KEY_PLAYMODE));
                     break;
+                case ACTION_CHANGE_REPEAT:
+                    handleChangeRepeat();
+                    break;
             }
+        }
+
+        private void handleChangeRepeat() {
+            mMusicProvider.changeRepeatStatus();
+            updatePlaybackState(null);
         }
 
         /**

@@ -20,12 +20,12 @@ import java.util.Random;
 /**
  * Created by tonyliao on 2017/5/12.
  */
-// TODO: 2017/10/8 待實作重覆播放同一首歌的功能
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
     private ArrayList<MediaMetadataCompat> mMusicPlayList;
     private ArrayList<MediaMetadataCompat> mRandomMusicPlayList;
     private int mSongPosition = 0;
+    private boolean mIsRepeat = false;
     private EnumPlayMode mEnumPlayMode = EnumPlayMode.NORMAL;
 
     /**
@@ -124,21 +124,6 @@ public class MusicProvider {
                 .setExtras(bundle)
                 .build();
         return new MediaBrowserCompat.MediaItem(description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-    }
-
-    public void minusSongPosition() {
-        switch (mEnumPlayMode) {
-            case NORMAL:
-            case RANDOM_NO_SAME:
-                mSongPosition--;
-                if (mSongPosition < 0) {
-                    mSongPosition = mMusicPlayList.size() - 1;
-                }
-                break;
-        }
-
-        Log.d(TAG, "minusSongPosition mode : " + mEnumPlayMode.name());
-        Log.d(TAG, "minusSongPosition : " + mSongPosition);
     }
 
     public void setSongPosition(int mSongPosition) {
@@ -242,11 +227,13 @@ public class MusicProvider {
         }
     }
 
-    public void addSongPosition() {
-
+    public void addSongPosition(boolean manualAdd) {
         switch (mEnumPlayMode) {
             case NORMAL:
             case RANDOM_NO_SAME:
+                if(!manualAdd && mIsRepeat) {
+                    break;
+                }
                 mSongPosition++;
                 if (mSongPosition >= getPlayListSize()) {
                     mSongPosition = 0;
@@ -254,8 +241,34 @@ public class MusicProvider {
                 break;
         }
 
+        if (manualAdd) {
+            mIsRepeat = false;
+        }
+
         Log.d(TAG, "addSongPosition mode : " + mEnumPlayMode.name());
         Log.d(TAG, "addSongPosition: " + mSongPosition);
+    }
+
+    public void minusSongPosition(boolean manualMinus) {
+        switch (mEnumPlayMode) {
+            case NORMAL:
+            case RANDOM_NO_SAME:
+                if(!manualMinus && mIsRepeat) {
+                    break;
+                }
+                mSongPosition--;
+                if (mSongPosition < 0) {
+                    mSongPosition = mMusicPlayList.size() - 1;
+                }
+                break;
+        }
+
+        if (manualMinus) {
+            mIsRepeat = false;
+        }
+
+        Log.d(TAG, "minusSongPosition mode : " + mEnumPlayMode.name());
+        Log.d(TAG, "minusSongPosition : " + mSongPosition);
     }
 
     public EnumPlayMode getmEnumPlayMode() {
@@ -265,5 +278,13 @@ public class MusicProvider {
     public void setmEnumPlayMode(EnumPlayMode mEnumPlayMode) {
         this.mEnumPlayMode = mEnumPlayMode;
         mSongPosition = getPostionInByMode(mEnumPlayMode);
+    }
+
+    public void changeRepeatStatus() {
+        this.mIsRepeat = !this.mIsRepeat;
+    }
+
+    public boolean getIsReapeated() {
+        return mIsRepeat;
     }
 }

@@ -62,6 +62,9 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
         if (mPlayPosition == position) {//目前播放的位置
             binding.ivAnimation.setVisibility(View.VISIBLE);
             binding.ivAnimation.setImageDrawable(getDrawableByState(mContext, position));
+            if (binding.ivAnimation.getDrawable() instanceof AnimationDrawable) {
+                ((AnimationDrawable)binding.ivAnimation.getDrawable()).start();
+            }
             binding.tvSongArtistSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
             binding.tvSongTitleSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
             binding.tvDurationSonglistadapter.setTextColor(ContextCompat.getColor(mContext, R.color.icon_equalizer_playing));
@@ -117,13 +120,9 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<MediaBro
         }
 
         if (position == mPlayPosition) {
-
             if (mIsPlaying) {
-                if (animation == null) {
-                    animation = (AnimationDrawable) ContextCompat.getDrawable(context, R.drawable.ic_equalizer_white_36dp);
-                    DrawableCompat.setTintList(animation, sColorStatePlaying);
-                    animation.start();
-                }
+                animation = (AnimationDrawable) ContextCompat.getDrawable(context, R.drawable.ic_equalizer_white_36dp);
+                DrawableCompat.setTintList(animation, sColorStatePlaying);
                 return animation;
             } else {
                 animation = null;

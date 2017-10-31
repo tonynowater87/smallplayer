@@ -87,7 +87,22 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
         mCurrentPlayListAdapter.onPlaybackStateChanged(mLastPlaybackState);
         setShuffleButtonEnable(mLastPlaybackState.getExtras());
+        setRepeatButtonEnable(mLastPlaybackState.getExtras());
         setLastEqualizerType();
+    }
+
+    private void setRepeatButtonEnable(Bundle bundle) {
+        if (bundle == null) {
+            Log.d(TAG, "setRepeatButtonEnable: bundle null");
+            return;
+        }
+
+        boolean isRepeat = bundle.getBoolean(PlayMusicService.BUNDLE_KEY_IS_REPEAT);
+        if (isRepeat) {
+            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+        } else {
+            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), android.R.color.white));
+        }
     }
 
     /**
@@ -223,6 +238,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         mBinding.ivEqActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivChangePlaylistActivityFullScreenPlayer.setOnClickListener(this);
         mBinding.ivShuffleActivityFullScreenPlayer.setOnClickListener(this);
+        mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setOnClickListener(this);
         mCurrentPlayListAdapter = new CurrentPlayListAdapter(this);
         initialCurrentPlayList();
     }
@@ -311,7 +327,14 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
             case R.id.iv_shuffle_activity_full_screen_player:
                 sendChangePlayModeAction();
                 break;
+            case R.id.iv_repeat_playlist_activity_full_screen_player:
+                sendChangeRepeatAction();
+                break;
         }
+    }
+
+    private void sendChangeRepeatAction() {
+        mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_REPEAT, null);
     }
 
     private void sendChangePlayModeAction() {
