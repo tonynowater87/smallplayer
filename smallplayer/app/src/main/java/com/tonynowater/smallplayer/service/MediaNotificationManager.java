@@ -96,6 +96,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private static final String ACTION_PREVIOUS = "com.tonynowater.smallplayer.previous";
     private static final String ACTION_STOP = "com.tonynowater.smallplayer.stop";
     private static final String ACTION_MODE = "com.tonynowater.smallplayer.mode";
+    private static final String ACTION_REPEAT = "com.tonynowater.smallplayer.repeat";
 
     private PlayMusicService mPlayMusicService;
     private NotificationManager mNotificationManager;
@@ -176,6 +177,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private PendingIntent mPreviousIntent;
     private PendingIntent mStopIntent;
     private PendingIntent mModeIntent;
+    private PendingIntent mRepeatIntent;
 
     private boolean mStarted = false;
     private int mNotificationColor;
@@ -194,6 +196,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mPreviousIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_PREVIOUS).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mStopIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_STOP).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mModeIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_MODE).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
+        mRepeatIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_REPEAT).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Cancel all notifications to handle the case where the Service was killed and
         // restarted by the system.
@@ -239,6 +242,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             intentFilter.addAction(ACTION_NEXT);
             intentFilter.addAction(ACTION_STOP);
             intentFilter.addAction(ACTION_MODE);
+            intentFilter.addAction(ACTION_REPEAT);
             mPlayMusicService.registerReceiver(this, intentFilter);
             // The notification must be updated after setting started to true
             Notification notification = createNofification();
@@ -286,11 +290,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
                 .setContentText(mediaDescription.getSubtitle())
-                .setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
+                .setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
                         , getAlbumArt(mMediaMetadata, builder)))
-                .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
+                .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                         , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
                         , getAlbumArt(mMediaMetadata, builder)));
@@ -331,14 +335,16 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     /** @return 自訂通知的Layout */
-    private RemoteViews getRemoteViews(int layoutId, String title, String artist, Bitmap art) {
+    private RemoteViews getBigRemoteViews(int layoutId, String title, String artist, Bitmap art) {
         RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_image_view_shuffle, mModeIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_repeat, mRepeatIntent);
         remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
         setShuffleButtonColor(remoteViews);
+        setRepeatButtonColor(remoteViews, mPlaybackState.getExtras());
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
             remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
             remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
@@ -351,6 +357,36 @@ public class MediaNotificationManager extends BroadcastReceiver {
         remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
         remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
         return remoteViews;
+    }
+
+    /** @return 自訂通知的Layout */
+    private RemoteViews getSmallRemoteViews(int layoutId, String title, String artist, Bitmap art) {
+        RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
+        remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
+            remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
+        } else {
+            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.VISIBLE);
+            remoteViews.setViewVisibility(R.id.progress_bar, View.GONE);
+            boolean isPlay = mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING;
+            remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+        }
+        remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
+        remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
+        return remoteViews;
+    }
+
+    private void setRepeatButtonColor(RemoteViews remoteViews, Bundle extras) {
+        boolean isRepeat = extras.getBoolean(PlayMusicService.BUNDLE_KEY_IS_REPEAT);
+        if (isRepeat) {
+            remoteViews.setInt(R.id.notification_image_view_repeat, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), R.color.colorAccent));
+        } else {
+            remoteViews.setInt(R.id.notification_image_view_repeat, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), android.R.color.white));
+        }
     }
 
     /**
@@ -455,8 +491,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 bundle.putSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE, MiscellaneousUtil.getNextMode((MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras()))));
                 mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYMODE, bundle);
                 break;
+            case ACTION_REPEAT:
+                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_REPEAT, null);
+                break;
             default:
-                Log.d(TAG, "onReceive: unknow " + action);
+                Log.d(TAG, "onReceive: unknown " + action);
         }
     }
 
@@ -475,11 +514,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
                 if (TextUtils.equals(artUrl,mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))) {
                     //抓回來的圖是播放歌曲的圖才去更新Nofification
-                    builder.setCustomContentView(getRemoteViews(R.layout.notification_layout_normal
+                    builder.setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
                             , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                             , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
                             , icon))
-                            .setCustomBigContentView(getRemoteViews(R.layout.notification_layout_large
+                            .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
                                     , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                                     , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
                                     , bitmap));
