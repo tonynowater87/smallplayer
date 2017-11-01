@@ -28,7 +28,6 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/5/1.
  */
-// TODO: 2017/10/23 搜尋完不會自動捲到最上面
 public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements BaseQueryArrayList.IOnU2BQuery {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
     private static final String BUNDLE_KEY_QUERY = "BUNDLE_KEY_QUERY";
@@ -122,6 +121,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     break;
             }
 
+            mBinding.recyclerviewU2bsearchfragment.scrollToPosition(0);
             mBinding.lottieAnimationView.setVisibility(View.VISIBLE);
         }
     }
