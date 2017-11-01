@@ -284,4 +284,8 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         }
         return null;
     }
+
+    public void expandSearchView() {
+        mSearchViewComponent.expandSearchView();
+    }
 }

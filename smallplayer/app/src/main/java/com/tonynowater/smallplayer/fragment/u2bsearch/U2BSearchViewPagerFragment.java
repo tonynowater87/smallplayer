@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsearchfragmentBinding;
@@ -28,7 +29,7 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/5/1.
  */
-public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements BaseQueryArrayList.IOnU2BQuery {
+public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements BaseQueryArrayList.IOnU2BQuery, View.OnClickListener {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
     private static final String BUNDLE_KEY_QUERY = "BUNDLE_KEY_QUERY";
 
@@ -123,6 +124,9 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
 
             mBinding.recyclerviewU2bsearchfragment.scrollToPosition(0);
             mBinding.lottieAnimationView.setVisibility(View.VISIBLE);
+            mBinding.ivSearchIcon.setVisibility(View.GONE);
+        } else {
+            mBinding.ivSearchIcon.setVisibility(View.VISIBLE);
         }
     }
 
@@ -162,6 +166,9 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         } else {
             if (mEnumU2BSearchType == EnumU2BSearchType.PLAYLISTVIDEO) {
                 queryBySearchView(getArguments().getString(BUNDLE_KEY_PLAYLISTID));
+            } else {
+                mBinding.ivSearchIcon.setVisibility(View.VISIBLE);
+                mBinding.ivSearchIcon.setOnClickListener(this);
             }
         }
     }
@@ -279,5 +286,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             showToast(getString(R.string.u2b_query_failure));
             mBinding.lottieAnimationView.setVisibility(View.GONE);
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        ((MainActivity) getActivity()).expandSearchView();
     }
 }

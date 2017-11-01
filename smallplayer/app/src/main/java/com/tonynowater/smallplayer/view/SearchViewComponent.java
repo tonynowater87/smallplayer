@@ -51,6 +51,7 @@ public class SearchViewComponent {
 
     private SearchRecentSuggestions mSearchRecentSuggestions;
     private SearchView mSearchView;
+    private Menu mMenu;
     private CustomSearchAdapter mSimpleCursorAdapter;
     private Activity mActivity;
     private OnSearchViewComponentCallback mOnSearchViewComponentCallback;
@@ -58,6 +59,7 @@ public class SearchViewComponent {
 
     public SearchViewComponent(Activity activity, Menu menu, ComponentName componentName) {
         mActivity = activity;
+        mMenu = menu;
 
         if (mActivity instanceof OnSearchViewComponentCallback) {
             mOnSearchViewComponentCallback = (OnSearchViewComponentCallback) activity;
@@ -92,14 +94,11 @@ public class SearchViewComponent {
                     public void onResponse(final Response response) throws IOException {
                         if (response.isSuccessful()) {
                             final String sResponse = new String(response.body().bytes());
-                            mActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.d(TAG, "suggesion response: " + sResponse);
-                                    mSuggestions = U2BApiUtil.getSuggestionStringList(sResponse);
-                                    if (MiscellaneousUtil.isListOK(mSuggestions)) {
-                                        initialSearchViewSuggestAdapter(mSuggestions, false);
-                                    }
+                            mActivity.runOnUiThread(() -> {
+                                Log.d(TAG, "suggesion response: " + sResponse);
+                                mSuggestions = U2BApiUtil.getSuggestionStringList(sResponse);
+                                if (MiscellaneousUtil.isListOK(mSuggestions)) {
+                                    initialSearchViewSuggestAdapter(mSuggestions, false);
                                 }
                             });
                         }
@@ -169,17 +168,14 @@ public class SearchViewComponent {
         if (MiscellaneousUtil.isListOK(mSuggestions)) {
             if (TextUtils.equals(mActivity.getString(R.string.search_bar_hint), mSuggestions.get(position))) {
                 //若是點擊最近搜尋列，清空搜尋記錄
-                DialogUtil.showYesNoDialog(mActivity, mActivity.getString(R.string.search_bar_clear_history_confirm_dialog_title), new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                        switch (dialogAction) {
-                            case POSITIVE:
-                                mSearchRecentSuggestions.clearHistory();
-                                mSearchView.setSuggestionsAdapter(null);
-                                break;
-                            case NEGATIVE:
-                                break;
-                        }
+                DialogUtil.showYesNoDialog(mActivity, mActivity.getString(R.string.search_bar_clear_history_confirm_dialog_title), (materialDialog, dialogAction) -> {
+                    switch (dialogAction) {
+                        case POSITIVE:
+                            mSearchRecentSuggestions.clearHistory();
+                            mSearchView.setSuggestionsAdapter(null);
+                            break;
+                        case NEGATIVE:
+                            break;
                     }
                 });
             } else {
@@ -207,6 +203,13 @@ public class SearchViewComponent {
             mSearchRecentSuggestions.saveRecentQuery(query, null);
             mSearchView.clearFocus();//防搜尋完鍵盤會彈起來
         }
+    }
+
+    /**
+     * 展開SearchView
+     */
+    public void expandSearchView() {
+        mMenu.findItem(R.id.menu_search).expandActionView();
     }
 }
 
