@@ -67,6 +67,8 @@
     <string name="no_permission_warning_msg">沒有開啟權限，不能使用本地音樂及下載音樂功能!</string>
     <string name="delete_all_dialog_check_title">是否要刪除全部的歌曲</string>
     <string name="viewpager_title_u2b_user_playlist">Youtube清單</string>
+    <string name="google_login_fail_msg">登入失敗</string>
+    <string name="refresh_token_fail">更新token失敗</string>
 
     <string-array name="local_action_list">
         <item>播放</item>

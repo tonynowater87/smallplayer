@@ -11,6 +11,8 @@ public class SPManager {
     public static final String SHARED_PREFERENCE_COMMON = "SHARED_PREFERENCE_COMMON";
     private static final String SP_KEY_LOGIN = "SP_KEY_LOGIN";
     private static final String SP_KEY_ACCESS_TOKEN = "SP_KEY_ACCESS_TOKEN";
+    private static final String SP_KEY_REFRESH_TOKEN = "SP_KEY_REFRESH_TOKEN";
+    private static final String SP_KEY_EXPIRES_IN = "SP_KEY_EXPIRES_IN";
 
     private static SPManager mInstance = null;
 
@@ -41,5 +43,21 @@ public class SPManager {
 
     public String getAccessToken() {
         return sharedPreferences.getString(SP_KEY_ACCESS_TOKEN, "");
+    }
+
+    public void setRefreshToken(String token) {
+        sharedPreferences.edit().putString(SP_KEY_REFRESH_TOKEN, token).commit();
+    }
+
+    public String getRefreshToken() {
+        return sharedPreferences.getString(SP_KEY_REFRESH_TOKEN, "");
+    }
+
+    public void setTokenExpireTime(long expires_in) {
+        sharedPreferences.edit().putLong(SP_KEY_EXPIRES_IN, expires_in).commit();
+    }
+
+    public long getTokenExpireTime() {
+        return sharedPreferences.getLong(SP_KEY_EXPIRES_IN, -1);
     }
 }

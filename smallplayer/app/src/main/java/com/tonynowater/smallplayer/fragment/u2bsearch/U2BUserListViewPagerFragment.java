@@ -16,12 +16,14 @@ import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.databinding.LayoutU2bUserPlaylistFragmentBinding;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
+import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.util.BaseQueryArrayList;
 import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
 import com.tonynowater.smallplayer.module.u2b.util.U2BUserListQueryArrayList;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SPManager;
 import com.tonynowater.smallplayer.util.google.GoogleLoginUtil;
+import com.tonynowater.smallplayer.util.google.TokenExpireTimeDefine;
 
 import java.util.List;
 
@@ -75,38 +77,50 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mBinding.googleSignInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGoogleLoginUtil.googleSignIn(U2BUserListViewPagerFragment.this);
-            }
-        });
+        mBinding.googleSignInButton.setOnClickListener(v -> mGoogleLoginUtil.googleSignIn(U2BUserListViewPagerFragment.this));
         if (!SPManager.getInstance(MyApplication.getContext()).getIsGoogleLogin()) {
             mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, GoogleLoginUtil.FRAGMENT_LOGIN, new GoogleLoginUtil.OnGoogleLoginCallBack() {
                 @Override
-                public void onGoogleLoginSuccess(String authToken) {
-                    U2BQueryParamsItem u2BQueryParamsItem = new U2BQueryParamsItem(EnumU2BSearchType.USER_LIST, "", true);
-                    mU2BUserListQueryArray = new U2BUserListQueryArrayList(u2BQueryParamsItem, U2BUserListViewPagerFragment.this);
-                    SPManager.getInstance(getContext()).setAccessToken(authToken);
-                    queryYoutubeUserPlaylist();
+                public void onGoogleLoginSuccess() {
+                    checkIsNeedRefreshToken();
                 }
 
                 @Override
                 public void onGoogleLoginFailure() {
-                    showToast("Google 登入失敗");
+                    showToast(getString(R.string.google_login_fail_msg));
                 }
             });
             mBinding.googleSignInButton.setVisibility(View.VISIBLE);
         } else {
-            queryYoutubeUserPlaylist();
+            checkIsNeedRefreshToken();
         }
         initialU2BSearchAdapter();
     }
 
+    private void checkIsNeedRefreshToken() {
+        if (SPManager.getInstance(getContext()).getTokenExpireTime() - TokenExpireTimeDefine.TOKEN_EXPIRE_TIME > System.currentTimeMillis()) {
+            U2BApi.newInstance().refreshYoutubeToken(SPManager.getInstance(getContext()).getRefreshToken(), new U2BApi.OnRequestTokenCallback() {
+                @Override
+                public void onSuccess() {
+                    queryYoutubeUserPlaylist();
+                }
+
+                @Override
+                public void onFailure() {
+                    showToast(getString(R.string.refresh_token_fail));
+                }
+            });
+        } else {
+            queryYoutubeUserPlaylist();
+        }
+    }
+
     private void queryYoutubeUserPlaylist() {
+        U2BQueryParamsItem u2BQueryParamsItem = new U2BQueryParamsItem(EnumU2BSearchType.USER_LIST, "", true);
+        mU2BUserListQueryArray = new U2BUserListQueryArrayList(u2BQueryParamsItem, U2BUserListViewPagerFragment.this);
         mU2BUserListQueryArray.query();
-        mBinding.googleSignInButton.setVisibility(View.GONE);
-        mBinding.lottieAnimationView.setVisibility(View.VISIBLE);
+        mBinding.googleSignInButton.post(() -> mBinding.googleSignInButton.setVisibility(View.GONE));
+        mBinding.lottieAnimationView.post(() -> mBinding.lottieAnimationView.setVisibility(View.VISIBLE));
     }
 
     @Override
@@ -155,20 +169,19 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onStop() {
         super.onStop();
-        mGoogleLoginUtil.onStop();
+        if (mGoogleLoginUtil != null) {
+            mGoogleLoginUtil.onStop();
+        }
     }
 
     @Override
     public void onQuerySuccess() {
         mSongListAdapter.setDataSource(mU2BUserListQueryArray);
         if (isAdded()) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mSongListAdapter.notifyDataSetChanged();
-                    isLoad = false;
-                    mBinding.lottieAnimationView.setVisibility(View.GONE);
-                }
+            getActivity().runOnUiThread(() -> {
+                mSongListAdapter.notifyDataSetChanged();
+                isLoad = false;
+                mBinding.lottieAnimationView.setVisibility(View.GONE);
             });
         }
     }
@@ -181,13 +194,10 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     private void showFailToast() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                showToast(getString(R.string.u2b_query_failure));
-                mBinding.lottieAnimationView.setVisibility(View.GONE);
-                mBinding.googleSignInButton.setVisibility(View.VISIBLE);
-            }
+        getActivity().runOnUiThread(() -> {
+            showToast(getString(R.string.u2b_query_failure));
+            mBinding.lottieAnimationView.setVisibility(View.GONE);
+            mBinding.googleSignInButton.setVisibility(View.VISIBLE);
         });
     }
 }

@@ -1,16 +1,11 @@
 package com.tonynowater.smallplayer.util.google;
 
-import android.accounts.Account;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -18,9 +13,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
-
-import java.io.IOException;
+import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.module.u2b.U2BApi;
 
 // TODO: 2017/10/6 Release版的Google登入會失敗 (因為SHA1不一樣)
 /**
@@ -36,7 +32,7 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
     public static final int FRAGMENT_LOGIN = 1;
 
     public interface OnGoogleLoginCallBack {
-        void onGoogleLoginSuccess(String authToken);
+        void onGoogleLoginSuccess();
         void onGoogleLoginFailure();
     }
 
@@ -65,8 +61,11 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
         this.mFragment = fragment;
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                //.requestIdToken(context.getString(R.string.default_web_client_id))//加這行登入成功後才取得到IdToken，但不知用來做什麼，先註解
+                 //.requestIdToken(mFragmentActivity.getString(R.string.default_web_client_id))//加這行登入成功後才取得到IdToken，但不知用來做什麼，先註解
                 .requestEmail()//加這行登入成功後才取得到Account
+                //取AuthServerCode
+                .requestScopes(new Scope(AUTH_YOUTUBE))
+                .requestServerAuthCode(mFragmentActivity.getString(R.string.default_web_client_id))
                 .build();
         //Log.d(TAG, "GoogleLoginUtil default_web_client_id : " + context.getString(R.string.default_web_client_id));
         //Log.d(TAG, "GoogleLoginUtil google_app_id : " + context.getString(R.string.google_app_id));
@@ -146,8 +145,21 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     if (result.isSuccess()) {
                         GoogleSignInAccount account = result.getSignInAccount();
-                        Log.d(TAG, "onActivityResult google login success : " + account.getEmail() + "\n" + account.getIdToken());
-                        new GetTokenAyncTask().execute(account.getAccount());
+                        Log.d(TAG, "onActivityResult google login success : "
+                                + account.getEmail()
+                                + "\n" + account.getIdToken()
+                                + "\n" + account.getServerAuthCode());
+                        U2BApi.newInstance().getYoutubeToken(account.getServerAuthCode(), new U2BApi.OnRequestTokenCallback() {
+                            @Override
+                            public void onSuccess() {
+                                mCallback.onGoogleLoginSuccess();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                mCallback.onGoogleLoginFailure();
+                            }
+                        });
                     } else {
                         Log.e(TAG, "onActivityResult: " + result.getStatus().getStatusMessage());
                         mCallback.onGoogleLoginFailure();
@@ -171,36 +183,36 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
             mCallback.onGoogleLoginFailure();
         }
     }
-
-    private class GetTokenAyncTask extends AsyncTask<Account, Void, String> {
-        @Override
-        protected String doInBackground(Account... accounts) {
-            String scopes = "oauth2:" + AUTH_YOUTUBE;
-            String token = null;
-            try {
-                token = GoogleAuthUtil.getToken(mGoogleApiClient.getContext(), accounts[0], scopes);
-            } catch (IOException e) {
-                Log.e(TAG, "IOException: " + e.getMessage());
-            } catch (UserRecoverableAuthException e) {
-                Log.e(TAG, "UserRecoverableAuthException: " + e.getMessage());
-                mFragment.startActivityForResult(e.getIntent(), RC_UserRecoverableAuth);
-
-            } catch (GoogleAuthException e) {
-                Log.e(TAG, "GoogleAuthException: " + e.getMessage());
-            }
-            return token;
-        }
-
-        @Override
-        protected void onPostExecute(String token) {
-            super.onPostExecute(token);
-            Log.d(TAG, "onActivityResult: getToken " + token);
-            if (token != null) {
-                mCallback.onGoogleLoginSuccess(token);
-            } else {
-                mCallback.onGoogleLoginFailure();
-            }
-        }
-    }
+//用GoogleAuthUtil取得AccessToken的方式
+//    private class GetTokenAyncTask extends AsyncTask<Account, Void, String> {
+//        @Override
+//        protected String doInBackground(Account... accounts) {
+//            String scopes = "oauth2:" + AUTH_YOUTUBE;
+//            String token = null;
+//            try {
+//                token = GoogleAuthUtil.getToken(mGoogleApiClient.getContext(), accounts[0], scopes);
+//            } catch (IOException e) {
+//                Log.e(TAG, "IOException: " + e.getMessage());
+//            } catch (UserRecoverableAuthException e) {
+//                Log.e(TAG, "UserRecoverableAuthException: " + e.getMessage());
+//                mFragment.startActivityForResult(e.getIntent(), RC_UserRecoverableAuth);
+//
+//            } catch (GoogleAuthException e) {
+//                Log.e(TAG, "GoogleAuthException: " + e.getMessage());
+//            }
+//            return token;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String token) {
+//            super.onPostExecute(token);
+//            Log.d(TAG, "onActivityResult: getToken " + token);
+//            if (token != null) {
+//                mCallback.onGoogleLoginSuccess(token);
+//            } else {
+//                mCallback.onGoogleLoginFailure();
+//            }
+//        }
+//    }
 }
 

@@ -6,13 +6,16 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.module.dto.U2BAccessTokenDTO;
 import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
@@ -36,7 +39,6 @@ import static com.tonynowater.smallplayer.module.u2b.U2BApiDefine.DEFAULT_QUERY_
 /**
  * Created by tonyliao on 2017/4/30.
  */
-// TODO: 2017/10/16 Youtube AccessToken過期的問題待處理
 public class U2BApi {
     private static final String TAG = U2BApi.class.getSimpleName();
     public static final int TIMEOUT = 10;
@@ -56,6 +58,11 @@ public class U2BApi {
     public interface OnMsgRequestCallback {
         void onSuccess(String response);
         void onFailure(String errorMsg);
+    }
+
+    public interface OnRequestTokenCallback {
+        void onSuccess();
+        void onFailure();
     }
 
     private U2BApi() {
@@ -421,25 +428,93 @@ public class U2BApi {
         Log.d(TAG, "sendHttpRequest:" + request.toString());
         mOkHttp.newCall(request).enqueue(callback);
     }
+
+
+    /**
+     * 取Access Token
+     * @param authCode
+     * @param callback
+     */
+    public void getYoutubeToken(String authCode, final OnRequestTokenCallback callback) {
+        String AUTH_SERVER_TOKEN = "https://www.googleapis.com/oauth2/v4/token";
+        RequestBody requestBody = new FormEncodingBuilder()
+                .add("grant_type", "authorization_code")
+                .add("client_id", MyApplication.getContext().getString(R.string.default_web_client_id))
+                .add("redirect_uri", "https://smallplayer-166212.firebaseapp.com/__/auth/handler")
+                .add("client_secret", "xvQXNCJUcDrCv72RC0tn9N4u")
+                .add("code", authCode)
+                .build();
+
+        final Request request = new Request.Builder()
+                .post(requestBody)
+                .url(AUTH_SERVER_TOKEN)
+                .build();
+
+        Log.d(TAG, "getYoutubeToken: " + request.toString());
+        mOkHttp.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                callback.onFailure();
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String body = response.body().string();
+                    Log.d(TAG, "onResponse: " + body);
+                    U2BAccessTokenDTO dto = new Gson().fromJson(body, U2BAccessTokenDTO.class);
+                    SPManager.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
+                    SPManager.getInstance(MyApplication.getContext()).setRefreshToken(dto.refresh_token);
+                    SPManager.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));
+                    SPManager.getInstance(MyApplication.getContext()).setIsGoogleLogin(true);
+                    callback.onSuccess();
+                } else {
+                    SPManager.getInstance(MyApplication.getContext()).setIsGoogleLogin(false);
+                    callback.onFailure();
+                }
+            }
+        });
+    }
+
+    /**
+     *
+     * @param refresh_token
+     * @param callback
+     */
+    public void refreshYoutubeToken(String refresh_token, final OnRequestTokenCallback callback) {
+        String AUTH_SERVER_TOKEN = "https://www.googleapis.com/oauth2/v4/token";
+        RequestBody requestBody = new FormEncodingBuilder()
+                .add("grant_type", "refresh_token")
+                .add("client_id", MyApplication.getContext().getString(R.string.default_web_client_id))
+                .add("client_secret", "xvQXNCJUcDrCv72RC0tn9N4u")
+                .add("refresh_token", refresh_token)
+                .build();
+
+        final Request request = new Request.Builder()
+                .post(requestBody)
+                .url(AUTH_SERVER_TOKEN)
+                .build();
+
+        Log.d(TAG, "refreshYoutubeToken: " + request.toString());
+        mOkHttp.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                callback.onFailure();
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String body = response.body().string();
+                    Log.d(TAG, "onResponse: " + body);
+                    U2BAccessTokenDTO dto = new Gson().fromJson(body, U2BAccessTokenDTO.class);
+                    SPManager.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
+                    SPManager.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure();
+                }
+            }
+        });
+    }
 }
-
-
-//另一種方式取Access Token的方式
-//    public void getYoutubeToken(String authCode, Callback callback) {
-//        String AUTH_SERVER_TOKEN = "https://www.googleapis.com/oauth2/v4/token";
-//        RequestBody requestBody = new FormEncodingBuilder()
-//                .add("grant_type", "authorization_code")
-//                .add("client_id", MyApplication.getContext().getString(R.string.default_web_client_id))
-//                .add("redirect_uri", "https://smallplayer-166212.firebaseapp.com/__/auth/handler")
-//                .add("client_secret", "xvQXNCJUcDrCv72RC0tn9N4u")
-//                .add("code", authCode)
-//                .build();
-//
-//        Request request = new Request.Builder()
-//                .post(requestBody)
-//                .url(AUTH_SERVER_TOKEN)
-//                .build();
-//
-//        Log.d(TAG, "getYoutubeToken: " + request.toString());
-//        mOkHttp.newCall(request).enqueue(callback);
-//    }
