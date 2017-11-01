@@ -23,7 +23,6 @@ import com.tonynowater.smallplayer.module.u2b.util.U2BUserListQueryArrayList;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SPManager;
 import com.tonynowater.smallplayer.util.google.GoogleLoginUtil;
-import com.tonynowater.smallplayer.util.google.TokenExpireTimeDefine;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
  * 使用者Youtube播放清單畫面
  * Created by tonynowater on 2017/10/3.
  */
-public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2bUserPlaylistFragmentBinding> implements BaseQueryArrayList.IOnU2BQuery {
+public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2bUserPlaylistFragmentBinding> implements BaseQueryArrayList.IOnU2BQuery, GoogleLoginUtil.OnGoogleLoginCallBack {
 
     private static final String TAG = U2BUserListViewPagerFragment.class.getSimpleName();
 
@@ -77,19 +76,9 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, GoogleLoginUtil.FRAGMENT_LOGIN, this);
         mBinding.googleSignInButton.setOnClickListener(v -> mGoogleLoginUtil.googleSignIn(U2BUserListViewPagerFragment.this));
         if (!SPManager.getInstance(MyApplication.getContext()).getIsGoogleLogin()) {
-            mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, GoogleLoginUtil.FRAGMENT_LOGIN, new GoogleLoginUtil.OnGoogleLoginCallBack() {
-                @Override
-                public void onGoogleLoginSuccess() {
-                    checkIsNeedRefreshToken();
-                }
-
-                @Override
-                public void onGoogleLoginFailure() {
-                    showToast(getString(R.string.google_login_fail_msg));
-                }
-            });
             mBinding.googleSignInButton.setVisibility(View.VISIBLE);
         } else {
             checkIsNeedRefreshToken();
@@ -98,7 +87,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     private void checkIsNeedRefreshToken() {
-        if (SPManager.getInstance(getContext()).getTokenExpireTime() - TokenExpireTimeDefine.TOKEN_EXPIRE_TIME > System.currentTimeMillis()) {
+        if ((SPManager.getInstance(getContext()).getTokenExpireTime() - System.currentTimeMillis()) < 0) {
             U2BApi.newInstance().refreshYoutubeToken(SPManager.getInstance(getContext()).getRefreshToken(), new U2BApi.OnRequestTokenCallback() {
                 @Override
                 public void onSuccess() {
@@ -108,6 +97,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
                 @Override
                 public void onFailure() {
                     showToast(getString(R.string.refresh_token_fail));
+                    mGoogleLoginUtil.googleSignIn(U2BUserListViewPagerFragment.this);
                 }
             });
         } else {
@@ -169,9 +159,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onStop() {
         super.onStop();
-        if (mGoogleLoginUtil != null) {
-            mGoogleLoginUtil.onStop();
-        }
+        mGoogleLoginUtil.onStop();
     }
 
     @Override
@@ -199,5 +187,15 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
             mBinding.lottieAnimationView.setVisibility(View.GONE);
             mBinding.googleSignInButton.setVisibility(View.VISIBLE);
         });
+    }
+
+    @Override
+    public void onGoogleLoginSuccess() {
+        checkIsNeedRefreshToken();
+    }
+
+    @Override
+    public void onGoogleLoginFailure() {
+        showToast(getString(R.string.google_login_fail_msg));
     }
 }
