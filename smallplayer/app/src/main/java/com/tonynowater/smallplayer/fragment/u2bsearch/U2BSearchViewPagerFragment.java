@@ -31,6 +31,7 @@ import java.util.List;
 // TODO: 2017/10/23 搜尋完不會自動捲到最上面
 public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bsearchfragmentBinding> implements BaseQueryArrayList.IOnU2BQuery {
     private static final String TAG = U2BSearchViewPagerFragment.class.getSimpleName();
+    private static final String BUNDLE_KEY_QUERY = "BUNDLE_KEY_QUERY";
 
     private U2BPlayListQueryArray<U2BUserPlayListEntity> u2BPlayListQueryArray;
     private U2BVideoQUeryArray<PlayListSongEntity> u2BVideoQUeryArray;
@@ -155,10 +156,19 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         super.onActivityCreated(savedInstanceState);
         mEnumU2BSearchType = (EnumU2BSearchType) getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE);
         initialU2BSearchAdapter();
-        if (mEnumU2BSearchType == EnumU2BSearchType.PLAYLISTVIDEO) {
-            mIsNeedAuthToken = getArguments().getBoolean(BUNDLE_KEY_IS_NEED_AUTH_TOKEN);
-            queryBySearchView(getArguments().getString(BUNDLE_KEY_PLAYLISTID));
+        mIsNeedAuthToken = getArguments().getBoolean(BUNDLE_KEY_IS_NEED_AUTH_TOKEN);
+        if (savedInstanceState != null) {
+            queryBySearchView(savedInstanceState.getString(BUNDLE_KEY_QUERY));
+        } else {
+            if (mEnumU2BSearchType == EnumU2BSearchType.PLAYLISTVIDEO) {
+                queryBySearchView(getArguments().getString(BUNDLE_KEY_PLAYLISTID));
+            }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(BUNDLE_KEY_QUERY, mQuery);
     }
 
     private void initialU2BSearchAdapter() {
@@ -249,13 +259,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
 
         mSongListAdapter.setDataSource(baseQueryArrayList);
         if (isAdded()) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mSongListAdapter.notifyDataSetChanged();
-                    isLoad = false;
-                    mBinding.lottieAnimationView.setVisibility(View.GONE);
-                }
+            getActivity().runOnUiThread(() -> {
+                mSongListAdapter.notifyDataSetChanged();
+                isLoad = false;
+                mBinding.lottieAnimationView.setVisibility(View.GONE);
             });
         }
     }
@@ -268,12 +275,9 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     }
 
     private void showFailToast() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                showToast(getString(R.string.u2b_query_failure));
-                mBinding.lottieAnimationView.setVisibility(View.GONE);
-            }
+        getActivity().runOnUiThread(() -> {
+            showToast(getString(R.string.u2b_query_failure));
+            mBinding.lottieAnimationView.setVisibility(View.GONE);
         });
     }
 }

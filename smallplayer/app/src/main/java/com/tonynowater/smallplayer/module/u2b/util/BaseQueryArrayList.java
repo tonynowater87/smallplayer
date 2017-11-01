@@ -23,6 +23,7 @@ public abstract class BaseQueryArrayList extends ArrayList {
     }
 
     public void setKeyword(String keyword) {
+        ueryParamsItem.setNextPageToken("");
         ueryParamsItem.setKeyword(keyword);
     }
 
