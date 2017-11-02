@@ -190,25 +190,22 @@ public class DialogUtil {
         builder.title(R.string.change_play_list_dialog_title);
         builder.items(playListEntities);
         builder.itemsCallbackSingleChoice(currentPlaylistPosition,
-                new MaterialDialog.ListCallbackSingleChoice() {
-            @Override
-            public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                int playListId = playListEntities.get(i).getId();
-                realmUtils.setCurrentPlayListID(playListId);
-                baseMediaControlActivity.sendActionChangePlaylist(playListId);
-                realmUtils.close();
-                if (callBack != null) {
-                    callBack.onSubmit();
-                }
-                return true;
-            }
-        });
-        builder.cancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if (callBack != null) {
-                    callBack.onCancel();
-                }
+                (materialDialog, view, i, charSequence) -> {
+                    int playListId = playListEntities.get(i).getId();
+                    if (playListId != playListEntities.get(currentPlaylistPosition).getId()) {
+                        //切換不同的歌單才做動作
+                        realmUtils.setCurrentPlayListID(playListId);
+                        baseMediaControlActivity.sendActionChangePlaylist(playListId);
+                        realmUtils.close();
+                        if (callBack != null) {
+                            callBack.onSubmit();
+                        }
+                    }
+                    return true;
+                });
+        builder.cancelListener(dialog -> {
+            if (callBack != null) {
+                callBack.onCancel();
             }
         });
         builder.show();

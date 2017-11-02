@@ -469,15 +469,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         private void handleChangePlayList(int playlistId) {
             Log.d(TAG, "handleChangePlayList: ");
             mMusicProvider.queryDBPlayList(playlistId);
-            if (mCurrentPlayListId != playlistId) {
-                //切換歌單，從頭播放歌曲
-                mMusicProvider.setSongPosition(0);
-            } else {
-                //切換原歌單就是播最新加的一首歌
-                if (mMusicProvider.getPlayListSize() != 0) {
-                    mMusicProvider.setSongPosition(mMusicProvider.getPlayListSize() - 1);
-                }
-            }
+            //切換歌單，從第一首開始播放
+            mMusicProvider.setSongPosition(0);
             mCurrentPlayListId = playlistId;
             if (mMusicProvider.getPlayListSize() == 0) {
                 //切換到沒歌曲的歌單要停止播放
