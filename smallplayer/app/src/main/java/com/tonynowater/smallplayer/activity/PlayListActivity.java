@@ -103,38 +103,35 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
                 return;
             }
 
-            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
-                @Override
-                public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
-                    switch (i) {
-                        case 0:
-                            int currentPlayListId = mRealmUtils.queryCurrentPlayListID();
-                            sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, playListSongEntity));
-                            break;
-                        case 1:
-                            DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, playListSongEntity, mTransportControls);
-                            break;
-                        case 2:
-                            if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
-                                showToast(getString(R.string.no_permission_warning_msg));
-                                return;
+            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, (materialDialog, view, i, charSequence) -> {
+                switch (i) {
+                    case 0:
+                        int currentPlayListId = mRealmUtils.queryCurrentPlayListID();
+                        sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, playListSongEntity));
+                        break;
+                    case 1:
+                        DialogUtil.showSelectPlaylistDialog(PlayListActivity.this, playListSongEntity, mTransportControls);
+                        break;
+                    case 2:
+                        if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                            showToast(getString(R.string.no_permission_warning_msg));
+                            return;
+                        }
+                        showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
+                        U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
+                            @Override
+                            public void onSuccess(String response) {
+                                Log.d(TAG, "onSuccess: " + response);
+                                showToast(response);
                             }
-                            showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
-                            U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
-                                @Override
-                                public void onSuccess(String response) {
-                                    Log.d(TAG, "onSuccess: " + response);
-                                    showToast(response);
-                                }
 
-                                @Override
-                                public void onFailure(String errorMsg) {
-                                    Log.d(TAG, "onFailure: " + errorMsg);
-                                    showToast(errorMsg);
-                                }
-                            });
-                            break;
-                    }
+                            @Override
+                            public void onFailure(String errorMsg) {
+                                Log.d(TAG, "onFailure: " + errorMsg);
+                                showToast(errorMsg);
+                            }
+                        });
+                        break;
                 }
             });
         }

@@ -1,14 +1,19 @@
 package com.tonynowater.smallplayer.util;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.squareup.okhttp.Response;
@@ -30,13 +35,17 @@ import okio.Okio;
 public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
     private static final String TAG = FileHelper.class.getSimpleName();
     private static final int BYTE_READ = 2048;
+    private static final String ACTION_STOP_DOWNLOAD = "com.tonynowater.smallplayer.stop_download";
+    private static final int REQUEST_CODE = 100;
     private final String mPath;
     private final String mp3suffix = ".mp3";
+    private final PendingIntent mStopDownloadIntent;
     private PlayListSongEntity mPlayListSongEntity;
     private String mFileName;
     private Response mResponse;
     private OnFileHelperCallback mCallback;
     private int mId;
+    private BroadcastReceiver localBroadcastManager;
 
     public interface OnFileHelperCallback {
         void onSuccess(String msg);
@@ -50,6 +59,19 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
         this.mCallback = mCallback;
         mPath = getFilePath();
         mId = mPlayListSongEntity.hashCode();
+        mStopDownloadIntent = PendingIntent.getBroadcast(MyApplication.getContext(), REQUEST_CODE, new Intent(ACTION_STOP_DOWNLOAD).setPackage(MyApplication.getContext().getPackageName()), PendingIntent.FLAG_ONE_SHOT);
+        localBroadcastManager = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (TextUtils.equals(intent.getAction(), ACTION_STOP_DOWNLOAD)) {
+                    Log.d(TAG, "onReceive: stop download");
+                    FileHelper.this.cancel(true);
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(MyApplication.getContext())
+                .registerReceiver(localBroadcastManager, new IntentFilter(ACTION_STOP_DOWNLOAD));
+
     }
 
     /**
@@ -212,6 +234,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
                 .setContentTitle(MyApplication.getContext().getString(R.string.app_name) + " " + MyApplication.getContext().getString(R.string.downloadMP3_ing_msg))
                 .setContentText(mFileName)
                 .setAutoCancel(false)
+                .addAction(android.R.drawable.ic_media_pause, MyApplication.getContext().getString(R.string.play_state_pause), mStopDownloadIntent)
                 .setProgress(100, percent, false)
                 .setOngoing(true);//設置下載的通知不可被滑掉。
 

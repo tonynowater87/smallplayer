@@ -8,9 +8,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.view.View;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.databinding.ActivityEditPlayListBinding;
@@ -92,37 +90,34 @@ public class EditPlayListActivity extends BaseMediaControlActivity<ActivityEditP
 
         } else if (object instanceof PlayListSongEntity){
             final PlayListSongEntity playListSongEntity = ((PlayListSongEntity) object);
-            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
-                @Override
-                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                    switch (i) {
-                        case 0:
-                            sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), playListSongEntity));
-                            break;
-                        case 1:
-                            DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
-                            break;
-                        case 2:
-                            if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
-                                showToast(getString(R.string.no_permission_warning_msg));
-                                return;
+            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, (materialDialog, view, i, charSequence) -> {
+                switch (i) {
+                    case 0:
+                        sendActionPlayingNow(mRealmUtils.queryCurrentPlayListID(), mRealmUtils.addSongToPlayList(mRealmUtils.queryCurrentPlayListID(), playListSongEntity));
+                        break;
+                    case 1:
+                        DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
+                        break;
+                    case 2:
+                        if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                            showToast(getString(R.string.no_permission_warning_msg));
+                            return;
+                        }
+                        showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
+                        U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
+                            @Override
+                            public void onSuccess(String response) {
+                                Log.d(TAG, "onSuccess: " + response);
+                                showToast(response);
                             }
-                            showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
-                            U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
-                                @Override
-                                public void onSuccess(String response) {
-                                    Log.d(TAG, "onSuccess: " + response);
-                                    showToast(response);
-                                }
 
-                                @Override
-                                public void onFailure(String errorMsg) {
-                                    Log.d(TAG, "onFailure: " + errorMsg);
-                                    showToast(errorMsg);
-                                }
-                            });
-                            break;
-                    }
+                            @Override
+                            public void onFailure(String errorMsg) {
+                                Log.d(TAG, "onFailure: " + errorMsg);
+                                showToast(errorMsg);
+                            }
+                        });
+                        break;
                 }
             });
         }

@@ -75,22 +75,22 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
         return MyApplication.getContext().getString(R.string.viewpager_title_local_music) + DateUtil.getFullLocaleDate();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.add(0, MENU_ID_REFRESH, MENU_ORDER_NUMBER, R.string.refresh)
-                .setIcon(android.R.drawable.ic_menu_rotate)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        menu.add(0, MENU_ID_REFRESH, MENU_ORDER_NUMBER, R.string.refresh)
+//                .setIcon(android.R.drawable.ic_menu_rotate)
+//                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case MENU_ID_REFRESH:
-                mSongListAdapter.setDataSource(MediaUtils.getSongList(MyApplication.getContext(), true));
-                mSongListAdapter.notifyDataSetChanged();
-                return true;
-        }
-
-        return false;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case MENU_ID_REFRESH:
+//                mSongListAdapter.setDataSource(MediaUtils.getSongList(MyApplication.getContext(), true));
+//                mSongListAdapter.notifyDataSetChanged();
+//                return true;
+//        }
+//
+//        return false;
+//    }
 }

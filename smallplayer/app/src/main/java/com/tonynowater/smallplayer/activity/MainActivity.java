@@ -172,17 +172,14 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
         final int currentPlayListId = mRealmUtils.queryCurrentPlayListID();
         if (object instanceof Song) {
             final Song song = ((Song) object);
-            DialogUtil.showActionDialog(this, song.getmTitle(), R.array.local_action_list, new MaterialDialog.ListCallback() {
-                @Override
-                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                    switch (i) {
-                        case 0:
-                            sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, song.getPlayListSongEntity()));
-                            break;
-                        case 1:
-                            DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
-                            break;
-                    }
+            DialogUtil.showActionDialog(this, song.getmTitle(), R.array.local_action_list, (materialDialog, view, i, charSequence) -> {
+                switch (i) {
+                    case 0:
+                        sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, song.getPlayListSongEntity()));
+                        break;
+                    case 1:
+                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, song, mTransportControls);
+                        break;
                 }
             });
         } else if (object instanceof PlayListSongEntity) {
@@ -190,37 +187,34 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
             if (playListSongEntity.isDeletedOrPrivatedVideo()) {
                 return;
             }
-            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, new MaterialDialog.ListCallback() {
-                @Override
-                public void onSelection(MaterialDialog materialDialog, View view, final int i, CharSequence charSequence) {
-                    switch (i) {
-                        case 0:
-                            sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, playListSongEntity));
-                            break;
-                        case 1:
-                            DialogUtil.showSelectPlaylistDialog(MainActivity.this, playListSongEntity, mTransportControls);
-                            break;
-                        case 2:
-                            if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
-                                showToast(getString(R.string.no_permission_warning_msg));
-                                return;
+            DialogUtil.showActionDialog(this, playListSongEntity.getTitle(), R.array.action_list, (materialDialog, view, i, charSequence) -> {
+                switch (i) {
+                    case 0:
+                        sendActionPlayingNow(currentPlayListId, mRealmUtils.addSongToPlayList(currentPlayListId, playListSongEntity));
+                        break;
+                    case 1:
+                        DialogUtil.showSelectPlaylistDialog(MainActivity.this, playListSongEntity, mTransportControls);
+                        break;
+                    case 2:
+                        if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                            showToast(getString(R.string.no_permission_warning_msg));
+                            return;
+                        }
+                        showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
+                        U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
+                            @Override
+                            public void onSuccess(String response) {
+                                Log.d(TAG, "onSuccess: " + response);
+                                showToast(response);
                             }
-                            showToast(String.format(getString(R.string.downloadMP3_start_msg), playListSongEntity.getTitle()));
-                            U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
-                                @Override
-                                public void onSuccess(String response) {
-                                    Log.d(TAG, "onSuccess: " + response);
-                                    showToast(response);
-                                }
 
-                                @Override
-                                public void onFailure(String errorMsg) {
-                                    Log.d(TAG, "onFailure: " + errorMsg);
-                                    showToast(errorMsg);
-                                }
-                            });
-                            break;
-                    }
+                            @Override
+                            public void onFailure(String errorMsg) {
+                                Log.d(TAG, "onFailure: " + errorMsg);
+                                showToast(errorMsg);
+                            }
+                        });
+                        break;
                 }
             });
         } else if (object instanceof U2BUserPlayListEntity) {
