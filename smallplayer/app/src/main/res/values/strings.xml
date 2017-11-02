@@ -69,6 +69,8 @@
     <string name="viewpager_title_u2b_user_playlist">Youtube清單</string>
     <string name="google_login_fail_msg">登入失敗</string>
     <string name="refresh_token_fail">更新token失敗</string>
+    <string name="play_state_shuffle">隨機</string>
+    <string name="play_state_repeat">重複播放</string>
 
     <string-array name="local_action_list">
         <item>播放</item>

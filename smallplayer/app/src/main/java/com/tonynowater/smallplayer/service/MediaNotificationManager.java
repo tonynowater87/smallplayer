@@ -264,49 +264,51 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService);
-        int playPauseButtonPosition = 0;
-
-        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
-            builder.addAction(android.R.drawable.ic_media_previous, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
-            // If there is a "skip to previous" button, the play/pause button will
-            // be the second one. We need to keep track of it, because the MediaStyle notification
-            // requires to specify the index of the buttons (actions) that should be visible
-            // when in compact view.
-            playPauseButtonPosition = 1;
-        }
-        updatePlayPauseAction(builder);
-        // If skip to next action is enabled
-        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
-            builder.addAction(android.R.drawable.ic_media_next, mPlayMusicService.getString(R.string.play_state_next), mNextIntent);
-        }
+        addShuffleAction(builder);
+        builder.addAction(android.R.drawable.ic_media_previous, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
+        addPlayPauseAction(builder);
+        builder.addAction(android.R.drawable.ic_media_next, mPlayMusicService.getString(R.string.play_state_next), mNextIntent);
+        builder.addAction(R.drawable.ic_repeat_white_24px, mPlayMusicService.getString(R.string.play_state_repeat), mRepeatIntent);
 
         MediaDescriptionCompat mediaDescription = mMediaMetadata.getDescription();
 
-        builder.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(new int[]{playPauseButtonPosition}).setMediaSession(mToken))
+        builder.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(new int[]{1, 2, 3}).setMediaSession(mToken)) // show only play/pause in compact view
                 .setColor(mNotificationColor)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.local_music_icon)//沒setSmallIcon，通知會直接沒有顯示
                 .setUsesChronometer(true)//TODO
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
-                .setContentText(mediaDescription.getSubtitle())
-                .setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , getAlbumArt(mMediaMetadata, builder)))
-                .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , getAlbumArt(mMediaMetadata, builder)));
+                .setContentText(mediaDescription.getSubtitle());
+//                .setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                        , getAlbumArt(mMediaMetadata, builder)))
+//                .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                        , getAlbumArt(mMediaMetadata, builder)));
         setNotificationPlayState(builder);
-
+        getAlbumArt(mMediaMetadata, builder);
         return builder.build();
+    }
+
+    private void addShuffleAction(NotificationCompat.Builder builder) {
+        EnumPlayMode enumPlayMode = MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras());
+        switch (enumPlayMode) {
+            case NORMAL:
+                builder.addAction(R.drawable.ic_shuffle_white_24px, mPlayMusicService.getString(R.string.play_state_shuffle), mModeIntent);
+                break;
+            case RANDOM_NO_SAME:
+                builder.addAction(R.drawable.ic_shuffle_white_24px, mPlayMusicService.getString(R.string.play_state_shuffle), mModeIntent);
+                break;
+        }
     }
 
     /**
      * 設定通知的圖片
      */
-    private Bitmap getAlbumArt(MediaMetadataCompat mMediaMetadata, NotificationCompat.Builder builder) {
+    private void getAlbumArt(MediaMetadataCompat mMediaMetadata, NotificationCompat.Builder builder) {
         String fetchArtUrl = mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
 
         boolean isLocal = TextUtils.equals(MetaDataCustomKeyDefine.ISLOCAL,mMediaMetadata.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL));
@@ -316,22 +318,145 @@ public class MediaNotificationManager extends BroadcastReceiver {
             if (!TextUtils.isEmpty(fetchArtUrl)) {
                 bitmap = BitmapFactory.decodeFile(fetchArtUrl);
             } else {
-                // TODO: 2017/6/3 這邊要改成本地音樂沒AlbumArt時的預設圖片
+                //本地音樂沒AlbumArt時的預設圖片
                 bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
                         R.drawable.ic_default_art);
             }
         } else {
             bitmap = AlbumArtCache.getInstance().getBigImage(fetchArtUrl);
             if (bitmap == null) {
-                // TODO: 2017/6/3 這邊改Loading的圖
+                //Loading圖
                 bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
                         R.drawable.ic_default_art);
             }
-
             fetchBitmapFromURLAsync(fetchArtUrl, builder);
         }
+        builder.setLargeIcon(bitmap);
+    }
 
-        return bitmap;
+    private void setNotificationPlayState(NotificationCompat.Builder builder) {
+        Log.d(TAG, "setNotificationPlayState: " + mPlaybackState);
+        if (!mStarted) {
+            Log.d(TAG, "setNotificationPlayState: cancel notification");
+            return;
+        }
+
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
+            || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING
+            && mPlaybackState.getPosition() >= 0) {
+            long playTime = System.currentTimeMillis() - mPlaybackState.getPosition();
+            Log.d(TAG, "setNotificationPlayState , position : " + playTime / 1000 + " seconds.");
+            builder.setWhen(playTime)
+                    .setShowWhen(true)
+                    .setUsesChronometer(true);
+        } else {
+            Log.d(TAG, "setNotificationPlayState: position 0");
+            builder.setWhen(0)
+                    .setShowWhen(false)
+                    .setUsesChronometer(false);
+        }
+
+        // Make sure that the notification can be dismissed by the user when we are not playing:
+        builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
+    }
+
+    /**
+     * 清空原來的Activity Stack，再啟動設定的Activity Stack，陣列位置越後面的在Stack上面
+     *
+     * @return 點擊通知的PendingIntent
+     */
+    private PendingIntent createContentIntent() {
+        Intent[] intents = new Intent[2];
+
+        Intent intentMainActivity = new Intent(mPlayMusicService, MainActivity.class);
+        intentMainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intents[0] = intentMainActivity;
+
+        Intent intentFullScreenActivity = new Intent(mPlayMusicService, FullScreenPlayerActivity.class);
+        intents[1] = intentFullScreenActivity;
+
+        return PendingIntent.getActivities(mPlayMusicService, REQUEST_CODE, intents, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private void addPlayPauseAction(NotificationCompat.Builder builder) {
+        Log.d(TAG, "addPlayPauseAction: ");
+        String label;
+        int icon;
+        PendingIntent pendingIntent;
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            label = mPlayMusicService.getString(R.string.play_state_pause);
+            icon = android.R.drawable.ic_media_pause;
+            pendingIntent = mPauseIntent;
+        } else {
+            label = mPlayMusicService.getString(R.string.play_state_playing);
+            icon = android.R.drawable.ic_media_play;
+            pendingIntent = mPlayIntent;
+        }
+        builder.addAction(icon, label, pendingIntent);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        //處理通知的點擊事件
+        String action = intent.getAction();
+        Log.d(TAG, "onReceive: " + action);
+        switch (action) {
+            case ACTION_PLAY:
+                mTransportControls.play();
+                break;
+            case ACTION_PAUSE:
+                mTransportControls.pause();
+                break;
+            case ACTION_NEXT:
+                mTransportControls.skipToNext();
+                break;
+            case ACTION_PREVIOUS:
+                mTransportControls.skipToPrevious();
+                break;
+            case ACTION_STOP:
+                mTransportControls.stop();
+                break;
+            case ACTION_MODE:
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE, MiscellaneousUtil.getNextMode((MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras()))));
+                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYMODE, bundle);
+                break;
+            case ACTION_REPEAT:
+                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_REPEAT, null);
+                break;
+            default:
+                Log.d(TAG, "onReceive: unknown " + action);
+        }
+    }
+
+    // TODO: 2017/5/28
+    private void fetchBitmapFromURLAsync(final String bitmapUrl,
+                                         final NotificationCompat.Builder builder) {
+        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+            @Override
+            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
+                // 更新通知的icon
+                Log.d(TAG, "fetchBitmapFromURLAsync: set bitmap to " + artUrl);
+                if (mMediaMetadata == null) {
+                    Log.d(TAG, "onFetched: 因為歌曲已刪除，所以就不更新通知了");
+                    return;
+                }
+
+                if (TextUtils.equals(artUrl,mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))) {
+                    //抓回來的圖是播放歌曲的圖才去更新Nofification
+//                    builder.setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
+//                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                            , icon))
+//                            .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
+//                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                                    , bitmap));
+                    builder.setLargeIcon(bitmap);
+                    mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+                }
+            }
+        });
     }
 
     /** @return 自訂通知的Layout */
@@ -404,127 +529,4 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     }
 
-    private void setNotificationPlayState(NotificationCompat.Builder builder) {
-        Log.d(TAG, "setNotificationPlayState: " + mPlaybackState);
-        if (!mStarted) {
-            Log.d(TAG, "setNotificationPlayState: cancel notification");
-            return;
-        }
-
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING
-            || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING
-            && mPlaybackState.getPosition() >= 0) {
-            long playTime = System.currentTimeMillis() - mPlaybackState.getPosition();
-            Log.d(TAG, "setNotificationPlayState , position : " + playTime / 1000 + " seconds.");
-            builder.setWhen(playTime)
-                    .setShowWhen(true)
-                    .setUsesChronometer(true);
-        } else {
-            Log.d(TAG, "setNotificationPlayState: position 0");
-            builder.setWhen(0)
-                    .setShowWhen(false)
-                    .setUsesChronometer(false);
-        }
-
-        // Make sure that the notification can be dismissed by the user when we are not playing:
-        builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
-    }
-
-    /**
-     * 清空原來的Activity Stack，再啟動設定的Activity Stack，陣列位置越後面的在Stack上面
-     *
-     * @return 點擊通知的PendingIntent
-     */
-    private PendingIntent createContentIntent() {
-        Intent[] intents = new Intent[2];
-
-        Intent intentMainActivity = new Intent(mPlayMusicService, MainActivity.class);
-        intentMainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intents[0] = intentMainActivity;
-
-        Intent intentFullScreenActivity = new Intent(mPlayMusicService, FullScreenPlayerActivity.class);
-        intents[1] = intentFullScreenActivity;
-
-        return PendingIntent.getActivities(mPlayMusicService, REQUEST_CODE, intents, PendingIntent.FLAG_CANCEL_CURRENT);
-    }
-
-    private void updatePlayPauseAction(NotificationCompat.Builder builder) {
-        Log.d(TAG, "updatePlayPauseAction: ");
-        String label;
-        int icon;
-        PendingIntent pendingIntent;
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            label = mPlayMusicService.getString(R.string.play_state_pause);
-            icon = android.R.drawable.ic_media_pause;
-            pendingIntent = mPauseIntent;
-        } else {
-            label = mPlayMusicService.getString(R.string.play_state_playing);
-            icon = android.R.drawable.ic_media_play;
-            pendingIntent = mPlayIntent;
-        }
-        builder.addAction(icon, label, pendingIntent);
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        //處理通知的點擊事件
-        String action = intent.getAction();
-        Log.d(TAG, "onReceive: " + action);
-        switch (action) {
-            case ACTION_PLAY:
-                mTransportControls.play();
-                break;
-            case ACTION_PAUSE:
-                mTransportControls.pause();
-                break;
-            case ACTION_NEXT:
-                mTransportControls.skipToNext();
-                break;
-            case ACTION_PREVIOUS:
-                mTransportControls.skipToPrevious();
-                break;
-            case ACTION_STOP:
-                mTransportControls.stop();
-                break;
-            case ACTION_MODE:
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(PlayMusicService.BUNDLE_KEY_PLAYMODE, MiscellaneousUtil.getNextMode((MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras()))));
-                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYMODE, bundle);
-                break;
-            case ACTION_REPEAT:
-                mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_REPEAT, null);
-                break;
-            default:
-                Log.d(TAG, "onReceive: unknown " + action);
-        }
-    }
-
-    // TODO: 2017/5/28
-    private void fetchBitmapFromURLAsync(final String bitmapUrl,
-                                         final NotificationCompat.Builder builder) {
-        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
-            @Override
-            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                // 更新通知的icon
-                Log.d(TAG, "fetchBitmapFromURLAsync: set bitmap to " + artUrl);
-                if (mMediaMetadata == null) {
-                    Log.d(TAG, "onFetched: 因為歌曲已刪除，所以就不更新通知了");
-                    return;
-                }
-
-                if (TextUtils.equals(artUrl,mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))) {
-                    //抓回來的圖是播放歌曲的圖才去更新Nofification
-                    builder.setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
-                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                            , icon))
-                            .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
-                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                                    , bitmap));
-                    mNotificationManager.notify(NOTIFICATION_ID, builder.build());
-                }
-            }
-        });
-    }
 }
