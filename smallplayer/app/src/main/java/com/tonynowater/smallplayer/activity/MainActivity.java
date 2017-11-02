@@ -6,7 +6,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
@@ -41,7 +40,6 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     //===== Fields =====
 
     //===== Views =====
-    private ActionBarDrawerToggle mActionBarDrawerToggle;
     private SearchViewComponent mSearchViewComponent;
     //===== Views =====
 
@@ -77,10 +75,6 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerlayout, mBinding.toolbar.toolbarMainActivity, R.string.app_name, R.string.app_name);
-        mActionBarDrawerToggle.syncState();
         initialFab();
         changeFragment(m_iFlag);
     }
@@ -266,7 +260,9 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 mBinding.fab.setVisibility(View.VISIBLE);
                 break;
         }
-        mSearchViewComponent.setSearchViewVisible(position != MainFunctionViewPagerFragment.U2B_USERLIST_POSITION);
+        if (mSearchViewComponent != null) {
+            mSearchViewComponent.setSearchViewVisible(position != MainFunctionViewPagerFragment.U2B_USERLIST_POSITION);
+        }
     }
 
     @Override
