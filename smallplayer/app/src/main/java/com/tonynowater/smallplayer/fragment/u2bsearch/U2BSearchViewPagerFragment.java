@@ -159,8 +159,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mEnumU2BSearchType = (EnumU2BSearchType) getArguments().getSerializable(BUNDLE_KEY_SEARCH_TYPE);
-        initialU2BSearchAdapter();
         mIsNeedAuthToken = getArguments().getBoolean(BUNDLE_KEY_IS_NEED_AUTH_TOKEN);
+        initialU2BSearchAdapter();
+        mBinding.ivSearchIcon.setOnClickListener(this);
+
         if (savedInstanceState != null) {
             queryBySearchView(savedInstanceState.getString(BUNDLE_KEY_QUERY));
         } else {
@@ -168,7 +170,6 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 queryBySearchView(getArguments().getString(BUNDLE_KEY_PLAYLISTID));
             } else {
                 mBinding.ivSearchIcon.setVisibility(View.VISIBLE);
-                mBinding.ivSearchIcon.setOnClickListener(this);
             }
         }
     }

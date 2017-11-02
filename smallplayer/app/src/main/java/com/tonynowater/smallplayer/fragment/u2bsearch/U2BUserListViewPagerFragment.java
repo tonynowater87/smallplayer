@@ -197,5 +197,6 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onGoogleLoginFailure() {
         showToast(getString(R.string.google_login_fail_msg));
+        mBinding.googleSignInButton.setVisibility(View.VISIBLE);
     }
 }
