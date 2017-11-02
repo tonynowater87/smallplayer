@@ -212,6 +212,10 @@ public class SearchViewComponent {
         mMenu.findItem(R.id.menu_search).expandActionView();
         mMenu.findItem(R.id.menu_search).getActionView().requestFocus();
     }
+
+    public void setSearchViewVisible(boolean visible) {
+        mMenu.findItem(R.id.menu_search).setVisible(visible);
+    }
 }
 
 

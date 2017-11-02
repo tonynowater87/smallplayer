@@ -255,11 +255,18 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     public void onPageSelected(int position) {
         Log.d(TAG, "onPageSelected: " + position);
         mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
-        if (position == MainFunctionViewPagerFragment.U2B_LIST_POSITION || position == MainFunctionViewPagerFragment.U2B_USERLIST_POSITION) {
-            mBinding.fab.setVisibility(View.GONE);
-        } else {
-            mBinding.fab.setVisibility(View.VISIBLE);
+        switch (position) {
+            case MainFunctionViewPagerFragment.U2B_LIST_POSITION:
+                mBinding.fab.setVisibility(View.GONE);
+                break;
+            case MainFunctionViewPagerFragment.U2B_USERLIST_POSITION:
+                mBinding.fab.setVisibility(View.GONE);
+                break;
+            default:
+                mBinding.fab.setVisibility(View.VISIBLE);
+                break;
         }
+        mSearchViewComponent.setSearchViewVisible(position != MainFunctionViewPagerFragment.U2B_USERLIST_POSITION);
     }
 
     @Override
