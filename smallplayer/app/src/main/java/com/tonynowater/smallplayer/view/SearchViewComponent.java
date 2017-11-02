@@ -41,6 +41,7 @@ public class SearchViewComponent {
 
     public interface OnSearchViewComponentCallback {
         BaseViewPagerFragment getCurrentBaseViewPagerFragment();
+        BaseViewPagerFragment[] getCurrentBaseViewPagerFragments();
     }
 
     public static final String TAG = SearchViewComponent.class.getSimpleName();
@@ -190,15 +191,17 @@ public class SearchViewComponent {
     public void onNewIntent(Intent intent) {
         if (TextUtils.equals(intent.getAction(), Intent.ACTION_SEARCH)) {
 
-            BaseViewPagerFragment baseViewPagerFragment = mOnSearchViewComponentCallback.getCurrentBaseViewPagerFragment();
-            if (baseViewPagerFragment instanceof SongListViewPagerFragment)
-                return;
+            BaseViewPagerFragment[] baseViewPagerFragments = mOnSearchViewComponentCallback.getCurrentBaseViewPagerFragments();
 
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.d(TAG, "onNewIntent: " + query);
-            baseViewPagerFragment.queryBySearchView(query);
-            mSearchRecentSuggestions.saveRecentQuery(query, null);
-            mSearchView.clearFocus();//防搜尋完鍵盤會彈起來
+            for (int i = 0; i < baseViewPagerFragments.length; i++) {
+                if (baseViewPagerFragments[i] instanceof SongListViewPagerFragment)
+                    continue;
+                String query = intent.getStringExtra(SearchManager.QUERY);
+                Log.d(TAG, "onNewIntent query: " + query);
+                baseViewPagerFragments[i].queryBySearchView(query);
+                mSearchRecentSuggestions.saveRecentQuery(query, null);
+                mSearchView.clearFocus();//防搜尋完鍵盤會彈起來
+            }
         }
     }
 

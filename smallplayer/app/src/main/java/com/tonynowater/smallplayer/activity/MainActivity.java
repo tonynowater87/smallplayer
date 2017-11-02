@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
@@ -275,6 +274,17 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                 return ((MainFunctionViewPagerFragment) getSupportFragmentManager()
                         .findFragmentByTag(MainFunctionViewPagerFragment.class.getSimpleName()))
                         .getBaseViewPagerFragment();
+        }
+        return null;
+    }
+
+    @Override
+    public BaseViewPagerFragment[] getCurrentBaseViewPagerFragments() {
+        switch (m_iFlag) {
+            case FLAG_PAGE_MAIN_FUNCTION:
+                return ((MainFunctionViewPagerFragment) getSupportFragmentManager()
+                        .findFragmentByTag(MainFunctionViewPagerFragment.class.getSimpleName()))
+                        .getBaseViewPagerFragments();
         }
         return null;
     }

@@ -157,6 +157,25 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
         }
     }
 
+    public BaseViewPagerFragment[] getBaseViewPagerFragments() {
+        BaseViewPagerFragment[] baseViewPagerFragments;
+        if (mCurrentViewPagerPosition > 0) {
+            baseViewPagerFragments = new BaseViewPagerFragment[3];
+            baseViewPagerFragments[0] = mBaseViewPagerFragments[mCurrentViewPagerPosition - 1];
+            baseViewPagerFragments[1] = mBaseViewPagerFragments[mCurrentViewPagerPosition];
+            baseViewPagerFragments[2] = mBaseViewPagerFragments[mCurrentViewPagerPosition + 1];
+        } else if (mCurrentViewPagerPosition == mBaseViewPagerFragments.length){
+            baseViewPagerFragments = new BaseViewPagerFragment[2];
+            baseViewPagerFragments[0] = mBaseViewPagerFragments[mCurrentViewPagerPosition - 1];
+            baseViewPagerFragments[1] = mBaseViewPagerFragments[mCurrentViewPagerPosition];
+        } else {
+            baseViewPagerFragments = new BaseViewPagerFragment[2];
+            baseViewPagerFragments[0] = mBaseViewPagerFragments[mCurrentViewPagerPosition];
+            baseViewPagerFragments[1] = mBaseViewPagerFragments[mCurrentViewPagerPosition + 1];
+        }
+        return baseViewPagerFragments;
+    }
+
     public BaseViewPagerFragment getBaseViewPagerFragment() {
         return mBaseViewPagerFragments[mCurrentViewPagerPosition];
     }

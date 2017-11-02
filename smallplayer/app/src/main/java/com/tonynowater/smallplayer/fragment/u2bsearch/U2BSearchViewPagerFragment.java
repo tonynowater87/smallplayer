@@ -78,7 +78,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     protected int getLayoutResourceId() {
         return R.layout.layout_u2bsearchfragment;
     }
-
+    
     @Override
     public CharSequence getPageTitle() {
         return getArguments().getString(BUNDLE_KEY_TITLE);
