@@ -11,15 +11,12 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.SearchRecentSuggestions;
-import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -210,6 +207,7 @@ public class SearchViewComponent {
      */
     public void expandSearchView() {
         mMenu.findItem(R.id.menu_search).expandActionView();
+        mMenu.findItem(R.id.menu_search).getActionView().requestFocus();
     }
 }
 
