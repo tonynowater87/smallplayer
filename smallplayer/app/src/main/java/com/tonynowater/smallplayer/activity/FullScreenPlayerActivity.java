@@ -265,12 +265,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     private void scheduledSeekUpdate() {
         stopSeekbarUpdate();
         if (!mSceduledExecutorService.isShutdown()) {
-            mScheduledFuture = mSceduledExecutorService.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    mHandler.post(mRunnable);
-                }
-            }, INITIAL_DELAY, UPDATE_PERIOD, TimeUnit.MILLISECONDS);
+            mScheduledFuture = mSceduledExecutorService.scheduleAtFixedRate(() -> mHandler.post(mRunnable), INITIAL_DELAY, UPDATE_PERIOD, TimeUnit.MILLISECONDS);
         }
     }
 

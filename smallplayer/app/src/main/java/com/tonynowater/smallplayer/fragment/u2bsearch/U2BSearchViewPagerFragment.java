@@ -78,7 +78,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     protected int getLayoutResourceId() {
         return R.layout.layout_u2bsearchfragment;
     }
-    
+
     @Override
     public CharSequence getPageTitle() {
         return getArguments().getString(BUNDLE_KEY_TITLE);
@@ -189,8 +189,8 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 mSongListAdapter = new U2BSearchPlayListFragmentAdapter((OnClickSomething) getActivity());
                 break;
         }
-        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        mBinding.recyclerviewU2bsearchfragment.setLayoutManager(layoutManager);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        mBinding.recyclerviewU2bsearchfragment.setLayoutManager(linearLayoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
         mBinding.recyclerviewU2bsearchfragment.addItemDecoration(dividerItemDecoration);
         mBinding.recyclerviewU2bsearchfragment.setAdapter(mSongListAdapter);

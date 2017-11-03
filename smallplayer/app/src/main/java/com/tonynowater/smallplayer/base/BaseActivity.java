@@ -22,16 +22,13 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     }
 
     public void showToast(final String toastMsg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mToast != null)
-                {
-                    mToast.cancel();
-                }
-                mToast = Toast.makeText(BaseActivity.this, toastMsg, Toast.LENGTH_SHORT);
-                mToast.show();
+        runOnUiThread(() -> {
+            if (mToast != null)
+            {
+                mToast.cancel();
             }
+            mToast = Toast.makeText(BaseActivity.this, toastMsg, Toast.LENGTH_SHORT);
+            mToast.show();
         });
     }
 

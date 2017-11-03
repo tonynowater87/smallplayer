@@ -6,9 +6,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.view.View;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
@@ -81,15 +79,12 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
 
     /** 點擊飄浮按鈕 */
     private void initialFab() {
-        mBinding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                List<Playable> playableList = mU2BSearchViewPagerFragment.getPlayableList();
-                if (MiscellaneousUtil.isListOK(playableList)) {
-                    DialogUtil.showAddPlayableListDialog(PlayListActivity.this, playableList, mU2BSearchViewPagerFragment.getPlayableListName());
-                } else {
-                    showToast(getString(R.string.add_playablelist_song_failed_toast_msg));
-                }
+        mBinding.fab.setOnClickListener(view -> {
+            List<Playable> playableList = mU2BSearchViewPagerFragment.getPlayableList();
+            if (MiscellaneousUtil.isListOK(playableList)) {
+                DialogUtil.showAddPlayableListDialog(PlayListActivity.this, playableList, mU2BSearchViewPagerFragment.getPlayableListName());
+            } else {
+                showToast(getString(R.string.add_playablelist_song_failed_toast_msg));
             }
         });
     }

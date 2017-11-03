@@ -81,17 +81,14 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
 
     /** 點擊飄浮按鈕 */
     private void initialFab() {
-        mBinding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        mBinding.fab.setOnClickListener(view -> {
 
-                switch (m_iFlag) {
-                    case FLAG_PAGE_MAIN_FUNCTION:
-                        ((MainFunctionViewPagerFragment) getSupportFragmentManager()
-                                .findFragmentByTag(MainFunctionViewPagerFragment.class.getSimpleName()))
-                                .onClickFab();
-                        break;
-                }
+            switch (m_iFlag) {
+                case FLAG_PAGE_MAIN_FUNCTION:
+                    ((MainFunctionViewPagerFragment) getSupportFragmentManager()
+                            .findFragmentByTag(MainFunctionViewPagerFragment.class.getSimpleName()))
+                            .onClickFab();
+                    break;
             }
         });
     }
