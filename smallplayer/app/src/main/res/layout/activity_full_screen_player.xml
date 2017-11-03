@@ -107,7 +107,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/ic_shuffle_white_24px" />
+                    android:src="@drawable/icons_shuffle_unselect" />
 
                 <ImageView
                     android:id="@+id/iv_previous_activity_full_screen_player"
@@ -130,7 +130,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:indeterminateTint="@color/colorFourth"/>
 
                 <ImageView
                     android:id="@+id/iv_next_activity_full_screen_player"
@@ -146,7 +147,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/ic_repeat_white_24px" />
+                    android:src="@drawable/icons8_repeat_unselect" />
 
                 <ImageView
                     android:id="@+id/iv_change_playlist_activity_full_screen_player"

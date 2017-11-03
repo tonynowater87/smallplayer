@@ -71,6 +71,7 @@
     <string name="refresh_token_fail">更新token失敗</string>
     <string name="play_state_shuffle">隨機</string>
     <string name="play_state_repeat">重複播放</string>
+    <string name="play_state_buffering">讀取中</string>
 
     <string-array name="local_action_list">
         <item>播放</item>

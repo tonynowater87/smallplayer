@@ -42,7 +42,8 @@
                 android:layout_width="@dimen/media_button_size"
                 android:layout_height="@dimen/media_button_size"
                 android:layout_toRightOf="@+id/buttonPrevious"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:indeterminateTint="@color/colorFourth"/>
 
             <ImageView
                 android:id="@+id/buttonNext"

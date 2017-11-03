@@ -1,10 +1,10 @@
 package com.tonynowater.smallplayer.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -99,9 +99,11 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
         boolean isRepeat = bundle.getBoolean(PlayMusicService.BUNDLE_KEY_IS_REPEAT);
         if (isRepeat) {
-            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setColorFilter(Color.rgb(255, 56, 127));
+            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setImageDrawable(getDrawable(R.drawable.icons8_repeat_select));
         } else {
-            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), android.R.color.white));
+            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setColorFilter(Color.WHITE);
+            mBinding.ivRepeatPlaylistActivityFullScreenPlayer.setImageDrawable(getDrawable(R.drawable.icons8_repeat_unselect));
         }
     }
 
@@ -119,10 +121,12 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         mEnumPlayMode = MiscellaneousUtil.getPlayModeFromBundle(bundle);
         switch (mEnumPlayMode) {
             case NORMAL:
-                mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), android.R.color.white));
+                mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(Color.WHITE);
+                mBinding.ivShuffleActivityFullScreenPlayer.setImageDrawable(getDrawable(R.drawable.icons_shuffle_unselect));
                 break;
             case RANDOM_NO_SAME:
-                mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                mBinding.ivShuffleActivityFullScreenPlayer.setColorFilter(Color.rgb(255, 56, 127));
+                mBinding.ivShuffleActivityFullScreenPlayer.setImageDrawable(getDrawable(R.drawable.icons_shuffle_select));
                 break;
         }
 
