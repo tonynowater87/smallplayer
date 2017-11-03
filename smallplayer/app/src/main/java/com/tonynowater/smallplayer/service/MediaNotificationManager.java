@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -21,8 +20,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.RemoteViews;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
@@ -264,49 +261,60 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService);
-        int playPauseButtonPosition = 0;
-
-        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
-            builder.addAction(android.R.drawable.ic_media_previous, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
-            // If there is a "skip to previous" button, the play/pause button will
-            // be the second one. We need to keep track of it, because the MediaStyle notification
-            // requires to specify the index of the buttons (actions) that should be visible
-            // when in compact view.
-            playPauseButtonPosition = 1;
-        }
-        updatePlayPauseAction(builder);
-        // If skip to next action is enabled
-        if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
-            builder.addAction(android.R.drawable.ic_media_next, mPlayMusicService.getString(R.string.play_state_next), mNextIntent);
-        }
+        addShuffleAction(builder);
+        builder.addAction(android.R.drawable.ic_media_previous, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
+        addPlayPauseAction(builder);
+        builder.addAction(android.R.drawable.ic_media_next, mPlayMusicService.getString(R.string.play_state_next), mNextIntent);
+        addRepeatAction(builder);
 
         MediaDescriptionCompat mediaDescription = mMediaMetadata.getDescription();
 
-        builder.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(new int[]{playPauseButtonPosition}).setMediaSession(mToken))
+        builder.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(new int[]{1, 2, 3}).setMediaSession(mToken)) // show only play/pause in compact view
                 .setColor(mNotificationColor)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.local_music_icon)//沒setSmallIcon，通知會直接沒有顯示
                 .setUsesChronometer(true)//TODO
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
-                .setContentText(mediaDescription.getSubtitle())
-                .setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , getAlbumArt(mMediaMetadata, builder)))
-                .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                        , getAlbumArt(mMediaMetadata, builder)));
+                .setContentText(mediaDescription.getSubtitle());
+//                .setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                        , getAlbumArt(mMediaMetadata, builder)))
+//                .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                        , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                        , getAlbumArt(mMediaMetadata, builder)));
         setNotificationPlayState(builder);
-
+        getAlbumArt(mMediaMetadata, builder);
         return builder.build();
+    }
+
+    private void addRepeatAction(NotificationCompat.Builder builder) {
+        boolean isRepeat = mPlaybackState.getExtras().getBoolean(PlayMusicService.BUNDLE_KEY_IS_REPEAT);
+        if (isRepeat) {
+            builder.addAction(R.drawable.icons8_repeat_select, mPlayMusicService.getString(R.string.play_state_repeat), mRepeatIntent);
+        } else {
+            builder.addAction(R.drawable.icons8_repeat_unselect, mPlayMusicService.getString(R.string.play_state_repeat), mRepeatIntent);
+        }
+    }
+
+    private void addShuffleAction(NotificationCompat.Builder builder) {
+        EnumPlayMode enumPlayMode = MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras());
+        switch (enumPlayMode) {
+            case NORMAL:
+                builder.addAction(R.drawable.icons_shuffle_unselect, mPlayMusicService.getString(R.string.play_state_shuffle), mModeIntent);
+                break;
+            case RANDOM_NO_SAME:
+                builder.addAction(R.drawable.icons_shuffle_select, mPlayMusicService.getString(R.string.play_state_shuffle), mModeIntent);
+                break;
+        }
     }
 
     /**
      * 設定通知的圖片
      */
-    private Bitmap getAlbumArt(MediaMetadataCompat mMediaMetadata, NotificationCompat.Builder builder) {
+    private void getAlbumArt(MediaMetadataCompat mMediaMetadata, NotificationCompat.Builder builder) {
         String fetchArtUrl = mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
 
         boolean isLocal = TextUtils.equals(MetaDataCustomKeyDefine.ISLOCAL,mMediaMetadata.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_IS_LOCAL));
@@ -316,92 +324,20 @@ public class MediaNotificationManager extends BroadcastReceiver {
             if (!TextUtils.isEmpty(fetchArtUrl)) {
                 bitmap = BitmapFactory.decodeFile(fetchArtUrl);
             } else {
-                // TODO: 2017/6/3 這邊要改成本地音樂沒AlbumArt時的預設圖片
+                //本地音樂沒AlbumArt時的預設圖片
                 bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
                         R.drawable.ic_default_art);
             }
         } else {
             bitmap = AlbumArtCache.getInstance().getBigImage(fetchArtUrl);
             if (bitmap == null) {
-                // TODO: 2017/6/3 這邊改Loading的圖
+                //Loading圖
                 bitmap = BitmapFactory.decodeResource(mPlayMusicService.getResources(),
                         R.drawable.ic_default_art);
             }
-
             fetchBitmapFromURLAsync(fetchArtUrl, builder);
         }
-
-        return bitmap;
-    }
-
-    /** @return 自訂通知的Layout */
-    private RemoteViews getBigRemoteViews(int layoutId, String title, String artist, Bitmap art) {
-        RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_shuffle, mModeIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_repeat, mRepeatIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
-        setShuffleButtonColor(remoteViews);
-        setRepeatButtonColor(remoteViews, mPlaybackState.getExtras());
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
-            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
-            remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
-        } else {
-            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.VISIBLE);
-            remoteViews.setViewVisibility(R.id.progress_bar, View.GONE);
-            boolean isPlay = mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING;
-            remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
-        }
-        remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
-        remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
-        return remoteViews;
-    }
-
-    /** @return 自訂通知的Layout */
-    private RemoteViews getSmallRemoteViews(int layoutId, String title, String artist, Bitmap art) {
-        RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
-        remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
-            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
-            remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
-        } else {
-            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.VISIBLE);
-            remoteViews.setViewVisibility(R.id.progress_bar, View.GONE);
-            boolean isPlay = mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING;
-            remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
-        }
-        remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
-        remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
-        return remoteViews;
-    }
-
-    private void setRepeatButtonColor(RemoteViews remoteViews, Bundle extras) {
-        boolean isRepeat = extras.getBoolean(PlayMusicService.BUNDLE_KEY_IS_REPEAT);
-        if (isRepeat) {
-            remoteViews.setInt(R.id.notification_image_view_repeat, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), R.color.colorAccent));
-        } else {
-            remoteViews.setInt(R.id.notification_image_view_repeat, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), android.R.color.white));
-        }
-    }
-
-    /**
-     * 依播放模式設定Notification按鈕的顏色
-     */
-    private void setShuffleButtonColor(RemoteViews remoteViews) {
-        EnumPlayMode enumPlayMode = MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras());
-        switch (enumPlayMode) {
-            case NORMAL:
-                remoteViews.setInt(R.id.notification_image_view_shuffle, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), android.R.color.white));
-                break;
-            case RANDOM_NO_SAME:
-                remoteViews.setInt(R.id.notification_image_view_shuffle, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), R.color.colorAccent));
-                break;
-        }
+        builder.setLargeIcon(bitmap);
     }
 
     private void setNotificationPlayState(NotificationCompat.Builder builder) {
@@ -448,8 +384,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
         return PendingIntent.getActivities(mPlayMusicService, REQUEST_CODE, intents, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private void updatePlayPauseAction(NotificationCompat.Builder builder) {
-        Log.d(TAG, "updatePlayPauseAction: ");
+    private void addPlayPauseAction(NotificationCompat.Builder builder) {
+        Log.d(TAG, "addPlayPauseAction: ");
         String label;
         int icon;
         PendingIntent pendingIntent;
@@ -457,6 +393,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
             label = mPlayMusicService.getString(R.string.play_state_pause);
             icon = android.R.drawable.ic_media_pause;
             pendingIntent = mPauseIntent;
+        } else if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            label = mPlayMusicService.getString(R.string.play_state_buffering);
+            icon = R.drawable.icons8_load2;
+            pendingIntent = null;
         } else {
             label = mPlayMusicService.getString(R.string.play_state_playing);
             icon = android.R.drawable.ic_media_play;
@@ -514,17 +454,89 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
                 if (TextUtils.equals(artUrl,mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))) {
                     //抓回來的圖是播放歌曲的圖才去更新Nofification
-                    builder.setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
-                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                            , icon))
-                            .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
-                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-                                    , bitmap));
+//                    builder.setCustomContentView(getSmallRemoteViews(R.layout.notification_layout_normal
+//                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                            , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                            , icon))
+//                            .setCustomBigContentView(getBigRemoteViews(R.layout.notification_layout_large
+//                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+//                                    , mMediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+//                                    , bitmap));
+                    builder.setLargeIcon(bitmap);
                     mNotificationManager.notify(NOTIFICATION_ID, builder.build());
                 }
             }
         });
     }
+
+//    /** @return 自訂通知的Layout */
+//    private RemoteViews getBigRemoteViews(int layoutId, String title, String artist, Bitmap art) {
+//        RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_shuffle, mModeIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_repeat, mRepeatIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
+//        setShuffleButtonColor(remoteViews);
+//        setRepeatButtonColor(remoteViews, mPlaybackState.getExtras());
+//        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+//            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
+//            remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
+//        } else {
+//            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.VISIBLE);
+//            remoteViews.setViewVisibility(R.id.progress_bar, View.GONE);
+//            boolean isPlay = mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING;
+//            remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+//        }
+//        remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
+//        remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
+//        return remoteViews;
+//    }
+
+//    /** @return 自訂通知的Layout */
+//    private RemoteViews getSmallRemoteViews(int layoutId, String title, String artist, Bitmap art) {
+//        RemoteViews remoteViews = new RemoteViews(mPlayMusicService.getPackageName(), layoutId);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_next, mNextIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_play, mPlayIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_image_view_previous, mPreviousIntent);
+//        remoteViews.setOnClickPendingIntent(R.id.notification_cancel_icon, mStopIntent);
+//        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+//            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.GONE);
+//            remoteViews.setViewVisibility(R.id.progress_bar, View.VISIBLE);
+//        } else {
+//            remoteViews.setViewVisibility(R.id.notification_image_view_play, View.VISIBLE);
+//            remoteViews.setViewVisibility(R.id.progress_bar, View.GONE);
+//            boolean isPlay = mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING;
+//            remoteViews.setImageViewResource(R.id.notification_image_view_play, isPlay ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+//        }
+//        remoteViews.setImageViewBitmap(R.id.notification_image_icon, art);
+//        remoteViews.setTextViewText(R.id.notification_textview, String.format("%s %s", title, artist));
+//        return remoteViews;
+//    }
+//
+//    private void setRepeatButtonColor(RemoteViews remoteViews, Bundle extras) {
+//        boolean isRepeat = extras.getBoolean(PlayMusicService.BUNDLE_KEY_IS_REPEAT);
+//        if (isRepeat) {
+//            remoteViews.setInt(R.id.notification_image_view_repeat, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), R.color.colorAccent));
+//        } else {
+//            remoteViews.setInt(R.id.notification_image_view_repeat, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), android.R.color.white));
+//        }
+//    }
+//
+//    /**
+//     * 依播放模式設定Notification按鈕的顏色
+//     */
+//    private void setShuffleButtonColor(RemoteViews remoteViews) {
+//        EnumPlayMode enumPlayMode = MiscellaneousUtil.getPlayModeFromBundle(mPlaybackState.getExtras());
+//        switch (enumPlayMode) {
+//            case NORMAL:
+//                remoteViews.setInt(R.id.notification_image_view_shuffle, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), android.R.color.white));
+//                break;
+//            case RANDOM_NO_SAME:
+//                remoteViews.setInt(R.id.notification_image_view_shuffle, "setColorFilter", ContextCompat.getColor(mPlayMusicService.getApplicationContext(), R.color.colorAccent));
+//                break;
+//        }
+//    }
+
 }
