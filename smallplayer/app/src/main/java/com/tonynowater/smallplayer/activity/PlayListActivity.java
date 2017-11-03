@@ -68,6 +68,7 @@ public class PlayListActivity extends BaseMediaControlActivity<ActivityPlayListB
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.toolbar.toolbarMainActivity);
+        turnOffToolbarScrolling(mBinding.toolbar.toolbarMainActivity, mBinding.toolbar.appbarLayoutMainActivity);
         setTitle(getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLIST_TITLE));
         mU2BSearchViewPagerFragment = U2BSearchViewPagerFragment.newInstance(EnumU2BSearchType.PLAYLISTVIDEO
                 , getIntent().getStringExtra(U2BSearchViewPagerFragment.BUNDLE_KEY_PLAYLISTID)

@@ -4,7 +4,10 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 /**
@@ -30,6 +33,28 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
             mToast = Toast.makeText(BaseActivity.this, toastMsg, Toast.LENGTH_SHORT);
             mToast.show();
         });
+    }
+
+    //turn off scrolling
+    protected void turnOffToolbarScrolling(Toolbar mToolbar, AppBarLayout appBarLayout) {
+        AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+        toolbarLayoutParams.setScrollFlags(0);
+        mToolbar.setLayoutParams(toolbarLayoutParams);
+
+        CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
+        appBarLayoutParams.setBehavior(null);
+        appBarLayout.setLayoutParams(appBarLayoutParams);
+    }
+
+    //turn on scrolling
+    protected void turnOnToolbarScrolling(Toolbar mToolbar, AppBarLayout appBarLayout) {
+        AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+        toolbarLayoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        mToolbar.setLayoutParams(toolbarLayoutParams);
+
+        CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
+        appBarLayoutParams.setBehavior(new AppBarLayout.Behavior());
+        appBarLayout.setLayoutParams(appBarLayoutParams);
     }
 
     protected abstract int getLayoutResourceId();
