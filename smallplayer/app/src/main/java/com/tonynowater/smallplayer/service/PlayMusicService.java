@@ -58,8 +58,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             if (!mMusicProvider.isPlayListAvailable()) {
                 return;
             }
-
-            mMusicProvider.addSongPosition(false);
+            
             if (mLocalPlayback.isPlaying()) {
                 handlePlayRequest();
             }
@@ -293,10 +292,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 return;
             }
 
-            mMusicProvider.addSongPosition(true);
             if (mLocalPlayback.isPlaying()) {
+                mMusicProvider.addSongPosition(true);
                 handlePlayRequest();
+            } else {
+                mMusicProvider.addSongPosition(false);
             }
+
             updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 
@@ -306,10 +308,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 return;
             }
 
-            mMusicProvider.minusSongPosition(true);
             if (mLocalPlayback.isPlaying()) {
+                mMusicProvider.minusSongPosition(true);
                 handlePlayRequest();
+            } else {
+                mMusicProvider.minusSongPosition(false);
             }
+
             updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 

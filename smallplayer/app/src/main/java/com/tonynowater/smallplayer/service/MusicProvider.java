@@ -227,13 +227,10 @@ public class MusicProvider {
         }
     }
 
-    public void addSongPosition(boolean manualAdd) {
+    public void addSongPosition(boolean resetRepeat) {
         switch (mEnumPlayMode) {
             case NORMAL:
             case RANDOM_NO_SAME:
-                if(!manualAdd && mIsRepeat) {
-                    break;
-                }
                 mSongPosition++;
                 if (mSongPosition >= getPlayListSize()) {
                     mSongPosition = 0;
@@ -241,7 +238,7 @@ public class MusicProvider {
                 break;
         }
 
-        if (manualAdd) {
+        if (resetRepeat) {
             mIsRepeat = false;
         }
 
@@ -249,13 +246,10 @@ public class MusicProvider {
         Log.d(TAG, "addSongPosition: " + mSongPosition);
     }
 
-    public void minusSongPosition(boolean manualMinus) {
+    public void minusSongPosition(boolean resetRepeat) {
         switch (mEnumPlayMode) {
             case NORMAL:
             case RANDOM_NO_SAME:
-                if(!manualMinus && mIsRepeat) {
-                    break;
-                }
                 mSongPosition--;
                 if (mSongPosition < 0) {
                     mSongPosition = mMusicPlayList.size() - 1;
@@ -263,7 +257,7 @@ public class MusicProvider {
                 break;
         }
 
-        if (manualMinus) {
+        if (resetRepeat) {
             mIsRepeat = false;
         }
 
