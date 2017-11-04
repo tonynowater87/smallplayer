@@ -378,10 +378,8 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     private void onPressPlayButton() {
         if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
             mTransportControls.pause();
         } else {
-            mBinding.ivPlayPauseActivityFullScreenPlayer.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
             mTransportControls.play();
         }
     }

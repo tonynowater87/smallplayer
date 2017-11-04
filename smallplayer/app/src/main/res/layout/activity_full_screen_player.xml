@@ -115,7 +115,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@android:drawable/ic_media_previous" />
+                    android:src="@drawable/ic_skip_previous_black_24px"
+                    android:tint="@android:color/white" />
 
                 <ImageView
                     android:id="@+id/iv_play_pause__activity_full_screen_player"
@@ -123,7 +124,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@android:drawable/ic_media_play" />
+                    android:src="@android:drawable/ic_media_play"
+                    android:tint="@android:color/white"/>
 
                 <ProgressBar
                     android:id="@+id/progress_bar"
@@ -139,7 +141,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@android:drawable/ic_media_next" />
+                    android:src="@drawable/ic_skip_next_black_24px"
+                    android:tint="@android:color/white"/>
 
                 <ImageView
                     android:id="@+id/iv_repeat_playlist_activity_full_screen_player"

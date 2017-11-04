@@ -113,6 +113,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy:");
+        mMediaNotificationManager.cancelNotification();
+        stopSelf();
         updatePlaybackState(null);
         mServiceStarted = false;
         mMediaSessionCompat.release();
@@ -148,8 +150,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
             mMediaNotificationManager.startNotification();
-        } else {
-            mMediaNotificationManager.cancelNotification();
         }
     }
 
@@ -171,11 +171,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: " + intent);
-        if (intent == null) {
-            //關閉Service
-            stopSelf();
-            return START_NOT_STICKY;
-        }
         return START_STICKY;
     }
 

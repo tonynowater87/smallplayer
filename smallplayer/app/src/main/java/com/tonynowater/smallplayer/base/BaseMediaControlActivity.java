@@ -114,7 +114,6 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
             }
 
             try {
-                startService(new Intent(BaseMediaControlActivity.this, PlayMusicService.class));
                 if (!TextUtils.isEmpty(getSubscribeID())) {
                     subscribe();
                 }
