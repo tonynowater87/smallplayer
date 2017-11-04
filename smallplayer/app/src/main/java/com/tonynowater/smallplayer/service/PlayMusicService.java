@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.service;
 
 import android.content.Intent;
-import android.drm.DrmStore;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.SystemClock;
@@ -58,7 +57,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             if (!mMusicProvider.isPlayListAvailable()) {
                 return;
             }
-            
+
             if (mLocalPlayback.isPlaying()) {
                 handlePlayRequest();
             }
@@ -380,7 +379,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
          * @param songPosition 要播放的歌曲位置
          */
         private void handlePlayExplicitSong(int songPosition) {
-            mMusicProvider.setSongPosition(songPosition);
+
+            if (!mMusicProvider.setSongPosition(songPosition)) {
+                Log.d(TAG, "handlePlayExplicitSong : same position");
+                return;
+            }
             if (mLocalPlayback.isPlaying()) {
                 //正在播放時換歌曲繼續播放
                 handlePlayRequest();

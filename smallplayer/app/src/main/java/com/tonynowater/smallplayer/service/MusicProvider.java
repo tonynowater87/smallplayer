@@ -126,8 +126,12 @@ public class MusicProvider {
         return new MediaBrowserCompat.MediaItem(description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
     }
 
-    public void setSongPosition(int mSongPosition) {
+    public boolean setSongPosition(int mSongPosition) {
+        if (this.mSongPosition == mSongPosition) {
+            return false;
+        }
         this.mSongPosition = mSongPosition;
+        return true;
     }
 
     /**

@@ -358,7 +358,6 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
             Bundle bundle = new Bundle();
             bundle.putInt(PlayMusicService.BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION, Integer.parseInt(mediaItem.getMediaId()));
             mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST, bundle);
-            mBinding.seekbarActivityFullScreenPlayer.setProgress(DEFAULT_PROGRESS);
         }
     }
 
