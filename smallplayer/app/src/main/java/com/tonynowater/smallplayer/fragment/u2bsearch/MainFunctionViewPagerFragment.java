@@ -159,19 +159,19 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
 
     public BaseViewPagerFragment[] getBaseViewPagerFragments() {
         BaseViewPagerFragment[] baseViewPagerFragments;
-        if (mCurrentViewPagerPosition > 0) {
+        if (mCurrentViewPagerPosition == LOCAL_POSITION) {
+            baseViewPagerFragments = new BaseViewPagerFragment[2];
+            baseViewPagerFragments[0] = mBaseViewPagerFragments[LOCAL_POSITION];
+            baseViewPagerFragments[1] = mBaseViewPagerFragments[U2B_VIDEO_POSITION];
+        } else if (mCurrentViewPagerPosition == mBaseViewPagerFragments.length - 1){
+            baseViewPagerFragments = new BaseViewPagerFragment[2];
+            baseViewPagerFragments[0] = mBaseViewPagerFragments[U2B_LIST_POSITION];
+            baseViewPagerFragments[1] = mBaseViewPagerFragments[U2B_VIDEO_POSITION];
+        } else {
             baseViewPagerFragments = new BaseViewPagerFragment[3];
             baseViewPagerFragments[0] = mBaseViewPagerFragments[mCurrentViewPagerPosition - 1];
             baseViewPagerFragments[1] = mBaseViewPagerFragments[mCurrentViewPagerPosition];
             baseViewPagerFragments[2] = mBaseViewPagerFragments[mCurrentViewPagerPosition + 1];
-        } else if (mCurrentViewPagerPosition == mBaseViewPagerFragments.length){
-            baseViewPagerFragments = new BaseViewPagerFragment[2];
-            baseViewPagerFragments[0] = mBaseViewPagerFragments[mCurrentViewPagerPosition - 1];
-            baseViewPagerFragments[1] = mBaseViewPagerFragments[mCurrentViewPagerPosition];
-        } else {
-            baseViewPagerFragments = new BaseViewPagerFragment[2];
-            baseViewPagerFragments[0] = mBaseViewPagerFragments[mCurrentViewPagerPosition];
-            baseViewPagerFragments[1] = mBaseViewPagerFragments[mCurrentViewPagerPosition + 1];
         }
         return baseViewPagerFragments;
     }
