@@ -18,6 +18,7 @@
     <string name="viewpager_title_u2b_search_playlist">搜尋播放清單</string>
     <string name="viewpager_title_local_music">本地音樂</string>
     <string name="viewpager_title_u2b_search_video">搜尋音樂</string>
+    <string name="viewpager_title_u2b_user_playlist">自己Youtube\n的播放清單</string>
     <string name="default_start_time">00:00</string>
     <string name="equlizer_set_finish_toast">等化器設定成%s</string>
     <string name="equlizer_can_not_set_when_not_play_toast_msg">歌曲尚未開始播放，無法切換等化器。</string>
@@ -65,7 +66,6 @@
     <string name="import_user_youtube_playlist_error_msg">匯入Youtube歌單發生錯誤</string>
     <string name="no_permission_warning_msg">沒有開啟權限，不能使用本地音樂及下載音樂功能!</string>
     <string name="delete_all_dialog_check_title">是否要刪除全部的歌曲</string>
-    <string name="viewpager_title_u2b_user_playlist">自己Youtube\n的播放清單</string>
     <string name="google_login_fail_msg">登入失敗</string>
     <string name="refresh_token_fail">更新token失敗</string>
     <string name="play_state_shuffle">隨機</string>

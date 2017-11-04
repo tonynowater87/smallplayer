@@ -62,6 +62,7 @@ public class U2BQueryParamsItem {
             case PLAYLIST:
                 return String.format(enumU2BSearchType.getUrl(), keyword, queryCount, nextPageToken);
             case USER_LIST:
+            case USER_CHANNELS:
                 return enumU2BSearchType.getUrl();
         }
 

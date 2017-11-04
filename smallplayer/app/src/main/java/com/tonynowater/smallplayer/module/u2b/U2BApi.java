@@ -477,7 +477,7 @@ public class U2BApi {
     }
 
     /**
-     *
+     * 更新AccessToken
      * @param refresh_token
      * @param callback
      */
