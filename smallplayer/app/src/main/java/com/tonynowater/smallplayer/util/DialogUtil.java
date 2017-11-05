@@ -3,32 +3,20 @@ package com.tonynowater.smallplayer.util;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.gson.Gson;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
-import com.tonynowater.smallplayer.base.BaseActivity;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
-import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
-import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
-import com.tonynowater.smallplayer.module.dto.realm.entity.PlayUserU2BListEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
-import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,35 +83,32 @@ public class DialogUtil {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
         builder.title(playable.getPlayListSongEntity().getTitle());
         builder.items(playListEntities);
-        builder.itemsCallbackMultiChoice(checkList, new MaterialDialog.ListCallbackMultiChoice() {
-            @Override
-            public boolean onSelection(MaterialDialog materialDialog, Integer[] integers, CharSequence[] charSequences) {
+        builder.itemsCallbackMultiChoice(checkList, (materialDialog, integers, charSequences) -> {
 
-                //先把要加入的歌曲全刪
-                for (int i = 0; i < songEntities.size(); i++) {
-                    realmUtils.deleteSongFromPlayList(songEntities.get(i));
-                }
-
-                //再把此次新增的歌曲加到各歌單裡
-                PlayListEntity playListEntity;
-                for (int i = 0; i < integers.length; i++) {
-                    playListEntity = playListEntities.get(integers[i]);
-                    Log.d(TAG, "onSelection : " + playListEntity.getPlayListName());
-                    realmUtils.addSongToPlayList(playListEntity.getId(), playable.getPlayListSongEntity());
-                    if (playListEntity.getId() == realmUtils.queryCurrentPlayListID()) {
-                        //若有加入目前播放歌單，則更新目前播放歌單
-                        Bundle bundle = new Bundle();
-                        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListEntity.getId());
-                        transportControls.sendCustomAction(PlayMusicService.ACTION_ADD_SONG_TO_PLAYLIST, bundle);
-                    }
-                }
-
-                // TODO: 2017/7/9 若在這邊刪除歌曲，要即時更新歌單歌曲
-
-
-                realmUtils.close();
-                return false;
+            //先把要加入的歌曲全刪
+            for (int i = 0; i < songEntities.size(); i++) {
+                realmUtils.deleteSongFromPlayList(songEntities.get(i));
             }
+
+            //再把此次新增的歌曲加到各歌單裡
+            PlayListEntity playListEntity;
+            for (int i = 0; i < integers.length; i++) {
+                playListEntity = playListEntities.get(integers[i]);
+                Log.d(TAG, "onSelection : " + playListEntity.getPlayListName());
+                realmUtils.addSongToPlayList(playListEntity.getId(), playable.getPlayListSongEntity());
+                if (playListEntity.getId() == realmUtils.queryCurrentPlayListID()) {
+                    //若有加入目前播放歌單，則更新目前播放歌單
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListEntity.getId());
+                    transportControls.sendCustomAction(PlayMusicService.ACTION_ADD_SONG_TO_PLAYLIST, bundle);
+                }
+            }
+
+            // TODO: 2017/7/9 若在這邊刪除歌曲，要即時更新歌單歌曲
+
+
+            realmUtils.close();
+            return false;
         });
         builder.positiveText(context.getString(android.R.string.ok));
         builder.positiveColor(context.getResources().getColor(R.color.colorAccent));
@@ -227,23 +212,27 @@ public class DialogUtil {
         builder.content(String.format(baseMediaControlActivity.getString(R.string.add_playable_list_dialog_content), String.valueOf(playableList.size())));
         builder.items(listItems);
         builder.itemsCallbackSingleChoice(-1,
-                new MaterialDialog.ListCallbackSingleChoice() {
-            @Override
-            public boolean onSelection(MaterialDialog materialDialog, View view, int position, CharSequence charSequence) {
-                int playlistId;
-                if (position == 0) {
-                    //自動新建歌單
-                    playlistId = realmUtils.addNewPlayList(listName);
-                } else {
-                    //加入已有歌單
-                    playlistId = playListEntities.get(position - 1).getId();
-                }
+                (materialDialog, view, position, charSequence) -> {
+                    int playlistId;
+                    if (position == 0) {
+                        //自動新建歌單
+                        playlistId = realmUtils.addNewPlayList(listName);
+                    } else {
+                        //加入已有歌單
+                        playlistId = playListEntities.get(position - 1).getId();
+                    }
 
-                realmUtils.addSongsToPlayList(playlistId, playableList);
-                realmUtils.close();
-                return true;
-            }
-        });
+                    realmUtils.addSongsToPlayList(playlistId, playableList);
+                    int curPos = realmUtils.queryCurrentPlayListID();
+                    realmUtils.close();
+                    if (playlistId == curPos) {
+                        //若有加入目前播放歌單，則更新目前播放歌單
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playlistId);
+                        baseMediaControlActivity.sendActionToService(PlayMusicService.ACTION_ADD_SONG_TO_PLAYLIST, bundle);
+                    }
+                    return true;
+                });
         builder.show();
     }
 
@@ -276,15 +265,12 @@ public class DialogUtil {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(baseMediaControlActivity);
         builder.title(R.string.change_equalizer_dialog_title);
         builder.items(names);
-        builder.itemsCallbackSingleChoice(currentEqPosition, new MaterialDialog.ListCallbackSingleChoice() {
-            @Override
-            public boolean onSelection(MaterialDialog materialDialog, View view, int position, CharSequence charSequence) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
-                transportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
-                baseMediaControlActivity.showToast(String.format(baseMediaControlActivity.getString(R.string.equlizer_set_finish_toast), names[position]));
-                return true;
-            }
+        builder.itemsCallbackSingleChoice(currentEqPosition, (materialDialog, view, position, charSequence) -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(PlayMusicService.BUNDLE_KEY_EQUALIZER_TYPE, types[position]);
+            transportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_EQUALIZER_TYPE,bundle);
+            baseMediaControlActivity.showToast(String.format(baseMediaControlActivity.getString(R.string.equlizer_set_finish_toast), names[position]));
+            return true;
         });
         builder.show();
     }

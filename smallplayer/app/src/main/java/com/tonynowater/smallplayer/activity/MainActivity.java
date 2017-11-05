@@ -82,7 +82,6 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     /** 點擊飄浮按鈕 */
     private void initialFab() {
         mBinding.fab.setOnClickListener(view -> {
-
             switch (m_iFlag) {
                 case FLAG_PAGE_MAIN_FUNCTION:
                     ((MainFunctionViewPagerFragment) getSupportFragmentManager()

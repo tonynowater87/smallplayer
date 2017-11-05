@@ -241,6 +241,15 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYLIST, bundle);
     }
 
+    /**
+     * 送指定Action動作至Service
+     * @param action
+     * @param bundle
+     */
+    public void sendActionToService(String action, Bundle bundle) {
+        mTransportControls.sendCustomAction(action, bundle);
+    }
+
     @Override
     public void onClick(Object o) {
 

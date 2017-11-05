@@ -49,6 +49,7 @@ public class YoutubeExtratorUtil extends YouTubeExtractor{
                 itag = ytFiles.keyAt(i);
                 YtFile ytFile = ytFiles.get(itag);// ytFile represents one file with its url and meta data
                 if (ytFile.getMeta().getHeight() == -1 || ytFile.getMeta().getHeight() >= 360) {// Just add videos in a decent format => height -1 = audio
+                    Log.d(TAG, "onExtractionComplete: " + ytFile.getUrl());
                     callBack.onSuccess(ytFile.getUrl());
                     break;
                 }
