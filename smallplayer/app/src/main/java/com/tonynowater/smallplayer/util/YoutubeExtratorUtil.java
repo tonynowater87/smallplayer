@@ -21,10 +21,25 @@ public class YoutubeExtratorUtil extends YouTubeExtractor{
     }
 
     private CallBack callBack;
+    private boolean running = true;
 
     public YoutubeExtratorUtil(Context context, CallBack callBack) {
         super(context);
         this.callBack = callBack;
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        running = false;
+    }
+
+    @Override
+    protected SparseArray<YtFile> doInBackground(String... params) {
+        if (!running) {
+            return null;
+        }
+        return super.doInBackground(params);
     }
 
     @Override
