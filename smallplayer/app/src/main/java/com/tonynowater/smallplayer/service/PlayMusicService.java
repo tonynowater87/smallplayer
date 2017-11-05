@@ -59,8 +59,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             }
 
             if (mLocalPlayback.isPlaying()) {
+                if (false == mMusicProvider.getIsReapeated()) {
+                    mMusicProvider.addSongPosition(true);
+                }
                 handlePlayRequest();
             }
+
             updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 
