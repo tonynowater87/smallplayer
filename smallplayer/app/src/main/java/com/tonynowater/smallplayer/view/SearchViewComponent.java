@@ -85,6 +85,7 @@ public class SearchViewComponent {
                         mActivity.runOnUiThread(() -> {
                             if (TextUtils.equals(mCurrentQueryText, newText)) {
                                 //check query text response is same with the newest query text
+                                mSuggestions = response;
                                 initialSearchViewSuggestAdapter(response, false);
                             }
                         });
