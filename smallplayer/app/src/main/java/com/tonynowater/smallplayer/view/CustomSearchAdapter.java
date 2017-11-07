@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsuggestionAdapterListItemBinding;
 
@@ -24,6 +23,7 @@ public class  CustomSearchAdapter extends CursorAdapter {
     private static final String TAG = CustomSearchAdapter.class.getSimpleName();
     public static final String COLUMN_SUGGESTION = "suggestion";
     private LayoutU2bsuggestionAdapterListItemBinding mBinding;
+    private int mIconId = R.drawable.ic_search_white_36dp;
 
     public CustomSearchAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
@@ -62,7 +62,7 @@ public class  CustomSearchAdapter extends CursorAdapter {
         } else {
             viewHolder.tvLeft.setTextAppearance(context, android.R.style.TextAppearance_Material_Medium);
             viewHolder.ivIcon.setVisibility(View.VISIBLE);
-            Glide.with(context).load(android.R.drawable.ic_menu_search).into(viewHolder.ivIcon);
+            viewHolder.ivIcon.setImageDrawable(context.getDrawable(mIconId));
             viewHolder.tvRight.setVisibility(View.GONE);
         }
 
@@ -73,5 +73,9 @@ public class  CustomSearchAdapter extends CursorAdapter {
         ImageView ivIcon;
         TextView tvLeft;
         TextView tvRight;
+    }
+
+    public void setImageIcon(int iconId) {
+        mIconId = iconId;
     }
 }

@@ -17,20 +17,15 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
 import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment;
 import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
-import com.tonynowater.smallplayer.module.u2b.U2BApiUtil;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,8 +147,10 @@ public class SearchViewComponent {
 
         if (mSearchView.getSuggestionsAdapter() == null) {
             mSimpleCursorAdapter = new CustomSearchAdapter(mActivity, matrixCursor, true);
+            mSimpleCursorAdapter.setImageIcon(bAddFirstRow ? R.drawable.ic_restore_white_36dp : R.drawable.ic_search_white_36dp);
             mSearchView.setSuggestionsAdapter(mSimpleCursorAdapter);
         } else {
+            ((CustomSearchAdapter) mSearchView.getSuggestionsAdapter()).setImageIcon(bAddFirstRow ? R.drawable.ic_restore_white_36dp : R.drawable.ic_search_white_36dp);
             mSearchView.getSuggestionsAdapter().changeCursor(matrixCursor);
         }
     }
