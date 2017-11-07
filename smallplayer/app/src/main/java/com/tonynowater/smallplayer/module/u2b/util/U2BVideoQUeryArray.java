@@ -21,7 +21,7 @@ public class U2BVideoQUeryArray<PlayListSongEntity> extends BaseQueryArrayList {
             public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response, String nextPageToken) {
                 ueryParamsItem.setNextPageToken(nextPageToken);
 
-                U2BApi.newInstance().queryU2BVedioDuration(response, new U2BApi.OnDurationNewCallback<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity>() {
+                U2BApi.newInstance().queryU2BVedioDuration(response, new U2BApi.OnListResponseCallback<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity>() {
                     @Override
                     public void onSuccess(List<com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity> response) {
                         for (int i = 0; i < response.size(); i++) {

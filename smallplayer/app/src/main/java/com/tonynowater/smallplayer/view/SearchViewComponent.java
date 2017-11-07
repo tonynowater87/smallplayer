@@ -54,6 +54,7 @@ public class SearchViewComponent {
     private Activity mActivity;
     private OnSearchViewComponentCallback mOnSearchViewComponentCallback;
     private List<String> mSuggestions;
+    private String mCurrentQueryText = "";
 
     public SearchViewComponent(Activity activity, Menu menu, ComponentName componentName) {
         mActivity = activity;
@@ -81,26 +82,21 @@ public class SearchViewComponent {
         Log.d(TAG, "onQueryTextChange: " + newText);
         BaseViewPagerFragment baseViewPagerFragment = mOnSearchViewComponentCallback.getCurrentBaseViewPagerFragment();
         if (baseViewPagerFragment instanceof U2BSearchViewPagerFragment) {
+            mCurrentQueryText = newText;
             if (!TextUtils.isEmpty(newText.trim())) {
-                U2BApi.newInstance().queryU2BSUGGESTION(newText, new Callback() {
+                U2BApi.newInstance().queryU2BSuggestion(newText, new U2BApi.OnListResponseCallback<String>() {
                     @Override
-                    public void onFailure(Request request, IOException e) {
-                        Log.d(TAG, "onFailure: " + e.toString());
+                    public void onSuccess(List<String> response) {
+                        mActivity.runOnUiThread(() -> {
+                            if (TextUtils.equals(mCurrentQueryText, newText)) {
+                                //check query text response is same with the newest query text
+                                initialSearchViewSuggestAdapter(response, false);
+                            }
+                        });
                     }
 
                     @Override
-                    public void onResponse(final Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            final String sResponse = new String(response.body().bytes());
-                            mActivity.runOnUiThread(() -> {
-                                Log.d(TAG, "suggesion response: " + sResponse);
-                                mSuggestions = U2BApiUtil.getSuggestionStringList(sResponse);
-                                if (MiscellaneousUtil.isListOK(mSuggestions)) {
-                                    initialSearchViewSuggestAdapter(mSuggestions, false);
-                                }
-                            });
-                        }
-                    }
+                    public void onFailure(String errorMsg) {}
                 });
             } else {
                 mSuggestions = getRecentSearchList(DEFAULT_SHOW_RECENT_SEARCH_RECORD_COUNT);

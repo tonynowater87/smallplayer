@@ -50,7 +50,7 @@ public class U2BApi {
         void onFailure(String errorMsg);
     }
 
-    public interface OnDurationNewCallback<T> {
+    public interface OnListResponseCallback<T> {
         void onSuccess(List<T> response);
         void onFailure(String errorMsg);
     }
@@ -196,8 +196,28 @@ public class U2BApi {
      * @param keyword
      * @param callback
      */
-    public void queryU2BSUGGESTION(String keyword, Callback callback) {
-        sendHttpRequest(String.format(U2BApiDefine.U2B_API_SUGGESTION_URL, keyword), callback);
+    public void queryU2BSuggestion(String keyword, OnListResponseCallback<String> callback) {
+        sendHttpRequest(String.format(U2BApiDefine.U2B_API_SUGGESTION_URL, keyword), new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                callback.onFailure(e.toString());
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String sResponse = new String(response.body().bytes());
+                    List<String> mSuggestions = U2BApiUtil.getSuggestionStringList(sResponse);
+                    if (MiscellaneousUtil.isListOK(mSuggestions)) {
+                        callback.onSuccess(mSuggestions);
+                    } else {
+                        callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                    }
+                } else {
+                    callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
+                }
+            }
+        });
     }
 
     /**
@@ -205,7 +225,7 @@ public class U2BApi {
      * @param listSongEntities
      * @param callback
      */
-    public void queryU2BVedioDuration(final List<PlayListSongEntity> listSongEntities, final OnDurationNewCallback<PlayListSongEntity> callback) {
+    public void queryU2BVedioDuration(final List<PlayListSongEntity> listSongEntities, final OnListResponseCallback<PlayListSongEntity> callback) {
         sendHttpRequest(String.format(U2BApiDefine.U2B_API_QUERY_DURATION_URL
                 , MiscellaneousUtil.getVideoIdsForQueryDuration(listSongEntities)
                 , DEFAULT_QUERY_RESULT)
