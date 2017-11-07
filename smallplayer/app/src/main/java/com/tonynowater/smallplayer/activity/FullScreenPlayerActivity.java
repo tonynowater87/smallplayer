@@ -214,18 +214,12 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     private ScheduledFuture<?> mScheduledFuture;
     private ScheduledExecutorService mSceduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private Runnable mRunnable = () -> updateProgress();
 
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_full_screen_player;
     }
-
-    private Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateProgress();
-        }
-    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

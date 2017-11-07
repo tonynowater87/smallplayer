@@ -14,7 +14,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
@@ -226,12 +225,12 @@ public class LocalPlayback implements Playback
 
     @Override
     public boolean isPlaying() {
-        return mState == PlaybackStateCompat.STATE_PLAYING || mState == PlaybackStateCompat.STATE_BUFFERING || (mMediaPlayer != null && mMediaPlayer.isPlaying()) ? true : false;
+        return mState == PlaybackStateCompat.STATE_PLAYING || mState == PlaybackStateCompat.STATE_BUFFERING ? true : false;
     }
 
     @Override
     public int getCurrentStreamPosition() {
-        return mMediaPlayer != null ? mMediaPlayer.getCurrentPosition() : mCurrentPosition;
+        return mState == PlaybackStateCompat.STATE_PLAYING ? mMediaPlayer.getCurrentPosition() : mCurrentPosition;
     }
 
     @Override
@@ -240,14 +239,10 @@ public class LocalPlayback implements Playback
     }
 
     @Override
-    public void setCurrentStreamPosition(int pos) {
-
-    }
+    public void setCurrentStreamPosition(int pos) {}
 
     @Override
-    public void updateLastKnownStreamPosition() {
-
-    }
+    public void updateLastKnownStreamPosition() {}
 
     // TODO: 2017/6/3 從Youtube音樂切回播本地音樂，會有不是播放本地音樂的問題
     @Override
@@ -286,10 +281,6 @@ public class LocalPlayback implements Playback
 
         mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
 
-        //設定狀態為BUFFERING通知畫面
-        mState = PlaybackStateCompat.STATE_BUFFERING;
-        mPlaybackCallback.onPlaybackStateChanged();
-
         if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
             //播放本地音樂
             String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
@@ -308,7 +299,10 @@ public class LocalPlayback implements Playback
                     mPlaybackCallback.onCompletion();
                 }
             });
-
+            //設定狀態為BUFFERING通知畫面
+            mState = PlaybackStateCompat.STATE_BUFFERING;
+            mCurrentPosition = 0;
+            mPlaybackCallback.onPlaybackStateChanged();
             mYoutubeExtratorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         }
     }
@@ -318,7 +312,6 @@ public class LocalPlayback implements Playback
             createMediaPlayerIfNeeded();
             Log.d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
             mCurrentTrackPosition = trackPosition;
-            mCurrentPosition = 0;
             mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(source);
@@ -333,16 +326,7 @@ public class LocalPlayback implements Playback
 
     private void createMediaPlayerIfNeeded() {
         Log.d(TAG, "createMediaPlayerIfNeeded");
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-
-        if (mEqualizer != null) {
-            mEqualizer.release();
-            mEqualizer = null;
-        }
-        
+        releaseResource();
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnCompletionListener(this);
@@ -367,7 +351,6 @@ public class LocalPlayback implements Playback
         mPlaybackCallback.onPlaybackStateChanged();
     }
 
-
     @Override
     public void stop(boolean notifyListeners) {
         Log.d(TAG, "stop:" + notifyListeners);
@@ -381,8 +364,10 @@ public class LocalPlayback implements Playback
         releaseResource();
     }
 
-    private void releaseResource() {
+    @Override
+    public void releaseResource() {
         if (mMediaPlayer != null) {
+            mCurrentPosition = 0;
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;

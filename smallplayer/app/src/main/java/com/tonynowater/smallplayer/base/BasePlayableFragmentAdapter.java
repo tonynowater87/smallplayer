@@ -81,7 +81,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     /** 設置List的Footer Layout，要客制化Footer需Override*/
     protected int getFooterLayoutId() {
         return R.layout.list_footer;
-    };
+    }
 
     @Override
     public void onBindViewHolder(BasePlayableFragmentAdapter.BaseViewHolder holder, int position) {
@@ -96,7 +96,6 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     @Override
     public int getItemCount() {
-
         if (supportFooter() && hasData() && mFootviewIsVisible) {
             return mDataList.size() + 1;
         } else {

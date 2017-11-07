@@ -70,7 +70,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPlaybackStateChanged() {
-            updatePlaybackState(null);
+            updatePlaybackState();
         }
 
         @Override
@@ -108,7 +108,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         mMediaNotificationManager = new MediaNotificationManager(this);
         //修改Service一建立起來就通知畫面
-        updatePlaybackState(null);
+        updatePlaybackState();
         updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
     }
 
@@ -117,23 +117,24 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         Log.d(TAG, "onDestroy:");
         mMediaNotificationManager.cancelNotification();
         stopSelf();
-        updatePlaybackState(null);
+        updatePlaybackState();
         mServiceStarted = false;
         mMediaSessionCompat.release();
         super.onDestroy();
     }
 
     /** 更新播放狀態至畫面及Notification */
+    private void updatePlaybackState() {
+        updatePlaybackState(null);
+    }
+
+    /** 更新播放狀態至畫面及Notification */
     private void updatePlaybackState(String sError) {
         Log.d(TAG, "updatePlaybackState: " + mLocalPlayback.getState());
-        long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
-        int state;
-        if (mLocalPlayback != null) {
-            position = mLocalPlayback.getCurrentStreamPosition();
-        }
+        long position = mLocalPlayback.getCurrentStreamPosition();
+        int state = mLocalPlayback.getState();
 
         PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder().setActions(getAvailableAction());
-        state = mLocalPlayback.getState();
 
         // If there is an error message, send it to the playback state:
         if (sError != null) {
@@ -273,7 +274,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     handlePauseRequest();
                 }
             } else {
-                updatePlaybackState(null);
+                updatePlaybackState();
             }
         }
 
@@ -300,6 +301,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 handlePlayRequest();
             } else {
                 mMusicProvider.addSongPosition(false);
+                mLocalPlayback.releaseResource();
+                updatePlaybackState();
             }
 
             updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
@@ -316,6 +319,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 handlePlayRequest();
             } else {
                 mMusicProvider.minusSongPosition(false);
+                mLocalPlayback.releaseResource();
+                updatePlaybackState();
             }
 
             updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
@@ -354,7 +359,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         private void handleChangeRepeat() {
             mMusicProvider.changeRepeatStatus();
-            updatePlaybackState(null);
+            updatePlaybackState();
         }
 
         /**
@@ -362,7 +367,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
          */
         private void handleChangeEqualizerType(EqualizerType equalizerType) {
             mLocalPlayback.setEqualizer(equalizerType);
-            updatePlaybackState(null);
+            updatePlaybackState();
         }
 
         /**
@@ -375,7 +380,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             }
             mMusicProvider.setmEnumPlayMode(enumPlayMode);
             mLocalPlayback.setEnumPlayMode(enumPlayMode);
-            updatePlaybackState(null);
+            updatePlaybackState();
         }
 
         /**
@@ -509,7 +514,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     private void handleStopRequest() {
         mLocalPlayback.stop(true);
         updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
-        updatePlaybackState(null);
+        updatePlaybackState();
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
     }

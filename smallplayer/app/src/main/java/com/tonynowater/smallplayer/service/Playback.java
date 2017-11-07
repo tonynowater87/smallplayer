@@ -85,6 +85,8 @@ public interface Playback {
      */
     void seekTo(int position);
 
+    void releaseResource();
+
     void setEqualizer(EqualizerType equalizerType);
 
     EqualizerType getEqualizerType();

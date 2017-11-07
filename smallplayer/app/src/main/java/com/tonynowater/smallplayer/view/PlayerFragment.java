@@ -38,12 +38,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
     private Handler mHandler = new Handler();
     private ScheduledExecutorService mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> mScheduledFuture;
-    private Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateProgress();
-        }
-    };
+    private Runnable mRunnable = () -> updateProgress();
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -156,12 +151,10 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
     private void startScheduledUpdateProgress() {
         stopScheduledUpdateProgress();
         if (!mScheduledExecutorService.isShutdown()) {
-            mScheduledFuture = mScheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    mHandler.post(mRunnable);
-                }
-            }, INITIAL_DELAY, UPDATE_PERIOD, TimeUnit.MILLISECONDS);
+            mScheduledFuture = mScheduledExecutorService
+                    .scheduleAtFixedRate(() -> mHandler.post(mRunnable)
+                            , INITIAL_DELAY, UPDATE_PERIOD
+                            , TimeUnit.MILLISECONDS);
         }
     }
 
