@@ -205,6 +205,16 @@ public class LocalPlayback implements Playback
     }
 
     @Override
+    public void seekTo(int position) {
+        if (mMediaPlayer != null) {
+            mState = PlaybackStateCompat.STATE_BUFFERING;
+            mMediaPlayer.seekTo(position);
+            mCurrentPosition = position;
+            mPlaybackCallback.onPlaybackStateChanged();
+        }
+    }
+
+    @Override
     public void onSeekComplete(MediaPlayer mp) {
         Log.d(TAG, "onSeekComplete:");
         mState = PlaybackState.STATE_PLAYING;
@@ -372,15 +382,6 @@ public class LocalPlayback implements Playback
             mMediaPlayer.release();
             mMediaPlayer = null;
             mEqualizer.release();
-        }
-    }
-
-    @Override
-    public void seekTo(int position) {
-        if (mMediaPlayer != null) {
-            mState = PlaybackStateCompat.STATE_BUFFERING;
-            mMediaPlayer.seekTo(position);
-            mPlaybackCallback.onPlaybackStateChanged();
         }
     }
 
