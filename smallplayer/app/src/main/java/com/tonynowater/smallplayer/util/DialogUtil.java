@@ -243,11 +243,6 @@ public class DialogUtil {
      * @param transportControls
      */
     public static void showChangeEqualizerDialog(final BaseMediaControlActivity baseMediaControlActivity, EqualizerType equalizerType, final MediaControllerCompat.TransportControls transportControls) {
-        if (equalizerType == null) {
-            baseMediaControlActivity.showToast(baseMediaControlActivity.getString(R.string.equlizer_can_not_set_when_not_play_toast_msg));
-            return;
-        }
-
         final EqualizerType[] types = EqualizerType.values();
         final String[] names = new String[types.length];
         int currentEqPosition = 0;

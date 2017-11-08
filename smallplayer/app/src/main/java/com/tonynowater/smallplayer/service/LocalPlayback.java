@@ -344,6 +344,7 @@ public class LocalPlayback implements Playback
         mMediaPlayer.setOnSeekCompleteListener(this);
         mMediaPlayer.setOnErrorListener(this);
         mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
+        setEqualizerBandLevel();
         mEqualizer.setEnabled(true);
     }
 
@@ -382,18 +383,41 @@ public class LocalPlayback implements Playback
             mMediaPlayer.release();
             mMediaPlayer = null;
             mEqualizer.release();
+            mEqualizer = null;
         }
     }
 
     @Override
     public void setEqualizer(EqualizerType equalizerType) {
+        mEqualizerType = equalizerType;
+        setEqualizerBandLevel();
+    }
+
+    @Override
+    public EqualizerType getEqualizerType() {
+        return mEqualizerType;
+    }
+
+    private short provideBandLevel(double dB) {
+        final short minLevel = mEqualizer.getBandLevelRange()[0];
+        final short maxLevel = mEqualizer.getBandLevelRange()[1];
+        dB *= 100;
+        if (dB > maxLevel) {
+            return maxLevel;
+        }
+
+        if (dB < minLevel) {
+            return minLevel;
+        }
+        return (short) dB;
+    }
+
+    private void setEqualizerBandLevel() {
         if (mEqualizer == null) {
             Log.d(TAG, "setEqualizer: you can't setEqualizer when mEqualizer is null");
             return;
         }
-
-        mEqualizerType = equalizerType;
-        switch (equalizerType) {
+        switch (mEqualizerType) {
             case STANDARD:
                 mEqualizer.setBandLevel((short) 0, provideBandLevel(0));
                 mEqualizer.setBandLevel((short) 1, provideBandLevel(0));
@@ -444,25 +468,6 @@ public class LocalPlayback implements Playback
                 mEqualizer.setBandLevel((short) 4, provideBandLevel(2.4));
                 break;
         }
-    }
-
-    @Override
-    public EqualizerType getEqualizerType() {
-        return mEqualizer == null ? null : mEqualizerType;
-    }
-
-    private short provideBandLevel(double dB) {
-        final short minLevel = mEqualizer.getBandLevelRange()[0];
-        final short maxLevel = mEqualizer.getBandLevelRange()[1];
-        dB *= 100;
-        if (dB > maxLevel) {
-            return maxLevel;
-        }
-
-        if (dB < minLevel) {
-            return minLevel;
-        }
-        return (short) dB;
     }
 
     public void setEnumPlayMode(EnumPlayMode mEnumPlayMode) {

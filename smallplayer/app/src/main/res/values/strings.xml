@@ -21,7 +21,6 @@
     <string name="viewpager_title_u2b_user_playlist">自己Youtube\n的播放清單</string>
     <string name="default_start_time">00:00</string>
     <string name="equlizer_set_finish_toast">等化器設定成%s</string>
-    <string name="equlizer_can_not_set_when_not_play_toast_msg">歌曲尚未開始播放，無法切換等化器。</string>
     <string name="search_view_hint">找音樂...</string>
     <string name="menu_playlist">編輯播放歌單</string>
     <string name="add_playlist">新增播放歌單</string>
