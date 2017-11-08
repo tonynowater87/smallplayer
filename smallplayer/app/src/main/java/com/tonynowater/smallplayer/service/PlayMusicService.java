@@ -49,7 +49,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     private MediaSessionCompat mMediaSessionCompat;
     private MusicProvider mMusicProvider;
     private MediaNotificationManager mMediaNotificationManager;
-    private LocalPlayback mLocalPlayback;
+    private Playback mLocalPlayback;
     private Playback.Callback mPlaybackCallback = new Playback.Callback() {
         @Override
         public void onCompletion() {
@@ -94,7 +94,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public void onCreate() {
         super.onCreate();
 
-        mLocalPlayback = new LocalPlayback(this, mMusicProvider, mPlaybackCallback, mMusicProvider.getmEnumPlayMode());
+        mLocalPlayback = new LocalPlayback(this, mMusicProvider, mPlaybackCallback);
 
         mMediaSessionCompat = new MediaSessionCompat(getApplicationContext(), TAG);
         // Enable callbacks from MediaButtons and TransportControls
@@ -379,7 +379,6 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 mMusicProvider.generateRandomList();
             }
             mMusicProvider.setmEnumPlayMode(enumPlayMode);
-            mLocalPlayback.setEnumPlayMode(enumPlayMode);
             updatePlaybackState();
         }
 

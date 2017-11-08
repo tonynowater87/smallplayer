@@ -63,7 +63,7 @@ public class MusicProvider {
      * @param index
      * @return
      */
-    public MediaMetadataCompat getPlayItemByIndex(int index, EnumPlayMode enumPlayMode) {
+    private MediaMetadataCompat getPlayItemByIndex(int index, EnumPlayMode enumPlayMode) {
         switch (enumPlayMode) {
             case NORMAL:
                 return index < mMusicPlayList.size() && mMusicPlayList.size() >= 0 ? mMusicPlayList.get(index) : null;

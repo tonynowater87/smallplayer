@@ -69,13 +69,11 @@ public class LocalPlayback implements Playback
     private boolean mPlayOnFocusGain;//獲取AudioFocus後是否繼續播放
     private String mCurrentPlayId;//目前正在播放歌曲的Id
     private EqualizerType mEqualizerType = EqualizerType.STANDARD;
-    private EnumPlayMode mEnumPlayMode;
 
-    public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback, EnumPlayMode mEnumPlayMode) {
+    public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
         this.mMusicProvider = mMusicProvider;
         this.mPlaybackCallback = mPlaybackCallback;
-        this.mEnumPlayMode = mEnumPlayMode;
         mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
         mWifiLock = ((WifiManager) mPlayMusicService.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     }
@@ -84,7 +82,7 @@ public class LocalPlayback implements Playback
      * 試著獲取AudioFocus
      */
     private void tryToGetAudioFocus() {
-        Log.d(TAG, "tryToGetAudioFocus: ");
+        Log.d(TAG, "tryToGetAudioFocus: " + mAudioNoisyReceiverRegistered);
         registerAudioNoisyReceiver();
         int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
@@ -98,7 +96,7 @@ public class LocalPlayback implements Playback
      * 放棄AudioFocus
      */
     private void giveUpAudioFocus() {
-        Log.d(TAG, "giveUpAudioFocus: ");
+        Log.d(TAG, "giveUpAudioFocus: " + mAudioNoisyReceiverRegistered);
         unregisterAudioNoisyReceiver();
         if (mAudioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
@@ -254,12 +252,11 @@ public class LocalPlayback implements Playback
     @Override
     public void updateLastKnownStreamPosition() {}
 
-    // TODO: 2017/6/3 從Youtube音樂切回播本地音樂，會有不是播放本地音樂的問題
     @Override
     public void play(final int trackPosition) {
         tryToGetAudioFocus();
 
-        final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getPlayItemByIndex(trackPosition, mEnumPlayMode);
+        final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getCurrentPlayingMediaMetadata();
 
         if (mediaMetadataCompat == null) {
             stop(true);
@@ -468,9 +465,5 @@ public class LocalPlayback implements Playback
                 mEqualizer.setBandLevel((short) 4, provideBandLevel(2.4));
                 break;
         }
-    }
-
-    public void setEnumPlayMode(EnumPlayMode mEnumPlayMode) {
-        this.mEnumPlayMode = mEnumPlayMode;
     }
 }
