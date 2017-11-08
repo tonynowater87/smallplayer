@@ -52,7 +52,7 @@ public class MusicProvider {
         mMusicPlayList.clear();
         RealmUtils realmUtils = new RealmUtils();
         List<PlayListSongEntity> playListSongEntities = realmUtils.queryPlayListSongByListIdSortByPosition(playlistId);
-        for (int i = 0; i < playListSongEntities.size(); i++) {
+        for (int i = 0, len = playListSongEntities.size(); i < len; i++) {
             mMusicPlayList.add(playListSongEntities.get(i).getMediaMetadata());
         }
         realmUtils.close();
@@ -100,7 +100,7 @@ public class MusicProvider {
                 break;
         }
 
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0, len = list.size(); i < len; i++) {
             mediaItems.add(createMediaItem(i,list.get(i)));
         }
 
@@ -141,7 +141,7 @@ public class MusicProvider {
     public void setSongPositionNow(int songId) {
         switch (mEnumPlayMode) {
             case NORMAL:
-                for (int i = 0; i < mMusicPlayList.size(); i++) {
+                for (int i = 0, len = mMusicPlayList.size(); i < len; i++) {
                     if (getSongIDFromList(mMusicPlayList, i) == songId) {
                         this.mSongPosition = i;
                         return;
@@ -149,7 +149,7 @@ public class MusicProvider {
                 }
                 break;
             case RANDOM_NO_SAME:
-                for (int i = 0; i < mRandomMusicPlayList.size(); i++) {
+                for (int i = 0, len = mMusicPlayList.size(); i < len; i++) {
                     if (getSongIDFromList(mRandomMusicPlayList, i) == songId) {
                         this.mSongPosition = i;
                         return;
@@ -208,7 +208,7 @@ public class MusicProvider {
         switch (enumPlayMode) {
             case NORMAL:
                 randomModeMediaItem = getPlayItemByIndex(mSongPosition, EnumPlayMode.RANDOM_NO_SAME);
-                for (int i = 0; i < mMusicPlayList.size(); i++) {
+                for (int i = 0, len = mMusicPlayList.size(); i < len; i++) {
                     normalModeMediaItem = mMusicPlayList.get(i);
                     if (TextUtils.equals(normalModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
                             , randomModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
@@ -219,7 +219,7 @@ public class MusicProvider {
                 return 0;
             case RANDOM_NO_SAME:
                 normalModeMediaItem = getPlayItemByIndex(mSongPosition, EnumPlayMode.NORMAL);
-                for (int i = 0; i < mRandomMusicPlayList.size(); i++) {
+                for (int i = 0, len = mRandomMusicPlayList.size(); i < len; i++) {
                     randomModeMediaItem = mRandomMusicPlayList.get(i);
                     if (TextUtils.equals(normalModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
                             , randomModeMediaItem.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
