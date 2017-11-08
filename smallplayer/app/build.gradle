@@ -11,12 +11,12 @@ android {
             storePassword Key_Password
         }
     }
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
     defaultConfig {
         applicationId "com.tonynowater.smallplayer"
-        minSdkVersion 21
-        targetSdkVersion 26
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -47,23 +47,21 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:' + rootProject.espressoVer, {
+    androidTestCompile(deps.espresso_core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:' + rootProject.junitVer
+    testCompile deps.junit
     compile 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
-    compile 'com.android.support:appcompat-v7:' + rootProject.androidSupLibVer
-    compile 'com.android.support:design:' + rootProject.androidSupLibVer
-    compile 'com.squareup.okhttp:okhttp:' + rootProject.okhttpVer
-    compile 'com.google.code.gson:gson:' + rootProject.gsonVer
-    compile 'com.android.support.constraint:constraint-layout:' + rootProject.constraintlayoutVer
-    compile 'com.afollestad.material-dialogs:core:' + rootProject.materialdialogVer
-    compile 'com.airbnb.android:lottie:' + rootProject.lottieVer
-    compile 'com.google.firebase:firebase-core:' + rootProject.firebaseVer
-    //analytics
-    compile 'com.google.firebase:firebase-crash:' + rootProject.firebaseVer
-    compile 'com.google.android.gms:play-services-auth:' + rootProject.googleAuthLibVer
-    // Google auth
+    compile deps.appcompat_v7
+    compile deps.designLib
+    compile deps.okhttp
+    compile deps.gson
+    compile deps.constraintlayout
+    compile deps.materia_dialog
+    compile deps.lottie
+    compile deps.firebase_core
+    compile deps.firebase_crash
+    compile deps.google_auth
 }
 
 apply plugin: 'com.google.gms.google-services'
