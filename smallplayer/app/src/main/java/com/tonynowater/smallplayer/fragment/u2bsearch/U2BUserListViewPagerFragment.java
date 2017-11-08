@@ -78,12 +78,17 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
         super.onActivityCreated(savedInstanceState);
         mGoogleLoginUtil = new GoogleLoginUtil(getActivity(), this, GoogleLoginUtil.FRAGMENT_LOGIN, this);
         mBinding.googleSignInButton.setOnClickListener(v -> mGoogleLoginUtil.googleSignIn(U2BUserListViewPagerFragment.this));
+        initialU2BSearchAdapter();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (!SPManager.getInstance(MyApplication.getContext()).getIsGoogleLogin()) {
             mBinding.googleSignInButton.setVisibility(View.VISIBLE);
         } else {
             checkIsNeedRefreshToken();
         }
-        initialU2BSearchAdapter();
     }
 
     private void checkIsNeedRefreshToken() {
