@@ -1,6 +1,5 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
@@ -12,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
@@ -21,6 +19,7 @@ import com.tonynowater.smallplayer.base.CustomItemTouchHelperCallback;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListFragmentBinding;
 import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
@@ -53,7 +52,7 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
 
     @Override
     protected void onMetadataChanged(MediaMetadataCompat metadata) {
-
+        initialPlayListSongAdapter();
     }
 
     @Override
@@ -143,12 +142,9 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
         final PlayListEntity playListEntity;
         switch (item.getItemId()) {
             case R.id.menu_add:
-                DialogUtil.showInputDialog(getContext(), getString(R.string.add_play_list_dialog_title), getString(R.string.input_play_list_name_dialog_hint),new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
-                        mRealmUtils.addNewPlayList(charSequence.toString());
-                        mShowPlayListAdapter.refreshData();
-                    }
+                DialogUtil.showInputDialog(getContext(), getString(R.string.add_play_list_dialog_title), getString(R.string.input_play_list_name_dialog_hint), (materialDialog, charSequence) -> {
+                    mRealmUtils.addNewPlayList(charSequence.toString());
+                    mShowPlayListAdapter.refreshData();
                 });
                 return true;
             case R.id.menu_edit_playlist_name:
@@ -165,15 +161,13 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
                 return true;
             case R.id.menu_edit_playlist_delete_all:
                 playListEntity = mRealmUtils.queryPlayListById(mId).get(0);
-                DialogUtil.showYesNoDialog(getContext(), getString(R.string.delete_all_dialog_check_title), new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                        switch (dialogAction) {
-                            case POSITIVE:
-                                mRealmUtils.deleteAllSongsFromPlaylist(playListEntity);
-                                initialPlayListSongAdapter();
-                                break;
-                        }
+                DialogUtil.showYesNoDialog(getContext(), getString(R.string.delete_all_dialog_check_title), (materialDialog, dialogAction) -> {
+                    switch (dialogAction) {
+                        case POSITIVE:
+                            Bundle bundle = new Bundle();
+                            bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListEntity.getId());
+                            mTransportControls.sendCustomAction(PlayMusicService.ACTION_DEL_ALL_SONGS_IN_PLAYLIST, bundle);
+                            break;
                     }
                 }, dialog -> {});
                 return true;

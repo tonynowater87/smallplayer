@@ -34,6 +34,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     public static final String ACTION_CHANGE_PLAYLIST = "ACTION_CHANGE_PLAYLIST";
     public static final String ACTION_CHANGE_PLAYMODE = "ACTION_CHANGE_PLAYMODE";
     public static final String ACTION_CHANGE_REPEAT = "ACTION_CHANGE_REPEAT";
+    public static final String ACTION_DEL_ALL_SONGS_IN_PLAYLIST = "ACTION_DEL_ALL_SONGS_IN_PLAYLIST";
     public static final String BUNDLE_KEY_PLAYLIST_ID = "BUNDLE_KEY_PLAYLIST_ID";
     public static final String BUNDLE_KEY_SONG_ID = "BUNDLE_KEY_SONG_ID";
     public static final String BUNDLE_KEY_CURRENT_PLAY_SONG_ID = "BUNDLE_KEY_CURRENT_PLAY_SONG_ID";
@@ -354,7 +355,18 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 case ACTION_CHANGE_REPEAT:
                     handleChangeRepeat();
                     break;
+                case ACTION_DEL_ALL_SONGS_IN_PLAYLIST:
+                    handleDelAllSongsInPlaylist(extras.getInt(BUNDLE_KEY_PLAYLIST_ID));
+                    break;
             }
+        }
+
+        private void handleDelAllSongsInPlaylist(int playlistId) {
+            RealmUtils realmUtils = new RealmUtils();
+            realmUtils.deleteAllSongsFromPlaylist(playlistId);
+            realmUtils.close();
+            mMusicProvider.queryDBPlayList(playlistId);
+            updateMetadata(null);
         }
 
         private void handleChangeRepeat() {
