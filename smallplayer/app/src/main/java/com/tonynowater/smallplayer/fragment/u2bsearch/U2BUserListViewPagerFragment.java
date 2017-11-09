@@ -37,6 +37,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     private GoogleLoginUtil mGoogleLoginUtil;
     private int lastCompletelyVisibleItemPosition;
     private boolean isLoad = false;
+    private boolean mIsAutoLogin = false;//是否已自動登入過
     private U2BUserListQueryArrayList<U2BUserPlayListEntity> mU2BUserListQueryArray;
     private BasePlayableFragmentAdapter mSongListAdapter;
 
@@ -93,6 +94,8 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
 
     private void checkIsNeedRefreshToken() {
         if ((SPManager.getInstance(getContext()).getTokenExpireTime() - System.currentTimeMillis()) < 0) {
+            //需要更新Token
+            mBinding.googleSignInButton.setVisibility(View.VISIBLE);
             U2BApi.newInstance().refreshYoutubeToken(SPManager.getInstance(getContext()).getRefreshToken(), new U2BApi.OnRequestTokenCallback() {
                 @Override
                 public void onSuccess() {
@@ -102,7 +105,10 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
                 @Override
                 public void onFailure() {
                     showToast(getString(R.string.refresh_token_fail));
-                    mGoogleLoginUtil.googleSignIn(U2BUserListViewPagerFragment.this);
+                    if (!mIsAutoLogin) {
+                        mIsAutoLogin = true;
+                        mGoogleLoginUtil.googleSignIn(U2BUserListViewPagerFragment.this);
+                    }
                 }
             });
         } else {
