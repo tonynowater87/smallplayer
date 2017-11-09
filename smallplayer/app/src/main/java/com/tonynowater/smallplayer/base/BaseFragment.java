@@ -30,7 +30,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     public void onStart() {
         super.onStart();
         if (getActivity() instanceof BaseActivity) {
-            baseActivity = (BaseMediaControlActivity) getActivity();
+            baseActivity = (BaseActivity) getActivity();
         }
     }
 

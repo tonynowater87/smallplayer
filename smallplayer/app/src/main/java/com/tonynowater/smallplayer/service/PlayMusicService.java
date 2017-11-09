@@ -462,7 +462,11 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                 Log.d(TAG, "handleAddSongToPlaylist: mCurrentPlayListId != playlistId :" + mCurrentPlayListId);
                 return;
             }
+            boolean isListAvailable = mMusicProvider.isPlayListAvailable();
             mMusicProvider.queryDBPlayList(playlistId);
+            if (!isListAvailable) {
+                updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
+            }
         }
 
         /**
