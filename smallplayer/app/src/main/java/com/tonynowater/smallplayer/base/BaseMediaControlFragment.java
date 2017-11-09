@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.base;
 
 import android.databinding.ViewDataBinding;
+import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -122,5 +123,14 @@ public abstract class BaseMediaControlFragment<T extends ViewDataBinding> extend
         if (mTransportControls != null) {
             mTransportControls.play();
         }
+    }
+
+    /**
+     * 送指定Action動作至Service
+     * @param action
+     * @param bundle
+     */
+    public void sendActionToService(String action, Bundle bundle) {
+        mTransportControls.sendCustomAction(action, bundle);
     }
 }

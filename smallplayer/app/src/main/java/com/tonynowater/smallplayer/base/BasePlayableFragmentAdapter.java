@@ -53,13 +53,10 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
             case NORMAL_VIEWTYPE:
                 viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getNormalLayoutId(), parent, false);
                 baseViewHolder = new BaseViewHolder(viewDataBinding.getRoot());
-                viewDataBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int position = baseViewHolder.getAdapterPosition();
-                        if (position != -1) {
-                            mOnClickSongListener.onClick(mDataList.get(position));
-                        }
+                viewDataBinding.getRoot().setOnClickListener(v -> {
+                    int position = baseViewHolder.getAdapterPosition();
+                    if (position != -1) {
+                        mOnClickSongListener.onClick(mDataList.get(position));
                     }
                 });
                 return baseViewHolder;

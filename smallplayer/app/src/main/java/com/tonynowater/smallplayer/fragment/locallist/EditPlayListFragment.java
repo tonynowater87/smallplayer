@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseMediaControlFragment;
 import com.tonynowater.smallplayer.base.CustomItemTouchHelperCallback;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListFragmentBinding;
@@ -57,9 +58,7 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
 
     @Override
     protected void onFragmentMediaConnected() {
-        if (mShowPlayListSongAdapter != null) {
-            mShowPlayListSongAdapter.setTransportControls(mTransportControls);
-        }
+
     }
 
     public EditPlayListFragment() {
@@ -104,7 +103,7 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
      * 播放清單裡歌曲的Adapter
      */
     private void initialPlayListSongAdapter() {
-        mShowPlayListSongAdapter = new ShowPlayListSongAdapter(getArguments().getInt(BUNDLE_KEY_POSITION), (OnClickSomething) getActivity());
+        mShowPlayListSongAdapter = new ShowPlayListSongAdapter((BaseMediaControlActivity) getActivity(), getArguments().getInt(BUNDLE_KEY_POSITION), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
@@ -119,7 +118,7 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
      * 播放清單的Adapter
      */
     private void initialPlayListAdapter() {
-        mShowPlayListAdapter = new ShowPlayListAdapter((OnClickSomething) getActivity());
+        mShowPlayListAdapter = new ShowPlayListAdapter((BaseMediaControlActivity) getActivity(), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
@@ -176,10 +175,7 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
                                 break;
                         }
                     }
-                }, new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {}
-                });
+                }, dialog -> {});
                 return true;
         }
 

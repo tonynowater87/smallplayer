@@ -1,22 +1,22 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
-import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBinding;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
-import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.TimeUtil;
 
@@ -27,10 +27,11 @@ import java.util.Collections;
 public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutShowPlayListSongAdapterBinding> implements ItemTouchHelperAdapter{
     private static final String TAG = ShowPlayListSongAdapter.class.getSimpleName();
     private int mPlayListId;
-    private MediaControllerCompat.TransportControls mTransportControls;
+    private BaseMediaControlActivity mActivity;
 
-    public ShowPlayListSongAdapter(int mPlayListId, OnClickSomething<PlayListSongEntity> mOnClickSongListener) {
+    public ShowPlayListSongAdapter(BaseMediaControlActivity activity, int mPlayListId, OnClickSomething<PlayListSongEntity> mOnClickSongListener) {
         super(mOnClickSongListener);
+        this.mActivity = activity;
         this.mPlayListId = mPlayListId;
         mDataList = new RealmUtils().queryPlayListSongByListIdSortByPosition(mPlayListId);
     }
@@ -72,18 +73,13 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
                         PlayListSongEntity playListSongEntity = mDataList.get(position);
                         realmUtils.deleteSongFromPlayList(playListSongEntity);
                         mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(mPlayListId);
-                        MiscellaneousUtil.sendRemoveSongFromListAction(mPlayListId, playListSongEntity.getId(), mTransportControls);
+                        sendRemoveSongFromListAction(mPlayListId, playListSongEntity.getId());
                         break;
                 }
 
                 notifyDataSetChanged();
             }
-        }, new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                notifyDataSetChanged();
-            }
-        });
+        }, dialog -> notifyDataSetChanged());
     }
 
     @Override
@@ -93,7 +89,15 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
         notifyItemMoved(from, to);
     }
 
-    public void setTransportControls(MediaControllerCompat.TransportControls mTransportControls) {
-        this.mTransportControls = mTransportControls;
+    /**
+     * 送從歌單刪除歌曲的Action
+     * @param mPlayListId
+     * @param playListSongEntityId
+     */
+    private void sendRemoveSongFromListAction(int mPlayListId, int playListSongEntityId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, mPlayListId);
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_SONG_ID, playListSongEntityId);
+        mActivity.sendActionToService(PlayMusicService.ACTION_REMOVE_SONG_FROM_PLAYLIST, bundle);
     }
 }

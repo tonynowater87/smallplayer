@@ -2,7 +2,6 @@ package com.tonynowater.smallplayer.module.dto.realm;
 
 import android.util.Log;
 
-import com.google.firebase.crash.FirebaseCrash;
 import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.dao.DBQueryCondition;
 import com.tonynowater.smallplayer.module.dto.realm.dao.DBQueryResult;
@@ -92,16 +91,6 @@ public class RealmUtils implements Closeable{
         return playFolderDAO.queryAll().get(0).getCurrentPlayListId();
     }
 
-    /** @return 現正播放的PlayListPosition */
-    public int queryCurrentPlayListPosition() {
-        try {
-            return playListDAO.getQuery().equalTo(PlayListDAO.COLUMN_ID, playFolderDAO.queryAll().get(0).getCurrentPlayListId()).findFirst().getPosition();
-        } catch (NullPointerException e) {
-            // FIXME: 2017/6/6 這邊若刪除正在播放的清單會當機，待處理，先 try catch起來
-            return BaseDAO.DEFAULT_ID;
-        }
-    }
-
     /** 更新現正播放的PlayListID */
     public int setCurrentPlayListID(final int playListID) {
         PlayFolderEntity playFolderEntity = playFolderDAO.copyFromReal(playFolderDAO.queryAll().get(0));
@@ -175,20 +164,6 @@ public class RealmUtils implements Closeable{
         }
 
         playListDAO.delete(playListEntity);
-
-        //以下處理刪除後歌單的位置
-        int deletePosition = playListEntity.getPosition();
-        int size = queryAllPlayList().size();
-        HashMap<String, Object> param = new HashMap<>();
-        param.put(PlayListDAO.COLUMN_POSITION, size);
-        List<PlayListEntity> playListEntities = playListDAO.query(DBQueryResult.Copy, DBQueryCondition.GreaterThanOrEqualTo, param);
-        for (PlayListEntity entity : playListEntities) {
-            if (deletePosition < size) {
-                //刪除目前歌單位置
-                entity.setPosition(entity.getPosition() - 1);
-                playListDAO.update(entity);
-            }
-        }
     }
 
     /**
@@ -283,17 +258,21 @@ public class RealmUtils implements Closeable{
     /**
      * @return 目前播放清單的名稱
      */
-    // TODO: 2017/10/10 這邊有可能會出現IndexOutOfBoundsException，先暫時這樣處理
     public String getCurrentPlayListName() {
+        return queryPlayListById(queryCurrentPlayListID()).get(0).getPlayListName();
+    }
+
+    /**
+     * @return 目前播放清單的位置
+     */
+    public int queryCurrentPlayListPosition() {
+        int curId = queryCurrentPlayListID();
         List<PlayListEntity> listEntities = queryAllPlayListSortByPosition();
-        int currentPlayListPosition = queryCurrentPlayListPosition();
-        if (currentPlayListPosition < listEntities.size()) {
-            return listEntities.get(currentPlayListPosition).getPlayListName();
-        } else {
-            String msg = String.format("current pos:%s, all list size:%s", currentPlayListPosition, listEntities.size());
-            Log.e(TAG, msg);
-            FirebaseCrash.logcat(Log.ERROR, "RealmUtils", msg);
-            return "";
+        for (int i = 0, len = listEntities.size(); i < len; i++) {
+            if (listEntities.get(i).getId() == curId) {
+                return i;
+            }
         }
+        return 0;
     }
 }

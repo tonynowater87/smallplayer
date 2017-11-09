@@ -62,21 +62,6 @@ public class MiscellaneousUtil {
     }
 
     /**
-     * 送從歌單刪除歌曲的Action
-     * @param mPlayListId
-     * @param playListSongEntityId
-     * @param mTransportControls
-     */
-    public static void sendRemoveSongFromListAction(int mPlayListId, int playListSongEntityId, MediaControllerCompat.TransportControls mTransportControls) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, mPlayListId);
-        bundle.putInt(PlayMusicService.BUNDLE_KEY_SONG_ID, playListSongEntityId);
-        if (mTransportControls != null) {
-            mTransportControls.sendCustomAction(PlayMusicService.ACTION_REMOVE_SONG_FROM_PLAYLIST, bundle);
-        }
-    }
-
-    /**
      * @param playListEntities 本地儲存的歌單
      * @return 只有本地儲存的歌單名稱的字串List
      */

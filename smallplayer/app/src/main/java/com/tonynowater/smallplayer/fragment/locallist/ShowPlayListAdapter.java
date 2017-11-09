@@ -1,16 +1,14 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
-import android.content.DialogInterface;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListAdapterBinding;
-import com.tonynowater.smallplayer.module.dto.realm.dao.BaseDAO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
+import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
@@ -23,8 +21,11 @@ import java.util.Collections;
 public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEntity, LayoutShowPlayListAdapterBinding> implements ItemTouchHelperAdapter{
     private static final String TAG = ShowPlayListAdapter.class.getSimpleName();
     private int[] mSongCountArray;
-    public ShowPlayListAdapter(OnClickSomething<PlayListEntity> mOnClickSongListener) {
+    private BaseMediaControlActivity mActivity;
+
+    public ShowPlayListAdapter(BaseMediaControlActivity activity, OnClickSomething<PlayListEntity> mOnClickSongListener) {
         super(mOnClickSongListener);
+        this.mActivity = activity;
         refreshData();
     }
 
@@ -49,28 +50,30 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     public void onDismiss(int position) {
         final PlayListEntity playListEntity = mDataList.get(position);
         if (playListEntity.isDeletable()) {
-            DialogUtil.showYesNoDialog(mContext, String.format(mContext.getString(R.string.delete_hint), playListEntity.getPlayListName()), new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                    switch (dialogAction) {
-                        case POSITIVE:
-                            realmUtils.deletePlayList(playListEntity);
-                            realmUtils.setCurrentPlayListID(realmUtils.queryAllPlayList().size() > 1 ? (realmUtils.queryCurrentPlayListPosition() - 1) : BaseDAO.DEFAULT_ID);
-                            mDataList = realmUtils.queryAllPlayListSortByPosition();
-                            break;
-                    }
-                    notifyDataSetChanged();
+            DialogUtil.showYesNoDialog(mContext, String.format(mContext.getString(R.string.delete_hint), playListEntity.getPlayListName()), (materialDialog, dialogAction) -> {
+                switch (dialogAction) {
+                    case POSITIVE:
+                        if (playListEntity.getId() == realmUtils.queryCurrentPlayListID()) {
+                            int defaultPlaylistId = realmUtils.queryAllPlayListSortByPosition().get(0).getId();
+                            realmUtils.setCurrentPlayListID(defaultPlaylistId);
+                            sendChangePlayListAction(defaultPlaylistId);
+                        }
+                        realmUtils.deletePlayList(playListEntity);
+                        mDataList = realmUtils.queryAllPlayListSortByPosition();
+                        break;
                 }
-            }, new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    notifyDataSetChanged();
-                }
-            });
+                notifyDataSetChanged();
+            }, dialog -> notifyDataSetChanged());
         } else {
             DialogUtil.showMessageDialog(mContext, mContext.getString(R.string.normal_dialog_title),mContext.getString(R.string.default_list_can_not_delete));
             notifyDataSetChanged();
         }
+    }
+
+    private void sendChangePlayListAction(int defaultPlaylistId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, defaultPlaylistId);
+        mActivity.sendActionToService(PlayMusicService.ACTION_CHANGE_PLAYLIST, bundle);
     }
 
     @Override
