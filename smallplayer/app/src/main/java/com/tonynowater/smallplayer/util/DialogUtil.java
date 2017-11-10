@@ -87,7 +87,7 @@ public class DialogUtil {
 
             //先把要加入的歌曲全刪
             for (int i = 0; i < songEntities.size(); i++) {
-                realmUtils.deleteSongFromPlayList(songEntities.get(i));
+                realmUtils.deleteSong(songEntities.get(i).getId());
             }
 
             //再把此次新增的歌曲加到各歌單裡

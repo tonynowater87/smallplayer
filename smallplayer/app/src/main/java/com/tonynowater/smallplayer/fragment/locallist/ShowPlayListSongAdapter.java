@@ -71,7 +71,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
                 switch (dialogAction) {
                     case POSITIVE:
                         PlayListSongEntity playListSongEntity = mDataList.get(position);
-                        realmUtils.deleteSongFromPlayList(playListSongEntity);
+                        realmUtils.deleteSong(playListSongEntity.getId());
                         mDataList = realmUtils.queryPlayListSongByListIdSortByPosition(mPlayListId);
                         sendRemoveSongFromListAction(mPlayListId, playListSongEntity.getId());
                         break;

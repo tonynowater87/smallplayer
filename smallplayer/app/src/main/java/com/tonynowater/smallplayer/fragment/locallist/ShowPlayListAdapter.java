@@ -2,6 +2,7 @@ package com.tonynowater.smallplayer.fragment.locallist;
 
 import android.os.Bundle;
 
+import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
@@ -50,7 +51,7 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
     public void onDismiss(int position) {
         final PlayListEntity playListEntity = mDataList.get(position);
         if (playListEntity.isDeletable()) {
-            DialogUtil.showYesNoDialog(mContext, String.format(mContext.getString(R.string.delete_hint), playListEntity.getPlayListName()), (materialDialog, dialogAction) -> {
+            DialogUtil.showYesNoDialog(mContext, String.format(MyApplication.getContext().getString(R.string.delete_hint), playListEntity.getPlayListName()), (materialDialog, dialogAction) -> {
                 switch (dialogAction) {
                     case POSITIVE:
                         if (playListEntity.getId() == realmUtils.queryCurrentPlayListID()) {
@@ -60,9 +61,9 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
                         }
                         realmUtils.deletePlayList(playListEntity);
                         mDataList = realmUtils.queryAllPlayListSortByPosition();
+                        notifyDataSetChanged();
                         break;
                 }
-                notifyDataSetChanged();
             }, dialog -> notifyDataSetChanged());
         } else {
             DialogUtil.showMessageDialog(mContext, mContext.getString(R.string.normal_dialog_title),mContext.getString(R.string.default_list_can_not_delete));

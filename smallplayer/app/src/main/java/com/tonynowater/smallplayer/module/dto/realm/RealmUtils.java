@@ -132,10 +132,15 @@ public class RealmUtils implements Closeable{
 
     /**
      * 從播放清單刪除一首歌曲
-     * @param playListSong
+     * @param songId
      */
-    public void deleteSongFromPlayList(PlayListSongEntity playListSong) {
-        playListSongDAO.delete(playListSong);
+    public void deleteSong(int songId) {
+        HashMap<String, Object> param = new HashMap<>();
+        param.put(PlayListSongDAO.COLUMN_ID, songId);
+        List<PlayListSongEntity> listSongEntities = playListSongDAO.query(DBQueryResult.NotCopy, DBQueryCondition.EqualTo, param);
+        if (listSongEntities.size() > 0) {
+            playListSongDAO.delete(listSongEntities.get(0));
+        }
     }
 
     /**
@@ -145,7 +150,7 @@ public class RealmUtils implements Closeable{
     public void deleteAllSongsFromPlaylist(int playlistId) {
         List<PlayListSongEntity> listSongEntities = queryPlayListSongByListId(playlistId);
         for (int i = 0; i < listSongEntities.size(); i++) {
-            deleteSongFromPlayList(listSongEntities.get(i));
+            deleteSong(listSongEntities.get(i).getId());
         }
     }
 

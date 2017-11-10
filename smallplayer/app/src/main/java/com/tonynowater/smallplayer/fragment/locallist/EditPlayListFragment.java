@@ -52,7 +52,9 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
 
     @Override
     protected void onMetadataChanged(MediaMetadataCompat metadata) {
-        initialPlayListSongAdapter();
+        if (metadata == null) {
+            initUI();
+        }
     }
 
     @Override
@@ -86,6 +88,10 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
         super.onActivityCreated(savedInstanceState);
         mEnumType = (EnumEditListType) getArguments().getSerializable(BUNDLE_KEY_ENUM_EDITLISTTYPE);
         mId = getArguments().getInt(BUNDLE_KEY_POSITION);
+        initUI();
+    }
+
+    private void initUI() {
         switch (mEnumType) {
             case PlayList:
                 getActivity().setTitle(getString(R.string.title_edit_play_list));
