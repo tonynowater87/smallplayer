@@ -51,7 +51,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile deps.junit
-    compile 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
     compile deps.appcompat_v7
     compile deps.designLib
     compile deps.okhttp
@@ -62,6 +61,9 @@ dependencies {
     compile deps.firebase_core
     compile deps.firebase_crash
     compile deps.google_auth
+    compile deps.retrofit2
+    compile deps.retrofitGson
+    compile deps.youtube_extrator
 }
 
 apply plugin: 'com.google.gms.google-services'

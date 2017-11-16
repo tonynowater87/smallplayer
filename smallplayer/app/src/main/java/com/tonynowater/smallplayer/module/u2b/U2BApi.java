@@ -14,6 +14,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.api.ApiClient;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.U2BAccessTokenDTO;
 import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
@@ -31,7 +32,9 @@ import com.tonynowater.smallplayer.util.SPManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.tonynowater.smallplayer.module.u2b.U2BApiDefine.DEFAULT_QUERY_RESULT;
@@ -87,6 +90,8 @@ public class U2BApi {
                 queryParamsItem.addHeader("Authorization", "Bearer " + token);
             }
 
+            testRetrofit(queryParamsItem);
+
             sendHttpRequest(queryParamsItem, new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
@@ -113,6 +118,14 @@ public class U2BApi {
         } else {
             callback.onFailure(MyApplication.getContext().getString(R.string.u2b_query_failure));
         }
+    }
+
+    private void testRetrofit(U2BQueryParamsItem queryParamsItem) {
+        Map<String, String> map = new HashMap<>();
+        map.put("q", queryParamsItem.getKeyword());
+        map.put("pageToken", queryParamsItem.getNextPageToken());
+        ApiClient apiClient = new ApiClient();
+        apiClient.getVideo(map);
     }
 
     /** 搜尋U2B的PlayList */

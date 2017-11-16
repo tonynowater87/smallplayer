@@ -44,6 +44,9 @@ ext {
     lottieVer = '2.0.0-rc2'
     googleAuthLibVer = '11.2.2'
     firebaseVer = '11.2.2'
+    retrofit2Ver = '2.3.0'
+    retrofitGsonVer = '2.3.0'
+    youtubeExtratorVer = 'master-SNAPSHOT'
 
     deps = [
             espresso_core: "com.android.support.test.espresso:espresso-core:$espressoVer",
@@ -57,6 +60,9 @@ ext {
             lottie       : "com.airbnb.android:lottie:$lottieVer",
             firebase_core: "com.google.firebase:firebase-core:$firebaseVer",//analytics
             firebase_crash: "com.google.firebase:firebase-crash:$firebaseVer",
-            google_auth  : "com.google.android.gms:play-services-auth:$googleAuthLibVer"//google auth
+            google_auth  : "com.google.android.gms:play-services-auth:$googleAuthLibVer",//google auth
+            retrofit2    : "com.squareup.retrofit2:retrofit:$retrofit2Ver",
+            retrofitGson : "com.squareup.retrofit2:converter-gson:$retrofitGsonVer",
+            youtube_extrator: "com.github.HaarigerHarald:android-youtubeExtractor:$youtubeExtratorVer"
     ]
 }

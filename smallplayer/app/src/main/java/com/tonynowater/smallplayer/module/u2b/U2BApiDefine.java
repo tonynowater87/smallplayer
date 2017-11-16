@@ -25,14 +25,17 @@ public class U2BApiDefine {
     public static final String U2B_USER_SUBSCRIPTIONS_QUERY_URL = "https://content.googleapis.com/youtube/v3/subscriptions?maxResults=" + DEFAULT_QUERY_RESULT + "&mine=true&part=snippet&contentDetails&key=" + API_KEY;
     //查影片的長度URL
     public static final String U2B_API_QUERY_DURATION_URL = "https://www.googleapis.com/youtube/v3/videos?id=%s&part=contentDetails&key=" + API_KEY + "&maxResults=%d";
+    //第三方函式庫要解析的 URL
     public static final String U2B_EXTRACT_VIDEO_URL = "http://youtube.com/watch?v=%s";
+    //關鍵字查詢的 URL
     public static final String U2B_API_SUGGESTION_URL = "http://suggestqueries.google.com/complete/search?q=%s&client=firefox&ds=yt&hl=zh";
-    public static final String DOWNLOAD_MP3_URL = "http://www.youtubeinmp3.com/fetch/?format=JSON&video=https://www.youtube.com/watch?v=%s";
-    public static final String DOWNLOAD_MP3_API_URL = "http://www.youtubeinmp3.com/%s";
     //檢查VideoID是否有效的URL
     public static final String CHECK_U2B_VIDEO_ID_URL = "https://www.googleapis.com/youtube/v3/videos?part=id&id=%s&key=" + API_KEY;
     //檢查VideoID是否有地區限制的URL
     public static final String CHECK_U2B_REGION_RESTRICT_URL = "https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=%s&key=" + API_KEY;
     //檢查VideoID的詳細資料
     public static final String U2B_API_VIDEO_DETAIL_INFORMATION_URL = "https://www.googleapis.com/youtube/v3/videos?id=%s&key=" + API_KEY;
+
+    public static final String DOWNLOAD_MP3_URL = "http://www.youtubeinmp3.com/fetch/?format=JSON&video=https://www.youtube.com/watch?v=%s";
+    public static final String DOWNLOAD_MP3_API_URL = "http://www.youtubeinmp3.com/%s";
 }
