@@ -44,6 +44,7 @@ public class MediaUtils {
             MediaStore.Audio.Albums.FIRST_YEAR,
             MediaStore.Audio.Albums.LAST_YEAR,
     };
+    private static final String TAG = MediaUtils.class.getSimpleName();
 
     private static List<Song> mSongList = new ArrayList<>();
 
@@ -97,7 +98,6 @@ public class MediaUtils {
         }
 
         cursor.close();
-        new Logger<Song>().log(songList);
         return songList;
     }
 

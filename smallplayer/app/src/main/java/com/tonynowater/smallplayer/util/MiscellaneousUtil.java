@@ -1,13 +1,9 @@
 package com.tonynowater.smallplayer.util;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.tonynowater.smallplayer.module.dto.U2BVideoDurationDTO;
@@ -47,11 +43,6 @@ public class MiscellaneousUtil {
         return object != null;
     }
 
-    public static void hideKeyboard(Context context, IBinder token) {
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromInputMethod(token, 0);
-    }
-
     /**
      * @param logName log要顯示的訊息
      * @param startTime 開始時間
@@ -71,12 +62,6 @@ public class MiscellaneousUtil {
             listRet.add(playListEntities.get(i).getPlayListName());
         }
         return listRet;
-    }
-
-    public static void logList(String[] strings) {
-        for (int i = 0; i < strings.length; i++) {
-            Log.d(TAG, "logList: " + strings[i]);
-        }
     }
 
     /**
