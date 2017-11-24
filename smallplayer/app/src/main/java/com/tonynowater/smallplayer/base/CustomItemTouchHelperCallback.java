@@ -1,7 +1,16 @@
 package com.tonynowater.smallplayer.base;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.View;
+
+import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.util.Logger;
 
 /**
  * Created by tonynowater on 2017/6/1.
@@ -42,4 +51,38 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         itemTouchHelperAdapter.onDismiss(viewHolder.getAdapterPosition());
     }
+
+    @Override
+    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        Logger.getInstance().i("dX", dX + "");
+        Logger.getInstance().i("test", String.format("l:%d t:%d r:%d b:%d"
+                , viewHolder.itemView.getLeft()
+                , viewHolder.itemView.getTop()
+                , viewHolder.itemView.getRight()
+                , viewHolder.itemView.getBottom()));
+
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(60);
+        String drawTxt = "刪除";
+        float centerY = viewHolder.itemView.getTop() + (viewHolder.itemView.getBottom() - viewHolder.itemView.getTop()) / 2;
+        float textWidth = paint.measureText(drawTxt);
+        if (dX > 0 && isCurrentlyActive) {
+            //向右滑
+            ColorDrawable bg = new ColorDrawable(ContextCompat.getColor(recyclerView.getContext(), R.color.colorAccent));
+            bg.setBounds(viewHolder.itemView.getLeft(), viewHolder.itemView.getTop(), (int) dX, viewHolder.itemView.getBottom());
+            bg.draw(c);
+            c.drawText(drawTxt, viewHolder.itemView.getLeft(), centerY, paint);
+
+        } else if (dX < 0 && isCurrentlyActive) {
+            //向左滑
+            ColorDrawable bg = new ColorDrawable(ContextCompat.getColor(recyclerView.getContext(), R.color.colorFourth));
+            bg.setBounds(viewHolder.itemView.getRight() + (int) dX, viewHolder.itemView.getTop(), viewHolder.itemView.getRight(), viewHolder.itemView.getBottom());
+            bg.draw(c);
+            c.drawText(drawTxt, viewHolder.itemView.getRight() - textWidth, centerY, paint);
+        }
+
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+    }
+
 }
