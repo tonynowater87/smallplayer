@@ -38,7 +38,7 @@ public class Logger {
             return;
         }
         if (mIsEnableLog) {
-            Log.d(TAG, msg);
+            Log.d(tag, msg);
         }
     }
 
@@ -47,7 +47,7 @@ public class Logger {
             return;
         }
         if (mIsEnableLog) {
-            Log.i(TAG, msg);
+            Log.i(tag, msg);
         }
     }
 
@@ -56,7 +56,7 @@ public class Logger {
             return;
         }
         if (mIsEnableLog) {
-            Log.w(TAG, msg);
+            Log.w(tag, msg);
         }
     }
 
@@ -65,7 +65,7 @@ public class Logger {
             return;
         }
         if (mIsEnableLog) {
-            Log.e(TAG, msg);
+            Log.e(tag, msg);
         }
     }
 
@@ -74,7 +74,7 @@ public class Logger {
             return;
         }
         if (mIsEnableLog) {
-            Log.v(TAG, msg);
+            Log.v(tag, msg);
         }
     }
 }

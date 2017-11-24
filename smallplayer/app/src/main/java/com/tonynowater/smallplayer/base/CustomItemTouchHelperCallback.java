@@ -54,12 +54,8 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         Logger.getInstance().i("dX", dX + "");
-        Logger.getInstance().i("test", String.format("l:%d t:%d r:%d b:%d"
-                , viewHolder.itemView.getLeft()
-                , viewHolder.itemView.getTop()
-                , viewHolder.itemView.getRight()
-                , viewHolder.itemView.getBottom()));
 
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
@@ -72,17 +68,24 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
             ColorDrawable bg = new ColorDrawable(ContextCompat.getColor(recyclerView.getContext(), R.color.colorAccent));
             bg.setBounds(viewHolder.itemView.getLeft(), viewHolder.itemView.getTop(), (int) dX, viewHolder.itemView.getBottom());
             bg.draw(c);
-            c.drawText(drawTxt, viewHolder.itemView.getLeft(), centerY, paint);
+            if (dX < textWidth) {
+                c.drawText(drawTxt, viewHolder.itemView.getLeft(), centerY, paint);
+            } else {
+                c.drawText(drawTxt, viewHolder.itemView.getLeft(), centerY, paint);
+            }
 
         } else if (dX < 0 && isCurrentlyActive) {
             //向左滑
             ColorDrawable bg = new ColorDrawable(ContextCompat.getColor(recyclerView.getContext(), R.color.colorFourth));
             bg.setBounds(viewHolder.itemView.getRight() + (int) dX, viewHolder.itemView.getTop(), viewHolder.itemView.getRight(), viewHolder.itemView.getBottom());
             bg.draw(c);
-            c.drawText(drawTxt, viewHolder.itemView.getRight() - textWidth, centerY, paint);
-        }
 
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            if (Math.abs(dX) < textWidth) {
+                c.drawText(drawTxt, viewHolder.itemView.getRight() + dX, centerY, paint);
+            } else {
+                c.drawText(drawTxt, viewHolder.itemView.getRight() - textWidth, centerY, paint);
+            }
+        }
     }
 
 }
