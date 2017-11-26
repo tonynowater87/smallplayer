@@ -1,5 +1,6 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
@@ -17,7 +18,6 @@ import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseMediaControlFragment;
 import com.tonynowater.smallplayer.base.CustomItemTouchHelperCallback;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListFragmentBinding;
-import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -111,12 +111,16 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
         mShowPlayListSongAdapter = new ShowPlayListSongAdapter((BaseMediaControlActivity) getActivity(), getArguments().getInt(BUNDLE_KEY_POSITION), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
-        RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
-        mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
         mBinding.recyclerview.setAdapter(mShowPlayListSongAdapter);
         CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(mShowPlayListSongAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(mBinding.recyclerview);
+        mBinding.recyclerview.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                callback.onDraw(c);
+            }
+        });
     }
 
     /**
@@ -126,12 +130,16 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
         mShowPlayListAdapter = new ShowPlayListAdapter((BaseMediaControlActivity) getActivity(), (OnClickSomething) getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mBinding.recyclerview.setLayoutManager(layoutManager);
-        RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());
-        mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
         mBinding.recyclerview.setAdapter(mShowPlayListAdapter);
         CustomItemTouchHelperCallback callback = new CustomItemTouchHelperCallback(mShowPlayListAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(mBinding.recyclerview);
+        mBinding.recyclerview.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                callback.onDraw(c);
+            }
+        });
     }
 
     @Override

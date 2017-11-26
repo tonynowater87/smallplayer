@@ -3,22 +3,31 @@ package com.tonynowater.smallplayer.base;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Rect;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
+import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.util.DpPixelTranser;
 import com.tonynowater.smallplayer.util.Logger;
 
 /**
+ * RecyclerView 滑動刪除，拖曳處理
  * Created by tonynowater on 2017/6/1.
  */
-
 public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
+    private static final int TXT_PADDING = DpPixelTranser.dpToPx(10);
+    private static final int TXT_SIZE = DpPixelTranser.dpToPx(20);
+    private static final int BUTTON_BACKGROUND_COLOR = ContextCompat.getColor(MyApplication.getContext(), R.color.colorPrimary);
+    private static final String DEL_TXT = "刪除";
 
     private final ItemTouchHelperAdapter itemTouchHelperAdapter;
+    private RecyclerView.ViewHolder currentItemViewHolder;
+    private ButtonsState mEButtonsState = ButtonsState.GONE;
+    private float mDx = 0;
 
     public CustomItemTouchHelperCallback(ItemTouchHelperAdapter itemTouchHelperAdapter) {
         this.itemTouchHelperAdapter = itemTouchHelperAdapter;
@@ -56,36 +65,81 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         Logger.getInstance().i("dX", dX + "");
-
-        Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(60);
-        String drawTxt = "刪除";
-        float centerY = viewHolder.itemView.getTop() + (viewHolder.itemView.getBottom() - viewHolder.itemView.getTop()) / 2;
-        float textWidth = paint.measureText(drawTxt);
-        if (dX > 0 && isCurrentlyActive) {
-            //向右滑
-            ColorDrawable bg = new ColorDrawable(ContextCompat.getColor(recyclerView.getContext(), R.color.colorAccent));
-            bg.setBounds(viewHolder.itemView.getLeft(), viewHolder.itemView.getTop(), (int) dX, viewHolder.itemView.getBottom());
-            bg.draw(c);
-            if (dX < textWidth) {
-                c.drawText(drawTxt, viewHolder.itemView.getLeft(), centerY, paint);
-            } else {
-                c.drawText(drawTxt, viewHolder.itemView.getLeft(), centerY, paint);
-            }
-
-        } else if (dX < 0 && isCurrentlyActive) {
-            //向左滑
-            ColorDrawable bg = new ColorDrawable(ContextCompat.getColor(recyclerView.getContext(), R.color.colorFourth));
-            bg.setBounds(viewHolder.itemView.getRight() + (int) dX, viewHolder.itemView.getTop(), viewHolder.itemView.getRight(), viewHolder.itemView.getBottom());
-            bg.draw(c);
-
-            if (Math.abs(dX) < textWidth) {
-                c.drawText(drawTxt, viewHolder.itemView.getRight() + dX, centerY, paint);
-            } else {
-                c.drawText(drawTxt, viewHolder.itemView.getRight() - textWidth, centerY, paint);
-            }
+        mDx = dX;
+        if (dX > 0) {
+            //左往右滑
+            mEButtonsState = ButtonsState.LEFT_VISIBLE;
+            currentItemViewHolder = viewHolder;
+        } else if (dX < 0) {
+            //右往左滑
+            mEButtonsState = ButtonsState.RIGHT_VISIBLE;
+            currentItemViewHolder = viewHolder;
+        } else {
+            mEButtonsState = ButtonsState.GONE;
+            currentItemViewHolder = null;
         }
     }
 
+    /**
+     * 使用ItemDecorator的Canvas去畫刪除的畫面
+     * @param canvas
+     */
+    public void onDraw(Canvas canvas) {
+        if (currentItemViewHolder != null && mEButtonsState != ButtonsState.GONE) {
+            drawButtons(canvas, currentItemViewHolder);
+        }
+    }
+
+    /**
+     * 畫刪除按鈕及文字
+     * @param c
+     * @param viewHolder
+     */
+    private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder) {
+        Logger.getInstance().i("drawBtn", "");
+        View itemView = viewHolder.itemView;
+        Rect rect = null;
+        switch (mEButtonsState) {
+            case GONE:
+                rect = new Rect();
+                break;
+            case LEFT_VISIBLE:
+                rect = new Rect(itemView.getLeft(), itemView.getTop(), (int) mDx, itemView.getBottom());
+                break;
+            case RIGHT_VISIBLE:
+                rect = new Rect((itemView.getRight() + (int) mDx), itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                break;
+        }
+        Paint paint = new Paint();
+        paint.setColor(BUTTON_BACKGROUND_COLOR);
+        paint.setStyle(Paint.Style.FILL);
+        c.drawRect(rect, paint);
+        drawTxt(c, itemView);
+    }
+
+    private void drawTxt(Canvas c, View itemView) {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(TXT_SIZE);
+        paint.setTextAlign(Paint.Align.CENTER);
+        float textWidth = paint.measureText(DEL_TXT);
+        float txtHalfHeight = (paint.descent() + paint.ascent()) / 2;
+        float centerY = itemView.getTop() + (itemView.getBottom() - itemView.getTop()) / 2;
+        switch (mEButtonsState) {
+            case GONE:
+                break;
+            case LEFT_VISIBLE:
+                c.drawText(DEL_TXT, itemView.getLeft() + textWidth + TXT_PADDING, centerY - txtHalfHeight, paint);
+                break;
+            case RIGHT_VISIBLE:
+                c.drawText(DEL_TXT, itemView.getRight() - textWidth - TXT_PADDING, centerY - txtHalfHeight, paint);
+                break;
+        }
+    }
+}
+
+enum ButtonsState {
+    GONE,
+    LEFT_VISIBLE,
+    RIGHT_VISIBLE
 }

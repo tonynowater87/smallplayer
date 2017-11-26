@@ -28,6 +28,25 @@ import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
+// TODO: 2017/11/26 11-26 12:13:41.585 17479-17479/? E/AndroidRuntime: FATAL EXCEPTION: main
+//                                                   Process: com.tonynowater.smallplayer, PID: 17479
+//                                                           java.lang.RuntimeException: bad array lengths
+//                                                           at android.os.Parcel.readIntArray(Parcel.java:978)
+//                                                           at android.app.INotificationManager$Stub$Proxy.enqueueNotificationWithTag(INotificationManager.java:844)
+//                                                           at android.app.NotificationManager.notifyAsUser(NotificationManager.java:313)
+//                                                           at android.app.NotificationManager.notify(NotificationManager.java:284)
+//                                                           at android.app.NotificationManager.notify(NotificationManager.java:268)
+//                                                           at com.tonynowater.smallplayer.service.MediaNotificationManager$1.onMetadataChanged(MediaNotificationManager.java:88)
+//                                                           at android.support.v4.media.session.MediaControllerCompat$Callback$StubApi21.onMetadataChanged(MediaControllerCompat.java:767)
+//                                                           at android.support.v4.media.session.MediaControllerCompatApi21$CallbackProxy.onMetadataChanged(MediaControllerCompatApi21.java:297)
+//                                                           at android.media.session.MediaController$MessageHandler.handleMessage(MediaController.java:1191)
+//                                                           at android.os.Handler.dispatchMessage(Handler.java:102)
+//                                                           at android.os.Looper.loop(Looper.java:173)
+//                                                           at android.app.ActivityThread.main(ActivityThread.java:6459)
+//                                                           at java.lang.reflect.Method.invoke(Native Method)
+//                                                           at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:938)
+//                                                           at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:828) 
+
 /**
  * 處理通知類別
  * Created by tonyliao on 2017/5/13.

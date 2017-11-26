@@ -5,9 +5,9 @@
         android:id="@+id/rl_root_songlistadapter"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
-        android:padding="5dp">
+        android:background="@android:color/white">
 
-        <ImageView
+    <ImageView
             android:id="@+id/iv_songlistadapter"
             android:layout_width="@dimen/list_image_width"
             android:layout_height="@dimen/list_image_height"
