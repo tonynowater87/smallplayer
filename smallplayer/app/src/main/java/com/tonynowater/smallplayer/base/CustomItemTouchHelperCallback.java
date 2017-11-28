@@ -15,7 +15,9 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.util.DpPixelTranser;
 import com.tonynowater.smallplayer.util.Logger;
 
-// TODO: 2017/11/26 二段式刪除畫面沒出來，點擊也無效... 
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
+
+// TODO: 2017/11/28 上下滑動在二段式滑動刪除時有問題
 /**
  * RecyclerView 滑動刪除，拖曳處理
  * Created by tonynowater on 2017/6/1.
@@ -31,8 +33,10 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private RecyclerView.ViewHolder currentItemViewHolder;
     private ButtonsState mEButtonsState = ButtonsState.GONE;
     private float mDx = 0;
-    private boolean mIsNeedCheckToDismiss = true;
+    private boolean mIsNeedCheckToDismiss = false;
     private boolean mIsTouching = false;
+    private Rect mRectLeftTouchArea;
+    private Rect mRectRightTouchArea;
     private Rect mRectTouchArea;
 
     public CustomItemTouchHelperCallback(ItemTouchHelperAdapter itemTouchHelperAdapter) {
@@ -83,13 +87,23 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
         Logger.getInstance().i("dX", dX + "");
         if (mIsNeedCheckToDismiss) {
-            if (mEButtonsState != ButtonsState.GONE) {
-                if (mEButtonsState == ButtonsState.LEFT_VISIBLE) dX = Math.max(dX, TOUCH_BUTTON_AREA);
-                else if (mEButtonsState == ButtonsState.RIGHT_VISIBLE) dX = Math.min(dX, -TOUCH_BUTTON_AREA);
-            } else {
-                setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            if (actionState == ACTION_STATE_SWIPE) {
+                if (mEButtonsState != ButtonsState.GONE) {
+                    if (mEButtonsState == ButtonsState.LEFT_VISIBLE) dX = Math.max(dX, TOUCH_BUTTON_AREA);
+                    else if (mEButtonsState == ButtonsState.RIGHT_VISIBLE) dX = Math.min(dX, -TOUCH_BUTTON_AREA);
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                } else {
+                    setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
+
+                if (mEButtonsState == ButtonsState.GONE) {
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
+                currentItemViewHolder = viewHolder;
             }
+
         } else {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             mDx = dX;
             if (dX > 0) {
                 //左往右滑
@@ -104,25 +118,16 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
                 currentItemViewHolder = null;
             }
         }
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
     private void setTouchListener(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
         recyclerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                mDx = dX;
-                if (dX < 0) {
-                    mEButtonsState = ButtonsState.RIGHT_VISIBLE;
-                    currentItemViewHolder = viewHolder;
-                }
-                else if (dX > 0) {
-                    mEButtonsState = ButtonsState.LEFT_VISIBLE;
-                    currentItemViewHolder = viewHolder;
-                }
-
                 mIsTouching = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
                 if (mIsTouching) {
+                    if (dX < -TOUCH_BUTTON_AREA) mEButtonsState = ButtonsState.RIGHT_VISIBLE;
+                    else if (dX > TOUCH_BUTTON_AREA) mEButtonsState  = ButtonsState.LEFT_VISIBLE;
                     if (mEButtonsState != ButtonsState.GONE) {
                         setTouchDownListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                         setItemsClickable(recyclerView, false);
@@ -189,22 +194,42 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder) {
         Logger.getInstance().i("drawBtn", "");
         View itemView = viewHolder.itemView;
-        mRectTouchArea = null;
-        switch (mEButtonsState) {
-            case GONE:
-                mRectTouchArea = new Rect();
-                break;
-            case LEFT_VISIBLE:
-                mRectTouchArea = new Rect(itemView.getLeft(), itemView.getTop(), (int) mDx, itemView.getBottom());
-                break;
-            case RIGHT_VISIBLE:
-                mRectTouchArea = new Rect((itemView.getRight() + (int) mDx), itemView.getTop(), itemView.getRight(), itemView.getBottom());
-                break;
-        }
+
         Paint paint = new Paint();
         paint.setColor(BUTTON_BACKGROUND_COLOR);
         paint.setStyle(Paint.Style.FILL);
-        c.drawRect(mRectTouchArea, paint);
+
+        if (mIsNeedCheckToDismiss) {
+            mRectLeftTouchArea = new Rect(itemView.getLeft(), itemView.getTop(), TOUCH_BUTTON_AREA, itemView.getBottom());
+            mRectRightTouchArea = new Rect((itemView.getRight() - TOUCH_BUTTON_AREA), itemView.getTop(), itemView.getRight(), itemView.getBottom());
+
+            c.drawRect(mRectLeftTouchArea, paint);
+            c.drawRect(mRectRightTouchArea, paint);
+
+            if (mEButtonsState == ButtonsState.LEFT_VISIBLE) {
+                mRectTouchArea = mRectLeftTouchArea;
+            }
+
+            if (mEButtonsState == ButtonsState.RIGHT_VISIBLE) {
+                mRectTouchArea = mRectRightTouchArea;
+            }
+
+        } else {
+            switch (mEButtonsState) {
+                case GONE:
+                    mRectTouchArea = new Rect();
+                    break;
+                case LEFT_VISIBLE:
+                    mRectTouchArea = new Rect(itemView.getLeft(), itemView.getTop(), (int) mDx, itemView.getBottom());
+                    break;
+                case RIGHT_VISIBLE:
+                    mRectTouchArea = new Rect((itemView.getRight() + (int) mDx), itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                    break;
+            }
+
+            c.drawRect(mRectTouchArea, paint);
+        }
+
         drawTxt(c, itemView);
     }
 
@@ -216,15 +241,19 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
         float textWidth = paint.measureText(DEL_TXT);
         float txtHalfHeight = (paint.descent() + paint.ascent()) / 2;
         float centerY = itemView.getTop() + (itemView.getBottom() - itemView.getTop()) / 2;
-        switch (mEButtonsState) {
-            case GONE:
-                break;
-            case LEFT_VISIBLE:
-                c.drawText(DEL_TXT, itemView.getLeft() + textWidth + TXT_PADDING, centerY - txtHalfHeight, paint);
-                break;
-            case RIGHT_VISIBLE:
-                c.drawText(DEL_TXT, itemView.getRight() - textWidth - TXT_PADDING, centerY - txtHalfHeight, paint);
-                break;
+
+        if (mIsNeedCheckToDismiss) {
+            c.drawText(DEL_TXT, itemView.getLeft() + textWidth + TXT_PADDING, centerY - txtHalfHeight, paint);
+            c.drawText(DEL_TXT, itemView.getRight() - textWidth - TXT_PADDING, centerY - txtHalfHeight, paint);
+        } else {
+            switch (mEButtonsState) {
+                case LEFT_VISIBLE:
+                    c.drawText(DEL_TXT, itemView.getLeft() + textWidth + TXT_PADDING, centerY - txtHalfHeight, paint);
+                    break;
+                case RIGHT_VISIBLE:
+                    c.drawText(DEL_TXT, itemView.getRight() - textWidth - TXT_PADDING, centerY - txtHalfHeight, paint);
+                    break;
+            }
         }
     }
 }
