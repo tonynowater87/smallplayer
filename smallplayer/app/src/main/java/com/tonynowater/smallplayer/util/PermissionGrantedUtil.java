@@ -41,7 +41,6 @@ public class PermissionGrantedUtil {
     public void checkPermissiion (String... requestPermission) {
         //6.0以上才需要權限處理
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-
             ArrayList<String> permissions = new ArrayList<>();
 
             for (int i = 0; i < requestPermission.length; i++) {
@@ -60,6 +59,9 @@ public class PermissionGrantedUtil {
             } else {
                 callBack.onPermissionGranted();
             }
+        } else {
+            //版本低於6.0，直接獲取權限
+            callBack.onPermissionGranted();
         }
     }
 
