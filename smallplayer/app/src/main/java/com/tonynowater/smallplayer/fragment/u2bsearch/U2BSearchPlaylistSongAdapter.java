@@ -11,14 +11,14 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.TimeUtil;
 
 /**
- * 搜尋音樂的列表
+ * U2B可播放的音樂列表
  * Created by tonyliao on 2017/5/1.
  */
-public class U2BSearchFragmentAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutSonglistadapterListitemBinding> {
-    private static final String TAG = U2BSearchFragmentAdapter.class.getSimpleName();
+public class U2BSearchPlaylistSongAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutSonglistadapterListitemBinding> {
+    private static final String TAG = U2BSearchPlaylistSongAdapter.class.getSimpleName();
 
-    public U2BSearchFragmentAdapter(OnClickSomething<PlayListSongEntity> mOnClickSongListener) {
-        super(mOnClickSongListener);
+    public U2BSearchPlaylistSongAdapter(OnClickSomething<PlayListSongEntity> mOnClickSongListener, boolean mFootviewIsVisible) {
+        super(mOnClickSongListener, mFootviewIsVisible);
     }
 
     @Override

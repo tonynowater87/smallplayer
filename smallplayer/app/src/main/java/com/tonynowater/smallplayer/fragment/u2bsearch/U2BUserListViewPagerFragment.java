@@ -132,7 +132,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     private void initialU2BSearchAdapter() {
-        mSongListAdapter = new U2BSearchPlayListFragmentAdapter((OnClickSomething) getActivity());
+        mSongListAdapter = new U2BSearchPlayListAdapter((OnClickSomething) getActivity());
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mBinding.recyclerviewU2bsearchfragment.setLayoutManager(layoutManager);
         RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(getContext());

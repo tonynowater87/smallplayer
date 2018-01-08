@@ -13,11 +13,11 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
  * 搜尋清單Adapter
  * Created by tonynowater on 2017/5/20.
  */
-public class U2BSearchPlayListFragmentAdapter extends BasePlayableFragmentAdapter<U2BUserPlayListEntity, LayoutU2bSearchPlaylistAdapterListitemBinding> {
-    private static final String TAG = U2BSearchPlayListFragmentAdapter.class.getSimpleName();
+public class U2BSearchPlayListAdapter extends BasePlayableFragmentAdapter<U2BUserPlayListEntity, LayoutU2bSearchPlaylistAdapterListitemBinding> {
+    private static final String TAG = U2BSearchPlayListAdapter.class.getSimpleName();
 
-    public U2BSearchPlayListFragmentAdapter(OnClickSomething<U2BUserPlayListEntity> mOnClickSongListener) {
-        super(mOnClickSongListener);
+    public U2BSearchPlayListAdapter(OnClickSomething<U2BUserPlayListEntity> mOnClickSongListener) {
+        super(mOnClickSongListener, true);
     }
 
     @Override

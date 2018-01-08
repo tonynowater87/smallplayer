@@ -182,11 +182,13 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     private void initialU2BSearchAdapter() {
         switch (mEnumU2BSearchType) {
             case VIDEO:
+                mSongListAdapter = new U2BSearchPlaylistSongAdapter((OnClickSomething) getActivity(), true);
+                break;
             case PLAYLISTVIDEO:
-                mSongListAdapter = new U2BSearchFragmentAdapter((OnClickSomething) getActivity());
+                mSongListAdapter = new U2BSearchPlaylistSongAdapter((OnClickSomething) getActivity(), false);
                 break;
             case PLAYLIST:
-                mSongListAdapter = new U2BSearchPlayListFragmentAdapter((OnClickSomething) getActivity());
+                mSongListAdapter = new U2BSearchPlayListAdapter((OnClickSomething) getActivity());
                 break;
         }
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
@@ -220,16 +222,6 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
                                     u2BPlayListQueryArray.query();
-                                    isLoad = true;
-                                }
-                                break;
-                            case PLAYLISTVIDEO:
-                                if (TextUtils.isEmpty(u2BPlayListVideoQueryArray.getNextPageToken())) {
-                                    Log.d(TAG, "onScrollStateChanged: token null");
-                                    mSongListAdapter.setFootviewVisible(false);
-                                    mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
-                                } else {
-                                    u2BPlayListVideoQueryArray.query();
                                     isLoad = true;
                                 }
                                 break;

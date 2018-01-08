@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * Created by tonynowater on 2017/10/26.
  */
-
 public class U2BPlayListVideoQueryArray<PlayListSongEntity> extends BaseQueryArrayList {
     
     public U2BPlayListVideoQueryArray(U2BQueryParamsItem u2BQueryParamsItem, IOnU2BQuery callback) {
@@ -26,7 +25,12 @@ public class U2BPlayListVideoQueryArray<PlayListSongEntity> extends BaseQueryArr
                         for (int i = 0; i < response.size(); i++) {
                             add(response.get(i));
                         }
-                        callback.onQuerySuccess();
+
+                        if (ueryParamsItem.getNextPageToken() != null) {
+                            query();
+                        } else {
+                            callback.onQuerySuccess();
+                        }
                     }
 
                     @Override

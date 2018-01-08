@@ -30,7 +30,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     protected OnClickSomething<K> mOnClickSongListener;
     protected RealmUtils realmUtils;
     protected Context mContext;
-    protected boolean mFootviewIsVisible = true;
+    protected boolean mFootviewIsVisible = false;
 
     public BasePlayableFragmentAdapter(List<K> mDataList, OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();
@@ -42,6 +42,13 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         realmUtils = new RealmUtils();
         this.mDataList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
+    }
+
+    protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener, boolean mFootviewIsVisible) {
+        realmUtils = new RealmUtils();
+        this.mDataList = new ArrayList<>();
+        this.mOnClickSongListener = mOnClickSongListener;
+        this.mFootviewIsVisible = mFootviewIsVisible;
     }
 
     @Override
@@ -134,7 +141,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     }
 
     /**
-     * @param footviewVisible 設置FootView是否可見
+     * @param footviewVisible 設置FootView是否可見，還要NotifydatasetChanged才會改變
      */
     public void setFootviewVisible (boolean footviewVisible) {
         mFootviewIsVisible = footviewVisible;
