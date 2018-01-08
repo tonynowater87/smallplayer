@@ -33,7 +33,7 @@ public class CustomItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private RecyclerView.ViewHolder currentItemViewHolder;
     private ButtonsState mEButtonsState = ButtonsState.GONE;
     private float mDx = 0;
-    private boolean mIsNeedCheckToDismiss = false;
+    private boolean mIsNeedCheckToDismiss = true;
     private boolean mIsTouching = false;
     private Rect mRectLeftTouchArea;
     private Rect mRectRightTouchArea;

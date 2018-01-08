@@ -13,11 +13,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseMediaControlFragment;
 import com.tonynowater.smallplayer.base.CustomItemTouchHelperCallback;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListFragmentBinding;
+import com.tonynowater.smallplayer.fragment.u2bsearch.RecyclerViewDivideLineDecorator;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
@@ -121,6 +123,9 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
                 callback.onDraw(c);
             }
         });
+
+        RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(MyApplication.getContext());
+        mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
     }
 
     /**
@@ -140,6 +145,8 @@ public class EditPlayListFragment extends BaseMediaControlFragment<LayoutShowPla
                 callback.onDraw(c);
             }
         });
+        RecyclerViewDivideLineDecorator dividerItemDecoration = new RecyclerViewDivideLineDecorator(MyApplication.getContext());
+        mBinding.recyclerview.addItemDecoration(dividerItemDecoration);
     }
 
     @Override

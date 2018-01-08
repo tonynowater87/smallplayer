@@ -25,6 +25,15 @@ public class RecyclerViewDivideLineDecorator extends RecyclerView.ItemDecoration
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         super.onDraw(canvas, parent, state);
+    }
+
+    /**
+     * All decorations are drawn before drawing the items.
+     * In case you want to draw decorations after drawing the view, override onDrawOver() method instead of onDraw().
+     */
+    @Override
+    public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+        super.onDrawOver(canvas, parent, state);
         View child;
         RecyclerView.LayoutParams params;
         int iDividerLeft = parent.getPaddingLeft();
@@ -42,10 +51,5 @@ public class RecyclerViewDivideLineDecorator extends RecyclerView.ItemDecoration
             mDividerDrawable.setBounds(iDividerLeft, iDividerTop, iDividerRight, iDividerBottom);
             mDividerDrawable.draw(canvas);
         }
-    }
-
-    @Override
-    public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-        super.onDrawOver(canvas, parent, state);
     }
 }
