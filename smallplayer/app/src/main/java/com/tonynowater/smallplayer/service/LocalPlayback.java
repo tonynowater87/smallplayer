@@ -175,6 +175,7 @@ public class LocalPlayback implements Playback
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "onCompletion:");
+        mCurrentPosition = 0;
         mPlaybackCallback.onCompletion();
     }
 
