@@ -337,10 +337,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private void setNotificationPlayState(NotificationCompat.Builder builder) {
         Log.d(TAG, "setNotificationPlayState: " + mPlaybackState);
-        if (!mStarted) {
-            Log.d(TAG, "setNotificationPlayState: cancel notification");
-            return;
-        }
 
         switch (mPlaybackState.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
