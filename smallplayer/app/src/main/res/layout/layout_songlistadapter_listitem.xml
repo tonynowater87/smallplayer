@@ -5,7 +5,7 @@
         android:id="@+id/rl_root_songlistadapter"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
-        android:layout_margin="@dimen/margin_gap_level_1">
+        android:padding="@dimen/margin_gap_level_1">
 
         <ImageView
             android:id="@+id/iv_songlistadapter"
