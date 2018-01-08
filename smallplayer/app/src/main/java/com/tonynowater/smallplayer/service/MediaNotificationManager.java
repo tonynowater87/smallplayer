@@ -183,9 +183,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // The notification must be updated after setting started to true
             Notification notification = createNotification();
             if (notification != null) {
-                mMediaController.registerCallback(mMediaControllerCallback);
-                mPlayMusicService.startForeground(NOTIFICATION_ID, createNotification());
                 mStarted = true;
+                mMediaController.registerCallback(mMediaControllerCallback);
+                mPlayMusicService.startForeground(NOTIFICATION_ID, notification);
             } else {
                 Log.w(TAG, "startNotification: notification null");
             }
@@ -203,6 +203,16 @@ public class MediaNotificationManager extends BroadcastReceiver {
             unRegisterReceiver();
             mPlayMusicService.stopForeground(true);
             mPlayMusicService.stopSelf();
+        }
+    }
+
+    /**
+     * 保留通知，停止前景Service
+     */
+    private void stopForeground() {
+        Log.d(TAG, "stopForeground: " + mStarted);
+        if (mStarted) {
+            mPlayMusicService.stopForeground(false);
         }
     }
 
@@ -246,7 +256,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService);
-        builder.addAction(R.drawable.ic_close_black_24dp, mPlayMusicService.getString(R.string.play_state_stop), mStopIntent);
+        addRepeatAction(builder);
         builder.addAction(R.drawable.ic_skip_previous_black_24px, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
         addPlayPauseAction(builder);
         builder.addAction(R.drawable.ic_skip_next_black_24px, mPlayMusicService.getString(R.string.play_state_next), mNextIntent);
@@ -256,14 +266,19 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         builder.setStyle(new NotificationCompat.MediaStyle()
                     .setShowActionsInCompactView(new int[]{1, 2, 3})// show specify button in compact view, limitation is three
-                    .setMediaSession(mToken))
+                    .setMediaSession(mToken)
+                    //For Pre-Lollipop use
+                    .setShowCancelButton(true)
+                    .setCancelButtonIntent(mStopIntent))
+                    //For Pre-Lollipop use
                 .setColor(mNotificationColor)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.local_music_icon)//沒setSmallIcon，通知會直接沒有顯示
                 .setContentIntent(createContentIntent())
                 .setContentTitle(mediaDescription.getTitle())
                 .setContentText(mediaDescription.getSubtitle())
-                .setShowWhen(false);
+                .setShowWhen(false)
+                .setDeleteIntent(mStopIntent);//滑掉觸發的intent
 
         setNotificationPlayState(builder);
         getAlbumArt(mMediaMetadata, builder);
@@ -344,6 +359,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 builder.setShowWhen(false)
                         .setAutoCancel(true)
                         .setOngoing(false);
+                stopForeground();
                 break;
             default:
                 Log.d(TAG, "setNotificationPlayState: position 0");
