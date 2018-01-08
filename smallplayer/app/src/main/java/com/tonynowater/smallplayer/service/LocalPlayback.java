@@ -44,7 +44,7 @@ public class LocalPlayback implements Playback
     private AudioManager mAudioManager;
     private int mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
     private int mState = PlaybackStateCompat.STATE_NONE;
-    private int mCurrentPosition;
+    private int mCurrentSongStreamPosition;
     private int mCurrentTrackPosition;
     private int mSongDuration = 0;
     private MediaPlayer mMediaPlayer;
@@ -162,7 +162,7 @@ public class LocalPlayback implements Playback
                 mAudioFocus = focusChange;
                 if (mState == PlaybackStateCompat.STATE_PLAYING) {
                     mPlayOnFocusGain = true;
-                    mCurrentPosition = mMediaPlayer.getCurrentPosition();
+                    mCurrentSongStreamPosition = mMediaPlayer.getCurrentPosition();
                 }
                 break;
             default:
@@ -175,7 +175,7 @@ public class LocalPlayback implements Playback
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "onCompletion:");
-        mCurrentPosition = 0;
+        mCurrentSongStreamPosition = 0;
         mPlaybackCallback.onCompletion();
     }
 
@@ -208,7 +208,7 @@ public class LocalPlayback implements Playback
         if (mMediaPlayer != null) {
             mState = PlaybackStateCompat.STATE_BUFFERING;
             mMediaPlayer.seekTo(position);
-            mCurrentPosition = position;
+            mCurrentSongStreamPosition = position;
             mPlaybackCallback.onPlaybackStateChanged();
         }
     }
@@ -239,7 +239,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public int getCurrentStreamPosition() {
-        return mState == PlaybackStateCompat.STATE_PLAYING ? mMediaPlayer.getCurrentPosition() : mCurrentPosition;
+        return mState == PlaybackStateCompat.STATE_PLAYING ? mMediaPlayer.getCurrentPosition() : mCurrentSongStreamPosition;
     }
 
     @Override
@@ -279,11 +279,11 @@ public class LocalPlayback implements Playback
             }
         }
 
-        if (mCurrentPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+        if (mCurrentSongStreamPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
             //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
             Log.d(TAG, "pause and play position : " + trackPosition);
             mState = PlaybackStateCompat.STATE_BUFFERING;
-            mMediaPlayer.seekTo(mCurrentPosition);
+            mMediaPlayer.seekTo(mCurrentSongStreamPosition);
             return;
         }
 
@@ -309,7 +309,7 @@ public class LocalPlayback implements Playback
             });
             //設定狀態為BUFFERING通知畫面
             mState = PlaybackStateCompat.STATE_BUFFERING;
-            mCurrentPosition = 0;
+            mCurrentSongStreamPosition = 0;
             mPlaybackCallback.onPlaybackStateChanged();
             mYoutubeExtratorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         }
@@ -351,7 +351,7 @@ public class LocalPlayback implements Playback
         if (mState == PlaybackStateCompat.STATE_PLAYING) {
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
-                mCurrentPosition = mMediaPlayer.getCurrentPosition();
+                mCurrentSongStreamPosition = mMediaPlayer.getCurrentPosition();
             }
         }
 
@@ -368,7 +368,7 @@ public class LocalPlayback implements Playback
             mPlaybackCallback.onPlaybackStateChanged();
         }
 
-        mCurrentPosition = 0;
+        mCurrentSongStreamPosition = 0;
         giveUpAudioFocus();
         releaseResource();
     }
@@ -376,7 +376,7 @@ public class LocalPlayback implements Playback
     @Override
     public void releaseResource() {
         if (mMediaPlayer != null) {
-            mCurrentPosition = 0;
+            mCurrentSongStreamPosition = 0;
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
