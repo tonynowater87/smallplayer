@@ -64,6 +64,7 @@ dependencies {
     compile deps.retrofit2
     compile deps.retrofitGson
     compile deps.youtube_extrator
+    compile deps.mediaCombat
 }
 
 apply plugin: 'com.google.gms.google-services'

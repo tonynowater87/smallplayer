@@ -23,6 +23,10 @@ public class MyApplication extends Application {
         return mContext;
     }
 
+    public static String getMyString(int id) {
+        return mContext.getString(id);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();

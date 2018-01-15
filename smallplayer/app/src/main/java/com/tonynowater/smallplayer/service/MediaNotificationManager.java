@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -10,22 +11,26 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 // TODO: 2017/11/26 11-26 12:13:41.585 17479-17479/? E/AndroidRuntime: FATAL EXCEPTION: main
@@ -62,6 +67,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private static final String ACTION_STOP = "com.tonynowater.smallplayer.stop";
     private static final String ACTION_MODE = "com.tonynowater.smallplayer.mode";
     private static final String ACTION_REPEAT = "com.tonynowater.smallplayer.repeat";
+    private static final String DEFAULT_CHANNEL_ID = "com.tonynowater.smallplayer.channel.default";
+    private static final String DEFAULT_CHANNEL_NAME = MyApplication.getMyString(R.string.app_name);
 
     private PlayMusicService mPlayMusicService;
     private NotificationManager mNotificationManager;
@@ -255,7 +262,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             return null;
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService, DEFAULT_CHANNEL_ID);
         addRepeatAction(builder);
         builder.addAction(R.drawable.ic_skip_previous_black_24px, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
         addPlayPauseAction(builder);
@@ -264,13 +271,15 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         MediaDescriptionCompat mediaDescription = mMediaMetadata.getDescription();
 
-        builder.setStyle(new NotificationCompat.MediaStyle()
-                    .setShowActionsInCompactView(new int[]{1, 2, 3})// show specify button in compact view, limitation is three
-                    .setMediaSession(mToken)
-                    //For Pre-Lollipop use
-                    .setShowCancelButton(true)
-                    .setCancelButtonIntent(mStopIntent))
-                    //For Pre-Lollipop use
+        MediaStyle mediaStyle = new MediaStyle()
+                .setShowActionsInCompactView(new int[]{1, 2, 3})// show specify button in compact view, limitation is three
+                .setMediaSession(mToken)
+                //For Pre-Lollipop use
+                .setShowCancelButton(true)
+                .setCancelButtonIntent(mStopIntent);
+                //For Pre-Lollipop use
+
+        builder.setStyle(mediaStyle)
                 .setColor(mNotificationColor)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.local_music_icon)//沒setSmallIcon，通知會直接沒有顯示
@@ -280,9 +289,17 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setShowWhen(false)
                 .setDeleteIntent(mStopIntent);//滑掉觸發的intent
 
+        addChannel();
         setNotificationPlayState(builder);
         getAlbumArt(mMediaMetadata, builder);
         return builder.build();
+    }
+
+    private void addChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(DEFAULT_CHANNEL_ID, DEFAULT_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     private void addRepeatAction(NotificationCompat.Builder builder) {

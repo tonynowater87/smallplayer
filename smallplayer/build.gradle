@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "io.realm:realm-gradle-plugin:3.3.1"
         classpath 'com.google.gms:google-services:3.0.0'
         classpath 'me.tatarka:gradle-retrolambda:3.7.0'
@@ -29,13 +29,13 @@ task clean(type: Delete) {
 
 ext {
     compileSdkVersion = 26
-    buildToolsVersion = "26.0.1"
+    buildToolsVersion = "26.0.2"
     minSdkVersion = 21
     targetSdkVersion = 26
 
     espressoVer = '2.2.2'
     junitVer = '4.12'
-    androidSupLibVer = '26.0.0-beta2'
+    androidSupLibVer = '27.0.2'
     okhttpVer = '2.4.0'
     gsonVer = '2.3.1'
     constraintlayoutVer = '1.0.2'
@@ -63,6 +63,7 @@ ext {
             google_auth  : "com.google.android.gms:play-services-auth:$googleAuthLibVer",//google auth
             retrofit2    : "com.squareup.retrofit2:retrofit:$retrofit2Ver",
             retrofitGson : "com.squareup.retrofit2:converter-gson:$retrofitGsonVer",
-            youtube_extrator: "com.github.HaarigerHarald:android-youtubeExtractor:$youtubeExtratorVer"
+            youtube_extrator: "com.github.HaarigerHarald:android-youtubeExtractor:$youtubeExtratorVer",
+            mediaCombat  : "com.android.support:support-media-compat:$androidSupLibVer"
     ]
 }

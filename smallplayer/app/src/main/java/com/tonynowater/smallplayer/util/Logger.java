@@ -33,6 +33,10 @@ public class Logger {
 
     Logger() {}
 
+    public void d(String msg) {
+        d(TAG, msg);
+    }
+
     public void d(String tag, String msg) {
         if (mLogLever.compareTo(LogLevel.Debug) < 0) {
             return;
@@ -40,6 +44,10 @@ public class Logger {
         if (mIsEnableLog) {
             Log.d(tag, msg);
         }
+    }
+
+    public void i(String msg) {
+        i(TAG, msg);
     }
 
     public void i(String tag, String msg) {
@@ -51,6 +59,10 @@ public class Logger {
         }
     }
 
+    public void w(String msg) {
+        w(TAG, msg);
+    }
+
     public void w(String tag, String msg) {
         if (mLogLever.compareTo(LogLevel.Warn) < 0) {
             return;
@@ -60,6 +72,10 @@ public class Logger {
         }
     }
 
+    public void e(String msg) {
+        e(TAG, msg);
+    }
+
     public void e(String tag, String msg) {
         if (mLogLever.compareTo(LogLevel.Warn) < 0) {
             return;
@@ -67,6 +83,10 @@ public class Logger {
         if (mIsEnableLog) {
             Log.e(tag, msg);
         }
+    }
+
+    public void v(String msg) {
+        v(TAG, msg);
     }
 
     public void v(String tag, String msg) {
