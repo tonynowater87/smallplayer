@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -42,10 +41,12 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
     private final PendingIntent mStopDownloadIntent;
     private PlayListSongEntity mPlayListSongEntity;
     private String mFileName;
+    private String mFileSuffix;
+    private String sMimeType;
     private Response mResponse;
     private OnFileHelperCallback mCallback;
     private int mId;
-    private BroadcastReceiver localBroadcastManager;
+    private BroadcastReceiver broadcastReceiver;
 
     public interface OnFileHelperCallback {
         void onSuccess(String msg);
@@ -54,24 +55,35 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
     public FileHelper(PlayListSongEntity mPlayListSongEntity, Response mResponse, OnFileHelperCallback mCallback) {
         this.mPlayListSongEntity = mPlayListSongEntity;
-        this.mFileName = mPlayListSongEntity.getTitle() + "." + mResponse.body().contentType().subtype();
+        this.mFileSuffix = mResponse.body().contentType().subtype();
+        this.sMimeType = mResponse.body().contentType().toString();
+        this.mFileName = mPlayListSongEntity.getTitle() + "." + mFileSuffix;
         this.mResponse = mResponse;
         this.mCallback = mCallback;
         mPath = getFilePath();
         mId = mPlayListSongEntity.hashCode();
         mStopDownloadIntent = PendingIntent.getBroadcast(MyApplication.getContext(), REQUEST_CODE, new Intent(ACTION_STOP_DOWNLOAD).setPackage(MyApplication.getContext().getPackageName()), PendingIntent.FLAG_ONE_SHOT);
-        localBroadcastManager = new BroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (TextUtils.equals(intent.getAction(), ACTION_STOP_DOWNLOAD)) {
                     Log.d(TAG, "onReceive: stop download");
+                    unregister();
+                    NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancel(mPlayListSongEntity.getId());
                     FileHelper.this.cancel(true);
                 }
             }
         };
-        LocalBroadcastManager.getInstance(MyApplication.getContext())
-                .registerReceiver(localBroadcastManager, new IntentFilter(ACTION_STOP_DOWNLOAD));
+        MyApplication.getContext().registerReceiver(broadcastReceiver, new IntentFilter(ACTION_STOP_DOWNLOAD));
+    }
 
+    private void unregister() {
+        try {
+            MyApplication.getContext().unregisterReceiver(broadcastReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -186,6 +198,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
     protected void onPostExecute(Boolean bResult) {
         Log.d(TAG, "onPostExecute: " + bResult);
         dismissProgressNotification();
+        unregister();
         if (bResult) {
             addFileToContentProvider();
             //addAlbumToContentProvider();
@@ -202,7 +215,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
         values.put(MediaStore.Audio.Media.ARTIST, mPlayListSongEntity.getArtist());
         values.put(MediaStore.Audio.Media.TITLE, mPlayListSongEntity.getTitle());
         values.put(MediaStore.Audio.Media.DURATION, mPlayListSongEntity.getDuration());
-        values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mp3");
+        values.put(MediaStore.Audio.Media.MIME_TYPE, sMimeType);
         values.put(MediaStore.Audio.Media.IS_MUSIC, true);
         values.put(MediaStore.Audio.Media.DATA, mPath + mFileName);
         values.put(MediaStore.Audio.Media.ALBUM_ID, mId);
@@ -232,15 +245,14 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
      * @param percent 百分比
      */
     private void showProgressNotification(int percent) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext(), ChannelConstant.DOWNLOAD_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext(), ChannelConstant.DEFAULT_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.arrow_down_float)
                 .setContentTitle(MyApplication.getContext().getString(R.string.app_name) + " " + MyApplication.getContext().getString(R.string.downloadMP3_ing_msg))
                 .setContentText(mFileName)
                 .setAutoCancel(false)
-                .addAction(android.R.drawable.ic_media_pause, MyApplication.getContext().getString(R.string.play_state_pause), mStopDownloadIntent)
                 .setProgress(100, percent, false)
                 .setOngoing(true)//設置下載的通知不可被滑掉。
-                .setDeleteIntent(mStopDownloadIntent);
+                .addAction(android.R.drawable.ic_media_pause, MyApplication.getMyString(R.string.downloadMP3_cancel_msg), mStopDownloadIntent);
 
         NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(mPlayListSongEntity.getId(), builder.build());

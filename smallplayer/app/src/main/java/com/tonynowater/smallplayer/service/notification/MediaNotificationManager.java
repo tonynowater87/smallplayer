@@ -34,7 +34,7 @@ import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
-import static android.app.NotificationChannel.DEFAULT_CHANNEL_ID;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DEFAULT_CHANNEL_ID;
 import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DEFAULT_CHANNEL_NAME;
 
 // TODO: 2017/11/26 11-26 12:13:41.585 17479-17479/? E/AndroidRuntime: FATAL EXCEPTION: main
@@ -370,7 +370,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             case PlaybackStateCompat.STATE_PAUSED:
                 // Make sure that the notification can be dismissed by the user when we are not playing:
                 builder.setShowWhen(false)
-                        .setAutoCancel(true)
+                        .setAutoCancel(false)
                         .setOngoing(false);
                 stopForeground();
                 break;
