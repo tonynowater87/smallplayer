@@ -20,6 +20,7 @@ import com.squareup.okhttp.Response;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.service.notification.ChannelConstant;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,7 +39,6 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
     private static final String ACTION_STOP_DOWNLOAD = "com.tonynowater.smallplayer.stop_download";
     private static final int REQUEST_CODE = 100;
     private final String mPath;
-    private final String mp3suffix = ".mp3";
     private final PendingIntent mStopDownloadIntent;
     private PlayListSongEntity mPlayListSongEntity;
     private String mFileName;
@@ -54,7 +54,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
     public FileHelper(PlayListSongEntity mPlayListSongEntity, Response mResponse, OnFileHelperCallback mCallback) {
         this.mPlayListSongEntity = mPlayListSongEntity;
-        this.mFileName = mPlayListSongEntity.getTitle() + mp3suffix;
+        this.mFileName = mPlayListSongEntity.getTitle() + "." + mResponse.body().contentType().subtype();
         this.mResponse = mResponse;
         this.mCallback = mCallback;
         mPath = getFilePath();
@@ -93,7 +93,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
      * 儲存Mp3
      * @return
      */
-    public boolean saveFile() {
+    private boolean saveFile() {
         boolean bRet = true;
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             //外部儲存空間不可用
@@ -118,8 +118,11 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
             try {
                 long startTime = System.currentTimeMillis();
                 BufferedSink bufferedSink = Okio.buffer(Okio.sink(file));
-                handleWrites(bufferedSink, mResponse.body().source(), mResponse.body().contentLength());
+                BufferedSource bufferedSource = mResponse.body().source();
+                handleWrites(bufferedSink, bufferedSource, mResponse.body().contentLength());
                 MiscellaneousUtil.calcRunningTime("下載"+mFileName,startTime);
+                bufferedSink.writeAll(bufferedSource);
+                bufferedSink.flush();
                 bufferedSink.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -186,7 +189,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
         if (bResult) {
             addFileToContentProvider();
             //addAlbumToContentProvider();
-            MyApplication.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+ mPath + mFileName)));
+            MyApplication.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(mPath))));
             mCallback.onSuccess(String.format(MyApplication.getContext().getString(R.string.downloadMP3_success_msg), mFileName));
         } else {
             mCallback.onFailure();
@@ -229,14 +232,15 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
      * @param percent 百分比
      */
     private void showProgressNotification(int percent) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext())
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext(), ChannelConstant.DOWNLOAD_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.arrow_down_float)
                 .setContentTitle(MyApplication.getContext().getString(R.string.app_name) + " " + MyApplication.getContext().getString(R.string.downloadMP3_ing_msg))
                 .setContentText(mFileName)
                 .setAutoCancel(false)
                 .addAction(android.R.drawable.ic_media_pause, MyApplication.getContext().getString(R.string.play_state_pause), mStopDownloadIntent)
                 .setProgress(100, percent, false)
-                .setOngoing(true);//設置下載的通知不可被滑掉。
+                .setOngoing(true)//設置下載的通知不可被滑掉。
+                .setDeleteIntent(mStopDownloadIntent);
 
         NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(mPlayListSongEntity.getId(), builder.build());

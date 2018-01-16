@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.service;
+package com.tonynowater.smallplayer.service.notification;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -10,14 +10,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -29,9 +29,13 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.activity.FullScreenPlayerActivity;
 import com.tonynowater.smallplayer.activity.MainActivity;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
+import com.tonynowater.smallplayer.service.EnumPlayMode;
+import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
-import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
+
+import static android.app.NotificationChannel.DEFAULT_CHANNEL_ID;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DEFAULT_CHANNEL_NAME;
 
 // TODO: 2017/11/26 11-26 12:13:41.585 17479-17479/? E/AndroidRuntime: FATAL EXCEPTION: main
 //                                                   Process: com.tonynowater.smallplayer, PID: 17479
@@ -41,7 +45,7 @@ import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 //                                                           at android.app.NotificationManager.notifyAsUser(NotificationManager.java:313)
 //                                                           at android.app.NotificationManager.notify(NotificationManager.java:284)
 //                                                           at android.app.NotificationManager.notify(NotificationManager.java:268)
-//                                                           at com.tonynowater.smallplayer.service.MediaNotificationManager$1.onMetadataChanged(MediaNotificationManager.java:88)
+//                                                           at com.tonynowater.smallplayer.service.notification.MediaNotificationManager$1.onMetadataChanged(MediaNotificationManager.java:88)
 //                                                           at android.support.v4.media.session.MediaControllerCompat$Callback$StubApi21.onMetadataChanged(MediaControllerCompat.java:767)
 //                                                           at android.support.v4.media.session.MediaControllerCompatApi21$CallbackProxy.onMetadataChanged(MediaControllerCompatApi21.java:297)
 //                                                           at android.media.session.MediaController$MessageHandler.handleMessage(MediaController.java:1191)
@@ -67,8 +71,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private static final String ACTION_STOP = "com.tonynowater.smallplayer.stop";
     private static final String ACTION_MODE = "com.tonynowater.smallplayer.mode";
     private static final String ACTION_REPEAT = "com.tonynowater.smallplayer.repeat";
-    private static final String DEFAULT_CHANNEL_ID = "com.tonynowater.smallplayer.channel.default";
-    private static final String DEFAULT_CHANNEL_NAME = MyApplication.getMyString(R.string.app_name);
 
     private PlayMusicService mPlayMusicService;
     private NotificationManager mNotificationManager;
@@ -131,13 +133,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private boolean mStarted = false;
     private boolean mIsRegisteredRecevier = false;
-    private int mNotificationColor;
 
     public MediaNotificationManager(PlayMusicService mPlayMusicService) {
         this.mPlayMusicService = mPlayMusicService;
         updateSessionToken();
 
-        mNotificationColor = ResourceHelper.getThemeColor(mPlayMusicService.getApplicationContext(), android.R.attr.colorPrimary, Color.GRAY);
         mNotificationManager = (NotificationManager) mPlayMusicService.getSystemService(Context.NOTIFICATION_SERVICE);
 
         String sPkg = mPlayMusicService.getPackageName();
@@ -280,7 +280,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 //For Pre-Lollipop use
 
         builder.setStyle(mediaStyle)
-                .setColor(mNotificationColor)
+                .setColor(ContextCompat.getColor(MyApplication.getContext(), R.color.colorAccent))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.local_music_icon)//沒setSmallIcon，通知會直接沒有顯示
                 .setContentIntent(createContentIntent())
@@ -297,7 +297,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private void addChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(DEFAULT_CHANNEL_ID, DEFAULT_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel notificationChannel = new NotificationChannel(DEFAULT_CHANNEL_ID, DEFAULT_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
     }

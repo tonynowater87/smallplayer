@@ -147,7 +147,7 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
     };
 
     /**
-     * 供子類別重新訂閱取新的歌單資料，必須重new Call帶入才會觸發
+     * 供子類別重新訂閱取新的歌單資料，必須重new Callback帶入才會觸發
      * @see BaseMediaControlActivity#onChildrenLoaded(List)
      * @see BaseMediaControlActivity#onChildrenLoaded(List, Bundle)
      */

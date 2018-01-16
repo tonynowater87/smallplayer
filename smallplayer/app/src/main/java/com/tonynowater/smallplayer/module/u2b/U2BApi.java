@@ -4,7 +4,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
@@ -17,7 +16,6 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.api.ApiClient;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.U2BAccessTokenDTO;
-import com.tonynowater.smallplayer.module.dto.U2BMP3LinkDTO;
 import com.tonynowater.smallplayer.module.dto.U2BPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListDTO;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
@@ -27,8 +25,10 @@ import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
 import com.tonynowater.smallplayer.util.FileHelper;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.SPManager;
+import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -263,117 +263,48 @@ public class U2BApi {
     }
 
     /**
-     * 透過http://www.youtubeinmp3.com/做到下載的功能
+     * 透過{@link com.tonynowater.smallplayer.util.YoutubeExtratorUtil}做到下載的功能
      * @param playable
      * @param callback
      */
     public void downloadMP3FromU2B(Playable playable, final OnMsgRequestCallback callback) {
         final PlayListSongEntity playListSongEntity = playable.getPlayListSongEntity();
         if (TextUtils.equals(MetaDataCustomKeyDefine.ISNOTLOCAL,playListSongEntity.getIsLocal())) {
-            sendHttpRequest(String.format(U2BApiDefine.DOWNLOAD_MP3_URL, playListSongEntity.getSource()), new Callback() {
+            YoutubeExtratorUtil youtubeExtratorUtil = new YoutubeExtratorUtil(MyApplication.getContext(), new YoutubeExtratorUtil.CallBack() {
                 @Override
-                public void onFailure(Request request, IOException e) {
-                    callback.onFailure(e.getMessage());
-                }
-
-                @Override
-                public void onResponse(Response response) throws IOException {
-                    if (response.isSuccessful()) {
-
-                        Gson gson = new Gson();
-                        U2BMP3LinkDTO u2BMP3LinkDTO;
-                        try {
-                            u2BMP3LinkDTO = gson.fromJson(response.body().string(), U2BMP3LinkDTO.class);
-                        } catch (JsonSyntaxException e) {
-                            e.printStackTrace();
-                            // FIXME: 2017/6/19 有些歌曲無法下載，先不處理
-                            Log.e(TAG, "onResponse : JsonSyntaxException " + e.toString());
-                            callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
-                            return;
+                public void onSuccess(String url) {
+                    sendHttpRequest(url, new Callback(){
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            Logger.getInstance().d("downloadMP3FromU2B Failure");
                         }
-                        sendHttpRequest(u2BMP3LinkDTO.getLink(), new Callback() {
-                            @Override
-                            public void onFailure(Request request, IOException e) {
-                                callback.onFailure(e.getMessage());
-                            }
 
-                            @Override
-                            public void onResponse(final Response response) throws IOException {
-                                if (response.isSuccessful()) {
-                                    if (response.header("Content-Type").contains("audio")) {
-                                        Log.d(TAG, "onResponse: audio");
-                                        new FileHelper(playListSongEntity, response, new FileHelper.OnFileHelperCallback() {
-                                            @Override
-                                            public void onSuccess(String msg) {
-                                                callback.onSuccess(msg);
-                                            }
-
-                                            @Override
-                                            public void onFailure() {
-                                                callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
-                                            }
-                                        }).execute();
-                                    } else {
-                                        Log.d(TAG, "onResponse: html");
-                                        //若是回html，還需要去解析mp3的下載位置
-                                        ParserMp3Helper.parserMp3UrlFromHtml(response.body().string(), playListSongEntity, callback);
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                new FileHelper(playListSongEntity, response, new FileHelper.OnFileHelperCallback() {
+                                    @Override
+                                    public void onSuccess(String msg) {
+                                        callback.onSuccess(msg);
                                     }
 
-                                } else {
-                                    callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
-                                }
+                                    @Override
+                                    public void onFailure() {
+                                        callback.onFailure(String.format(MyApplication.getMyString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
+                                    }
+                                }).execute();
                             }
-                        });
-                    } else {
-                        callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
-                    }
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailed() {
+                    callback.onFailure(MyApplication.getMyString(R.string.downloadMP3_banned_msg));
                 }
             });
+            youtubeExtratorUtil.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, playListSongEntity.getMediaMetadata().getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         }
-    }
-
-    /**
-     * 若第一次下載回覆為html，這裡做第二次下載的動作
-     * @param url
-     * @param playListSongEntity
-     * @param callback
-     */
-    public void downloadMP3FromU2B(String url, final PlayListSongEntity playListSongEntity, final OnMsgRequestCallback callback) {
-        url = String.format(U2BApiDefine.DOWNLOAD_MP3_API_URL, url);
-        sendHttpRequest(url, new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                Log.d(TAG, "onResponse failure: ");
-                callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity));
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "onResponse success: ");
-                    if (response.header("Content-Type").contains("audio")) {
-                        Log.d(TAG, "onResponse audio : ");
-                        new FileHelper(playListSongEntity, response, new FileHelper.OnFileHelperCallback() {
-                            @Override
-                            public void onSuccess(String msg) {
-                                callback.onSuccess(msg);
-                            }
-
-                            @Override
-                            public void onFailure() {
-                                callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity.getTitle()));
-                            }
-                        }).execute();
-                    } else if (response.header("Content-Type").contains("html")){
-                        Log.d(TAG, "onResponse html : ");
-                        callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity));
-                    }
-                } else {
-                    Log.d(TAG, "onResponse fail: ");
-                    callback.onFailure(String.format(MyApplication.getContext().getString(R.string.downloadMP3_error_msg), playListSongEntity));
-                }
-            }
-        });
     }
 
     /**

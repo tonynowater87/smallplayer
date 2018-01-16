@@ -35,7 +35,4 @@ public class U2BApiDefine {
     public static final String CHECK_U2B_REGION_RESTRICT_URL = "https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=%s&key=" + API_KEY;
     //檢查VideoID的詳細資料
     public static final String U2B_API_VIDEO_DETAIL_INFORMATION_URL = "https://www.googleapis.com/youtube/v3/videos?id=%s&key=" + API_KEY;
-
-    public static final String DOWNLOAD_MP3_URL = "http://www.youtubeinmp3.com/fetch/?format=JSON&video=https://www.youtube.com/watch?v=%s";
-    public static final String DOWNLOAD_MP3_API_URL = "http://www.youtubeinmp3.com/%s";
 }

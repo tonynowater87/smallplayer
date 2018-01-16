@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import com.tonynowater.smallplayer.BuildConfig;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.service.notification.MediaNotificationManager;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
