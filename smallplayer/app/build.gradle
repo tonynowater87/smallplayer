@@ -22,7 +22,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         //***** 設定gradle.properties裡面的值到BuildConfig ******
         buildConfigField('String', 'YoutubeDataAPIKey', YoutubeDataAPIKey)
-
+        archivesBaseName = "SmallPlayer_${versionName}"//設定產出的apk名稱
     }
     buildTypes {
         release {
