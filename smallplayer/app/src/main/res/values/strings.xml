@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">小小播放器</string>
+
+    <string name="channel_group_default_name">小小播放器通知</string>
+    <string name="channel_player_name">播放器通知</string>
+    <string name="channel_download_name">下載通知</string>
+
     <string name="play_state_stop">已停止</string>
     <string name="play_state_pause">已暫停</string>
     <string name="play_state_playing">播放中</string>

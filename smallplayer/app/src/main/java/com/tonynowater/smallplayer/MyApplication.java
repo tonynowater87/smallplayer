@@ -1,7 +1,11 @@
 package com.tonynowater.smallplayer;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
@@ -10,6 +14,13 @@ import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DEFAULT_CHANNEL_GROUP_ID;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DEFAULT_CHANNEL_GROUP_NAME;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DOWNLOAD_CHANNEL_ID;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DOWNLOAD_CHANNEL_NAME;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.PLAYER_CHANNEL_ID;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.PLAYER_CHANNEL_NAME;
 
 /**
  * Created by tonyliao on 2017/4/30.
@@ -27,6 +38,10 @@ public class MyApplication extends Application {
         return mContext.getString(id);
     }
 
+    public static NotificationManager getNotificationManager() {
+        return (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -35,6 +50,7 @@ public class MyApplication extends Application {
         //測試版不做錯誤報告
         FirebaseCrash.setCrashCollectionEnabled(BuildConfig.DEBUG ? false : true);
         initalRealm();
+        addNotificationChannel();
     }
 
     private void initalRealm() {
@@ -47,5 +63,23 @@ public class MyApplication extends Application {
         Realm.setDefaultConfiguration(realmConfiguration);
         RealmUtils realmUtils = new RealmUtils();
         realmUtils.close();
+    }
+
+    private void addNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationManager notificationManager = getNotificationManager();
+
+            NotificationChannelGroup notificationChannelGroup = new NotificationChannelGroup(DEFAULT_CHANNEL_GROUP_ID, DEFAULT_CHANNEL_GROUP_NAME);
+            notificationManager.createNotificationChannelGroup(notificationChannelGroup);
+
+            NotificationChannel notificationChannelDefault = new NotificationChannel(PLAYER_CHANNEL_ID, PLAYER_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            notificationChannelDefault.setGroup(DEFAULT_CHANNEL_GROUP_ID);
+            notificationManager.createNotificationChannel(notificationChannelDefault);
+
+            NotificationChannel notificationChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, DOWNLOAD_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.setGroup(DEFAULT_CHANNEL_GROUP_ID);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 }

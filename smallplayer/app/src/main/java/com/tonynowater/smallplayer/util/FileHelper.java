@@ -245,7 +245,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
      * @param percent 百分比
      */
     private void showProgressNotification(int percent) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext(), ChannelConstant.DEFAULT_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyApplication.getContext(), ChannelConstant.DOWNLOAD_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.arrow_down_float)
                 .setContentTitle(MyApplication.getContext().getString(R.string.app_name) + " " + MyApplication.getContext().getString(R.string.downloadMP3_ing_msg))
                 .setContentText(mFileName)

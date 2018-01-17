@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.service.notification;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
@@ -34,8 +32,7 @@ import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
-import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DEFAULT_CHANNEL_ID;
-import static com.tonynowater.smallplayer.service.notification.ChannelConstant.DEFAULT_CHANNEL_NAME;
+import static com.tonynowater.smallplayer.service.notification.ChannelConstant.PLAYER_CHANNEL_ID;
 
 // TODO: 2017/11/26 11-26 12:13:41.585 17479-17479/? E/AndroidRuntime: FATAL EXCEPTION: main
 //                                                   Process: com.tonynowater.smallplayer, PID: 17479
@@ -262,7 +259,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             return null;
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService, DEFAULT_CHANNEL_ID);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mPlayMusicService, PLAYER_CHANNEL_ID);
         addRepeatAction(builder);
         builder.addAction(R.drawable.ic_skip_previous_black_24px, mPlayMusicService.getString(R.string.play_state_previous), mPreviousIntent);
         addPlayPauseAction(builder);
@@ -289,17 +286,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setShowWhen(false)
                 .setDeleteIntent(mStopIntent);//滑掉觸發的intent
 
-        addChannel();
         setNotificationPlayState(builder);
         getAlbumArt(mMediaMetadata, builder);
         return builder.build();
-    }
-
-    private void addChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(DEFAULT_CHANNEL_ID, DEFAULT_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            mNotificationManager.createNotificationChannel(notificationChannel);
-        }
     }
 
     private void addRepeatAction(NotificationCompat.Builder builder) {
