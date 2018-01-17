@@ -73,11 +73,11 @@ public class MyApplication extends Application {
             NotificationChannelGroup notificationChannelGroup = new NotificationChannelGroup(DEFAULT_CHANNEL_GROUP_ID, DEFAULT_CHANNEL_GROUP_NAME);
             notificationManager.createNotificationChannelGroup(notificationChannelGroup);
 
-            NotificationChannel notificationChannelDefault = new NotificationChannel(PLAYER_CHANNEL_ID, PLAYER_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel notificationChannelDefault = new NotificationChannel(PLAYER_CHANNEL_ID, PLAYER_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
             notificationChannelDefault.setGroup(DEFAULT_CHANNEL_GROUP_ID);
             notificationManager.createNotificationChannel(notificationChannelDefault);
 
-            NotificationChannel notificationChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, DOWNLOAD_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel notificationChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, DOWNLOAD_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
             notificationChannel.setGroup(DEFAULT_CHANNEL_GROUP_ID);
             notificationManager.createNotificationChannel(notificationChannel);
         }

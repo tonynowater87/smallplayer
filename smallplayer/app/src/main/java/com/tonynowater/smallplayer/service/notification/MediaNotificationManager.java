@@ -135,7 +135,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         this.mPlayMusicService = mPlayMusicService;
         updateSessionToken();
 
-        mNotificationManager = (NotificationManager) mPlayMusicService.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = MyApplication.getNotificationManager();
 
         String sPkg = mPlayMusicService.getPackageName();
         mPlayIntent = PendingIntent.getBroadcast(mPlayMusicService, REQUEST_CODE, new Intent(ACTION_PLAY).setPackage(sPkg), PendingIntent.FLAG_CANCEL_CURRENT);

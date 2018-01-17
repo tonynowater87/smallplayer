@@ -1,6 +1,5 @@
 package com.tonynowater.smallplayer.util;
 
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -69,8 +68,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
                 if (TextUtils.equals(intent.getAction(), ACTION_STOP_DOWNLOAD)) {
                     Log.d(TAG, "onReceive: stop download");
                     unregister();
-                    NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                    notificationManager.cancel(mPlayListSongEntity.getId());
+                    dismissProgressNotification();
                     FileHelper.this.cancel(true);
                 }
             }
@@ -236,8 +234,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
      * 關閉下載百分比的通知
      */
     private void dismissProgressNotification() {
-        NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(mPlayListSongEntity.getId());
+        MyApplication.getNotificationManager().cancel(mPlayListSongEntity.getId());
     }
 
     /**
@@ -254,7 +251,6 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
                 .setOngoing(true)//設置下載的通知不可被滑掉。
                 .addAction(android.R.drawable.ic_media_pause, MyApplication.getMyString(R.string.downloadMP3_cancel_msg), mStopDownloadIntent);
 
-        NotificationManager notificationManager = (NotificationManager) MyApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(mPlayListSongEntity.getId(), builder.build());
+        MyApplication.getNotificationManager().notify(mPlayListSongEntity.getId(), builder.build());
     }
 }
