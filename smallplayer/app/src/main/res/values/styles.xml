@@ -42,4 +42,28 @@
         <item name="fabSize">normal</item>
         <item name="layout_behavior">com.tonynowater.smallplayer.view.ScrollOffBottomBehavior</item>
     </style>
+
+    <style name="image_media_icon_style_full_screent_activity">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="image_media_icon_style_player_fragment">
+        <item name="android:layout_width">@dimen/player_fragment_media_button_size</item>
+        <item name="android:layout_height">@dimen/player_fragment_media_button_size</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="progressbar_player_loading_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:indeterminateTint">@color/colorFourth</item>
+    </style>
+
 </resources>

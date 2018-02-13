@@ -95,69 +95,44 @@
 
                 <ImageView
                     android:id="@+id/iv_eq_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    style="@style/image_media_icon_style_full_screent_activity"
                     android:src="@drawable/ic_equalizer2_white_36dp" />
 
                 <ImageView
-                    android:id="@+id/iv_shuffle_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@drawable/icons_shuffle_unselect" />
+                    android:id="@+id/iv_repeat_playlist_activity_full_screen_player"
+                    style="@style/image_media_icon_style_full_screent_activity"
+                    android:src="@drawable/icons8_repeat_unselect" />
 
                 <ImageView
                     android:id="@+id/iv_previous_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    style="@style/image_media_icon_style_full_screent_activity"
                     android:src="@drawable/ic_skip_previous_black_24px"
                     android:tint="@android:color/white" />
 
                 <ImageView
                     android:id="@+id/iv_play_pause__activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    style="@style/image_media_icon_style_full_screent_activity"
                     android:src="@android:drawable/ic_media_play"
                     android:tint="@android:color/white"/>
 
                 <ProgressBar
                     android:id="@+id/progress_bar"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:visibility="gone"
-                    android:indeterminateTint="@color/colorFourth"/>
+                    style="@style/progressbar_player_loading_style"/>
 
                 <ImageView
                     android:id="@+id/iv_next_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    style="@style/image_media_icon_style_full_screent_activity"
                     android:src="@drawable/ic_skip_next_black_24px"
                     android:tint="@android:color/white"/>
 
                 <ImageView
-                    android:id="@+id/iv_repeat_playlist_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:src="@drawable/icons8_repeat_unselect" />
+                    android:id="@+id/iv_shuffle_activity_full_screen_player"
+                    style="@style/image_media_icon_style_full_screent_activity"
+                    android:src="@drawable/icons_shuffle_unselect" />
 
                 <ImageView
                     android:id="@+id/iv_change_playlist_activity_full_screen_player"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    style="@style/image_media_icon_style_full_screent_activity"
                     android:src="@drawable/ic_queue_music_white" />
 
             </LinearLayout>

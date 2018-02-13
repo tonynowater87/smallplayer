@@ -19,44 +19,33 @@
         <LinearLayout
             android:id="@+id/ll_media_buttons"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/media_button_size"
+            android:layout_height="?android:attr/actionBarSize"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/buttonPrevious"
-                android:layout_width="@dimen/media_button_size"
-                android:layout_height="@dimen/media_button_size"
+                style="@style/image_media_icon_style_player_fragment"
                 android:src="@android:drawable/ic_media_previous" />
 
             <ImageView
                 android:id="@+id/buttonPlay"
-                android:layout_width="@dimen/media_button_size"
-                android:layout_height="@dimen/media_button_size"
-                android:layout_toRightOf="@+id/buttonPrevious"
+                style="@style/image_media_icon_style_player_fragment"
                 android:src="@android:drawable/ic_media_play" />
 
             <ProgressBar
                 android:id="@+id/progress_bar"
-                android:layout_width="@dimen/media_button_size"
-                android:layout_height="@dimen/media_button_size"
-                android:layout_toRightOf="@+id/buttonPrevious"
-                android:visibility="gone"
-                android:indeterminateTint="@color/colorFourth"/>
+                style="@style/progressbar_player_loading_style" />
 
             <ImageView
                 android:id="@+id/buttonNext"
-                android:layout_width="@dimen/media_button_size"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/buttonPlay"
+                style="@style/image_media_icon_style_player_fragment"
                 android:src="@android:drawable/ic_media_next" />
 
             <ImageView
                 android:id="@+id/buttonAction"
-                android:layout_width="@dimen/media_button_size"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/buttonNext"
+                style="@style/image_media_icon_style_player_fragment"
                 android:src="@drawable/ic_queue_music_white" />
 
         </LinearLayout>
@@ -64,18 +53,20 @@
         <LinearLayout
             android:id="@+id/ll_song_info_fragment_player"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_height="?android:attr/actionBarSize"
             android:layout_marginLeft="@dimen/margin_gap_level_1"
             android:layout_toLeftOf="@+id/ll_media_buttons"
             android:layout_toRightOf="@+id/imageview_thumb"
+            android:weightSum="2"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textViewSongNameValue"
                 style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="bottom"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
@@ -88,7 +79,9 @@
                 android:id="@+id/textViewSongArtistValue"
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/dash"
