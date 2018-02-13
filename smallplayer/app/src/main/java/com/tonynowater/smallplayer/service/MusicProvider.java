@@ -110,6 +110,7 @@ public class MusicProvider {
     private MediaBrowserCompat.MediaItem createMediaItem(int idIsPosition, MediaMetadataCompat mediaMetadataCompat) {
 
         Bundle bundle = new Bundle();
+        bundle.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
         bundle.putString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE));
         bundle.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ALBUM));
         bundle.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));

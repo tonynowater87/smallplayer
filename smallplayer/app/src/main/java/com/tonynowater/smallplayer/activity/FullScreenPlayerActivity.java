@@ -9,6 +9,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
@@ -192,6 +193,19 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         mBinding.seekbarActivityFullScreenPlayer.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         mCurrentPlayListAdapter.onMetadataChanged(metadata);
         updateProgress();
+        updateRecyclerViewPosition();
+    }
+
+    private void updateRecyclerViewPosition() {
+        String id1, id2;
+        for (int i = 0, len = mCurrentPlayList.size(); i < len; i++) {
+            id1 = mCurrentPlayList.get(i).getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+            id2 = mMediaMetaData.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+            if (TextUtils.equals(id1, id2)) {
+                mBinding.recyclerviewFullplayer.smoothScrollToPosition(i);
+                break;
+            }
+        }
     }
 
     private SeekBar.OnSeekBarChangeListener mOnSeekChangedListener = new SeekBar.OnSeekBarChangeListener() {
@@ -246,11 +260,6 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         RealmUtils realmUtils = new RealmUtils();
         setTitle(realmUtils.getCurrentPlayListName());
         realmUtils.close();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
