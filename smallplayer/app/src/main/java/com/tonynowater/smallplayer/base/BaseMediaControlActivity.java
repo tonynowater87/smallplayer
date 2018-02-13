@@ -44,6 +44,9 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
             Log.d(TAG, "onPlaybackStateChanged: ");
+            if (!TextUtils.isEmpty(state.getErrorMessage())) {
+                showToast(state.getErrorMessage().toString());
+            }
             BaseMediaControlActivity.this.onPlaybackStateChanged(state);
         }
 

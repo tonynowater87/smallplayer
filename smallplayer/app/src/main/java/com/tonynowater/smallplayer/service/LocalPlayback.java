@@ -14,9 +14,12 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.tonynowater.smallplayer.MyApplication;
+import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
+import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
 
 import java.io.IOException;
 // TODO: 2017/9/2 連結藍芽耳機播放音樂時，縮小App將手機螢幕關閉，關閉藍芽耳機，會出現音樂繼續播放的問題
@@ -255,7 +258,6 @@ public class LocalPlayback implements Playback
 
     @Override
     public void play(final int trackPosition) {
-        tryToGetAudioFocus();
 
         final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getCurrentPlayingMediaMetadata();
 
@@ -264,6 +266,16 @@ public class LocalPlayback implements Playback
             Log.e(TAG, "play: null");
             return;
         }
+
+        //沒有網路
+        if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat) == false
+                && !SNetworkInfo.INSTANCE.isNetworkAvailable()) {
+            stop(true);
+            mPlaybackCallback.onError(MyApplication.getMyString(R.string.no_network_msg));
+            return;
+        }
+
+        tryToGetAudioFocus();
 
         //沒有取得播音樂焦點
         if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {

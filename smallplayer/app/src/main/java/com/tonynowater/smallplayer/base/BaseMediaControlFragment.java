@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
@@ -24,6 +25,9 @@ public abstract class BaseMediaControlFragment<T extends ViewDataBinding> extend
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
             if (isAdded()) {
+                if (!TextUtils.isEmpty(state.getErrorMessage())) {
+                    showToast(state.getErrorMessage().toString());
+                }
                 BaseMediaControlFragment.this.onPlaybackStateChanged(state);
             } else {
                 Log.w(TAG, "onPlaybackStateChanged: isNoAdded");

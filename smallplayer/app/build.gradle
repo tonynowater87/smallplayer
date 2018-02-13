@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     signingConfigs {
@@ -64,6 +66,8 @@ dependencies {
     compile deps.retrofitGson
     compile deps.youtube_extrator
     compile deps.mediaCombat
+    compile deps.kotlin_stdlib
+    compile deps.kotlin_reflect
 }
 
 apply plugin: 'com.google.gms.google-services'
