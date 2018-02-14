@@ -47,8 +47,8 @@ ext {
     firebaseVer = '11.2.2'
     retrofit2Ver = '2.3.0'
     retrofitGsonVer = '2.3.0'
-    youtubeExtratorVer = 'master-SNAPSHOT'
     kotlin_version = '1.2.21'
+    js_evaluator_ver = 'v4.0.0'
 
     deps = [
             espresso_core: "com.android.support.test.espresso:espresso-core:$espressoVer",
@@ -65,9 +65,9 @@ ext {
             google_auth  : "com.google.android.gms:play-services-auth:$googleAuthLibVer",//google auth
             retrofit2    : "com.squareup.retrofit2:retrofit:$retrofit2Ver",
             retrofitGson : "com.squareup.retrofit2:converter-gson:$retrofitGsonVer",
-            youtube_extrator: "com.github.HaarigerHarald:android-youtubeExtractor:$youtubeExtratorVer",
             mediaCombat  : "com.android.support:support-media-compat:$androidSupLibVer",
             kotlin_stdlib: "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
-            kotlin_reflect:"org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+            kotlin_reflect:"org.jetbrains.kotlin:kotlin-reflect:$kotlin_version",
+            js_evaluator : "com.github.evgenyneu:js-evaluator-for-android:$js_evaluator_ver"
     ]
 }

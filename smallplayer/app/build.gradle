@@ -44,10 +44,13 @@ android {
 repositories {
     maven { url "https://jitpack.io" }
     mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(include: ['*.jar'], dir: 'libs' )
     androidTestCompile(deps.espresso_core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -64,10 +67,11 @@ dependencies {
     compile deps.google_auth
     compile deps.retrofit2
     compile deps.retrofitGson
-    compile deps.youtube_extrator
     compile deps.mediaCombat
     compile deps.kotlin_stdlib
     compile deps.kotlin_reflect
+    compile(name: 'youtubeExtractor', ext: "aar")
+    compile deps.js_evaluator
 }
 
 apply plugin: 'com.google.gms.google-services'
