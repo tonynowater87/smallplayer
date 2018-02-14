@@ -45,7 +45,7 @@ repositories {
     maven { url "https://jitpack.io" }
     mavenCentral()
     flatDir {
-        dirs 'libs'
+        dirs 'libs' //this way we can find the .aar file in libs folder
     }
 }
 
@@ -70,8 +70,7 @@ dependencies {
     compile deps.mediaCombat
     compile deps.kotlin_stdlib
     compile deps.kotlin_reflect
-    compile(name: 'youtubeExtractor', ext: "aar")
-    compile deps.js_evaluator
+    compile deps.youtube_extrator
 }
 
 apply plugin: 'com.google.gms.google-services'
