@@ -1,7 +1,6 @@
 package com.tonynowater.smallplayer.base;
 
 import android.content.ComponentName;
-import android.content.Intent;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -129,7 +128,6 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
                 onPlaybackStateChanged(mPlaybackStateCompat);
                 onMetadataChanged(mMediaControllerCompat.getMetadata());
                 connectPlayerFragment();
-
             } catch (RemoteException e) {
                 e.printStackTrace();
                 Log.e(TAG, "onConnected: " + e.toString());
@@ -195,30 +193,18 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         super.onCreate(savedInstanceState);
         mRealmUtils = new RealmUtils();
         mMediaBrowserCompat = new MediaBrowserCompat(this, new ComponentName(this, PlayMusicService.class), mConnectionCallback, null);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mRealmUtils.close();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         if (mMediaBrowserCompat != null) {
-            Log.d(TAG, "onStart: connect");
+            Log.d(TAG, "onCreate: connect");
             mMediaBrowserCompat.connect();
         }
     }
 
     @Override
-    protected void onStop() {
-        if (mMediaBrowserCompat != null) {
-            Log.d(TAG, "onStop: disconnect");
-            mMediaBrowserCompat.disconnect();
-        }
-        super.onStop();
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy: disconnect");
+        mRealmUtils.close();
+        mMediaBrowserCompat.disconnect();
+        super.onDestroy();
     }
 
     /**

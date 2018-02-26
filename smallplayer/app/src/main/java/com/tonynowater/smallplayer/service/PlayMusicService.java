@@ -117,10 +117,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy:");
+        handleStopRequest();
         mMediaNotificationManager.cancelNotification();
-        stopSelf();
-        updatePlaybackState();
-        mServiceStarted = false;
         mMediaSessionCompat.release();
         super.onDestroy();
     }
@@ -528,6 +526,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     }
 
     private void handleStopRequest() {
+        Log.d(TAG, "handleStopRequest");
         mLocalPlayback.stop(true);
         updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         updatePlaybackState();

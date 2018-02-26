@@ -2,6 +2,7 @@ package com.tonynowater.smallplayer.base;
 
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -56,23 +57,19 @@ public abstract class BaseMediaControlFragment<T extends ViewDataBinding> extend
     }
 
     @Override
-    public void onStart() {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         super.onStart();
-        Log.d(TAG, "onStart: ");
+        Log.d(TAG, "onActivityCreated: ");
         onConnected();
     }
 
     @Override
-    public void onStop() {
+    public void onDestroy() {
         MediaControllerCompat mediaControllerCompat = MediaControllerCompat.getMediaController(getActivity());
         if (mediaControllerCompat != null) {
             mediaControllerCompat.unregisterCallback(mMediaControllerCallback);
         }
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
         mRealmUtils.close();
         super.onDestroy();
     }
@@ -87,10 +84,10 @@ public abstract class BaseMediaControlFragment<T extends ViewDataBinding> extend
                 onFragmentMediaConnected();
                 onPlaybackStateChanged(mediaControllerCompat.getPlaybackState());
                 onMetadataChanged(mediaControllerCompat.getMetadata());
+                mediaControllerCompat.registerCallback(mMediaControllerCallback);
             } else {
                 Log.w(TAG, "onConnected: isNotAdded");
             }
-            mediaControllerCompat.registerCallback(mMediaControllerCallback);
         }
     }
 
