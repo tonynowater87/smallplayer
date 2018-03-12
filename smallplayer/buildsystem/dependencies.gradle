@@ -14,25 +14,28 @@ ext {
     retrofitGsonVer = '2.3.0'
     kotlin_version = '1.2.21'
     youtubeExtratorVer = 'master-SNAPSHOT'
+    leakcanaryVer = '1.5.4'
 
     deps = [
-            espresso_core: "com.android.support.test.espresso:espresso-core:$espressoVer",
-            junit        : "junit:junit:$junitVer",
-            appcompat_v7 : "com.android.support:appcompat-v7:$androidSupLibVer",
-            designLib    : "com.android.support:design:$androidSupLibVer",
-            okhttp       : "com.squareup.okhttp:okhttp:$okhttpVer",
-            gson         : "com.google.code.gson:gson:$gsonVer",
+            espresso_core   : "com.android.support.test.espresso:espresso-core:$espressoVer",
+            junit           : "junit:junit:$junitVer",
+            appcompat_v7    : "com.android.support:appcompat-v7:$androidSupLibVer",
+            designLib       : "com.android.support:design:$androidSupLibVer",
+            okhttp          : "com.squareup.okhttp:okhttp:$okhttpVer",
+            gson            : "com.google.code.gson:gson:$gsonVer",
             constraintlayout: "com.android.support.constraint:constraint-layout:$constraintlayoutVer",
-            materia_dialog: "com.afollestad.material-dialogs:core:$materialdialogVer",
-            lottie       : "com.airbnb.android:lottie:$lottieVer",
-            firebase_core: "com.google.firebase:firebase-core:$firebaseVer",//analytics
-            firebase_crash: "com.google.firebase:firebase-crash:$firebaseVer",
-            google_auth  : "com.google.android.gms:play-services-auth:$googleAuthLibVer",//google auth
-            retrofit2    : "com.squareup.retrofit2:retrofit:$retrofit2Ver",
-            retrofitGson : "com.squareup.retrofit2:converter-gson:$retrofitGsonVer",
-            mediaCombat  : "com.android.support:support-media-compat:$androidSupLibVer",
+            materia_dialog  : "com.afollestad.material-dialogs:core:$materialdialogVer",
+            lottie          : "com.airbnb.android:lottie:$lottieVer",
+            firebase_core   : "com.google.firebase:firebase-core:$firebaseVer",//analytics
+            firebase_crash  : "com.google.firebase:firebase-crash:$firebaseVer",
+            google_auth     : "com.google.android.gms:play-services-auth:$googleAuthLibVer",//google auth
+            retrofit2       : "com.squareup.retrofit2:retrofit:$retrofit2Ver",
+            retrofitGson    : "com.squareup.retrofit2:converter-gson:$retrofitGsonVer",
+            mediaCombat     : "com.android.support:support-media-compat:$androidSupLibVer",
             youtube_extrator: "com.github.HaarigerHarald:android-youtubeExtractor:$youtubeExtratorVer",
-            kotlin_stdlib: "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
-            kotlin_reflect:"org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+            kotlin_stdlib   : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
+            kotlin_reflect  : "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version",
+            leakcanary      : "com.squareup.leakcanary:leakcanary-android:$leakcanaryVer",
+            leakcanary_no_op: "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVer"
     ]
 }

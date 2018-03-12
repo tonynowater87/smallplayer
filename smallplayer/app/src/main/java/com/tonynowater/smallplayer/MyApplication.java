@@ -9,6 +9,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.squareup.leakcanary.LeakCanary;
 import com.tonynowater.smallplayer.module.dto.realm.Migration;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 
@@ -47,8 +48,15 @@ public class MyApplication extends Application {
         super.onCreate();
         mContext = getApplicationContext();
         Log.d(TAG, "onCreate: " + BuildConfig.DEBUG);
-        //測試版不做錯誤報告
-        FirebaseCrash.setCrashCollectionEnabled(BuildConfig.DEBUG ? false : true);
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+
+        LeakCanary.install(this);
+
+        FirebaseCrash.setCrashCollectionEnabled(BuildConfig.DEBUG ? false : true);//測試版不做錯誤報告
         initalRealm();
         addNotificationChannel();
     }

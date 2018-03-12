@@ -71,6 +71,8 @@ dependencies {
     compile deps.kotlin_stdlib
     compile deps.kotlin_reflect
     compile deps.youtube_extrator
+    debugCompile deps.leakcanary
+    releaseCompile deps.leakcanary_no_op
 }
 
 apply plugin: 'com.google.gms.google-services'
