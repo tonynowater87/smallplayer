@@ -18,6 +18,7 @@ import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
 
@@ -62,7 +63,7 @@ public class LocalPlayback implements Playback
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == intent.getAction()) {
                 //耳機拔掉的事件
-                Log.d(TAG, "onReceive: " + isPlaying());
+                Logger.getInstance().d(TAG, "onReceive: " + isPlaying());
                 if (isPlaying()) {
                     pause(false);
                 }
@@ -85,7 +86,7 @@ public class LocalPlayback implements Playback
      * 試著獲取AudioFocus
      */
     private void tryToGetAudioFocus() {
-        Log.d(TAG, "tryToGetAudioFocus: " + mAudioNoisyReceiverRegistered);
+        Logger.getInstance().d(TAG, "tryToGetAudioFocus: " + mAudioNoisyReceiverRegistered);
         registerAudioNoisyReceiver();
         int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
@@ -99,7 +100,7 @@ public class LocalPlayback implements Playback
      * 放棄AudioFocus
      */
     private void giveUpAudioFocus() {
-        Log.d(TAG, "giveUpAudioFocus: " + mAudioNoisyReceiverRegistered);
+        Logger.getInstance().d(TAG, "giveUpAudioFocus: " + mAudioNoisyReceiverRegistered);
         unregisterAudioNoisyReceiver();
         if (mAudioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
@@ -121,7 +122,7 @@ public class LocalPlayback implements Playback
     }
 
     private void configureMediaPlayerByAudioFocus() {
-        Log.d(TAG, "configureMediaPlayerByAudioFocus: " + mAudioFocus);
+        Logger.getInstance().d(TAG, "configureMediaPlayerByAudioFocus: " + mAudioFocus);
         if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED
          || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS
          || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
@@ -150,7 +151,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        Log.d(TAG, "onAudioFocusChange: " + focusChange);
+        Logger.getInstance().d(TAG, "onAudioFocusChange: " + focusChange);
 
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
@@ -177,7 +178,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion:");
+        Logger.getInstance().d(TAG, "onCompletion:");
         mCurrentSongStreamPosition = 0;
         mPlaybackCallback.onCompletion();
     }
@@ -185,21 +186,21 @@ public class LocalPlayback implements Playback
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         // FIXME: 2017/6/14 目前當歌曲在緩衝時切換播放位置會onError -38 onCompletion
-        Log.d(TAG, "onError: " + what + " " + extra);
+        Logger.getInstance().d(TAG, "onError: " + what + " " + extra);
         return false;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         mState = PlaybackStateCompat.STATE_PLAYING;
-        Log.d(TAG, "onPrepared:" + mState);
+        Logger.getInstance().d(TAG, "onPrepared:" + mState);
         mp.start();
         mPlaybackCallback.onPlaybackStateChanged();
     }
 
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        Log.d(TAG, "onBufferingUpdate: " + percent);
+        Logger.getInstance().d(TAG, "onBufferingUpdate: " + percent);
 //        if (percent == 100) {
 //            mMediaPlayer.start();
 //            mPlaybackCallback.onPlaybackStateChanged();
@@ -218,7 +219,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        Log.d(TAG, "onSeekComplete:");
+        Logger.getInstance().d(TAG, "onSeekComplete:");
         mState = PlaybackState.STATE_PLAYING;
         mMediaPlayer.start();
         mPlaybackCallback.onPlaybackStateChanged();
@@ -226,12 +227,12 @@ public class LocalPlayback implements Playback
 
     @Override
     public void setState(int state) {
-        Log.d(TAG, "setState:" + state);
+        Logger.getInstance().d(TAG, "setState:" + state);
     }
 
     @Override
     public int getState() {
-        Log.d(TAG, "getState:" + mState);
+        Logger.getInstance().d(TAG, "getState:" + mState);
         return mState;
     }
 
@@ -279,21 +280,22 @@ public class LocalPlayback implements Playback
 
         //沒有取得播音樂焦點
         if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
-            Log.d(TAG, "play: AudioManager.AUDIOFOCUS_REQUEST_FAILED");
+            Logger.getInstance().d(TAG, "play: AudioManager.AUDIOFOCUS_REQUEST_FAILED");
             return;
         }
 
         //取消前一首取Youtube的AsyncTask
         if (mYoutubeExtratorAsyncTask != null) {
             if (!mYoutubeExtratorAsyncTask.isCancelled()) {
-                Log.d(TAG, "play: mYoutubeExtratorAsyncTask.cancel(true)");
+                Logger.getInstance().d(TAG, "play: mYoutubeExtratorAsyncTask.cancel(true)");
                 mYoutubeExtratorAsyncTask.cancel(true);
             }
         }
 
         if (mCurrentSongStreamPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
             //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
-            Log.d(TAG, "pause and play position : " + trackPosition);
+            Logger.getInstance().d(TAG, "pause and play position : " + trackPosition);
+            Logger.getInstance().d(TAG, "resume:" + mCurrentSongStreamPosition);
             mState = PlaybackStateCompat.STATE_BUFFERING;
             mMediaPlayer.seekTo(mCurrentSongStreamPosition);
             return;
@@ -330,7 +332,7 @@ public class LocalPlayback implements Playback
     private void play(int trackPosition, String source, MediaMetadataCompat mediaMetadataCompat) {
         try {
             createMediaPlayerIfNeeded();
-            Log.d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
+            Logger.getInstance().d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
             mCurrentTrackPosition = trackPosition;
             mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -345,7 +347,7 @@ public class LocalPlayback implements Playback
     }
 
     private void createMediaPlayerIfNeeded() {
-        Log.d(TAG, "createMediaPlayerIfNeeded");
+        Logger.getInstance().d(TAG, "createMediaPlayerIfNeeded");
         releaseResource();
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(this);
@@ -364,6 +366,7 @@ public class LocalPlayback implements Playback
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentSongStreamPosition = mMediaPlayer.getCurrentPosition();
+                Logger.getInstance().d(TAG, "pause:" + mCurrentSongStreamPosition);
             }
         }
 
@@ -374,7 +377,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public void stop(boolean notifyListeners) {
-        Log.d(TAG, "stop:" + notifyListeners);
+        Logger.getInstance().d(TAG, "stop:" + notifyListeners);
         mState = PlaybackStateCompat.STATE_STOPPED;
         if (notifyListeners) {
             mPlaybackCallback.onPlaybackStateChanged();
@@ -424,7 +427,7 @@ public class LocalPlayback implements Playback
 
     private void setEqualizerBandLevel() {
         if (mEqualizer == null) {
-            Log.d(TAG, "setEqualizer: you can't setEqualizer when mEqualizer is null");
+            Logger.getInstance().d(TAG, "setEqualizer: you can't setEqualizer when mEqualizer is null");
             return;
         }
         switch (mEqualizerType) {

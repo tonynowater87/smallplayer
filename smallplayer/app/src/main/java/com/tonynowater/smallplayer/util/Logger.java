@@ -2,6 +2,8 @@ package com.tonynowater.smallplayer.util;
 
 import android.util.Log;
 
+import com.tonynowater.smallplayer.BuildConfig;
+
 /**
  * Created by tonyliao on 2017/4/29.
  */
@@ -25,7 +27,7 @@ public class Logger {
 
     private static Logger instance = new Logger();
     private LogLevel mLogLever = LogLevel.Verbose;
-    private boolean mIsEnableLog = true;
+    private boolean mIsEnableLog = BuildConfig.DEBUG;
 
     public static Logger getInstance() {
         return instance;
