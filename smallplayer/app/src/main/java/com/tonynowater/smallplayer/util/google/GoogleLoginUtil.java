@@ -17,6 +17,7 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
+import com.tonynowater.smallplayer.util.Logger;
 
 // TODO: 2017/10/6 Release版的Google登入會失敗 (因為SHA1不一樣)
 /**
@@ -67,9 +68,9 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
                 .requestScopes(new Scope(AUTH_YOUTUBE))
                 .requestServerAuthCode(mFragmentActivity.getString(R.string.default_web_client_id))
                 .build();
-        //Log.d(TAG, "GoogleLoginUtil default_web_client_id : " + context.getString(R.string.default_web_client_id));
-        //Log.d(TAG, "GoogleLoginUtil google_app_id : " + context.getString(R.string.google_app_id));
-        //Log.d(TAG, "GoogleLoginUtil google_api_key : " + context.getString(R.string.google_api_key));
+        //Logger.getInstance().d(TAG, "GoogleLoginUtil default_web_client_id : " + context.getString(R.string.default_web_client_id));
+        //Logger.getInstance().d(TAG, "GoogleLoginUtil google_app_id : " + context.getString(R.string.google_app_id));
+        //Logger.getInstance().d(TAG, "GoogleLoginUtil google_api_key : " + context.getString(R.string.google_api_key));
 
         mGoogleApiClient = new GoogleApiClient.Builder(mFragmentActivity)
                 .enableAutoManage(mFragmentActivity, fragment == null ? 0 : fragment.hashCode(), this)//此行啟用表示會自動在onStart及onStop中做connect()及disconnect()的動作
@@ -90,7 +91,7 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
 
     /** For Activity Google登入 */
     public void googleSignIn(final FragmentActivity fragmentActivity) {
-        Log.d(TAG, "googleSignIn: ");
+        Logger.getInstance().d(TAG, "googleSignIn: ");
         if (mGoogleApiClient.isConnected()) {
             //若有登入就先登出
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
@@ -112,7 +113,7 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
 
     /** For Fragment Google登入 */
     public void googleSignIn(final Fragment fragment) {
-        Log.d(TAG, "googleSignIn: ");
+        Logger.getInstance().d(TAG, "googleSignIn: ");
         if (mGoogleApiClient.isConnected()) {
             //若有登入就先登出
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
@@ -145,7 +146,7 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     if (result.isSuccess()) {
                         GoogleSignInAccount account = result.getSignInAccount();
-                        Log.d(TAG, "onActivityResult google login success : "
+                        Logger.getInstance().d(TAG, "onActivityResult google login success : "
                                 + account.getEmail()
                                 + "\n" + account.getIdToken()
                                 + "\n" + account.getServerAuthCode());
@@ -206,7 +207,7 @@ public class GoogleLoginUtil implements GoogleApiClient.OnConnectionFailedListen
 //        @Override
 //        protected void onPostExecute(String token) {
 //            super.onPostExecute(token);
-//            Log.d(TAG, "onActivityResult: getToken " + token);
+//            Logger.getInstance().d(TAG, "onActivityResult: getToken " + token);
 //            if (token != null) {
 //                mCallback.onGoogleLoginSuccess(token);
 //            } else {

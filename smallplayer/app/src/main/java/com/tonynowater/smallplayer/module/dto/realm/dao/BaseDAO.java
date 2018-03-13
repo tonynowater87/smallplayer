@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.module.dto.realm.dao;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.module.dto.realm.entity.EntityInterface;
+import com.tonynowater.smallplayer.util.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -273,11 +274,11 @@ public abstract class BaseDAO<T extends RealmObject & EntityInterface> implement
     protected int getNextKey() {
 
         if (realm.where(clazz).max(COLUMN_ID) == null) {
-            Log.d(TAG, "getNextKey: null" );
+            Logger.getInstance().d(TAG, "getNextKey: null" );
             return DEFAULT_ID;
         } else {
             int id = realm.where(clazz).max(COLUMN_ID).intValue() + 1;
-            Log.d(TAG, "getNextKey:" + id );
+            Logger.getInstance().d(TAG, "getNextKey:" + id );
             return id;
         }
     }

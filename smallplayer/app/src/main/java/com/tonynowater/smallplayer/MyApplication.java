@@ -12,6 +12,7 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.leakcanary.LeakCanary;
 import com.tonynowater.smallplayer.module.dto.realm.Migration;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.util.Logger;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -47,7 +48,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
-        Log.d(TAG, "onCreate: " + BuildConfig.DEBUG);
+        Logger.getInstance().d(TAG, "onCreate: " + BuildConfig.DEBUG);
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.

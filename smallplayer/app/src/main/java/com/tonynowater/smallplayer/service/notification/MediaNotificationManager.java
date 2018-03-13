@@ -30,6 +30,7 @@ import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.AlbumArtCache;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 import static com.tonynowater.smallplayer.service.notification.ChannelConstant.PLAYER_CHANNEL_ID;
@@ -79,7 +80,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private MediaControllerCompat.Callback mMediaControllerCallback = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            Log.d(TAG, "onPlaybackStateChanged: " + state);
+            Logger.getInstance().d(TAG, "onPlaybackStateChanged: " + state);
             mPlaybackState = state;
 
             if (state.getState() == PlaybackStateCompat.STATE_PLAYING
@@ -87,7 +88,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     || state.getState() == PlaybackStateCompat.STATE_BUFFERING) {
                 Notification notification = createNotification();
                 if (notification != null) {
-                    Log.d(TAG, "onPlaybackStateChanged: refresh notification");
+                    Logger.getInstance().d(TAG, "onPlaybackStateChanged: refresh notification");
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
                 }
             } else {
@@ -97,11 +98,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
-            Log.d(TAG, "onMetadataChanged: " + metadata);
+            Logger.getInstance().d(TAG, "onMetadataChanged: " + metadata);
 
 
             if (mPlaybackState.getState() == PlaybackStateCompat.STATE_STOPPED) {
-                Log.d(TAG, "onMetadataChanged: PlaybackStateCompat.STATE_STOPPED");
+                Logger.getInstance().d(TAG, "onMetadataChanged: PlaybackStateCompat.STATE_STOPPED");
                 cancelNotification();
                 return;
             }
@@ -115,7 +116,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
         @Override
         public void onSessionDestroyed() {
-            Log.d(TAG, "onSessionDestroyed: ");
+            Logger.getInstance().d(TAG, "onSessionDestroyed: ");
             updateSessionToken();
         }
     };
@@ -200,7 +201,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
      * 清除通知，並停止Service
      */
     private void stopNotification() {
-        Log.d(TAG, "stopNotification:" + mStarted);
+        Logger.getInstance().d(TAG, "stopNotification:" + mStarted);
         if (mStarted) {
             mStarted = false;
             mMediaController.unregisterCallback(mMediaControllerCallback);
@@ -214,7 +215,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
      * 保留通知，停止前景Service
      */
     private void stopForeground() {
-        Log.d(TAG, "stopForeground: " + mStarted);
+        Logger.getInstance().d(TAG, "stopForeground: " + mStarted);
         if (mStarted) {
             mPlayMusicService.stopForeground(false);
         }
@@ -224,12 +225,12 @@ public class MediaNotificationManager extends BroadcastReceiver {
      * 清除通知
      */
     public void cancelNotification() {
-        Log.d(TAG, "cancelNotification: " + mStarted);
+        Logger.getInstance().d(TAG, "cancelNotification: " + mStarted);
         mNotificationManager.cancel(NOTIFICATION_ID);
     }
 
     private void registerReceiver() {
-        Log.d(TAG, "registerReceiver: " + mIsRegisteredRecevier);
+        Logger.getInstance().d(TAG, "registerReceiver: " + mIsRegisteredRecevier);
         if (!mIsRegisteredRecevier) {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(ACTION_PLAY);
@@ -245,7 +246,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void unRegisterReceiver() {
-        Log.d(TAG, "unRegisterReceiver: " + mIsRegisteredRecevier);
+        Logger.getInstance().d(TAG, "unRegisterReceiver: " + mIsRegisteredRecevier);
         if (mIsRegisteredRecevier) {
             mPlayMusicService.unregisterReceiver(this);
             mIsRegisteredRecevier = false;
@@ -253,8 +254,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private Notification createNotification() {
-        Log.d(TAG, "createNotification: MetaData = " + mMediaMetadata);
-        Log.d(TAG, "createNotification: mPlaybackState = " + mPlaybackState);
+        Logger.getInstance().d(TAG, "createNotification: MetaData = " + mMediaMetadata);
+        Logger.getInstance().d(TAG, "createNotification: mPlaybackState = " + mPlaybackState);
         if (mMediaMetadata == null || mPlaybackState == null) {
             return null;
         }
@@ -342,13 +343,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void setNotificationPlayState(NotificationCompat.Builder builder) {
-        Log.d(TAG, "setNotificationPlayState: " + mPlaybackState);
+        Logger.getInstance().d(TAG, "setNotificationPlayState: " + mPlaybackState);
 
         switch (mPlaybackState.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
                 if (mPlaybackState.getPosition() >= 0) {
                     long playTime = System.currentTimeMillis() - mPlaybackState.getPosition();
-                    Log.d(TAG, "setNotificationPlayState , position : " + playTime / 1000 + " seconds.");
+                    Logger.getInstance().d(TAG, "setNotificationPlayState , position : " + playTime / 1000 + " seconds.");
                     builder.setWhen(playTime)
                             .setShowWhen(true)
                             .setUsesChronometer(true)
@@ -364,7 +365,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 stopForeground();
                 break;
             default:
-                Log.d(TAG, "setNotificationPlayState: position 0");
+                Logger.getInstance().d(TAG, "setNotificationPlayState: position 0");
                 builder.setWhen(0)
                         .setShowWhen(false)
                         .setUsesChronometer(false);
@@ -390,7 +391,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void addPlayPauseAction(NotificationCompat.Builder builder) {
-        Log.d(TAG, "addPlayPauseAction: ");
+        Logger.getInstance().d(TAG, "addPlayPauseAction: ");
         String label;
         int icon;
         PendingIntent pendingIntent;
@@ -414,7 +415,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         //處理通知的點擊事件
         String action = intent.getAction();
-        Log.d(TAG, "onReceive: " + action);
+        Logger.getInstance().d(TAG, "onReceive: " + action);
         switch (action) {
             case ACTION_PLAY:
                 mTransportControls.play();
@@ -440,7 +441,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_REPEAT, null);
                 break;
             default:
-                Log.d(TAG, "onReceive: unknown " + action);
+                Logger.getInstance().d(TAG, "onReceive: unknown " + action);
         }
     }
 
@@ -451,9 +452,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
             @Override
             public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                 // 更新通知的icon
-                Log.d(TAG, "fetchBitmapFromURLAsync: set bitmap to " + artUrl);
+                Logger.getInstance().d(TAG, "fetchBitmapFromURLAsync: set bitmap to " + artUrl);
                 if (mMediaMetadata == null) {
-                    Log.d(TAG, "onFetched: 因為歌曲已刪除，所以就不更新通知了");
+                    Logger.getInstance().d(TAG, "onFetched: 因為歌曲已刪除，所以就不更新通知了");
                     return;
                 }
 

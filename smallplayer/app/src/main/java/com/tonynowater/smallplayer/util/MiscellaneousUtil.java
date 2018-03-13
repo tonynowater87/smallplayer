@@ -49,7 +49,7 @@ public class MiscellaneousUtil {
      * @return 開始時間到call這個method的秒數
      */
     public static void calcRunningTime(String logName, long startTime) {
-        Log.d(TAG, logName + "花費 : " + (System.currentTimeMillis() - startTime) / 1000d + "秒");
+        Logger.getInstance().d(TAG, logName + "花費 : " + (System.currentTimeMillis() - startTime) / 1000d + "秒");
     }
 
     /**

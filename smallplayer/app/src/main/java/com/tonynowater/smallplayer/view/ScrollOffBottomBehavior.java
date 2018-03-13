@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.tonynowater.smallplayer.util.Logger;
+
 /**
  * 給FloatingActionButton能在CoordinatorLayout裡上下滑動隱藏
  *
@@ -49,7 +51,7 @@ public class ScrollOffBottomBehavior extends CoordinatorLayout.Behavior<Floating
                 scale = 0;
             }
 
-            Log.d(TAG, "onNestedScroll : " + targetTraslation);
+            Logger.getInstance().d(TAG, "onNestedScroll : " + targetTraslation);
             //設定浮動按鈕屬性動畫
             mAnimatorSet = new AnimatorSet();
             mAnimatorTransition = ObjectAnimator.ofFloat(child, "translationY", targetTraslation);

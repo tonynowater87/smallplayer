@@ -49,7 +49,7 @@ public class PermissionGrantedUtil {
                 }
             }
 
-            Log.d(TAG, "checkPermissiion: " + permissions.size());
+            Logger.getInstance().d(TAG, "checkPermissiion: " + permissions.size());
             if (permissions.size() > 0) {
                 if (activity != null) {
                     activity.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISTTION_REQUEST_CODE);
@@ -67,8 +67,8 @@ public class PermissionGrantedUtil {
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISTTION_REQUEST_CODE) {
-            Log.d(TAG, "onRequestPermissionsResult: " + permissions.length);
-            Log.d(TAG, "onRequestPermissionsResult: " + grantResults.length);
+            Logger.getInstance().d(TAG, "onRequestPermissionsResult: " + permissions.length);
+            Logger.getInstance().d(TAG, "onRequestPermissionsResult: " + grantResults.length);
 
             boolean granted = false;
             for (int i = 0; i < grantResults.length; i++) {

@@ -72,7 +72,7 @@ public class BitmapHelper {
             is.mark(MAX_READ_LIMIT_PER_IMG);
             int scaleFactor = findScaleFactor(width, height, is);
             String log = "Scaling bitmap " + uri + " by factor " + scaleFactor + " to support " + width + "x" + height + "requested dimension";
-            Log.d(TAG, log);
+            Logger.getInstance().d(TAG, log);
             is.reset();
             return scaleBitmap(scaleFactor, is);
         } finally {

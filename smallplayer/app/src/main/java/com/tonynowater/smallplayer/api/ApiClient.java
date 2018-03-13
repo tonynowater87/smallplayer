@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.tonynowater.smallplayer.BuildConfig;
 import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
+import com.tonynowater.smallplayer.util.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,13 +39,13 @@ public class ApiClient {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
-                        Log.d(TAG, "ApiClient: " + request.url().toString());
+                        Logger.getInstance().d(TAG, "ApiClient: " + request.url().toString());
                         HttpUrl httpUrl = request.url().newBuilder()
                                 .addQueryParameter("key", BuildConfig.YoutubeDataAPIKey)
                                 .addQueryParameter("part", "snippet")
                                 .build();
                         request = request.newBuilder().url(httpUrl).build();
-                        Log.d(TAG, "ApiClient: " + httpUrl.toString());
+                        Logger.getInstance().d(TAG, "ApiClient: " + httpUrl.toString());
                         return chain.proceed(request);
                     }
                 }).build();
@@ -67,13 +68,13 @@ public class ApiClient {
                 List<U2BVideoDTO.ItemsBean> videos = response.body().getItems();
 
                 for (int i = 0, len = videos.size(); i < len; i++) {
-                    Log.d(TAG, "onResponse: " + videos.get(i).getSnippet().getTitle());
+                    Logger.getInstance().d(TAG, "onResponse: " + videos.get(i).getSnippet().getTitle());
                 }
             }
 
             @Override
             public void onFailure(Call<U2BVideoDTO> call, Throwable throwable) {
-                Log.d(TAG, "onResponse: " + throwable.toString());
+                Logger.getInstance().d(TAG, "onResponse: " + throwable.toString());
             }
         });
     }

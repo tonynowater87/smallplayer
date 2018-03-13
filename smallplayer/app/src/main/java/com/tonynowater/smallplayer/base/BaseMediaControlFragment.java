@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
+import com.tonynowater.smallplayer.util.Logger;
 
 /**
  * Fragment需要和Service交互的基底類別
@@ -60,7 +61,7 @@ public abstract class BaseMediaControlFragment<T extends ViewDataBinding> extend
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         super.onStart();
-        Log.d(TAG, "onActivityCreated: ");
+        Logger.getInstance().d(TAG, "onActivityCreated: ");
         onConnected();
     }
 
@@ -76,7 +77,7 @@ public abstract class BaseMediaControlFragment<T extends ViewDataBinding> extend
 
     public void onConnected() {
         MediaControllerCompat mediaControllerCompat = MediaControllerCompat.getMediaController(getActivity());
-        Log.d(TAG, "onConnected: " + (mediaControllerCompat == null));
+        Logger.getInstance().d(TAG, "onConnected: " + (mediaControllerCompat == null));
         if (mediaControllerCompat != null) {
             mTransportControls = mediaControllerCompat.getTransportControls();
 

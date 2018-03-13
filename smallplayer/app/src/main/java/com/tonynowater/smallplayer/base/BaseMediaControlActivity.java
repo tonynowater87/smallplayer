@@ -16,6 +16,7 @@ import android.util.Log;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.service.PlayMusicService;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.view.PlayerFragment;
 
@@ -42,7 +43,7 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
-            Log.d(TAG, "onPlaybackStateChanged: ");
+            Logger.getInstance().d(TAG, "onPlaybackStateChanged: ");
             if (!TextUtils.isEmpty(state.getErrorMessage())) {
                 showToast(state.getErrorMessage().toString());
             }
@@ -52,14 +53,14 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
-            Log.d(TAG, "onMetadataChanged: ");
+            Logger.getInstance().d(TAG, "onMetadataChanged: ");
             BaseMediaControlActivity.this.onMetadataChanged(metadata);
         }
 
         @Override
         public void onSessionDestroyed() {
             super.onSessionDestroyed();
-            Log.d(TAG, "onSessionDestroyed: ");
+            Logger.getInstance().d(TAG, "onSessionDestroyed: ");
             BaseMediaControlActivity.this.onSessionDestroyed();
         }
     };
@@ -109,7 +110,7 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         @Override
         public void onConnected() {
             super.onConnected();
-            Log.d(TAG, "onConnected: " + mMediaBrowserCompat.getSessionToken());
+            Logger.getInstance().d(TAG, "onConnected: " + mMediaBrowserCompat.getSessionToken());
 
             if (mMediaBrowserCompat.getSessionToken() == null) {
                 throw new IllegalArgumentException("No session token");
@@ -137,13 +138,13 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         @Override
         public void onConnectionFailed() {
             super.onConnectionFailed();
-            Log.d(TAG, "onConnectionFailed: ");
+            Logger.getInstance().d(TAG, "onConnectionFailed: ");
         }
 
         @Override
         public void onConnectionSuspended() {
             super.onConnectionSuspended();
-            Log.d(TAG, "onConnectionSuspended: ");
+            Logger.getInstance().d(TAG, "onConnectionSuspended: ");
         }
     };
 
@@ -183,7 +184,7 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         MediaControllerCompat.setMediaController(BaseMediaControlActivity.this, mMediaControllerCompat);//設定後，在Fragment可以用MediaControllerCompat.getMediaController取得
         PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.bottom_player_fragment);
         if (playerFragment != null) {
-            Log.d(TAG, "connectPlayerFragment: ");
+            Logger.getInstance().d(TAG, "connectPlayerFragment: ");
             playerFragment.onConnected();//手動觸發PlayerFragment的連線
         }
     }
@@ -194,14 +195,14 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
         mRealmUtils = new RealmUtils();
         mMediaBrowserCompat = new MediaBrowserCompat(this, new ComponentName(this, PlayMusicService.class), mConnectionCallback, null);
         if (mMediaBrowserCompat != null) {
-            Log.d(TAG, "onCreate: connect");
+            Logger.getInstance().d(TAG, "onCreate: connect");
             mMediaBrowserCompat.connect();
         }
     }
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy: disconnect");
+        Logger.getInstance().d(TAG, "onDestroy: disconnect");
         mRealmUtils.close();
         mMediaBrowserCompat.disconnect();
         super.onDestroy();
@@ -212,7 +213,7 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
      * @param playListPosition
      */
     public void sendActionPlayingNow(int playListPosition, int playListSongEntityId) {
-        Log.d(TAG, "sendActionPlayingNow: " + playListPosition);
+        Logger.getInstance().d(TAG, "sendActionPlayingNow: " + playListPosition);
         Bundle bundle = new Bundle();
         bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListPosition);
         bundle.putInt(PlayMusicService.BUNDLE_KEY_CURRENT_PLAY_SONG_ID, playListSongEntityId);
@@ -224,7 +225,7 @@ public abstract class BaseMediaControlActivity<T extends ViewDataBinding> extend
      * @param playListPosition
      */
     public void sendActionChangePlaylist(int playListPosition) {
-        Log.d(TAG, "sendActionChangePlaylist: " + playListPosition);
+        Logger.getInstance().d(TAG, "sendActionChangePlaylist: " + playListPosition);
         Bundle bundle = new Bundle();
         bundle.putInt(PlayMusicService.BUNDLE_KEY_PLAYLIST_ID, playListPosition);
         mTransportControls.sendCustomAction(PlayMusicService.ACTION_CHANGE_PLAYLIST, bundle);

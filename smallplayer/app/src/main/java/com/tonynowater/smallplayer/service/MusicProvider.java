@@ -10,6 +10,7 @@ import android.util.Log;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class MusicProvider {
      */
     public void generateRandomList() {
         if (MiscellaneousUtil.isObjOK(mMusicPlayList)) {
-            Log.d(TAG, "generateRandomList: ");
+            Logger.getInstance().d(TAG, "generateRandomList: ");
             mRandomMusicPlayList = new ArrayList<>(mMusicPlayList);
             Collections.shuffle(mRandomMusicPlayList, new Random(System.currentTimeMillis()));
         }
@@ -188,8 +189,8 @@ public class MusicProvider {
      * @return 目前正在播放的位置
      */
     public int getCurrentPlayingIndex() {
-        Log.d(TAG, "getCurrentPlayingIndex: " + mSongPosition);
-        Log.d(TAG, "getMediaItemList size: " + getMediaItemList().size());
+        Logger.getInstance().d(TAG, "getCurrentPlayingIndex: " + mSongPosition);
+        Logger.getInstance().d(TAG, "getMediaItemList size: " + getMediaItemList().size());
 
         if (getPlayItemByIndex(mSongPosition, mEnumPlayMode) == null) {
             mSongPosition = getMediaItemList().size() - 1;
@@ -247,8 +248,8 @@ public class MusicProvider {
             mIsRepeat = false;
         }
 
-        Log.d(TAG, "addSongPosition mode : " + mEnumPlayMode.name());
-        Log.d(TAG, "addSongPosition: " + mSongPosition);
+        Logger.getInstance().d(TAG, "addSongPosition mode : " + mEnumPlayMode.name());
+        Logger.getInstance().d(TAG, "addSongPosition: " + mSongPosition);
     }
 
     public void minusSongPosition(boolean resetRepeat) {
@@ -266,8 +267,8 @@ public class MusicProvider {
             mIsRepeat = false;
         }
 
-        Log.d(TAG, "minusSongPosition mode : " + mEnumPlayMode.name());
-        Log.d(TAG, "minusSongPosition : " + mSongPosition);
+        Logger.getInstance().d(TAG, "minusSongPosition mode : " + mEnumPlayMode.name());
+        Logger.getInstance().d(TAG, "minusSongPosition : " + mSongPosition);
     }
 
     public EnumPlayMode getmEnumPlayMode() {

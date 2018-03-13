@@ -19,6 +19,7 @@ import com.tonynowater.smallplayer.BuildConfig;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.service.notification.MediaNotificationManager;
+import com.tonynowater.smallplayer.util.Logger;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -55,7 +56,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     private Playback.Callback mPlaybackCallback = new Playback.Callback() {
         @Override
         public void onCompletion() {
-            Log.d(TAG, "onCompletion: ");
+            Logger.getInstance().d(TAG, "onCompletion: ");
             if (!mMusicProvider.isPlayListAvailable()) {
                 return;
             }
@@ -116,7 +117,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy:");
+        Logger.getInstance().d(TAG, "onDestroy:");
         handleStopRequest();
         mMediaNotificationManager.cancelNotification();
         mMediaSessionCompat.release();
@@ -130,7 +131,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     /** 更新播放狀態至畫面及Notification */
     private void updatePlaybackState(String sError) {
-        Log.d(TAG, "updatePlaybackState: " + mLocalPlayback.getState());
+        Logger.getInstance().d(TAG, "updatePlaybackState: " + mLocalPlayback.getState());
         long position = mLocalPlayback.getCurrentStreamPosition();
         int state = mLocalPlayback.getState();
 
@@ -173,7 +174,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: " + intent);
+        Logger.getInstance().d(TAG, "onStartCommand: " + intent);
         return START_STICKY;
     }
 
@@ -188,12 +189,12 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-        Log.d(TAG, "onGetRoot: " + clientPackageName);
+        Logger.getInstance().d(TAG, "onGetRoot: " + clientPackageName);
         // not allowing any arbitrary app to browse your app's contents, you
         // 這裡必須回傳，畫面端才能成功連線Service
         
         if (clientPackageName.equals(BuildConfig.APPLICATION_ID)) {
-            Log.d(TAG, "onGetRoot equals my app");
+            Logger.getInstance().d(TAG, "onGetRoot equals my app");
             //這裡放的Bundle可從MediaBrowserCompat.getExtra取得
             Bundle bundle = new Bundle();
             bundle.putSerializable(BUNDLE_KEY_PLAYMODE, mMusicProvider.getmEnumPlayMode());
@@ -210,7 +211,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
      */
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        Log.d(TAG, "onLoadChildren: " + parentId);
+        Logger.getInstance().d(TAG, "onLoadChildren: " + parentId);
         // 在畫面端subcribe後，回傳項目回畫面
         if (TextUtils.equals(parentId, GET_CURRENT_PLAY_LIST_ID)) {
             result.sendResult(mMusicProvider.getMediaItemList());
@@ -234,27 +235,27 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
                     //只處理按下時的ACTION，因為按一次按鈕會有ACTION_DONW & ACTION_UP兩個ACTION
                     switch (keyEvent.getKeyCode()) {
                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY_PAUSE");
+                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY_PAUSE");
                             onPlay();
                             break;
                         case KeyEvent.KEYCODE_HEADSETHOOK:
-                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_HEADSETHOOK");
+                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_HEADSETHOOK");
                             onPlay();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_NEXT:
-                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_NEXT");
+                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_NEXT");
                             onSkipToNext();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PREVIOUS");
+                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PREVIOUS");
                             onSkipToPrevious();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PLAY:
-                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY");
+                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY");
                             onPlay();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                            Log.d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PAUSE");
+                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PAUSE");
                             onPause();
                             break;
                     }
@@ -266,7 +267,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPlay() {
-            Log.d(TAG, "onPlay:"+mMusicProvider.isPlayListAvailable());
+            Logger.getInstance().d(TAG, "onPlay:"+mMusicProvider.isPlayListAvailable());
             if (mMusicProvider.isPlayListAvailable()) {
                 if (!mLocalPlayback.isPlaying()) {
                     handlePlayRequest();
@@ -280,13 +281,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPause() {
-            Log.d(TAG, "onPause:");
+            Logger.getInstance().d(TAG, "onPause:");
             handlePauseRequest();
         }
 
         @Override
         public void onStop() {
-            Log.d(TAG, "onStop:");
+            Logger.getInstance().d(TAG, "onStop:");
             handleStopRequest();
         }
 
@@ -328,7 +329,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onCustomAction(String action, Bundle extras) {
-            Log.d(TAG, "onCustomAction: " + action);
+            Logger.getInstance().d(TAG, "onCustomAction: " + action);
             switch (action) {
                 case ACTION_CHANGE_EQUALIZER_TYPE:
                     handleChangeEqualizerType((EqualizerType) extras.getSerializable(BUNDLE_KEY_EQUALIZER_TYPE));
@@ -400,7 +401,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         private void handlePlayExplicitSong(int songPosition) {
 
             if (!mMusicProvider.setSongPosition(songPosition)) {
-                Log.d(TAG, "handlePlayExplicitSong : same position");
+                Logger.getInstance().d(TAG, "handlePlayExplicitSong : same position");
                 return;
             }
             if (mLocalPlayback.isPlaying()) {
@@ -432,10 +433,10 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
             String currentSongId = mMusicProvider.getCurrentPlayingMediaMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
 
-            Log.d(TAG, "handleRemoveSongFromPlaylist: song id : " + String.valueOf(songId));
-            Log.d(TAG, "handleRemoveSongFromPlaylist: current song id : " + currentSongId);
-            Log.d(TAG, "handleRemoveSongFromPlaylist: playlist id : " + String.valueOf(playlistId));
-            Log.d(TAG, "handleRemoveSongFromPlaylist: current playlist id : " + mCurrentPlayListId);
+            Logger.getInstance().d(TAG, "handleRemoveSongFromPlaylist: song id : " + String.valueOf(songId));
+            Logger.getInstance().d(TAG, "handleRemoveSongFromPlaylist: current song id : " + currentSongId);
+            Logger.getInstance().d(TAG, "handleRemoveSongFromPlaylist: playlist id : " + String.valueOf(playlistId));
+            Logger.getInstance().d(TAG, "handleRemoveSongFromPlaylist: current playlist id : " + mCurrentPlayListId);
             if (TextUtils.equals(String.valueOf(songId), currentSongId)) {
                 //刪目前正在播放的歌曲
                 mMusicProvider.queryDBPlayList(playlistId);
@@ -468,9 +469,9 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         /** 加歌至歌單動作處理 */
         private void handleAddSongToPlaylist(int playlistId) {
-            Log.d(TAG, "handleAddSongToPlaylist: ");
+            Logger.getInstance().d(TAG, "handleAddSongToPlaylist: ");
             if (mCurrentPlayListId != playlistId) {
-                Log.d(TAG, "handleAddSongToPlaylist: mCurrentPlayListId != playlistId :" + mCurrentPlayListId);
+                Logger.getInstance().d(TAG, "handleAddSongToPlaylist: mCurrentPlayListId != playlistId :" + mCurrentPlayListId);
                 return;
             }
             boolean isListAvailable = mMusicProvider.isPlayListAvailable();
@@ -486,7 +487,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
          * @param playingSongId
          */
         private void handlePlayingNow(int playlistId, int playingSongId) {
-            Log.d(TAG, "handlePlayingNow: ");
+            Logger.getInstance().d(TAG, "handlePlayingNow: ");
             mMusicProvider.queryDBPlayList(playlistId);
             mMusicProvider.setSongPositionNow(playingSongId);//播指定加入歌曲的位置
             handlePlayRequest();
@@ -494,7 +495,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         /** 切換歌單動作處理 */
         private void handleChangePlayList(int playlistId) {
-            Log.d(TAG, "handleChangePlayList: ");
+            Logger.getInstance().d(TAG, "handleChangePlayList: ");
             mMusicProvider.queryDBPlayList(playlistId);
             //切換歌單，從第一首開始播放
             mMusicProvider.setSongPosition(0);
@@ -515,18 +516,18 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSeekTo(long pos) {
-            Log.d(TAG, "onSeekTo: " + pos);
+            Logger.getInstance().d(TAG, "onSeekTo: " + pos);
             mLocalPlayback.seekTo((int) pos);
         }
     };
 
     private void handlePauseRequest() {
-        Log.d(TAG, "handlePauseRequest: " + mLocalPlayback.getState());
+        Logger.getInstance().d(TAG, "handlePauseRequest: " + mLocalPlayback.getState());
         mLocalPlayback.pause(false);
     }
 
     private void handleStopRequest() {
-        Log.d(TAG, "handleStopRequest");
+        Logger.getInstance().d(TAG, "handleStopRequest");
         mLocalPlayback.stop(true);
         updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         updatePlaybackState();
@@ -535,15 +536,15 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     }
 
     private void handlePlayRequest() {
-        Log.d(TAG, "handlePlayRequest: " + mLocalPlayback.getState());
-        Log.d(TAG, "handlePlayRequest mServiceStarted : " + mServiceStarted);
+        Logger.getInstance().d(TAG, "handlePlayRequest: " + mLocalPlayback.getState());
+        Logger.getInstance().d(TAG, "handlePlayRequest mServiceStarted : " + mServiceStarted);
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
         if (!mServiceStarted) {
             // The MusicService needs to keep running even after the calling MediaBrowser
             // is disconnected. Call startService(Intent) and then stopSelf(..) when we no longer
             // need to play media.
-            Log.d(TAG, "handlePlayRequest: startService");
+            Logger.getInstance().d(TAG, "handlePlayRequest: startService");
             startService(new Intent(getApplicationContext(), PlayMusicService.class));
             mServiceStarted = true;
         }
@@ -568,7 +569,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             return;
         }
 
-        Log.d(TAG, "updateMetadata: " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        Logger.getInstance().d(TAG, "updateMetadata: " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mMediaSessionCompat.setMetadata(metadata);
     }
 
@@ -585,10 +586,10 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         @Override
         public void handleMessage(Message msg) {
             PlayMusicService playMusicService = mWeakReference.get();
-            Log.d(TAG, "handleMessage: ");
+            Logger.getInstance().d(TAG, "handleMessage: ");
             if (playMusicService != null && playMusicService.mLocalPlayback != null) {
                 if (playMusicService.mLocalPlayback.isPlaying()) {
-                    Log.d(TAG, "handleMessage: mLocalPlayback.isPlaying");
+                    Logger.getInstance().d(TAG, "handleMessage: mLocalPlayback.isPlaying");
                     return;
                 }
                 Log.w(TAG, "handleMessage: Stopping service with delay handler.");

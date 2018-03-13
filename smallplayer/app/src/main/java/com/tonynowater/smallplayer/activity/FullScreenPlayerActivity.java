@@ -24,6 +24,7 @@ import com.tonynowater.smallplayer.service.EnumPlayMode;
 import com.tonynowater.smallplayer.service.EqualizerType;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.TimeUtil;
 import com.tonynowater.smallplayer.view.CurrentPlayListAdapter;
@@ -50,16 +51,16 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
-        Log.d(TAG, "onPlaybackStateChanged: ");
+        Logger.getInstance().d(TAG, "onPlaybackStateChanged: ");
         if (state == null) {
-            Log.d(TAG, "onPlaybackStateChanged: state == null");
+            Logger.getInstance().d(TAG, "onPlaybackStateChanged: state == null");
             return;
         }
         updatePlaybackState(state);
     }
 
     private void updatePlaybackState(PlaybackStateCompat state) {
-        Log.d(TAG, "updatePlaybackState: ");
+        Logger.getInstance().d(TAG, "updatePlaybackState: ");
         mLastPlaybackState = state;
         mBinding.ivPlayPauseActivityFullScreenPlayer.setVisibility(View.VISIBLE);
         mBinding.progressBar.setVisibility(View.GONE);
@@ -83,7 +84,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
                 stopSeekbarUpdate();
                 break;
             default:
-                Log.d(TAG, "updatePlaybackState: unhandle state " + state.getState());
+                Logger.getInstance().d(TAG, "updatePlaybackState: unhandle state " + state.getState());
         }
 
         mCurrentPlayListAdapter.onPlaybackStateChanged(mLastPlaybackState);
@@ -94,7 +95,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     private void setRepeatButtonEnable(Bundle bundle) {
         if (bundle == null) {
-            Log.d(TAG, "setRepeatButtonEnable: bundle null");
+            Logger.getInstance().d(TAG, "setRepeatButtonEnable: bundle null");
             return;
         }
 
@@ -115,7 +116,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     private void setShuffleButtonEnable(Bundle bundle) {
 
         if (bundle == null) {
-            Log.d(TAG, "setShuffleButtonEnable: bundle null");
+            Logger.getInstance().d(TAG, "setShuffleButtonEnable: bundle null");
             return;
         }
 
@@ -144,7 +145,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     @Override
     protected void onSessionDestroyed() {
-        Log.d(TAG, "onSessionDestroyed: ");
+        Logger.getInstance().d(TAG, "onSessionDestroyed: ");
     }
 
     @Override
@@ -152,13 +153,13 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
         if (metadata == null) {
             return;
         }
-        Log.d(TAG, "onMetadataChanged: ");
+        Logger.getInstance().d(TAG, "onMetadataChanged: ");
         updateUI(metadata);
     }
 
     @Override
     protected void onMediaServiceConnected() {
-        Log.d(TAG, "onMediaServiceConnected: ");
+        Logger.getInstance().d(TAG, "onMediaServiceConnected: ");
         setShuffleButtonEnable(mMediaBrowserCompat.getExtras());
     }
 
@@ -169,7 +170,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     @Override
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
-        Log.d(TAG, "onChildrenLoaded: ");
+        Logger.getInstance().d(TAG, "onChildrenLoaded: ");
         setPlaylistNameToToolbarTitle();
         mCurrentPlayList.clear();
         mCurrentPlayList = new ArrayList<>(children);
@@ -186,7 +187,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     }
 
     private void updateUI(MediaMetadataCompat metadata) {
-        Log.d(TAG, "updateUI : " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        Logger.getInstance().d(TAG, "updateUI : " + metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mMediaMetaData = metadata;
         mBinding.tvCurrentSongActivityFullScreenPlayer.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         mBinding.tvEndTextActivityFullScreenPlayer.setText(TimeUtil.formatSongDuration((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
@@ -292,7 +293,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
         else {
-            Log.d(TAG, "updateProgress: 不更新SeekBar的狀態 " + mLastPlaybackState.getState());
+            Logger.getInstance().d(TAG, "updateProgress: 不更新SeekBar的狀態 " + mLastPlaybackState.getState());
         }
 
         mBinding.seekbarActivityFullScreenPlayer.setProgress((int) currentPosition);

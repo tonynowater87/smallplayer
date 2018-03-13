@@ -2,6 +2,8 @@ package com.tonynowater.smallplayer.module.dto.realm;
 
 import android.util.Log;
 
+import com.tonynowater.smallplayer.util.Logger;
+
 import io.realm.DynamicRealm;
 import io.realm.FieldAttribute;
 import io.realm.RealmMigration;
@@ -17,8 +19,8 @@ public class Migration implements RealmMigration {
     private static final String TAG = Migration.class.getSimpleName();
     @Override
     public void migrate(final DynamicRealm realm, long oldVersion, long newVersion) {
-        Log.d(TAG, "migrate old version : " + oldVersion);
-        Log.d(TAG, "migrate new version : " + newVersion);
+        Logger.getInstance().d(TAG, "migrate old version : " + oldVersion);
+        Logger.getInstance().d(TAG, "migrate new version : " + newVersion);
         // During a migration, a DynamicRealm is exposed. A DynamicRealm is an untyped variant of a normal Realm, but
         // with the same object creation and query capabilities.
         // A DynamicRealm uses Strings instead of Class references because the Classes might not even exist or have been

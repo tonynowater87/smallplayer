@@ -18,6 +18,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 
 import java.util.List;
@@ -107,13 +108,13 @@ public class EditPlayListActivity extends BaseMediaControlActivity<ActivityEditP
                         U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
                             @Override
                             public void onSuccess(String response) {
-                                Log.d(TAG, "onSuccess: " + response);
+                                Logger.getInstance().d(TAG, "onSuccess: " + response);
                                 showToast(response);
                             }
 
                             @Override
                             public void onFailure(String errorMsg) {
-                                Log.d(TAG, "onFailure: " + errorMsg);
+                                Logger.getInstance().d(TAG, "onFailure: " + errorMsg);
                                 showToast(errorMsg);
                             }
                         });

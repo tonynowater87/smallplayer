@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.databinding.LayoutU2bsuggestionAdapterListItemBinding;
+import com.tonynowater.smallplayer.util.Logger;
 
 /**
  * Created by tonynowater on 2017/6/6.
@@ -48,7 +49,7 @@ public class  CustomSearchAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         if (view == null || cursor == null) {
-            Log.d(TAG, "bindView: null");
+            Logger.getInstance().d(TAG, "bindView: null");
             return;
         }
 

@@ -18,6 +18,7 @@ import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BaseMediaControlFragment;
 import com.tonynowater.smallplayer.databinding.FragmentPlayerBinding;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.Logger;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -77,7 +78,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated: ");
+        Logger.getInstance().d(TAG, "onActivityCreated: ");
         mBinding.buttonPlay.setOnClickListener(mOnClickListener);
         mBinding.buttonNext.setOnClickListener(mOnClickListener);
         mBinding.buttonPrevious.setOnClickListener(mOnClickListener);
@@ -100,7 +101,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
-        Log.d(TAG, "onPlaybackStateChanged: " + state);
+        Logger.getInstance().d(TAG, "onPlaybackStateChanged: " + state);
         if (state == null) {
             return;
         }
@@ -114,7 +115,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
      * @param state
      */
     private void updateState(PlaybackStateCompat state) {
-        Log.d(TAG, "updateState : " + mPlaybackStateCompat);
+        Logger.getInstance().d(TAG, "updateState : " + mPlaybackStateCompat);
 
         if (mPlaybackStateCompat == null) {
             return;
@@ -145,7 +146,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
                 break;
         }
 
-        Log.d(TAG, "updateState: " + state.getState());
+        Logger.getInstance().d(TAG, "updateState: " + state.getState());
     }
 
     private void startScheduledUpdateProgress() {
@@ -179,7 +180,7 @@ public class PlayerFragment extends BaseMediaControlFragment<FragmentPlayerBindi
 
     @Override
     protected void onMetadataChanged(MediaMetadataCompat metadata) {
-        Log.d(TAG, "onMetadataChanged: " + (metadata == null));
+        Logger.getInstance().d(TAG, "onMetadataChanged: " + (metadata == null));
         if (metadata == null) {
             setUIWhenPlayListSongEntityNull();
             return;

@@ -82,11 +82,11 @@ public final class AlbumArtCache {
         // a proper image loading library, like Glide.
         Bitmap[] bitmap = mCache.get(artUrl);
         if (bitmap != null) {
-            Log.d(TAG, "getOrFetch: album art is in cache, using it " + artUrl);
+            Logger.getInstance().d(TAG, "getOrFetch: album art is in cache, using it " + artUrl);
             listener.onFetched(artUrl, bitmap[BIG_BITMAP_INDEX], bitmap[ICON_BITMAP_INDEX]);
             return;
         }
-        Log.d(TAG, "getOrFetch: starting asynctask to fetch " + artUrl);
+        Logger.getInstance().d(TAG, "getOrFetch: starting asynctask to fetch " + artUrl);
 
         new AsyncTask<Void, Void, Bitmap[]>() {
             @Override
@@ -102,7 +102,7 @@ public final class AlbumArtCache {
                 } catch (IOException e) {
                     return null;
                 }
-                Log.d(TAG, "doInBackground: putting bitmap in cache. cache size=" +
+                Logger.getInstance().d(TAG, "doInBackground: putting bitmap in cache. cache size=" +
                     mCache.size());
                 return bitmaps;
             }

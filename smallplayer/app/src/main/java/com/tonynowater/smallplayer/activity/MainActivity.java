@@ -23,6 +23,7 @@ import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 import com.tonynowater.smallplayer.view.SearchViewComponent;
 
@@ -45,17 +46,17 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
 
     @Override
     protected void onPlaybackStateChanged(PlaybackStateCompat state) {
-        Log.d(TAG, "onPlaybackStateChanged: " + state);
+        Logger.getInstance().d(TAG, "onPlaybackStateChanged: " + state);
     }
 
     @Override
     protected void onSessionDestroyed() {
-        Log.d(TAG, "onSessionDestroyed: ");
+        Logger.getInstance().d(TAG, "onSessionDestroyed: ");
     }
 
     @Override
     protected void onMetadataChanged(MediaMetadataCompat metadata) {
-        Log.d(TAG, "onMetadataChanged: ");
+        Logger.getInstance().d(TAG, "onMetadataChanged: ");
     }
 
     @Override
@@ -94,13 +95,13 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "onCreateOptionsMenu: ");
+        Logger.getInstance().d(TAG, "onCreateOptionsMenu: ");
         getMenuInflater().inflate(R.menu.menu_main, menu);
         mSearchViewComponent = new SearchViewComponent(this, menu, getComponentName());
         mSearchViewComponent.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d(TAG, "onQueryTextSubmit: " + query);
+                Logger.getInstance().d(TAG, "onQueryTextSubmit: " + query);
                 return false;//return false才能讓search執行預設搜尋 => 從onNewIntent處理Query的字串
             }
 
@@ -138,7 +139,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d(TAG, "onNewIntent:");
+        Logger.getInstance().d(TAG, "onNewIntent:");
         setIntent(intent);//一定要先setIntent才能收到
         if (mSearchViewComponent != null) {
             // FIXME: 2017/10/21 因為OnNewIntent有可能會比OnCreateOptionMenu早執行，先暫時這樣處理防NPE
@@ -193,13 +194,13 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                         U2BApi.newInstance().downloadMP3FromU2B(playListSongEntity, new U2BApi.OnMsgRequestCallback() {
                             @Override
                             public void onSuccess(String response) {
-                                Log.d(TAG, "onSuccess: " + response);
+                                Logger.getInstance().d(TAG, "onSuccess: " + response);
                                 showToast(response);
                             }
 
                             @Override
                             public void onFailure(String errorMsg) {
-                                Log.d(TAG, "onFailure: " + errorMsg);
+                                Logger.getInstance().d(TAG, "onFailure: " + errorMsg);
                                 showToast(errorMsg);
                             }
                         });
@@ -243,7 +244,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
 
     @Override
     public void onPageSelected(int position) {
-        Log.d(TAG, "onPageSelected: " + position);
+        Logger.getInstance().d(TAG, "onPageSelected: " + position);
         mBinding.toolbar.appbarLayoutMainActivity.setExpanded(true, true);
         switch (position) {
             case MainFunctionViewPagerFragment.U2B_LIST_POSITION:

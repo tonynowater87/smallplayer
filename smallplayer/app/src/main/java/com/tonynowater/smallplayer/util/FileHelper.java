@@ -66,7 +66,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (TextUtils.equals(intent.getAction(), ACTION_STOP_DOWNLOAD)) {
-                    Log.d(TAG, "onReceive: stop download");
+                    Logger.getInstance().d(TAG, "onReceive: stop download");
                     unregister();
                     dismissProgressNotification();
                     FileHelper.this.cancel(true);
@@ -112,14 +112,14 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
             String filePath = mPath + mFileName;
 
-            Log.d(TAG, "saveFile mPath : " + mPath);
-            Log.d(TAG, "saveFile file : " + filePath);
+            Logger.getInstance().d(TAG, "saveFile mPath : " + mPath);
+            Logger.getInstance().d(TAG, "saveFile file : " + filePath);
             File file = new File(mPath);
 
-            Log.d(TAG, "saveFile isDir : " + file.isDirectory());
+            Logger.getInstance().d(TAG, "saveFile isDir : " + file.isDirectory());
 
             if (!file.isDirectory()) {
-                Log.d(TAG, "saveFile createDir : " + filePath);
+                Logger.getInstance().d(TAG, "saveFile createDir : " + filePath);
                 file.mkdir();
             }
 
@@ -153,7 +153,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
         }
 
-        Log.d(TAG, "saveFile save success : " + bRet);
+        Logger.getInstance().d(TAG, "saveFile save success : " + bRet);
         return bRet;
     }
 
@@ -167,7 +167,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
         long completeCount = 0;
         long readCount = 0;
         long limit = 10000;
-        Log.d(TAG, "handleWrites contentLengh : " + contentLength);
+        Logger.getInstance().d(TAG, "handleWrites contentLengh : " + contentLength);
         while (readCount != -1) {
             readCount = source.read(bufferedSink.buffer(), BYTE_READ);
             completeCount += readCount;
@@ -175,7 +175,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
             //show every 50kb
             if (completeCount > limit) {
                 limit += 50000;
-                Log.d(TAG, "handleWrites total count : " + completeCount);
+                Logger.getInstance().d(TAG, "handleWrites total count : " + completeCount);
                 publishProgress((int) (100 * completeCount/contentLength));
             }
         }
@@ -183,7 +183,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected void onProgressUpdate(Integer... values) {
-        Log.d(TAG, "onProgressUpdate: " + values[0]);
+        Logger.getInstance().d(TAG, "onProgressUpdate: " + values[0]);
         showProgressNotification(values[0]);
     }
 
@@ -194,7 +194,7 @@ public class FileHelper extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean bResult) {
-        Log.d(TAG, "onPostExecute: " + bResult);
+        Logger.getInstance().d(TAG, "onPostExecute: " + bResult);
         dismissProgressNotification();
         unregister();
         if (bResult) {

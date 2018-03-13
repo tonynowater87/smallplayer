@@ -24,6 +24,7 @@ import com.tonynowater.smallplayer.fragment.u2bsearch.U2BSearchViewPagerFragment
 import com.tonynowater.smallplayer.module.GoogleSearchSuggestionProvider;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class SearchViewComponent {
     }
 
     public boolean onQueryTextChange(String newText) {
-        Log.d(TAG, "onQueryTextChange: " + newText);
+        Logger.getInstance().d(TAG, "onQueryTextChange: " + newText);
         BaseViewPagerFragment baseViewPagerFragment = mOnSearchViewComponentCallback.getCurrentBaseViewPagerFragment();
         if (baseViewPagerFragment instanceof U2BSearchViewPagerFragment) {
             mCurrentQueryText = newText;
@@ -191,7 +192,7 @@ public class SearchViewComponent {
                 if (baseViewPagerFragments[i] instanceof SongListViewPagerFragment)
                     continue;
                 String query = intent.getStringExtra(SearchManager.QUERY);
-                Log.d(TAG, "onNewIntent query: " + query);
+                Logger.getInstance().d(TAG, "onNewIntent query: " + query);
                 baseViewPagerFragments[i].queryBySearchView(query);
                 mSearchRecentSuggestions.saveRecentQuery(query, null);
                 mSearchView.clearFocus();//防搜尋完鍵盤會彈起來

@@ -94,7 +94,7 @@ public class DialogUtil {
             PlayListEntity playListEntity;
             for (int i = 0; i < integers.length; i++) {
                 playListEntity = playListEntities.get(integers[i]);
-                Log.d(TAG, "onSelection : " + playListEntity.getPlayListName());
+                Logger.getInstance().d(TAG, "onSelection : " + playListEntity.getPlayListName());
                 realmUtils.addSongToPlayList(playListEntity.getId(), playable.getPlayListSongEntity());
                 if (playListEntity.getId() == realmUtils.queryCurrentPlayListID()) {
                     //若有加入目前播放歌單，則更新目前播放歌單
@@ -350,7 +350,7 @@ public class DialogUtil {
 //            @Override
 //            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
 //                final String playlistName = userU2BListEntities.get(i).toString();
-//                Log.d(TAG, "onSelection: " + playlistName);
+//                Logger.getInstance().d(TAG, "onSelection: " + playlistName);
 //                U2BApi.newInstance().queryU2BPlayListVideo(userU2BListEntities.get(i).getListId(), authToken, new Callback() {
 //                    @Override
 //                    public void onFailure(Request request, IOException e) {
@@ -360,7 +360,7 @@ public class DialogUtil {
 //                    @Override
 //                    public void onResponse(Response response) throws IOException {
 //                        String sResponse = response.body().string();
-//                        Log.d(TAG, "onResponse body: " + sResponse);
+//                        Logger.getInstance().d(TAG, "onResponse body: " + sResponse);
 //                        if (response.isSuccessful()) {
 //                            processPlayListVideoList(playlistName, sResponse);
 //                        } else {
@@ -385,7 +385,7 @@ public class DialogUtil {
 //                    public void onResponse(Response response) throws IOException {
 //                        if (response.isSuccessful()) {
 //                            String sResponse = response.body().string();
-//                            Log.d(TAG, "onResponse body: " + sResponse);
+//                            Logger.getInstance().d(TAG, "onResponse body: " + sResponse);
 //                            U2BVideoDurationDTO u2BVideoDurationDTO = new Gson().fromJson(sResponse, U2BVideoDurationDTO.class);
 //                            MiscellaneousUtil.processDuration(u2BVideoDurationDTO, mU2bPlayListVideoDTO.getItems());
 //                            baseActivity.runOnUiThread(new Runnable() {

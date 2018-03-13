@@ -20,6 +20,7 @@ import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.module.u2b.util.BaseQueryArrayList;
 import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
 import com.tonynowater.smallplayer.module.u2b.util.U2BUserListQueryArrayList;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 import com.tonynowater.smallplayer.util.SPManager;
 import com.tonynowater.smallplayer.util.google.GoogleLoginUtil;
@@ -127,7 +128,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: ");
+        Logger.getInstance().d(TAG, "onActivityResult: ");
         mGoogleLoginUtil.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -141,13 +142,13 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
         mBinding.recyclerviewU2bsearchfragment.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                Log.d(TAG, "onScrollStateChanged: " + newState);
+                Logger.getInstance().d(TAG, "onScrollStateChanged: " + newState);
                 super.onScrollStateChanged(recyclerView, newState);
                 //滑到底部的時候做加載
                 if (lastCompletelyVisibleItemPosition + 5 >= mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (!isLoad) {
                         if (TextUtils.isEmpty(mU2BUserListQueryArray.getNextPageToken())) {
-                            Log.d(TAG, "onScrollStateChanged: token null");
+                            Logger.getInstance().d(TAG, "onScrollStateChanged: token null");
                             mSongListAdapter.setFootviewVisible(false);
                             mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                         } else {
@@ -161,7 +162,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 lastCompletelyVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-                Log.d(TAG, "onScrolled: " + lastCompletelyVisibleItemPosition);
+                Logger.getInstance().d(TAG, "onScrolled: " + lastCompletelyVisibleItemPosition);
                 super.onScrolled(recyclerView, dx, dy);
             }
         });

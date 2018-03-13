@@ -21,6 +21,7 @@ import com.tonynowater.smallplayer.databinding.LayoutMainFunctionViewPagerFragme
 import com.tonynowater.smallplayer.fragment.songlist.SongListViewPagerFragment;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.util.DialogUtil;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 
@@ -58,7 +59,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnMainFunctionViewPagerFragmentInterface) {
-            Log.d(TAG, "onAttach: ");
+            Logger.getInstance().d(TAG, "onAttach: ");
             mOnMainFunctionViewPagerFragmentInterface = (OnMainFunctionViewPagerFragmentInterface) context;
         }
     }
@@ -70,7 +71,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
 
             @Override
             public void onPermissionGranted() {
-                Log.d(TAG, "onPermissionGranted: ");
+                Logger.getInstance().d(TAG, "onPermissionGranted: ");
                 mBaseViewPagerFragments = new BaseViewPagerFragment[]{SongListViewPagerFragment.newInstance()
                         , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
                         , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)
@@ -80,7 +81,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
 
             @Override
             public void onPermissionNotGranted() {
-                Log.d(TAG, "onPermissionNotGranted: ");
+                Logger.getInstance().d(TAG, "onPermissionNotGranted: ");
                 showToast(getString(R.string.no_permission_warning_msg));
                 mBaseViewPagerFragments = new BaseViewPagerFragment[]{U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_video), EnumU2BSearchType.VIDEO)
                         , U2BSearchViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_search_playlist), EnumU2BSearchType.PLAYLIST)

@@ -102,7 +102,7 @@ public class U2BApi {
                 public void onResponse(Response response) throws IOException {
                     if (response.isSuccessful()) {
                         String res = response.body().string();
-                        Log.d(TAG, "onResponse: " + res);
+                        Logger.getInstance().d(TAG, "onResponse: " + res);
                         Gson gson = new Gson();
                         U2BVideoDTO u2BVideoDTO = gson.fromJson(res, U2BVideoDTO.class);
                         List<PlayListSongEntity> listEntities = new ArrayList<>();
@@ -146,7 +146,7 @@ public class U2BApi {
                 public void onResponse(Response response) throws IOException {
                     if (response.isSuccessful()) {
                         String res = response.body().string();
-                        Log.d(TAG, "onResponse: " + res);
+                        Logger.getInstance().d(TAG, "onResponse: " + res);
                         Gson gson = new Gson();
                         U2BPlayListDTO userPlayListDTO = gson.fromJson(res, U2BPlayListDTO.class);
                         List<U2BUserPlayListEntity> listEntities = new ArrayList<>();
@@ -186,7 +186,7 @@ public class U2BApi {
                         public void onResponse(Response response) throws IOException {
                             if (response.isSuccessful()) {
                                 String res = response.body().string();
-                                Log.d(TAG, "onResponse: " + res);
+                                Logger.getInstance().d(TAG, "onResponse: " + res);
                                 Gson gson = new Gson();
                                 U2bPlayListVideoDTO u2bPlayListVideoDTO = gson.fromJson(res, U2bPlayListVideoDTO.class);
                                 List<PlayListSongEntity> listEntities = new ArrayList<>();
@@ -328,7 +328,7 @@ public class U2BApi {
             public void onResponse(Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String res = response.body().string();
-                    Log.d(TAG, "onResponse: " + res);
+                    Logger.getInstance().d(TAG, "onResponse: " + res);
                     Gson gson = new Gson();
                     U2BUserPlayListDTO userPlayListDTO = gson.fromJson(res, U2BUserPlayListDTO.class);
                     List<U2BUserPlayListEntity> listEntities = new ArrayList<>();
@@ -372,7 +372,7 @@ public class U2BApi {
                 .url(url)
                 .build();
 
-        Log.d(TAG, "sendHttpRequest:" + request.toString());
+        Logger.getInstance().d(TAG, "sendHttpRequest:" + request.toString());
         mOkHttp.newCall(request).enqueue(callback);
     }
 
@@ -389,7 +389,7 @@ public class U2BApi {
                 .url(queryParamsItem.getUrl())
                 .build();
 
-        Log.d(TAG, "sendHttpRequest:" + request.toString());
+        Logger.getInstance().d(TAG, "sendHttpRequest:" + request.toString());
         mOkHttp.newCall(request).enqueue(callback);
     }
 
@@ -414,7 +414,7 @@ public class U2BApi {
                 .url(AUTH_SERVER_TOKEN)
                 .build();
 
-        Log.d(TAG, "getYoutubeToken: " + request.toString());
+        Logger.getInstance().d(TAG, "getYoutubeToken: " + request.toString());
         mOkHttp.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -425,7 +425,7 @@ public class U2BApi {
             public void onResponse(Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String body = response.body().string();
-                    Log.d(TAG, "onResponse: " + body);
+                    Logger.getInstance().d(TAG, "onResponse: " + body);
                     U2BAccessTokenDTO dto = new Gson().fromJson(body, U2BAccessTokenDTO.class);
                     SPManager.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
                     SPManager.getInstance(MyApplication.getContext()).setRefreshToken(dto.refresh_token);
@@ -459,7 +459,7 @@ public class U2BApi {
                 .url(AUTH_SERVER_TOKEN)
                 .build();
 
-        Log.d(TAG, "refreshYoutubeToken: " + request.toString());
+        Logger.getInstance().d(TAG, "refreshYoutubeToken: " + request.toString());
         mOkHttp.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -470,7 +470,7 @@ public class U2BApi {
             public void onResponse(Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String body = response.body().string();
-                    Log.d(TAG, "onResponse: " + body);
+                    Logger.getInstance().d(TAG, "onResponse: " + body);
                     U2BAccessTokenDTO dto = new Gson().fromJson(body, U2BAccessTokenDTO.class);
                     SPManager.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
                     SPManager.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));

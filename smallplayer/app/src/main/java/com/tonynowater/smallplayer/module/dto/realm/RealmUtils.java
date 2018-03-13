@@ -13,6 +13,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListEntity;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.util.DateUtil;
+import com.tonynowater.smallplayer.util.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -122,7 +123,7 @@ public class RealmUtils implements Closeable{
         param.put(PlayListSongDAO.COLUMN_TITLE, playListSong.getTitle());
         List<PlayListSongEntity> listSongEntities = playListSongDAO.query(DBQueryResult.Copy, DBQueryCondition.EqualTo, param);
         if (listSongEntities.size() > 0) {
-            Log.d(TAG, "addSongToPlayList: 重覆加入 " + playListSong.getTitle());
+            Logger.getInstance().d(TAG, "addSongToPlayList: 重覆加入 " + playListSong.getTitle());
             return listSongEntities.get(0).getId();
         }
 
@@ -163,7 +164,7 @@ public class RealmUtils implements Closeable{
         params.put(PlayListSongDAO.COLUMN_LIST_ID, playListEntity.getId());
         List<PlayListSongEntity> playListSongEntities = playListSongDAO.query(DBQueryResult.NotCopy, DBQueryCondition.EqualTo, params);
         for (PlayListSongEntity entity : playListSongEntities) {
-            //Log.d(TAG, "deletePlayList: " + entity.getTitle());
+            //Logger.getInstance().d(TAG, "deletePlayList: " + entity.getTitle());
             playListSongDAO.delete(entity);
         }
         playListDAO.delete(playListEntity);
@@ -175,8 +176,8 @@ public class RealmUtils implements Closeable{
      * @param to
      */
     public void updatePlayListPosition(PlayListEntity from, PlayListEntity to) {
-        Log.d(TAG, "updatePlayListPosition: from:" + from.getPosition());
-        Log.d(TAG, "updatePlayListPosition: to:" + to.getPosition());
+        Logger.getInstance().d(TAG, "updatePlayListPosition: from:" + from.getPosition());
+        Logger.getInstance().d(TAG, "updatePlayListPosition: to:" + to.getPosition());
         int fromPosition = from.getPosition();
         from.setPosition(to.getPosition());
         to.setPosition(fromPosition);
@@ -251,7 +252,7 @@ public class RealmUtils implements Closeable{
             playable = playableList.get(i);
             if (playable.isDeletedOrPrivatedVideo()) {
                 //不要加入Private Video或Delete Video
-                Log.d(TAG, "addSongsToPlayList isDeletedOrPrivatedVideo : " + i);
+                Logger.getInstance().d(TAG, "addSongsToPlayList isDeletedOrPrivatedVideo : " + i);
                 continue;
             }
             addSongToPlayList(playlistId, playableList.get(i).getPlayListSongEntity());

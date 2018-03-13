@@ -22,6 +22,7 @@ import com.tonynowater.smallplayer.module.u2b.util.U2BPlayListVideoQueryArray;
 import com.tonynowater.smallplayer.module.u2b.util.U2BQueryParamsItem;
 import com.tonynowater.smallplayer.module.u2b.util.U2BVideoQUeryArray;
 import com.tonynowater.smallplayer.util.DateUtil;
+import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
 import java.util.List;
@@ -91,7 +92,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             U2BQueryParamsItem queryParamsItem = new U2BQueryParamsItem(mEnumU2BSearchType, query, mIsNeedAuthToken);
             switch (mEnumU2BSearchType) {
                 case VIDEO:
-                    Log.d(TAG, "queryBySearchView: search video" );
+                    Logger.getInstance().d(TAG, "queryBySearchView: search video" );
                     if (u2BVideoQUeryArray == null) {
                         u2BVideoQUeryArray = new U2BVideoQUeryArray<>(queryParamsItem, this);
                     } else {
@@ -101,7 +102,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     u2BVideoQUeryArray.query();
                     break;
                 case PLAYLIST:
-                    Log.d(TAG, "queryBySearchView: search playlist" );
+                    Logger.getInstance().d(TAG, "queryBySearchView: search playlist" );
                     if (u2BPlayListQueryArray == null) {
                         u2BPlayListQueryArray = new U2BPlayListQueryArray<>(queryParamsItem, this);
                     } else {
@@ -111,7 +112,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                     u2BPlayListQueryArray.query();
                     break;
                 case PLAYLISTVIDEO:
-                    Log.d(TAG, "queryBySearchView: search playlistvideo" );
+                    Logger.getInstance().d(TAG, "queryBySearchView: search playlistvideo" );
                     if (u2BPlayListVideoQueryArray == null) {
                         u2BPlayListVideoQueryArray = new U2BPlayListVideoQueryArray<>(queryParamsItem, this);
                     } else {
@@ -199,7 +200,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
         mBinding.recyclerviewU2bsearchfragment.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                Log.d(TAG, "onScrollStateChanged: " + newState);
+                Logger.getInstance().d(TAG, "onScrollStateChanged: " + newState);
                 super.onScrollStateChanged(recyclerView, newState);
                 //滑到底部的時候做加載
                 if (lastCompletelyVisibleItemPosition + 5 >= mSongListAdapter.getItemCount() && newState == RecyclerView.SCROLL_STATE_IDLE) {
@@ -207,7 +208,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                         switch (mEnumU2BSearchType) {
                             case VIDEO:
                                 if (TextUtils.isEmpty(u2BVideoQUeryArray.getNextPageToken())) {
-                                    Log.d(TAG, "onScrollStateChanged: token null");
+                                    Logger.getInstance().d(TAG, "onScrollStateChanged: token null");
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
@@ -217,7 +218,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                 break;
                             case PLAYLIST:
                                 if (TextUtils.isEmpty(u2BPlayListQueryArray.getNextPageToken())) {
-                                    Log.d(TAG, "onScrollStateChanged: token null");
+                                    Logger.getInstance().d(TAG, "onScrollStateChanged: token null");
                                     mSongListAdapter.setFootviewVisible(false);
                                     mSongListAdapter.notifyItemChanged(mSongListAdapter.getItemCount());
                                 } else {
@@ -226,7 +227,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                                 }
                                 break;
                             default:
-                                Log.d(TAG, "onScrollStateChanged : DoNothing " + mEnumU2BSearchType.name());
+                                Logger.getInstance().d(TAG, "onScrollStateChanged : DoNothing " + mEnumU2BSearchType.name());
                         }
                     }
                 }
@@ -235,7 +236,7 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 lastCompletelyVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-                Log.d(TAG, "onScrolled: " + lastCompletelyVisibleItemPosition);
+                Logger.getInstance().d(TAG, "onScrolled: " + lastCompletelyVisibleItemPosition);
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
