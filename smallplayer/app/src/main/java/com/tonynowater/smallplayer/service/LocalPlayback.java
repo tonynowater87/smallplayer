@@ -284,14 +284,6 @@ public class LocalPlayback implements Playback
             return;
         }
 
-        //取消前一首取Youtube的AsyncTask
-        if (mYoutubeExtratorAsyncTask != null) {
-            if (!mYoutubeExtratorAsyncTask.isCancelled()) {
-                Logger.getInstance().d(TAG, "play: mYoutubeExtratorAsyncTask.cancel(true)");
-                mYoutubeExtratorAsyncTask.cancel(true);
-            }
-        }
-
         if (mCurrentSongStreamPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
             //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
             Logger.getInstance().d(TAG, "pause and play position : " + trackPosition);
