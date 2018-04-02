@@ -23,6 +23,7 @@ import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
 import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
 
 import java.io.IOException;
+// TODO: 2018/3/13 暫停取到的時間不正確，需更換ExoPlayer解決
 // TODO: 2017/9/2 連結藍芽耳機播放音樂時，縮小App將手機螢幕關閉，關閉藍芽耳機，會出現音樂繼續播放的問題
 // TODO: 2017/8/22 音頻柱狀圖 http://blog.csdn.net/topgun_chenlingyun/article/details/7663849
 // TODO: 2017/8/20 找到音樂播放的聲音大小不一致的問題解法 https://stackoverflow.com/questions/37046343/dsp-digital-sound-processing-with-android-media-player
@@ -124,15 +125,14 @@ public class LocalPlayback implements Playback
     private void configureMediaPlayerByAudioFocus() {
         Logger.getInstance().d(TAG, "configureMediaPlayerByAudioFocus: " + mAudioFocus);
         if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED
-         || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS
-         || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+         || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS) {
             if (isPlaying()) {
-                if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                    //電話播打進來會進這一個
-                    pause(true);
-                } else {
-                    pause(false);
-                }
+                pause(false);
+            }
+        } else if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            //電話播打進來時會觸發的焦點狀態
+            if (isPlaying()) {
+                pause(true);
             }
         } else {
             if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
@@ -363,6 +363,7 @@ public class LocalPlayback implements Playback
         }
 
         mPlayOnFocusGain = bAudoPlayWhenGetFocus;
+        giveUpAudioFocus();
         mState = PlaybackStateCompat.STATE_PAUSED;
         mPlaybackCallback.onPlaybackStateChanged();
     }
