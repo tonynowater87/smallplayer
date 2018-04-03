@@ -28,7 +28,7 @@ import com.tonynowater.smallplayer.util.FileHelper;
 import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.SPManager;
-import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
+import com.tonynowater.smallplayer.util.YoutubeExtractorUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -263,14 +263,14 @@ public class U2BApi {
     }
 
     /**
-     * 透過{@link com.tonynowater.smallplayer.util.YoutubeExtratorUtil}做到下載的功能
+     * 透過{@link YoutubeExtractorUtil}做到下載的功能
      * @param playable
      * @param callback
      */
     public void downloadMP3FromU2B(Playable playable, final OnMsgRequestCallback callback) {
         final PlayListSongEntity playListSongEntity = playable.getPlayListSongEntity();
         if (TextUtils.equals(MetaDataCustomKeyDefine.ISNOTLOCAL,playListSongEntity.getIsLocal())) {
-            YoutubeExtratorUtil youtubeExtratorUtil = new YoutubeExtratorUtil(MyApplication.getContext(), new YoutubeExtratorUtil.CallBack() {
+            YoutubeExtractorUtil youtubeExtractorUtil = new YoutubeExtractorUtil(MyApplication.getContext(), new YoutubeExtractorUtil.CallBack() {
                 @Override
                 public void onSuccess(String url) {
                     sendHttpRequest(url, new Callback(){
@@ -303,7 +303,7 @@ public class U2BApi {
                     callback.onFailure(MyApplication.getMyString(R.string.downloadMP3_banned_msg));
                 }
             });
-            youtubeExtratorUtil.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, playListSongEntity.getMediaMetadata().getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
+            youtubeExtractorUtil.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, playListSongEntity.getMediaMetadata().getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         }
     }
 

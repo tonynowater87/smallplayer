@@ -11,7 +11,7 @@ import at.huber.youtubeExtractor.YtFile;
 /**
  * Created by tonyliao on 2017/5/1.
  */
-public class YoutubeExtratorUtil extends YouTubeExtractor{
+public class YoutubeExtractorUtil extends YouTubeExtractor{
 
     private static final String TAG = YouTubeExtractor.class.getSimpleName();
 
@@ -23,7 +23,7 @@ public class YoutubeExtratorUtil extends YouTubeExtractor{
     private CallBack callBack;
     private boolean running = true;
 
-    public YoutubeExtratorUtil(Context context, CallBack callBack) {
+    public YoutubeExtractorUtil(Context context, CallBack callBack) {
         super(context);
         this.callBack = callBack;
     }

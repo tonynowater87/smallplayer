@@ -19,10 +19,11 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.Logger;
-import com.tonynowater.smallplayer.util.YoutubeExtratorUtil;
+import com.tonynowater.smallplayer.util.YoutubeExtractorUtil;
 import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
 
 import java.io.IOException;
+import java.util.Locale;
 // TODO: 2018/3/13 暫停取到的時間不正確，需更換ExoPlayer解決
 // TODO: 2017/9/2 連結藍芽耳機播放音樂時，縮小App將手機螢幕關閉，關閉藍芽耳機，會出現音樂繼續播放的問題
 // TODO: 2017/8/22 音頻柱狀圖 http://blog.csdn.net/topgun_chenlingyun/article/details/7663849
@@ -34,7 +35,6 @@ import java.io.IOException;
  * Created by tonyliao on 2017/5/12.
  */
 public class LocalPlayback implements Playback
-        , AudioManager.OnAudioFocusChangeListener
         , MediaPlayer.OnCompletionListener
         , MediaPlayer.OnErrorListener
         , MediaPlayer.OnPreparedListener
@@ -44,8 +44,15 @@ public class LocalPlayback implements Playback
     private static final String TAG = LocalPlayback.class.getSimpleName();
     private static final float VOLUME_DOCK = 0.2f;
     private static final float VOLUME_NORMAL = 1.0f;
+    // we don't have audio focus, and can't duck (play at a low volume)
+    private static final int AUDIO_NO_FOCUS_NO_DUCK = 0;
+    // we don't have focus, but can duck (play at a low volume)
+    private static final int AUDIO_NO_FOCUS_CAN_DUCK = 1;
+    // we have full audio focus
+    private static final int AUDIO_FOCUSED = 2;
+
     private PlayMusicService mPlayMusicService;
-    private WifiManager.WifiLock mWifiLock;
+    //private WifiManager.WifiLock mWifiLock;
     private AudioManager mAudioManager;
     private int mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
     private int mState = PlaybackStateCompat.STATE_NONE;
@@ -56,17 +63,16 @@ public class LocalPlayback implements Playback
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
     private Equalizer mEqualizer;
-    private YoutubeExtratorUtil mYoutubeExtratorAsyncTask;
     private boolean mAudioNoisyReceiverRegistered = false;
     private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private final BroadcastReceiver mAudioNoisyReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == intent.getAction()) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 //耳機拔掉的事件
                 Logger.getInstance().d(TAG, "onReceive: " + isPlaying());
                 if (isPlaying()) {
-                    pause(false);
+                    pause();
                 }
             }
         }
@@ -75,12 +81,12 @@ public class LocalPlayback implements Playback
     private String mCurrentPlayId;//目前正在播放歌曲的Id
     private EqualizerType mEqualizerType = EqualizerType.STANDARD;
 
-    public LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
+    LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
         this.mMusicProvider = mMusicProvider;
         this.mPlaybackCallback = mPlaybackCallback;
         mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
-        mWifiLock = ((WifiManager) mPlayMusicService.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+        //mWifiLock = ((WifiManager) mPlayMusicService.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     }
 
     /**
@@ -89,11 +95,11 @@ public class LocalPlayback implements Playback
     private void tryToGetAudioFocus() {
         Logger.getInstance().d(TAG, "tryToGetAudioFocus: " + mAudioNoisyReceiverRegistered);
         registerAudioNoisyReceiver();
-        int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        int result = mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+            mAudioFocus = AUDIO_FOCUSED;
         } else {
-            mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
+            mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
         }
     }
 
@@ -103,8 +109,8 @@ public class LocalPlayback implements Playback
     private void giveUpAudioFocus() {
         Logger.getInstance().d(TAG, "giveUpAudioFocus: " + mAudioNoisyReceiverRegistered);
         unregisterAudioNoisyReceiver();
-        if (mAudioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
+        if (mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
         }
     }
 
@@ -124,21 +130,19 @@ public class LocalPlayback implements Playback
 
     private void configureMediaPlayerByAudioFocus() {
         Logger.getInstance().d(TAG, "configureMediaPlayerByAudioFocus: " + mAudioFocus);
-        if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED
-         || mAudioFocus == AudioManager.AUDIOFOCUS_LOSS) {
-            if (isPlaying()) {
-                pause(false);
-            }
-        } else if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-            //電話播打進來時會觸發的焦點狀態
-            if (isPlaying()) {
-                pause(true);
-            }
+
+        if (mAudioFocus == AUDIO_NO_FOCUS_NO_DUCK) {
+            pause();
         } else {
-            if (mAudioFocus == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+            if (mAudioFocus == AUDIO_NO_FOCUS_CAN_DUCK) {
                 setMediaPlayerVolume(VOLUME_DOCK);
             } else {
                 setMediaPlayerVolume(VOLUME_NORMAL);
+            }
+
+            if (mPlayOnFocusGain) {
+                play(mCurrentTrackPosition);
+                mPlayOnFocusGain = false;
             }
         }
     }
@@ -149,32 +153,35 @@ public class LocalPlayback implements Playback
         }
     }
 
-    @Override
-    public void onAudioFocusChange(int focusChange) {
-        Logger.getInstance().d(TAG, "onAudioFocusChange: " + focusChange);
+    private AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            Logger.getInstance().d(TAG, "onAudioFocusChange: " + focusChange);
 
-        switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_GAIN:
-                mAudioFocus = AudioManager.AUDIOFOCUS_GAIN;
-                if (mPlayOnFocusGain) {
-                    play(mCurrentTrackPosition);
-                }
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS:
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                mAudioFocus = focusChange;
-                if (mState == PlaybackStateCompat.STATE_PLAYING) {
-                    mPlayOnFocusGain = true;
-                    mCurrentSongStreamPosition = mMediaPlayer.getCurrentPosition();
-                }
-                break;
-            default:
-                Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
+            switch (focusChange) {
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    mAudioFocus = AUDIO_FOCUSED;
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    //電話播打進來時會觸發的焦點狀態
+                    mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
+                    mPlayOnFocusGain = isPlaying();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    mAudioFocus = focusChange;
+                    break;
+                default:
+                    Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
+            }
+
+            if (mMediaPlayer != null) {
+                configureMediaPlayerByAudioFocus();
+            }
         }
-
-        configureMediaPlayerByAudioFocus();
-    }
+    };
 
     @Override
     public void onCompletion(MediaPlayer mp) {
@@ -238,7 +245,7 @@ public class LocalPlayback implements Playback
 
     @Override
     public boolean isPlaying() {
-        return mState == PlaybackStateCompat.STATE_PLAYING || mState == PlaybackStateCompat.STATE_BUFFERING ? true : false;
+        return mState == PlaybackStateCompat.STATE_PLAYING || mState == PlaybackStateCompat.STATE_BUFFERING;
     }
 
     @Override
@@ -269,7 +276,7 @@ public class LocalPlayback implements Playback
         }
 
         //沒有網路
-        if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat) == false
+        if (!MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)
                 && !SNetworkInfo.INSTANCE.isNetworkAvailable()) {
             stop(true);
             mPlaybackCallback.onError(MyApplication.getMyString(R.string.no_network_msg));
@@ -301,7 +308,7 @@ public class LocalPlayback implements Playback
             play(trackPosition, source ,mediaMetadataCompat);
         } else {
             //播放Youtube音樂
-            mYoutubeExtratorAsyncTask = new YoutubeExtratorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtratorUtil.CallBack() {
+            YoutubeExtractorUtil youtubeExtractorAsyncTask = new YoutubeExtractorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtractorUtil.CallBack() {
                 @Override
                 public void onSuccess(String url) {
                     play(trackPosition, url, mediaMetadataCompat);
@@ -317,14 +324,14 @@ public class LocalPlayback implements Playback
             mState = PlaybackStateCompat.STATE_BUFFERING;
             mCurrentSongStreamPosition = 0;
             mPlaybackCallback.onPlaybackStateChanged();
-            mYoutubeExtratorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
+            youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         }
     }
 
     private void play(int trackPosition, String source, MediaMetadataCompat mediaMetadataCompat) {
         try {
             createMediaPlayerIfNeeded();
-            Logger.getInstance().d(TAG, String.format("PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
+            Logger.getInstance().d(TAG, String.format(Locale.TAIWAN, "PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
             mCurrentTrackPosition = trackPosition;
             mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -353,8 +360,8 @@ public class LocalPlayback implements Playback
     }
 
     @Override
-    public void pause(boolean bAudoPlayWhenGetFocus) {
-        if (mState == PlaybackStateCompat.STATE_PLAYING) {
+    public void pause() {
+        if (isPlaying()) {
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentSongStreamPosition = mMediaPlayer.getCurrentPosition();
@@ -362,7 +369,6 @@ public class LocalPlayback implements Playback
             }
         }
 
-        mPlayOnFocusGain = bAudoPlayWhenGetFocus;
         giveUpAudioFocus();
         mState = PlaybackStateCompat.STATE_PAUSED;
         mPlaybackCallback.onPlaybackStateChanged();

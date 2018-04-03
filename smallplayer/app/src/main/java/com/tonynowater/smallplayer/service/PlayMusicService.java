@@ -523,7 +523,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
     private void handlePauseRequest() {
         Logger.getInstance().d(TAG, "handlePauseRequest: " + mLocalPlayback.getState());
-        mLocalPlayback.pause(false);
+        mLocalPlayback.pause();
     }
 
     private void handleStopRequest() {
