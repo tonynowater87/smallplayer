@@ -24,6 +24,7 @@ android {
         //***** 設定gradle.properties裡面的值到BuildConfig ******
         buildConfigField('String', 'YoutubeDataAPIKey', YoutubeDataAPIKey)
         archivesBaseName = "SmallPlayer_${versionName}"//設定產出的apk名稱
+        multiDexEnabled true//fix method > 64K issue
     }
     buildTypes {
         release {
@@ -71,6 +72,9 @@ dependencies {
     compile deps.kotlin_stdlib
     compile deps.kotlin_reflect
     compile deps.youtube_extrator
+    compile deps.exoplayer_core
+    compile deps.exoplayer_smooth
+    compile deps.exoplayer_ui
     debugCompile deps.leakcanary
     releaseCompile deps.leakcanary_no_op
 }

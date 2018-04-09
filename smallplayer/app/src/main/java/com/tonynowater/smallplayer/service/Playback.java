@@ -31,11 +31,6 @@ public interface Playback {
     void stop(boolean notifyListeners);
 
     /**
-     * Set the latest playback state as determined by the caller.
-     */
-    void setState(int state);
-
-    /**
      * Get the current {@link android.media.session.PlaybackState#getState()}
      */
     int getState();
@@ -49,7 +44,7 @@ public interface Playback {
     /**
      * @return pos if currently playing an item
      */
-    int getCurrentStreamPosition();
+    long getCurrentStreamPosition();
 
     /**
      * @return duration if currently playing an item

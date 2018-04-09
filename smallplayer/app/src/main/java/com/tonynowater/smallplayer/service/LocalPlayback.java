@@ -5,15 +5,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.audiofx.Equalizer;
-import android.media.session.PlaybackState;
-import android.net.wifi.WifiManager;
+import android.net.Uri;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.audio.AudioRendererEventListener;
+import com.google.android.exoplayer2.decoder.DecoderCounters;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
@@ -22,9 +37,8 @@ import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.YoutubeExtractorUtil;
 import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
 
-import java.io.IOException;
-import java.util.Locale;
-// TODO: 2018/3/13 暫停取到的時間不正確，需更換ExoPlayer解決
+import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
+import static com.google.android.exoplayer2.C.USAGE_MEDIA;
 // TODO: 2017/9/2 連結藍芽耳機播放音樂時，縮小App將手機螢幕關閉，關閉藍芽耳機，會出現音樂繼續播放的問題
 // TODO: 2017/8/22 音頻柱狀圖 http://blog.csdn.net/topgun_chenlingyun/article/details/7663849
 // TODO: 2017/8/20 找到音樂播放的聲音大小不一致的問題解法 https://stackoverflow.com/questions/37046343/dsp-digital-sound-processing-with-android-media-player
@@ -34,12 +48,7 @@ import java.util.Locale;
  *
  * Created by tonyliao on 2017/5/12.
  */
-public class LocalPlayback implements Playback
-        , MediaPlayer.OnCompletionListener
-        , MediaPlayer.OnErrorListener
-        , MediaPlayer.OnPreparedListener
-        , MediaPlayer.OnSeekCompleteListener
-        , MediaPlayer.OnBufferingUpdateListener {
+public class LocalPlayback implements Playback {
 
     private static final String TAG = LocalPlayback.class.getSimpleName();
     private static final float VOLUME_DOCK = 0.2f;
@@ -52,14 +61,11 @@ public class LocalPlayback implements Playback
     private static final int AUDIO_FOCUSED = 2;
 
     private PlayMusicService mPlayMusicService;
-    //private WifiManager.WifiLock mWifiLock;
     private AudioManager mAudioManager;
     private int mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
     private int mState = PlaybackStateCompat.STATE_NONE;
-    private int mCurrentSongStreamPosition;
-    private int mCurrentTrackPosition;
+    private long mCurrentSongStreamPosition;
     private int mSongDuration = 0;
-    private MediaPlayer mMediaPlayer;
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
     private Equalizer mEqualizer;
@@ -81,12 +87,23 @@ public class LocalPlayback implements Playback
     private String mCurrentPlayId;//目前正在播放歌曲的Id
     private EqualizerType mEqualizerType = EqualizerType.STANDARD;
 
+    //exo
+    private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+    private SimpleExoPlayer mExoPlayer;
+    private MyExoPlayerEventLogger eventListener = new MyExoPlayerEventLogger();
+    //exo
+
     LocalPlayback(PlayMusicService mPlayMusicService, MusicProvider mMusicProvider, Playback.Callback mPlaybackCallback) {
         this.mPlayMusicService = mPlayMusicService;
         this.mMusicProvider = mMusicProvider;
         this.mPlaybackCallback = mPlaybackCallback;
         mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
-        //mWifiLock = ((WifiManager) mPlayMusicService.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+    }
+
+    private MediaSource buildMediaSource(Uri uri) {
+        return new ExtractorMediaSource.Factory(
+                new DefaultHttpDataSourceFactory("smallplayer")).
+                createMediaSource(uri, null, null);
     }
 
     /**
@@ -141,15 +158,17 @@ public class LocalPlayback implements Playback
             }
 
             if (mPlayOnFocusGain) {
-                play(mCurrentTrackPosition);
+                if (mExoPlayer != null) {
+                    mExoPlayer.setPlayWhenReady(true);
+                }
                 mPlayOnFocusGain = false;
             }
         }
     }
 
     private void setMediaPlayerVolume(float volume) {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.setVolume(volume, volume);
+        if (mExoPlayer != null) {
+            mExoPlayer.setVolume(volume);
         }
     }
 
@@ -174,67 +193,20 @@ public class LocalPlayback implements Playback
                     mAudioFocus = focusChange;
                     break;
                 default:
-                    Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
+                    Logger.getInstance().e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
             }
 
-            if (mMediaPlayer != null) {
+            if (mExoPlayer != null) {
                 configureMediaPlayerByAudioFocus();
             }
         }
     };
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
-        Logger.getInstance().d(TAG, "onCompletion:");
-        mCurrentSongStreamPosition = 0;
-        mPlaybackCallback.onCompletion();
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        // FIXME: 2017/6/14 目前當歌曲在緩衝時切換播放位置會onError -38 onCompletion
-        Logger.getInstance().d(TAG, "onError: " + what + " " + extra);
-        return false;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        mState = PlaybackStateCompat.STATE_PLAYING;
-        Logger.getInstance().d(TAG, "onPrepared:" + mState);
-        mp.start();
-        mPlaybackCallback.onPlaybackStateChanged();
-    }
-
-    @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        Logger.getInstance().d(TAG, "onBufferingUpdate: " + percent);
-//        if (percent == 100) {
-//            mMediaPlayer.start();
-//            mPlaybackCallback.onPlaybackStateChanged();
-//        }
-    }
-
-    @Override
     public void seekTo(int position) {
-        if (mMediaPlayer != null) {
-            mState = PlaybackStateCompat.STATE_BUFFERING;
-            mMediaPlayer.seekTo(position);
-            mCurrentSongStreamPosition = position;
-            mPlaybackCallback.onPlaybackStateChanged();
+        if (mExoPlayer != null) {
+            mExoPlayer.seekTo(position);
         }
-    }
-
-    @Override
-    public void onSeekComplete(MediaPlayer mp) {
-        Logger.getInstance().d(TAG, "onSeekComplete:");
-        mState = PlaybackState.STATE_PLAYING;
-        mMediaPlayer.start();
-        mPlaybackCallback.onPlaybackStateChanged();
-    }
-
-    @Override
-    public void setState(int state) {
-        Logger.getInstance().d(TAG, "setState:" + state);
     }
 
     @Override
@@ -245,12 +217,12 @@ public class LocalPlayback implements Playback
 
     @Override
     public boolean isPlaying() {
-        return mState == PlaybackStateCompat.STATE_PLAYING || mState == PlaybackStateCompat.STATE_BUFFERING;
+        return mExoPlayer != null && mExoPlayer.getPlayWhenReady();
     }
 
     @Override
-    public int getCurrentStreamPosition() {
-        return mState == PlaybackStateCompat.STATE_PLAYING ? mMediaPlayer.getCurrentPosition() : mCurrentSongStreamPosition;
+    public long getCurrentStreamPosition() {
+        return mExoPlayer != null ? mExoPlayer.getCurrentPosition() : 0;
     }
 
     @Override
@@ -271,7 +243,7 @@ public class LocalPlayback implements Playback
 
         if (mediaMetadataCompat == null) {
             stop(true);
-            Log.e(TAG, "play: null");
+            Logger.getInstance().e(TAG, "play: null");
             return;
         }
 
@@ -283,24 +255,13 @@ public class LocalPlayback implements Playback
             return;
         }
 
-        tryToGetAudioFocus();
-
-        //沒有取得播音樂焦點
-        if (mAudioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
-            Logger.getInstance().d(TAG, "play: AudioManager.AUDIOFOCUS_REQUEST_FAILED");
-            return;
-        }
-
-        if (mCurrentSongStreamPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
-            //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
-            Logger.getInstance().d(TAG, "pause and play position : " + trackPosition);
-            Logger.getInstance().d(TAG, "resume:" + mCurrentSongStreamPosition);
-            mState = PlaybackStateCompat.STATE_BUFFERING;
-            mMediaPlayer.seekTo(mCurrentSongStreamPosition);
-            return;
-        }
-
-        mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+//        if (mCurrentSongStreamPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+//            //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
+//            Logger.getInstance().d(TAG, "pause and play position : " + trackPosition);
+//            Logger.getInstance().d(TAG, "resume:" + mCurrentSongStreamPosition);
+//            mExoPlayer.seekTo(mCurrentSongStreamPosition);
+//            return;
+//        }
 
         if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
             //播放本地音樂
@@ -320,8 +281,7 @@ public class LocalPlayback implements Playback
                     mPlaybackCallback.onCompletion();
                 }
             });
-            //設定狀態為BUFFERING通知畫面
-            mState = PlaybackStateCompat.STATE_BUFFERING;
+
             mCurrentSongStreamPosition = 0;
             mPlaybackCallback.onPlaybackStateChanged();
             youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
@@ -329,49 +289,75 @@ public class LocalPlayback implements Playback
     }
 
     private void play(int trackPosition, String source, MediaMetadataCompat mediaMetadataCompat) {
-        try {
-            createMediaPlayerIfNeeded();
-            Logger.getInstance().d(TAG, String.format(Locale.TAIWAN, "PlaySize:%d\tPlayPosition:%d\tPlaySong:%s",mMusicProvider.getPlayListSize(),trackPosition,mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE)));
-            mCurrentTrackPosition = trackPosition;
-            mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mMediaPlayer.setDataSource(source);
-            mMediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "play error: " + e.toString() );
-            //歌曲有問題就跳下一首
-            mPlaybackCallback.onCompletion();
-        }
-    }
+        mPlayOnFocusGain = true;
+        tryToGetAudioFocus();
 
-    private void createMediaPlayerIfNeeded() {
-        Logger.getInstance().d(TAG, "createMediaPlayerIfNeeded");
-        releaseResource();
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setOnPreparedListener(this);
-        mMediaPlayer.setOnCompletionListener(this);
-        mMediaPlayer.setOnBufferingUpdateListener(this);
-        mMediaPlayer.setOnSeekCompleteListener(this);
-        mMediaPlayer.setOnErrorListener(this);
-        mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
-        setEqualizerBandLevel();
-        mEqualizer.setEnabled(true);
+        if (mExoPlayer == null || !TextUtils.equals(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), mCurrentPlayId)) {
+            releaseResource();
+            mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+            mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(MyApplication.getContext(), new DefaultTrackSelector(), new DefaultLoadControl());
+            mExoPlayer.addListener(eventListener);
+            mExoPlayer.addAudioDebugListener(new AudioRendererEventListener() {
+                @Override
+                public void onAudioEnabled(DecoderCounters counters) {
+
+                }
+
+                @Override
+                public void onAudioSessionId(int audioSessionId) {
+                    if (mEqualizer == null) {
+                        mEqualizer = new Equalizer(0, mExoPlayer.getAudioSessionId());
+                        setEqualizerBandLevel();
+                        mEqualizer.setEnabled(true);
+                    }
+                }
+
+                @Override
+                public void onAudioDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
+
+                }
+
+                @Override
+                public void onAudioInputFormatChanged(Format format) {
+
+                }
+
+                @Override
+                public void onAudioSinkUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
+
+                }
+
+                @Override
+                public void onAudioDisabled(DecoderCounters counters) {
+
+                }
+            });
+            // Android "O" makes much greater use of AudioAttributes, especially
+            // with regards to AudioFocus. All of UAMP's tracks are music, but
+            // if your content includes spoken word such as audiobooks or podcasts
+            // then the content type should be set to CONTENT_TYPE_SPEECH for those
+            // tracks.
+            final AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(CONTENT_TYPE_MUSIC)
+                    .setUsage(USAGE_MEDIA)
+                    .build();
+            mExoPlayer.setAudioAttributes(audioAttributes);
+            mExoPlayer.prepare(buildMediaSource(Uri.parse(source)));
+        }
+
+        configureMediaPlayerByAudioFocus();
     }
 
     @Override
     public void pause() {
-        if (isPlaying()) {
-            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-                mMediaPlayer.pause();
-                mCurrentSongStreamPosition = mMediaPlayer.getCurrentPosition();
-                Logger.getInstance().d(TAG, "pause:" + mCurrentSongStreamPosition);
-            }
+        if (mExoPlayer != null) {
+            mExoPlayer.setPlayWhenReady(false);
+            mCurrentSongStreamPosition = mExoPlayer.getCurrentPosition();
+            Logger.getInstance().d(TAG, "pause:" + mCurrentSongStreamPosition);
         }
 
         giveUpAudioFocus();
-        mState = PlaybackStateCompat.STATE_PAUSED;
-        mPlaybackCallback.onPlaybackStateChanged();
     }
 
     @Override
@@ -389,13 +375,16 @@ public class LocalPlayback implements Playback
 
     @Override
     public void releaseResource() {
-        if (mMediaPlayer != null) {
+        if (mExoPlayer != null) {
             mCurrentSongStreamPosition = 0;
-            mMediaPlayer.reset();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-            mEqualizer.release();
-            mEqualizer = null;
+            mExoPlayer.release();
+            mExoPlayer.removeListener(eventListener);
+            mExoPlayer = null;
+
+            if (mEqualizer != null) {
+                mEqualizer.release();
+                mEqualizer = null;
+            }
         }
     }
 
@@ -479,6 +468,98 @@ public class LocalPlayback implements Playback
                 mEqualizer.setBandLevel((short) 3, provideBandLevel(2.4));
                 mEqualizer.setBandLevel((short) 4, provideBandLevel(2.4));
                 break;
+        }
+    }
+
+    private class MyExoPlayerEventLogger implements Player.EventListener {
+        @Override
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+            Logger.getInstance().d(TAG, "onTimelineChanged");
+        }
+
+        @Override
+        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+            Logger.getInstance().d(TAG, "onTracksChanged");
+        }
+
+        @Override
+        public void onLoadingChanged(boolean isLoading) {
+            Logger.getInstance().d(TAG, "onLoadingChanged:" + isLoading);
+        }
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            Logger.getInstance().d(TAG, "onPlayerStateChanged, playWhenReady: " + playWhenReady + ", playbackState:" + playbackState);
+            switch (playbackState) {
+                case Player.STATE_IDLE:
+                    mState = PlaybackStateCompat.STATE_NONE;
+                    mPlaybackCallback.onPlaybackStateChanged();
+                    break;
+                case Player.STATE_BUFFERING:
+                    mState = PlaybackStateCompat.STATE_BUFFERING;
+                    mPlaybackCallback.onPlaybackStateChanged();
+                    break;
+                case Player.STATE_READY:
+                    Logger.getInstance().d(TAG, "mExoPlayer.getPlayWhenReady():" + mExoPlayer.getPlayWhenReady());
+                    if (playWhenReady) {
+                        mState = PlaybackStateCompat.STATE_PLAYING;
+                    } else {
+                        mState = PlaybackStateCompat.STATE_PAUSED;
+                    }
+                    mPlaybackCallback.onPlaybackStateChanged();
+                    break;
+                case Player.STATE_ENDED:
+                    mCurrentSongStreamPosition = 0;
+                    mPlaybackCallback.onCompletion();
+                    break;
+            }
+        }
+
+        @Override
+        public void onRepeatModeChanged(int repeatMode) {
+            Logger.getInstance().d(TAG, "onRepeatModeChanged:" + repeatMode);
+        }
+
+        @Override
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+            Logger.getInstance().d(TAG, "onShuffleModeEnabledChanged:" + shuffleModeEnabled);
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+            final String what;
+            switch (error.type) {
+                case ExoPlaybackException.TYPE_SOURCE:
+                    what = error.getSourceException().getMessage();
+                    break;
+                case ExoPlaybackException.TYPE_RENDERER:
+                    what = error.getRendererException().getMessage();
+                    break;
+                case ExoPlaybackException.TYPE_UNEXPECTED:
+                    what = error.getUnexpectedException().getMessage();
+                    break;
+                default:
+                    what = "Unknown: " + error;
+            }
+            Logger.getInstance().d(TAG, "onPlayerError: what = " + what);
+            mPlaybackCallback.onError(what);
+            stop(true);
+        }
+
+        @Override
+        public void onPositionDiscontinuity(int reason) {
+            Logger.getInstance().d(TAG, "onPositionDiscontinuity:" + reason);
+        }
+
+        @Override
+        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+            Logger.getInstance().d(TAG, "onPlaybackParametersChanged:" + playbackParameters);
+        }
+
+        @Override
+        public void onSeekProcessed() {
+            Logger.getInstance().d(TAG, "onSeekProcessed:");
+            mExoPlayer.setPlayWhenReady(true);
         }
     }
 }

@@ -15,7 +15,7 @@ ext {
     kotlin_version = '1.2.21'
     youtubeExtratorVer = 'master-SNAPSHOT'
     leakcanaryVer = '1.5.4'
-
+    exoplayer = '2.7.2'
     deps = [
             espresso_core   : "com.android.support.test.espresso:espresso-core:$espressoVer",
             junit           : "junit:junit:$junitVer",
@@ -36,6 +36,9 @@ ext {
             kotlin_stdlib   : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
             kotlin_reflect  : "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version",
             leakcanary      : "com.squareup.leakcanary:leakcanary-android:$leakcanaryVer",
-            leakcanary_no_op: "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVer"
+            leakcanary_no_op: "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVer",
+            exoplayer_core  : "com.google.android.exoplayer:exoplayer-core:$exoplayer",
+            exoplayer_smooth: "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoplayer",
+            exoplayer_ui    : "com.google.android.exoplayer:exoplayer-ui:$exoplayer"
     ]
 }
