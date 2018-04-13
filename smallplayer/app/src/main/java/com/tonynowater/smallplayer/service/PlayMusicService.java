@@ -553,7 +553,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
             mMediaSessionCompat.setActive(true);
         }
 
-        mLocalPlayback.play(mMusicProvider.getCurrentPlayingIndex());
+        mLocalPlayback.play();
         updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
     }
 

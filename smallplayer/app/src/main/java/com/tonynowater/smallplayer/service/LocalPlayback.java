@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
@@ -44,8 +45,8 @@ import static com.google.android.exoplayer2.C.USAGE_MEDIA;
 // TODO: 2017/8/20 找到音樂播放的聲音大小不一致的問題解法 https://stackoverflow.com/questions/37046343/dsp-digital-sound-processing-with-android-media-player
 // TODO: 2017/8/12 移動進度條時會有一直切換到下一首歌的問題
 // TODO: 2017/5/29 綁定Wifi待實做
+
 /**
- *
  * Created by tonyliao on 2017/5/12.
  */
 public class LocalPlayback implements Playback {
@@ -64,7 +65,7 @@ public class LocalPlayback implements Playback {
     private AudioManager mAudioManager;
     private int mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
     private int mState = PlaybackStateCompat.STATE_NONE;
-    private long mCurrentSongStreamPosition;
+    private long mCurrentSongStreamPosition = 0;
     private int mSongDuration = 0;
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
@@ -100,9 +101,15 @@ public class LocalPlayback implements Playback {
         mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
     }
 
-    private MediaSource buildMediaSource(Uri uri) {
+    private MediaSource buildHttpMediaSource(Uri uri) {
         return new ExtractorMediaSource.Factory(
                 new DefaultHttpDataSourceFactory("smallplayer")).
+                createMediaSource(uri, null, null);
+    }
+
+    private MediaSource buildLocalMediaSource(Uri uri) {
+        return new ExtractorMediaSource.Factory(
+                new DefaultDataSourceFactory(MyApplication.getContext(), "smallplayer")).
                 createMediaSource(uri, null, null);
     }
 
@@ -159,7 +166,11 @@ public class LocalPlayback implements Playback {
 
             if (mPlayOnFocusGain) {
                 if (mExoPlayer != null) {
-                    mExoPlayer.setPlayWhenReady(true);
+                    if (mCurrentSongStreamPosition != 0) {
+                        mExoPlayer.seekTo(mCurrentSongStreamPosition);
+                    } else {
+                        mExoPlayer.setPlayWhenReady(true);
+                    }
                 }
                 mPlayOnFocusGain = false;
             }
@@ -231,13 +242,15 @@ public class LocalPlayback implements Playback {
     }
 
     @Override
-    public void setCurrentStreamPosition(int pos) {}
+    public void setCurrentStreamPosition(int pos) {
+    }
 
     @Override
-    public void updateLastKnownStreamPosition() {}
+    public void updateLastKnownStreamPosition() {
+    }
 
     @Override
-    public void play(final int trackPosition) {
+    public void play() {
 
         final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getCurrentPlayingMediaMetadata();
 
@@ -263,36 +276,14 @@ public class LocalPlayback implements Playback {
 //            return;
 //        }
 
-        if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
-            //播放本地音樂
-            String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
-            play(trackPosition, source ,mediaMetadataCompat);
-        } else {
-            //播放Youtube音樂
-            YoutubeExtractorUtil youtubeExtractorAsyncTask = new YoutubeExtractorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtractorUtil.CallBack() {
-                @Override
-                public void onSuccess(String url) {
-                    play(trackPosition, url, mediaMetadataCompat);
-                }
-
-                @Override
-                public void onFailed() {
-                    //歌曲有問題就跳下一首
-                    mPlaybackCallback.onCompletion();
-                }
-            });
-
-            mCurrentSongStreamPosition = 0;
-            mPlaybackCallback.onPlaybackStateChanged();
-            youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
-        }
+        play(mediaMetadataCompat);
     }
 
-    private void play(int trackPosition, String source, MediaMetadataCompat mediaMetadataCompat) {
+    private void play(MediaMetadataCompat mediaMetadataCompat) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
-
-        if (mExoPlayer == null || !TextUtils.equals(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), mCurrentPlayId)) {
+        boolean isSameSong = TextUtils.equals(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), mCurrentPlayId);
+        if (mExoPlayer == null || !isSameSong) {
             releaseResource();
             mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
             mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
@@ -343,10 +334,37 @@ public class LocalPlayback implements Playback {
                     .setUsage(USAGE_MEDIA)
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
-            mExoPlayer.prepare(buildMediaSource(Uri.parse(source)));
+
+            if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
+                //播放本地音樂
+                String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
+                mExoPlayer.prepare(buildLocalMediaSource(Uri.parse(source)));
+                configureMediaPlayerByAudioFocus();
+            } else {
+                //播放Youtube音樂
+                YoutubeExtractorUtil youtubeExtractorAsyncTask = new YoutubeExtractorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtractorUtil.CallBack() {
+                    @Override
+                    public void onSuccess(String url) {
+                        mExoPlayer.prepare(buildHttpMediaSource(Uri.parse(url)));
+                        configureMediaPlayerByAudioFocus();
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        //歌曲有問題就跳下一首
+                        mPlaybackCallback.onCompletion();
+                    }
+                });
+
+                mCurrentSongStreamPosition = 0;
+                mPlaybackCallback.onPlaybackStateChanged();
+                youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
+            }
         }
 
-        configureMediaPlayerByAudioFocus();
+        if (isSameSong) {
+            configureMediaPlayerByAudioFocus();
+        }
     }
 
     @Override

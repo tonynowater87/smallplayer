@@ -67,7 +67,7 @@ public interface Playback {
     /**
      * play music
      */
-    void play(int trackPosition);
+    void play();
 
     /**
      * Pause the current playing item
