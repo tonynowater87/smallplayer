@@ -51,32 +51,32 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs' )
-    androidTestCompile(deps.espresso_core, {
+    implementation fileTree(include: ['*.jar'], dir: 'libs' )
+    androidTestImplementation(deps.espresso_core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile deps.junit
-    compile deps.appcompat_v7
-    compile deps.designLib
-    compile deps.okhttp
-    compile deps.gson
-    compile deps.constraintlayout
-    compile deps.materia_dialog
-    compile deps.lottie
-    compile deps.firebase_core
-    compile deps.firebase_crash
-    compile deps.google_auth
-    compile deps.retrofit2
-    compile deps.retrofitGson
-    compile deps.mediaCombat
-    compile deps.kotlin_stdlib
-    compile deps.kotlin_reflect
-    compile deps.youtube_extrator
-    compile deps.exoplayer_core
-    compile deps.exoplayer_smooth
-    compile deps.exoplayer_ui
-    debugCompile deps.leakcanary
-    releaseCompile deps.leakcanary_no_op
+    androidTestImplementation deps.junit
+    implementation deps.appcompat_v7
+    implementation deps.designLib
+    implementation deps.okhttp
+    implementation deps.gson
+    implementation deps.constraintlayout
+    implementation deps.materia_dialog
+    implementation deps.lottie
+    implementation deps.firebase_core
+    implementation deps.firebase_crash
+    implementation deps.google_auth
+    implementation deps.retrofit2
+    implementation deps.retrofitGson
+    implementation deps.mediaCombat
+    implementation deps.kotlin_stdlib
+    implementation deps.kotlin_reflect
+    implementation deps.youtube_extrator
+    implementation deps.exoplayer_core
+    implementation deps.exoplayer_smooth
+    implementation deps.exoplayer_ui
+    debugImplementation deps.leakcanary
+    releaseImplementation deps.leakcanary_no_op
 }
 
 apply plugin: 'com.google.gms.google-services'

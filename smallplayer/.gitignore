@@ -2,11 +2,9 @@
 .gradle
 /local.properties
 /gradle.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
 /build
 /captures
 .externalNativeBuild
-.idea/dictionaries/
 app/google-services.json
+.idea/*
