@@ -43,7 +43,6 @@ import static com.google.android.exoplayer2.C.USAGE_MEDIA;
 // TODO: 2017/9/2 連結藍芽耳機播放音樂時，縮小App將手機螢幕關閉，關閉藍芽耳機，會出現音樂繼續播放的問題
 // TODO: 2017/8/22 音頻柱狀圖 http://blog.csdn.net/topgun_chenlingyun/article/details/7663849
 // TODO: 2017/8/20 找到音樂播放的聲音大小不一致的問題解法 https://stackoverflow.com/questions/37046343/dsp-digital-sound-processing-with-android-media-player
-// TODO: 2017/8/12 移動進度條時會有一直切換到下一首歌的問題
 // TODO: 2017/5/29 綁定Wifi待實做
 
 /**
@@ -66,7 +65,6 @@ public class LocalPlayback implements Playback {
     private int mAudioFocus = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
     private int mState = PlaybackStateCompat.STATE_NONE;
     private long mCurrentSongStreamPosition = 0;
-    private int mSongDuration = 0;
     private MusicProvider mMusicProvider;
     private Playback.Callback mPlaybackCallback;
     private Equalizer mEqualizer;
@@ -89,7 +87,6 @@ public class LocalPlayback implements Playback {
     private EqualizerType mEqualizerType = EqualizerType.STANDARD;
 
     //exo
-    private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private SimpleExoPlayer mExoPlayer;
     private MyExoPlayerEventLogger eventListener = new MyExoPlayerEventLogger();
     //exo
@@ -237,8 +234,8 @@ public class LocalPlayback implements Playback {
     }
 
     @Override
-    public int getCurrentDuration() {
-        return mSongDuration;
+    public long getCurrentDuration() {
+        return mExoPlayer != null ? mExoPlayer.getDuration() : 0;
     }
 
     @Override
@@ -268,14 +265,6 @@ public class LocalPlayback implements Playback {
             return;
         }
 
-//        if (mCurrentSongStreamPosition != 0 && TextUtils.equals(mCurrentPlayId, mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
-//            //暫停時並切換歌單後，若是同一首歌曲的Id才做暫停=>播放的動作
-//            Logger.getInstance().d(TAG, "pause and play position : " + trackPosition);
-//            Logger.getInstance().d(TAG, "resume:" + mCurrentSongStreamPosition);
-//            mExoPlayer.seekTo(mCurrentSongStreamPosition);
-//            return;
-//        }
-
         play(mediaMetadataCompat);
     }
 
@@ -286,7 +275,6 @@ public class LocalPlayback implements Playback {
         if (mExoPlayer == null || !isSameSong) {
             releaseResource();
             mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-            mSongDuration = (int) mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(MyApplication.getContext(), new DefaultTrackSelector(), new DefaultLoadControl());
             mExoPlayer.addListener(eventListener);
             mExoPlayer.addAudioDebugListener(new AudioRendererEventListener() {

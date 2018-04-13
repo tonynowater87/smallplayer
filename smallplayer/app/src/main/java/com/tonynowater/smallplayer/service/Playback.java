@@ -49,7 +49,7 @@ public interface Playback {
     /**
      * @return duration if currently playing an item
      */
-    int getCurrentDuration();
+    long getCurrentDuration();
 
     /**
      * Set the current position. Typically used when switching players that are in

@@ -145,7 +145,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
 
         Bundle bundle = new Bundle();
-        bundle.putInt(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());
+        bundle.putLong(BUNDLE_KEY_SONG_DURATION, mLocalPlayback.getCurrentDuration());
         bundle.putBoolean(BUNDLE_KEY_IS_REPEAT, mMusicProvider.getIsReapeated());
         bundle.putSerializable(BUNDLE_KEY_PLAYMODE, mMusicProvider.getmEnumPlayMode());
         bundle.putSerializable(BUNDLE_KEY_EQUALIZER_TYPE, mLocalPlayback.getEqualizerType());
@@ -212,7 +212,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         Logger.getInstance().d(TAG, "onLoadChildren: " + parentId);
-        // 在畫面端subcribe後，回傳項目回畫面
+        // 在畫面端subscribe後，回傳項目回畫面
         if (TextUtils.equals(parentId, GET_CURRENT_PLAY_LIST_ID)) {
             result.sendResult(mMusicProvider.getMediaItemList());
         }
@@ -497,21 +497,13 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         private void handleChangePlayList(int playlistId) {
             Logger.getInstance().d(TAG, "handleChangePlayList: ");
             mMusicProvider.queryDBPlayList(playlistId);
-            //切換歌單，從第一首開始播放
-            mMusicProvider.setSongPosition(0);
             mCurrentPlayListId = playlistId;
-            if (mMusicProvider.getPlayListSize() == 0) {
-                //切換到沒歌曲的歌單要停止播放
-                handleStopRequest();
-            } else {
-                if (mLocalPlayback.isPlaying()) {
-                    //正在播放，切換歌單繼續播放
-                    handlePlayRequest();
-                } else {
-                    //更新畫面歌曲UI)
-                    updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
-                }
-            }
+            //切換歌單，從位置設為第一首
+            mMusicProvider.setSongPosition(0);
+            //切換歌單後，停止播放
+            handleStopRequest();
+            //更新畫面歌曲UI)
+            updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
         }
 
         @Override
@@ -565,7 +557,7 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
 
         if (metadata == null) {
             Log.w(TAG, "updateMetadata: metadata null ");
-            mMediaSessionCompat.setMetadata(metadata);
+            mMediaSessionCompat.setMetadata(null);
             return;
         }
 
