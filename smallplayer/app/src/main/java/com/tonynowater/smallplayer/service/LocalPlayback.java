@@ -27,7 +27,6 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.tonynowater.smallplayer.MyApplication;
@@ -239,14 +238,6 @@ public class LocalPlayback implements Playback {
     }
 
     @Override
-    public void setCurrentStreamPosition(int pos) {
-    }
-
-    @Override
-    public void updateLastKnownStreamPosition() {
-    }
-
-    @Override
     public void play() {
 
         final MediaMetadataCompat mediaMetadataCompat = mMusicProvider.getCurrentPlayingMediaMetadata();
@@ -272,7 +263,7 @@ public class LocalPlayback implements Playback {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         boolean isSameSong = TextUtils.equals(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), mCurrentPlayId);
-        if (mExoPlayer == null || !isSameSong) {
+        if (mExoPlayer == null || !isSameSong || (mMusicProvider.getIsReapeated() && mCurrentSongStreamPosition == 0)) {
             releaseResource();
             mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(MyApplication.getContext(), new DefaultTrackSelector(), new DefaultLoadControl());
@@ -340,11 +331,12 @@ public class LocalPlayback implements Playback {
                     @Override
                     public void onFailed() {
                         //歌曲有問題就跳下一首
-                        mPlaybackCallback.onCompletion();
+                        onCompletion();
                     }
                 });
 
                 mCurrentSongStreamPosition = 0;
+                mState = PlaybackStateCompat.STATE_BUFFERING;
                 mPlaybackCallback.onPlaybackStateChanged();
                 youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
             }
@@ -502,8 +494,7 @@ public class LocalPlayback implements Playback {
                     mPlaybackCallback.onPlaybackStateChanged();
                     break;
                 case Player.STATE_BUFFERING:
-                    mState = PlaybackStateCompat.STATE_BUFFERING;
-                    mPlaybackCallback.onPlaybackStateChanged();
+                    //do nothing
                     break;
                 case Player.STATE_READY:
                     Logger.getInstance().d(TAG, "mExoPlayer.getPlayWhenReady():" + mExoPlayer.getPlayWhenReady());
@@ -516,7 +507,7 @@ public class LocalPlayback implements Playback {
                     break;
                 case Player.STATE_ENDED:
                     mCurrentSongStreamPosition = 0;
-                    mPlaybackCallback.onCompletion();
+                    onCompletion();
                     break;
             }
         }
@@ -567,5 +558,23 @@ public class LocalPlayback implements Playback {
             Logger.getInstance().d(TAG, "onSeekProcessed:");
             mExoPlayer.setPlayWhenReady(true);
         }
+    }
+
+    private void onCompletion() {
+        Logger.getInstance().d(TAG, "onCompletion: ");
+        if (!mMusicProvider.isPlayListAvailable()) {
+            return;
+        }
+
+        if (isPlaying()) {
+            if (!mMusicProvider.getIsReapeated()) {
+                mMusicProvider.addSongPosition(true);
+            }
+            play();
+        } else {
+            stop(true);
+        }
+
+        mPlaybackCallback.onUpdateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
     }
 }

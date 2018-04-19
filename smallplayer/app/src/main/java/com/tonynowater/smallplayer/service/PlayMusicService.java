@@ -54,21 +54,10 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
     private MediaNotificationManager mMediaNotificationManager;
     private Playback mLocalPlayback;
     private Playback.Callback mPlaybackCallback = new Playback.Callback() {
+
         @Override
-        public void onCompletion() {
-            Logger.getInstance().d(TAG, "onCompletion: ");
-            if (!mMusicProvider.isPlayListAvailable()) {
-                return;
-            }
-
-            if (mLocalPlayback.isPlaying()) {
-                if (false == mMusicProvider.getIsReapeated()) {
-                    mMusicProvider.addSongPosition(true);
-                }
-                handlePlayRequest();
-            }
-
-            updateMetadata(mMusicProvider.getCurrentPlayingMediaMetadata());
+        public void onUpdateMetadata(MediaMetadataCompat metadata) {
+            updateMetadata(metadata);
         }
 
         @Override

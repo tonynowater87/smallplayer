@@ -15,6 +15,8 @@
  */
 package com.tonynowater.smallplayer.service;
 
+import android.support.v4.media.MediaMetadataCompat;
+
 /**
  * Interface representing either Local or Remote Playback. The {@link PlayMusicService} works
  * directly with an instance of the Playback object to make the various calls such as
@@ -52,19 +54,6 @@ public interface Playback {
     long getCurrentDuration();
 
     /**
-     * Set the current position. Typically used when switching players that are in
-     * paused state.
-     *
-     * @param pos position in the stream
-     */
-    void setCurrentStreamPosition(int pos);
-
-    /**
-     * Query the underlying stream and update the internal last known stream position.
-     */
-    void updateLastKnownStreamPosition();
-
-    /**
      * play music
      */
     void play();
@@ -87,7 +76,7 @@ public interface Playback {
 
     interface Callback {
 
-        void onCompletion();
+        void onUpdateMetadata(MediaMetadataCompat metadata);
 
         void onPlaybackStateChanged();
 
