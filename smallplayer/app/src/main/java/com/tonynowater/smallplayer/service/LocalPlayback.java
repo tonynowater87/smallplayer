@@ -256,52 +256,68 @@ public class LocalPlayback implements Playback {
             return;
         }
 
-        play(mediaMetadataCompat);
+        if (!MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
+            //播放Youtube音樂
+            YoutubeExtractorUtil youtubeExtractorAsyncTask = new YoutubeExtractorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtractorUtil.CallBack() {
+                @Override
+                public void onSuccess(String url) {
+                    play(mediaMetadataCompat, buildHttpMediaSource(Uri.parse(url)));
+                }
+
+                @Override
+                public void onFailed() {
+                    //歌曲有問題就跳下一首
+                    onCompletion();
+                }
+            });
+
+            mCurrentSongStreamPosition = 0;
+            mState = PlaybackStateCompat.STATE_BUFFERING;
+            mPlaybackCallback.onPlaybackStateChanged();
+            youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
+        } else {
+            //播放本地音樂
+            String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
+            play(mediaMetadataCompat, buildLocalMediaSource(Uri.parse(source)));
+        }
     }
 
-    private void play(MediaMetadataCompat mediaMetadataCompat) {
+    private void play(MediaMetadataCompat mediaMetadataCompat, MediaSource mediaSource) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         boolean isSameSong = TextUtils.equals(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), mCurrentPlayId);
-        if (mExoPlayer == null || !isSameSong || (mMusicProvider.getIsReapeated() && mCurrentSongStreamPosition == 0)) {
+        if (mExoPlayer == null
+                || !isSameSong
+                ////重覆播放且不是暫停
+                || (mMusicProvider.getIsReapeated() && mCurrentSongStreamPosition == 0)) {
             releaseResource();
             mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(MyApplication.getContext(), new DefaultTrackSelector(), new DefaultLoadControl());
             mExoPlayer.addListener(eventListener);
             mExoPlayer.addAudioDebugListener(new AudioRendererEventListener() {
                 @Override
-                public void onAudioEnabled(DecoderCounters counters) {
-
-                }
+                public void onAudioEnabled(DecoderCounters counters) { }
 
                 @Override
                 public void onAudioSessionId(int audioSessionId) {
                     if (mEqualizer == null) {
-                        mEqualizer = new Equalizer(0, mExoPlayer.getAudioSessionId());
+                        mEqualizer = new Equalizer(0, audioSessionId);
                         setEqualizerBandLevel();
                         mEqualizer.setEnabled(true);
                     }
                 }
 
                 @Override
-                public void onAudioDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
-
-                }
+                public void onAudioDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) { }
 
                 @Override
-                public void onAudioInputFormatChanged(Format format) {
-
-                }
+                public void onAudioInputFormatChanged(Format format) { }
 
                 @Override
-                public void onAudioSinkUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
-
-                }
+                public void onAudioSinkUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) { }
 
                 @Override
-                public void onAudioDisabled(DecoderCounters counters) {
-
-                }
+                public void onAudioDisabled(DecoderCounters counters) { }
             });
             // Android "O" makes much greater use of AudioAttributes, especially
             // with regards to AudioFocus. All of UAMP's tracks are music, but
@@ -314,32 +330,8 @@ public class LocalPlayback implements Playback {
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
 
-            if (MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
-                //播放本地音樂
-                String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
-                mExoPlayer.prepare(buildLocalMediaSource(Uri.parse(source)));
-                configureMediaPlayerByAudioFocus();
-            } else {
-                //播放Youtube音樂
-                YoutubeExtractorUtil youtubeExtractorAsyncTask = new YoutubeExtractorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtractorUtil.CallBack() {
-                    @Override
-                    public void onSuccess(String url) {
-                        mExoPlayer.prepare(buildHttpMediaSource(Uri.parse(url)));
-                        configureMediaPlayerByAudioFocus();
-                    }
-
-                    @Override
-                    public void onFailed() {
-                        //歌曲有問題就跳下一首
-                        onCompletion();
-                    }
-                });
-
-                mCurrentSongStreamPosition = 0;
-                mState = PlaybackStateCompat.STATE_BUFFERING;
-                mPlaybackCallback.onPlaybackStateChanged();
-                youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
-            }
+            mExoPlayer.prepare(mediaSource);
+            configureMediaPlayerByAudioFocus();
         }
 
         if (isSameSong) {
