@@ -212,48 +212,8 @@ public class PlayMusicService extends MediaBrowserServiceCompat {
         super.onLoadChildren(parentId, result, options);
     }
 
+    /** PS:耳機線控操作事件 MediaSessionCompat.Callback 已做掉，不用自己實做，但停止播放後不能「連按兩下播放鍵」切換下一首 */
     private MediaSessionCompat.Callback mSessionCallBack = new MediaSessionCompat.Callback() {
-        /**
-         * 處理線控按鈕事件
-         */
-        @Override
-        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
-            if (TextUtils.equals(Intent.ACTION_MEDIA_BUTTON, mediaButtonEvent.getAction())) {
-                KeyEvent keyEvent = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-                if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    //只處理按下時的ACTION，因為按一次按鈕會有ACTION_DONW & ACTION_UP兩個ACTION
-                    switch (keyEvent.getKeyCode()) {
-                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY_PAUSE");
-                            onPlay();
-                            break;
-                        case KeyEvent.KEYCODE_HEADSETHOOK:
-                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_HEADSETHOOK");
-                            onPlay();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_NEXT:
-                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_NEXT");
-                            onSkipToNext();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PREVIOUS");
-                            onSkipToPrevious();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_PLAY:
-                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PLAY");
-                            onPlay();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                            Logger.getInstance().d(TAG, "onMediaButtonEvent: KEYCODE_MEDIA_PAUSE");
-                            onPause();
-                            break;
-                    }
-                }
-            }
-
-            return true;
-        }
-
         @Override
         public void onPlay() {
             Logger.getInstance().d(TAG, "onPlay:"+mMusicProvider.isPlayListAvailable());

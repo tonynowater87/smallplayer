@@ -344,6 +344,8 @@ public class LocalPlayback implements Playback {
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
             mCurrentSongStreamPosition = mExoPlayer.getCurrentPosition();
+            mState = PlaybackStateCompat.STATE_PAUSED;
+            mPlaybackCallback.onPlaybackStateChanged();
             Logger.getInstance().d(TAG, "pause:" + mCurrentSongStreamPosition);
         }
 
