@@ -1,4 +1,4 @@
-package com.tonynowater.smallplayer.util.kt
+package com.tonynowater.smallplayer.util
 
 import android.content.Context
 import android.net.ConnectivityManager

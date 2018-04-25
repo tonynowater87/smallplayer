@@ -24,8 +24,8 @@ import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.permission.SPermissionDefine;
-import com.tonynowater.smallplayer.util.permission.SActivityRequestUtil;
 import com.tonynowater.smallplayer.view.SearchViewComponent;
+import com.tonynowater.util.kotlin.activityRequest.SActivityRequestUtil;
 
 import java.util.List;
 

@@ -19,7 +19,7 @@ import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.permission.SPermissionDefine;
-import com.tonynowater.smallplayer.util.permission.SActivityRequestUtil;
+import com.tonynowater.util.kotlin.activityRequest.SActivityRequestUtil;
 
 import java.util.List;
 

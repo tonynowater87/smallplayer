@@ -9,8 +9,8 @@ import android.util.SparseArray;
 
 import com.tonynowater.smallplayer.module.dto.Album;
 import com.tonynowater.smallplayer.module.dto.Song;
-import com.tonynowater.smallplayer.util.permission.SActivityRequestUtil;
 import com.tonynowater.smallplayer.util.permission.SPermissionDefine;
+import com.tonynowater.util.kotlin.activityRequest.SActivityRequestUtil;
 
 import java.util.ArrayList;
 import java.util.List;

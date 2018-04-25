@@ -36,8 +36,8 @@ import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.permission.SPermissionDefine;
 import com.tonynowater.smallplayer.util.YoutubeExtractorUtil;
-import com.tonynowater.smallplayer.util.permission.SActivityRequestUtil;
-import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
+import com.tonynowater.smallplayer.util.SNetworkInfo;
+import com.tonynowater.util.kotlin.activityRequest.SActivityRequestUtil;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
