@@ -85,6 +85,7 @@ public class LocalPlayback implements Playback {
     private boolean mPlayOnFocusGain;//獲取AudioFocus後是否繼續播放
     private String mCurrentPlayId;//目前正在播放歌曲的Id
     private EqualizerType mEqualizerType = EqualizerType.STANDARD;
+    private Context mContext;
 
     //exo
     private SimpleExoPlayer mExoPlayer;
@@ -95,6 +96,7 @@ public class LocalPlayback implements Playback {
         this.mPlayMusicService = mPlayMusicService;
         this.mMusicProvider = mMusicProvider;
         this.mPlaybackCallback = mPlaybackCallback;
+        mContext = mPlayMusicService.getApplicationContext();
         mAudioManager = (AudioManager) mPlayMusicService.getSystemService(Context.AUDIO_SERVICE);
     }
 
@@ -106,7 +108,7 @@ public class LocalPlayback implements Playback {
 
     private MediaSource buildLocalMediaSource(Uri uri) {
         return new ExtractorMediaSource.Factory(
-                new DefaultDataSourceFactory(MyApplication.getContext(), "smallplayer")).
+                new DefaultDataSourceFactory(mContext, "smallplayer")).
                 createMediaSource(uri, null, null);
     }
 
@@ -258,7 +260,7 @@ public class LocalPlayback implements Playback {
 
         if (!MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)) {
             //播放Youtube音樂
-            YoutubeExtractorUtil youtubeExtractorAsyncTask = new YoutubeExtractorUtil(mPlayMusicService.getApplicationContext(), new YoutubeExtractorUtil.CallBack() {
+            YoutubeExtractorUtil youtubeExtractorAsyncTask = new YoutubeExtractorUtil(mContext, new YoutubeExtractorUtil.CallBack() {
                 @Override
                 public void onSuccess(String url) {
                     play(mediaMetadataCompat, buildHttpMediaSource(Uri.parse(url)));
@@ -276,7 +278,7 @@ public class LocalPlayback implements Playback {
             mPlaybackCallback.onPlaybackStateChanged();
             youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         } else {
-            if (!PermissionGrantedUtil.isPermissionGranted(mPlayMusicService.getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+            if (!PermissionGrantedUtil.isPermissionGranted(mContext, PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
                 onError(mPlayMusicService.getString(R.string.no_permission_warning_msg));
                 return;
             }
@@ -297,11 +299,11 @@ public class LocalPlayback implements Playback {
         boolean isSameSong = TextUtils.equals(mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID), mCurrentPlayId);
         if (mExoPlayer == null
                 || !isSameSong
-                ////重覆播放且不是暫停
+                //重覆播放且不是暫停
                 || (mMusicProvider.getIsReapeated() && mCurrentSongStreamPosition == 0)) {
             releaseResource();
             mCurrentPlayId = mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-            mExoPlayer = ExoPlayerFactory.newSimpleInstance(MyApplication.getContext(), new DefaultTrackSelector(), new DefaultLoadControl());
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, new DefaultTrackSelector(), new DefaultLoadControl());
             mExoPlayer.addListener(eventListener);
             mExoPlayer.addAudioDebugListener(new AudioRendererEventListener() {
                 @Override
