@@ -147,7 +147,7 @@ public class MediaUtils {
      */
     public static List<Song> getSongList(Context context, boolean bIsRefresh) {
 
-        if (!PermissionGrantedUtil.isPermissionGranted(context, PermissionGrantedUtil.REQUEST_PERMISSIONS)
+        if (!SPermissionGrantedUtil.isPermissionGranted(context, SPermissionGrantedUtil.REQUEST_PERMISSIONS)
                 && mSongList != null
                 && !bIsRefresh) {
             return mSongList;

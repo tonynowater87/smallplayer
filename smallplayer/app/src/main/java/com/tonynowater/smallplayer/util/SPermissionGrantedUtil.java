@@ -7,7 +7,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -15,30 +14,33 @@ import java.util.ArrayList;
  * 權限處理工具
  * Created by tonynowater on 2017/9/16.
  */
-public class PermissionGrantedUtil {
-    private static final String TAG = PermissionGrantedUtil.class.getSimpleName();
+public class SPermissionGrantedUtil {
+    private static final String TAG = SPermissionGrantedUtil.class.getSimpleName();
 
     public static final String[] REQUEST_PERMISSIONS = new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    public static final int PERMISTTION_REQUEST_CODE = 100;
+    public static final int PERMISSION_REQUEST_CODE = 100;
 
     private Context context;
     private Activity activity;
     private Fragment fragment;
     private CallBack callBack;
 
-    public PermissionGrantedUtil(Activity activity, CallBack callBack) {
+    public SPermissionGrantedUtil(Activity activity, CallBack callBack) {
         this.activity = activity;
         this.context = activity.getApplicationContext();
         this.callBack = callBack;
     }
 
-    public PermissionGrantedUtil(Fragment fragment, CallBack callBack) {
+    public SPermissionGrantedUtil(Fragment fragment, CallBack callBack) {
         this.fragment = fragment;
         this.context = fragment.getContext();
         this.callBack = callBack;
     }
 
-    public void checkPermissiion (String... requestPermission) {
+    /**
+     * @param requestPermission 要檢查的權限
+     */
+    public void checkPermission(String... requestPermission) {
         //6.0以上才需要權限處理
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             ArrayList<String> permissions = new ArrayList<>();
@@ -49,12 +51,12 @@ public class PermissionGrantedUtil {
                 }
             }
 
-            Logger.getInstance().d(TAG, "checkPermissiion: " + permissions.size());
+            Logger.getInstance().d(TAG, "checkPermission: " + permissions.size());
             if (permissions.size() > 0) {
                 if (activity != null) {
-                    activity.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISTTION_REQUEST_CODE);
+                    activity.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISSION_REQUEST_CODE);
                 } else {
-                    fragment.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISTTION_REQUEST_CODE);
+                    fragment.requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISSION_REQUEST_CODE);
                 }
             } else {
                 callBack.onPermissionGranted();
@@ -66,7 +68,7 @@ public class PermissionGrantedUtil {
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISTTION_REQUEST_CODE) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
             Logger.getInstance().d(TAG, "onRequestPermissionsResult: " + permissions.length);
             Logger.getInstance().d(TAG, "onRequestPermissionsResult: " + grantResults.length);
 

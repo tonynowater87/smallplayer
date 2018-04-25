@@ -34,7 +34,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.Logger;
-import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
+import com.tonynowater.smallplayer.util.SPermissionGrantedUtil;
 import com.tonynowater.smallplayer.util.YoutubeExtractorUtil;
 import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
 
@@ -278,7 +278,7 @@ public class LocalPlayback implements Playback {
             mPlaybackCallback.onPlaybackStateChanged();
             youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         } else {
-            if (!PermissionGrantedUtil.isPermissionGranted(mContext, PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+            if (!SPermissionGrantedUtil.isPermissionGranted(mContext, SPermissionGrantedUtil.REQUEST_PERMISSIONS)) {
                 onError(mPlayMusicService.getString(R.string.no_permission_warning_msg));
                 return;
             }

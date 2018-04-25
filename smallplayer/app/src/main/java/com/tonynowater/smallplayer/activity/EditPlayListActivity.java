@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
@@ -19,7 +18,7 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.Logger;
-import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
+import com.tonynowater.smallplayer.util.SPermissionGrantedUtil;
 
 import java.util.List;
 
@@ -100,7 +99,7 @@ public class EditPlayListActivity extends BaseMediaControlActivity<ActivityEditP
                         DialogUtil.showSelectPlaylistDialog(EditPlayListActivity.this, playListSongEntity, mTransportControls);
                         break;
                     case 2:
-                        if (!PermissionGrantedUtil.isPermissionGranted(getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                        if (!SPermissionGrantedUtil.isPermissionGranted(getApplicationContext(), SPermissionGrantedUtil.REQUEST_PERMISSIONS)) {
                             showToast(getString(R.string.no_permission_warning_msg));
                             return;
                         }

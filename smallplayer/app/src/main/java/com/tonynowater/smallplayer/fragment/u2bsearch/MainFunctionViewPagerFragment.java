@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,7 +22,7 @@ import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
-import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
+import com.tonynowater.smallplayer.util.SPermissionGrantedUtil;
 
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
 
     private int mCurrentViewPagerPosition = 0;
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
-    private PermissionGrantedUtil mPermissionUtil;
+    private SPermissionGrantedUtil mPermissionUtil;
     private OnMainFunctionViewPagerFragmentInterface mOnMainFunctionViewPagerFragmentInterface;
 
     @Override
@@ -67,7 +66,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mPermissionUtil = new PermissionGrantedUtil(this, new PermissionGrantedUtil.CallBack() {
+        mPermissionUtil = new SPermissionGrantedUtil(this, new SPermissionGrantedUtil.CallBack() {
 
             @Override
             public void onPermissionGranted() {
@@ -89,7 +88,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
                 initialView();
             }
         });
-        mPermissionUtil.checkPermissiion(PermissionGrantedUtil.REQUEST_PERMISSIONS);//獲取權限
+        mPermissionUtil.checkPermission(SPermissionGrantedUtil.REQUEST_PERMISSIONS);//獲取權限
     }
 
     private void initialView() {
