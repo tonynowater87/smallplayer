@@ -2,7 +2,6 @@ package com.tonynowater.smallplayer.fragment.u2bsearch;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -22,7 +21,8 @@ import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
-import com.tonynowater.smallplayer.util.SPermissionGrantedUtil;
+import com.tonynowater.smallplayer.util.permission.SPermissionDefine;
+import com.tonynowater.smallplayer.util.permission.SActivityRequestUtil;
 
 import java.util.List;
 
@@ -46,7 +46,6 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
 
     private int mCurrentViewPagerPosition = 0;
     private BaseViewPagerFragment[] mBaseViewPagerFragments;
-    private SPermissionGrantedUtil mPermissionUtil;
     private OnMainFunctionViewPagerFragmentInterface mOnMainFunctionViewPagerFragmentInterface;
 
     @Override
@@ -66,8 +65,9 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mPermissionUtil = new SPermissionGrantedUtil(this, new SPermissionGrantedUtil.CallBack() {
 
+        //請求權限
+        new SActivityRequestUtil(getActivity()).requestPermission(new SActivityRequestUtil.OnAuthRequestCallback() {
             @Override
             public void onPermissionGranted() {
                 Logger.getInstance().d(TAG, "onPermissionGranted: ");
@@ -87,8 +87,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
                         , U2BUserListViewPagerFragment.newInstance(getString(R.string.viewpager_title_u2b_user_playlist))};
                 initialView();
             }
-        });
-        mPermissionUtil.checkPermission(SPermissionGrantedUtil.REQUEST_PERMISSIONS);//獲取權限
+        }, SPermissionDefine.REQUEST_PERMISSIONS);
     }
 
     private void initialView() {
@@ -140,12 +139,6 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
         public CharSequence getPageTitle(int position) {
             return mBaseViewPagerFragments[position].getPageTitle();
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mPermissionUtil.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     public void onClickFab() {

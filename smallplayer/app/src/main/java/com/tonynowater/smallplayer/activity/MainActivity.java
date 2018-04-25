@@ -23,7 +23,8 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.Logger;
-import com.tonynowater.smallplayer.util.SPermissionGrantedUtil;
+import com.tonynowater.smallplayer.util.permission.SPermissionDefine;
+import com.tonynowater.smallplayer.util.permission.SActivityRequestUtil;
 import com.tonynowater.smallplayer.view.SearchViewComponent;
 
 import java.util.List;
@@ -185,7 +186,7 @@ public class MainActivity extends BaseMediaControlActivity<ActivityMainBinding> 
                         DialogUtil.showSelectPlaylistDialog(MainActivity.this, playListSongEntity, mTransportControls);
                         break;
                     case 2:
-                        if (!SPermissionGrantedUtil.isPermissionGranted(getApplicationContext(), SPermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                        if (!SActivityRequestUtil.checkPermissionGranted(getApplicationContext(), SPermissionDefine.REQUEST_PERMISSIONS)) {
                             showToast(getString(R.string.no_permission_warning_msg));
                             return;
                         }

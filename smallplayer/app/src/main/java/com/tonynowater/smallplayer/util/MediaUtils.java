@@ -9,6 +9,8 @@ import android.util.SparseArray;
 
 import com.tonynowater.smallplayer.module.dto.Album;
 import com.tonynowater.smallplayer.module.dto.Song;
+import com.tonynowater.smallplayer.util.permission.SActivityRequestUtil;
+import com.tonynowater.smallplayer.util.permission.SPermissionDefine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +149,7 @@ public class MediaUtils {
      */
     public static List<Song> getSongList(Context context, boolean bIsRefresh) {
 
-        if (!SPermissionGrantedUtil.isPermissionGranted(context, SPermissionGrantedUtil.REQUEST_PERMISSIONS)
+        if (!SActivityRequestUtil.checkPermissionGranted(context, SPermissionDefine.REQUEST_PERMISSIONS)
                 && mSongList != null
                 && !bIsRefresh) {
             return mSongList;
