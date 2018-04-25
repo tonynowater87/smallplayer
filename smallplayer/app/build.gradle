@@ -52,9 +52,7 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs' )
-    androidTestImplementation(deps.espresso_core, {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    androidTestImplementation deps.espresso_core
     androidTestImplementation deps.junit
     implementation deps.appcompat_v7
     implementation deps.designLib
@@ -73,7 +71,6 @@ dependencies {
     implementation deps.kotlin_reflect
     implementation deps.youtube_extrator
     implementation deps.exoplayer_core
-    implementation deps.exoplayer_smooth
     implementation deps.exoplayer_ui
     debugImplementation deps.leakcanary
     releaseImplementation deps.leakcanary_no_op
