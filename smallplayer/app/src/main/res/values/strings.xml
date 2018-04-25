@@ -69,7 +69,7 @@
     <string name="import_user_youtube_playlist_success_detail_msg">成功匯入Youtube歌單(%s)</string>
     <string name="import_user_youtube_playlist_error_detail_msg">匯入Youtube歌單發生錯誤(%s)</string>
     <string name="import_user_youtube_playlist_error_msg">匯入Youtube歌單發生錯誤</string>
-    <string name="no_permission_warning_msg">沒有開啟權限，不能使用本地音樂及下載音樂功能!</string>
+    <string name="no_permission_warning_msg">沒有開啟權限，不能播放本地音樂及下載音樂功能!</string>
     <string name="delete_all_dialog_check_title">是否要刪除全部的歌曲</string>
     <string name="google_login_fail_msg">登入失敗</string>
     <string name="refresh_token_fail">更新token失敗</string>

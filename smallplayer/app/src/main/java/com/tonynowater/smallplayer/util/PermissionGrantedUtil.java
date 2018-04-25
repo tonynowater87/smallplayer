@@ -84,10 +84,11 @@ public class PermissionGrantedUtil {
     }
 
     /**
-     * 檢查權限
+     * 檢查是否有權限
      * @param context
-     * @param requestPermission
-     * @return
+     * @param requestPermission 要檢查的權限
+     * @return true: Granted
+     *         false: Not Granted
      */
     public static boolean isPermissionGranted(Context context, String... requestPermission) {
         for (int i = 0; i < requestPermission.length; i++) {

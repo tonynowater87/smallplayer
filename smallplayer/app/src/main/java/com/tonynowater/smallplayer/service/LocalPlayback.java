@@ -34,6 +34,7 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.u2b.U2BApiDefine;
 import com.tonynowater.smallplayer.util.Logger;
+import com.tonynowater.smallplayer.util.PermissionGrantedUtil;
 import com.tonynowater.smallplayer.util.YoutubeExtractorUtil;
 import com.tonynowater.smallplayer.util.kt.SNetworkInfo;
 
@@ -251,8 +252,7 @@ public class LocalPlayback implements Playback {
         //沒有網路
         if (!MetaDataCustomKeyDefine.isLocal(mediaMetadataCompat)
                 && !SNetworkInfo.INSTANCE.isNetworkAvailable()) {
-            stop(true);
-            mPlaybackCallback.onError(MyApplication.getMyString(R.string.no_network_msg));
+            onError(MyApplication.getMyString(R.string.no_network_msg));
             return;
         }
 
@@ -276,10 +276,19 @@ public class LocalPlayback implements Playback {
             mPlaybackCallback.onPlaybackStateChanged();
             youtubeExtractorAsyncTask.extract(String.format(U2BApiDefine.U2B_EXTRACT_VIDEO_URL, mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE)), false, false);
         } else {
+            if (!PermissionGrantedUtil.isPermissionGranted(mPlayMusicService.getApplicationContext(), PermissionGrantedUtil.REQUEST_PERMISSIONS)) {
+                onError(mPlayMusicService.getString(R.string.no_permission_warning_msg));
+                return;
+            }
             //播放本地音樂
             String source = mediaMetadataCompat.getString(MetaDataCustomKeyDefine.CUSTOM_METADATA_KEY_SOURCE);
             play(mediaMetadataCompat, buildLocalMediaSource(Uri.parse(source)));
         }
+    }
+
+    private void onError(String errorMsg) {
+        stop(false);
+        mPlaybackCallback.onError(errorMsg);
     }
 
     private void play(MediaMetadataCompat mediaMetadataCompat, MediaSource mediaSource) {
@@ -533,8 +542,7 @@ public class LocalPlayback implements Playback {
                     what = "Unknown: " + error;
             }
             Logger.getInstance().d(TAG, "onPlayerError: what = " + what);
-            mPlaybackCallback.onError(what);
-            stop(true);
+            onError(what);
         }
 
         @Override
