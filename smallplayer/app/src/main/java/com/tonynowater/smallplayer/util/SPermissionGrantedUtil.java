@@ -18,7 +18,7 @@ public class SPermissionGrantedUtil {
     private static final String TAG = SPermissionGrantedUtil.class.getSimpleName();
 
     public static final String[] REQUEST_PERMISSIONS = new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    public static final int PERMISSION_REQUEST_CODE = 100;
+    private static final int PERMISSION_REQUEST_CODE = 100;
 
     private Context context;
     private Activity activity;
@@ -45,9 +45,9 @@ public class SPermissionGrantedUtil {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             ArrayList<String> permissions = new ArrayList<>();
 
-            for (int i = 0; i < requestPermission.length; i++) {
-                if (ContextCompat.checkSelfPermission(context, requestPermission[i]) != PackageManager.PERMISSION_GRANTED) {
-                    permissions.add(requestPermission[i]);
+            for (String sPermission : requestPermission) {
+                if (ContextCompat.checkSelfPermission(context, sPermission) != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(sPermission);
                 }
             }
 
@@ -71,13 +71,18 @@ public class SPermissionGrantedUtil {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             Logger.getInstance().d(TAG, "onRequestPermissionsResult: " + permissions.length);
             Logger.getInstance().d(TAG, "onRequestPermissionsResult: " + grantResults.length);
-
             boolean granted = false;
-            for (int i = 0; i < grantResults.length; i++) {
-                granted = grantResults[i] == PackageManager.PERMISSION_GRANTED;
+
+            if (grantResults.length <= 0) {
+                callBack.onPermissionNotGranted();
+                return;
             }
 
-            if (granted && grantResults.length > 0) {
+            for (int iPermission : grantResults) {
+                granted = iPermission == PackageManager.PERMISSION_GRANTED;
+            }
+
+            if (granted) {
                 callBack.onPermissionGranted();
             } else {
                 callBack.onPermissionNotGranted();
@@ -87,14 +92,15 @@ public class SPermissionGrantedUtil {
 
     /**
      * 檢查是否有權限
+     *
      * @param context
      * @param requestPermission 要檢查的權限
      * @return true: Granted
-     *         false: Not Granted
+     * false: Not Granted
      */
     public static boolean isPermissionGranted(Context context, String... requestPermission) {
-        for (int i = 0; i < requestPermission.length; i++) {
-            if (ContextCompat.checkSelfPermission(context, requestPermission[i]) != PackageManager.PERMISSION_GRANTED) {
+        for (String sPermission : requestPermission) {
+            if (ContextCompat.checkSelfPermission(context, sPermission) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -103,6 +109,7 @@ public class SPermissionGrantedUtil {
 
     public interface CallBack {
         void onPermissionGranted();
+
         void onPermissionNotGranted();
     }
 }
