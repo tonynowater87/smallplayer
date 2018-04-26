@@ -36,15 +36,15 @@ class FileHelper(private val mPlayListSongEntity: PlayListSongEntity, private va
     private val mStopDownloadIntent: PendingIntent
     private val mFileName: String
     private val mFileSuffix: String
-    private val sMimeType: String
+    private val mMimeType: String
     private val mId: Int
-    private val broadcastReceiver: BroadcastReceiver
+    private val mBroadcastReceiver: BroadcastReceiver
 
     /**
      * @return 存Mp3的路徑
      */
-    private val filePath: String
-        get() = String.format("%s%s%s%s%s%s%s%s", Environment.getExternalStorageDirectory().absolutePath, File.separator, "Android", File.separator, "data", File.separator, MyApplication.getContext().packageName, File.separator)
+    private val mFilePath: String
+        get() = MyApplication.getContext().getExternalFilesDir(null).absolutePath + File.separator
 
     interface OnFileHelperCallback {
         fun onSuccess(msg: String)
@@ -53,12 +53,12 @@ class FileHelper(private val mPlayListSongEntity: PlayListSongEntity, private va
 
     init {
         this.mFileSuffix = mResponse.body().contentType().subtype()
-        this.sMimeType = mResponse.body().contentType().toString()
+        this.mMimeType = mResponse.body().contentType().toString()
         this.mFileName = mPlayListSongEntity.title + "." + mFileSuffix
-        mPath = filePath
+        mPath = mFilePath
         mId = mPlayListSongEntity.hashCode()
         mStopDownloadIntent = PendingIntent.getBroadcast(MyApplication.getContext(), REQUEST_CODE, Intent(ACTION_STOP_DOWNLOAD).setPackage(MyApplication.getContext().packageName), PendingIntent.FLAG_ONE_SHOT)
-        broadcastReceiver = object : BroadcastReceiver() {
+        mBroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 if (TextUtils.equals(intent.action, ACTION_STOP_DOWNLOAD)) {
                     Logger.getInstance().d(TAG, "onReceive: stop download")
@@ -68,12 +68,12 @@ class FileHelper(private val mPlayListSongEntity: PlayListSongEntity, private va
                 }
             }
         }
-        MyApplication.getContext().registerReceiver(broadcastReceiver, IntentFilter(ACTION_STOP_DOWNLOAD))
+        MyApplication.getContext().registerReceiver(mBroadcastReceiver, IntentFilter(ACTION_STOP_DOWNLOAD))
     }
 
     private fun unregister() {
         try {
-            MyApplication.getContext().unregisterReceiver(broadcastReceiver)
+            MyApplication.getContext().unregisterReceiver(mBroadcastReceiver)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -148,9 +148,9 @@ class FileHelper(private val mPlayListSongEntity: PlayListSongEntity, private va
     private fun handleWrites(bufferedSink: BufferedSink, source: BufferedSource, contentLength: Long) {
         var completeCount: Long = 0
         var readCount: Long = 0
-        var limit: Long = 10000
-        Logger.getInstance().d(TAG, "handleWrites contentLengh : $contentLength")
-        while (readCount != -1) {
+        var limit: Long = 50000
+        Logger.getInstance().d(TAG, "handleWrites contentLength : $contentLength")
+        while (readCount != -1L) {
             readCount = source.read(bufferedSink.buffer(), BYTE_READ.toLong())
             completeCount += readCount
 
@@ -163,9 +163,9 @@ class FileHelper(private val mPlayListSongEntity: PlayListSongEntity, private va
         }
     }
 
-    protected override fun onProgressUpdate(vararg values: Int) {
+    override fun onProgressUpdate(vararg values: Int?) {
         Logger.getInstance().d(TAG, "onProgressUpdate: " + values[0])
-        showProgressNotification(values[0])
+        showProgressNotification(values[0]!!)
     }
 
     override fun doInBackground(objects: Array<Void>): Boolean? {
@@ -192,7 +192,7 @@ class FileHelper(private val mPlayListSongEntity: PlayListSongEntity, private va
         values.put(MediaStore.Audio.Media.ARTIST, mPlayListSongEntity.artist)
         values.put(MediaStore.Audio.Media.TITLE, mPlayListSongEntity.title)
         values.put(MediaStore.Audio.Media.DURATION, mPlayListSongEntity.duration)
-        values.put(MediaStore.Audio.Media.MIME_TYPE, sMimeType)
+        values.put(MediaStore.Audio.Media.MIME_TYPE, mMimeType)
         values.put(MediaStore.Audio.Media.IS_MUSIC, true)
         values.put(MediaStore.Audio.Media.DATA, mPath + mFileName)
         values.put(MediaStore.Audio.Media.ALBUM_ID, mId)
@@ -235,8 +235,8 @@ class FileHelper(private val mPlayListSongEntity: PlayListSongEntity, private va
 
     companion object {
         private val TAG = FileHelper::class.java.simpleName
-        private val BYTE_READ = 2048
-        private val ACTION_STOP_DOWNLOAD = "com.tonynowater.smallplayer.stop_download"
-        private val REQUEST_CODE = 100
+        private const val BYTE_READ = 2048
+        private const val ACTION_STOP_DOWNLOAD = "com.tonynowater.smallplayer.stop_download"
+        private const val REQUEST_CODE = 100
     }
 }
