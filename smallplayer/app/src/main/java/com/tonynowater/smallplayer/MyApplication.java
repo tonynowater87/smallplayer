@@ -1,12 +1,11 @@
 package com.tonynowater.smallplayer;
 
-import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
+import android.support.multidex.MultiDexApplication;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.leakcanary.LeakCanary;
@@ -28,7 +27,7 @@ import static com.tonynowater.smallplayer.service.notification.ChannelConstant.P
  * Created by tonyliao on 2017/4/30.
  */
 
-public class MyApplication extends Application {
+public class MyApplication extends MultiDexApplication {
     private static final String TAG = MyApplication.class.getSimpleName();
     private static Context mContext;
 

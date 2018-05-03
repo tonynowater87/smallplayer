@@ -16,6 +16,7 @@ ext {
     youtubeExtratorVer = 'master-SNAPSHOT'
     leakcanaryVer = '1.5.4'
     exoplayer = '2.7.2'
+    multiDex = '1.0.3'
     deps = [
             espresso_core   : "com.android.support.test.espresso:espresso-core:$espressoVer",
             junit           : "junit:junit:$junitVer",
@@ -39,6 +40,7 @@ ext {
             leakcanary_no_op: "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVer",
             exoplayer_core  : "com.google.android.exoplayer:exoplayer-core:$exoplayer",
             exoplayer_smooth: "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoplayer",
-            exoplayer_ui    : "com.google.android.exoplayer:exoplayer-ui:$exoplayer"
+            exoplayer_ui    : "com.google.android.exoplayer:exoplayer-ui:$exoplayer",
+            multiDex        : "com.android.support:multidex:$multiDex"
     ]
 }
