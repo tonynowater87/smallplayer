@@ -73,6 +73,9 @@ dependencies {
     implementation deps.exoplayer_core
     implementation deps.exoplayer_ui
     implementation deps.multiDex
+    implementation deps.room
+    implementation deps.roomRx
+    annotationProcessor deps.roomCompiler
     implementation (name: 'extension-flac-debug', ext: 'aar')
     debugImplementation deps.leakcanary
     releaseImplementation deps.leakcanary_no_op

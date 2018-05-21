@@ -17,6 +17,7 @@ ext {
     leakcanaryVer = '1.5.4'
     exoplayer = '2.7.2'
     multiDex = '1.0.3'
+    room = "1.1.0"
     deps = [
             espresso_core   : "com.android.support.test.espresso:espresso-core:$espressoVer",
             junit           : "junit:junit:$junitVer",
@@ -26,21 +27,35 @@ ext {
             gson            : "com.google.code.gson:gson:$gsonVer",
             constraintlayout: "com.android.support.constraint:constraint-layout:$constraintlayoutVer",
             materia_dialog  : "com.afollestad.material-dialogs:core:$materialdialogVer",
+
             lottie          : "com.airbnb.android:lottie:$lottieVer",
+
             firebase_core   : "com.google.firebase:firebase-core:$firebaseVer",//analytics
             firebase_crash  : "com.google.firebase:firebase-crash:$firebaseVer",
+
             google_auth     : "com.google.android.gms:play-services-auth:$googleAuthLibVer",//google auth
+
             retrofit2       : "com.squareup.retrofit2:retrofit:$retrofit2Ver",
             retrofitGson    : "com.squareup.retrofit2:converter-gson:$retrofitGsonVer",
+
             mediaCombat     : "com.android.support:support-media-compat:$androidSupLibVer",
+
             youtube_extrator: "com.github.HaarigerHarald:android-youtubeExtractor:$youtubeExtratorVer",
+
             kotlin_stdlib   : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
             kotlin_reflect  : "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version",
+
             leakcanary      : "com.squareup.leakcanary:leakcanary-android:$leakcanaryVer",
             leakcanary_no_op: "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVer",
+
             exoplayer_core  : "com.google.android.exoplayer:exoplayer-core:$exoplayer",
             exoplayer_smooth: "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoplayer",
             exoplayer_ui    : "com.google.android.exoplayer:exoplayer-ui:$exoplayer",
-            multiDex        : "com.android.support:multidex:$multiDex"
+
+            multiDex        : "com.android.support:multidex:$multiDex",
+
+            room            : "android.arch.persistence.room:runtime:$room",
+            roomCompiler    : "android.arch.persistence.room:compiler:$room",
+            roomRx          : "android.arch.persistence.room:rxjava2:$room"
     ]
 }
