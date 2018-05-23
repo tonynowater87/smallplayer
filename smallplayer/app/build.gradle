@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     signingConfigs {
@@ -52,8 +53,7 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs' )
-    androidTestImplementation deps.espresso_core
-    androidTestImplementation deps.junit
+
     implementation deps.appcompat_v7
     implementation deps.designLib
     implementation deps.okhttp
@@ -66,6 +66,7 @@ dependencies {
     implementation deps.google_auth
     implementation deps.retrofit2
     implementation deps.retrofitGson
+    implementation deps.retrofitRxadapter
     implementation deps.mediaCombat
     implementation deps.kotlin_stdlib
     implementation deps.kotlin_reflect
@@ -75,8 +76,18 @@ dependencies {
     implementation deps.multiDex
     implementation deps.room
     implementation deps.roomRx
-    annotationProcessor deps.roomCompiler
+    implementation deps.rxAndroid
+    kapt deps.roomCompiler
     implementation (name: 'extension-flac-debug', ext: 'aar')
+
+    androidTestImplementation deps.espresso_core
+    androidTestImplementation deps.junit
+
+    testImplementation deps.junit
+    testImplementation deps.robolectric
+    testImplementation deps.robolectricV4
+    testImplementation deps.runner
+
     debugImplementation deps.leakcanary
     releaseImplementation deps.leakcanary_no_op
 }
