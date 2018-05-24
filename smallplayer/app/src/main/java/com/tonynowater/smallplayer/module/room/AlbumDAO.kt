@@ -16,6 +16,9 @@ interface AlbumDAO {
     @Query("SELECT * FROM album WHERE album_id = :id")
     fun queryAlbumById(id: Long): AlbumEntity
 
+    @Query("SELECT * FROM album WHERE album_name = :name")
+    fun queryAlbumByName(name: String): AlbumEntity
+
     @Delete()
     fun deleteAlbum(albumEntity: AlbumEntity)
 

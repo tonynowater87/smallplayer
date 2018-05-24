@@ -1,7 +1,7 @@
 package com.tonynowater.smallplayer.module.room;
 
 import android.arch.persistence.room.Room
-import org.junit.Assert
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,57 +28,78 @@ class AlbumDAOTest {
     }
 
     @Test
-    fun insert0_1() {
+    fun insertAlbum01() {
         val name = "測試歌單"
         albumDao.insertAlbum(AlbumEntity(album_name = name))
         val list = albumDao.queryAlbums()
-        Assert.assertEquals(list.size, 1)
-        Assert.assertEquals(name, list[0].album_name)
+        assertEquals(list.size, 1)
+        assertEquals(name, list[0].album_name)
     }
 
     @Test
-    fun insert0_2() {
+    fun insertAlbum02() {
         albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單1"))
         albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單2"))
         val list = albumDao.queryAlbums()
-        Assert.assertEquals(list.size, 2)
-        Assert.assertEquals("測試歌單2", list[1].album_name)
+        assertEquals(list.size, 2)
+        assertEquals("測試歌單2", list[1].album_name)
     }
 
     /**
-     * 歌單名字重複插入測試
+     * test insert items with the same album name
+     *
+     * the newer one will replace the older one
      */
     @Test
-    fun insert0_3() {
+    fun insertAlbum03() {
         val id1 = albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單1"))
         val id2 = albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單1"))
 
-        Assert.assertEquals(1, id1)
-        Assert.assertEquals(2, id2)
+        assertEquals(1, id1)
+        assertEquals(2, id2)
 
         val list = albumDao.queryAlbums()
-        Assert.assertEquals(list.size, 1)
-        Assert.assertEquals(1, list[0].album_id)//重複插入會覆蓋
-        Assert.assertEquals("測試歌單1", list[0].album_name)
+        assertEquals(list.size, 1)
+        assertEquals(2, list[0].album_id)
+        assertEquals("測試歌單1", list[0].album_name)
     }
 
     @Test
-    fun delete0_1() {
+    fun queryByName01() {
+        albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單1"))
+        albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單2"))
+
+        val album = albumDao.queryAlbumByName("測試歌單2")
+        assertNotNull(album)
+        assertEquals("測試歌單2", album.album_name)
+    }
+
+    @Test
+    fun queryByName02() {
+        albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單1"))
+        albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單2"))
+
+        val album = albumDao.queryAlbumByName("測試歌單3")
+        assertNull(album)
+    }
+
+    @Test
+    fun deleteAlbum01() {
         val name = "測試歌單"
         val id = albumDao.insertAlbum(AlbumEntity(album_name = name))
         albumDao.deleteAlbum(albumDao.queryAlbumById(id))
 
         val list = albumDao.queryAlbums()
-        Assert.assertEquals(list.size, 0)
+        assertEquals(list.size, 0)
     }
 
     @Test
-    fun update0_1() {
+    fun updateAlbum01() {
         val id = albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單"))
         val album = albumDao.queryAlbumById(id)
         album.album_name = "更新歌單名字"
 
         albumDao.updateAlbum(album)
-        Assert.assertEquals("更新歌單名字", albumDao.queryAlbumById(id).album_name)
+        assertEquals("更新歌單名字", albumDao.queryAlbumById(id).album_name)
     }
 }
