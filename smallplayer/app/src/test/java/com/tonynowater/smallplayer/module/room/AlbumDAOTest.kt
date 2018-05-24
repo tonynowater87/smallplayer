@@ -45,6 +45,23 @@ class AlbumDAOTest {
         Assert.assertEquals("測試歌單2", list[1].album_name)
     }
 
+    /**
+     * 歌單名字重複插入測試
+     */
+    @Test
+    fun insert0_3() {
+        val id1 = albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單1"))
+        val id2 = albumDao.insertAlbum(AlbumEntity(album_name = "測試歌單1"))
+
+        Assert.assertEquals(1, id1)
+        Assert.assertEquals(2, id2)
+
+        val list = albumDao.queryAlbums()
+        Assert.assertEquals(list.size, 1)
+        Assert.assertEquals(1, list[0].album_id)//重複插入會覆蓋
+        Assert.assertEquals("測試歌單1", list[0].album_name)
+    }
+
     @Test
     fun delete0_1() {
         val name = "測試歌單"
