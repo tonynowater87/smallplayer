@@ -14,7 +14,7 @@ import org.robolectric.shadows.ShadowApplication
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
-class AlbumDAOTest {
+class AlbumDAO_ImplTest {
 
     private lateinit var db: SRoomDataBase
     private lateinit var albumDao: AlbumDAO
@@ -59,7 +59,7 @@ class AlbumDAOTest {
         assertEquals(2, id2)
 
         val list = albumDao.queryAlbums()
-        assertEquals(list.size, 1)
+        assertEquals(1, list.size)
         assertEquals(2, list[0].album_id)
         assertEquals("測試歌單1", list[0].album_name)
     }
@@ -102,4 +102,17 @@ class AlbumDAOTest {
         albumDao.updateAlbum(album)
         assertEquals("更新歌單名字", albumDao.queryAlbumById(id).album_name)
     }
+
+//    @Test
+//    fun switchAlbum01() {
+//        val name1 = "測試歌單1"
+//        val name2 = "測試歌單2"
+//        val id1 = albumDao.insertAlbum(AlbumEntity(album_name = name1))
+//        val id2 = albumDao.insertAlbum(AlbumEntity(album_name = name2))
+//        var list = albumDao.queryAlbums()
+//        albumDao.switchAlbum(name1, name2)
+//        list = albumDao.queryAlbums()
+//        assertEquals(albumDao.queryAlbumById(id1).album_name, name2)
+//        assertEquals(albumDao.queryAlbumById(id2).album_name, name1)
+//    }
 }

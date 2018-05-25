@@ -11,7 +11,6 @@ import android.arch.persistence.room.Query
  */
 @Dao
 interface SongDAO {
-
     @Insert(onConflict = REPLACE)
     fun insertSong(song: SongEntity): Long
 

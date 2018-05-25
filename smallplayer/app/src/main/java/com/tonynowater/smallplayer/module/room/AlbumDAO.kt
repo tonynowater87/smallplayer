@@ -24,4 +24,9 @@ interface AlbumDAO {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateAlbum(albumEntity: AlbumEntity)
+
+//    @Query("""UPDATE album SET album_name = CASE WHEN album_name = :name1 THEN :name2
+//                                                       WHEN album_name = :name2 THEN :name1
+//                                                  END WHERE album_name IN (:name1, :name2)""")
+//    fun switchAlbum(name1: String, name2: String)
 }

@@ -15,7 +15,7 @@ import org.robolectric.shadows.ShadowApplication
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
-class SongDAOTest {
+class SongDAO_ImplTest {
     private lateinit var db: SRoomDataBase
     private lateinit var songDAO: SongDAO
 
