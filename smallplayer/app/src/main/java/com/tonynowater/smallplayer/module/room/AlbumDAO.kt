@@ -19,8 +19,8 @@ interface AlbumDAO {
     @Query("SELECT * FROM album WHERE album_name = :name")
     fun queryAlbumByName(name: String): AlbumEntity
 
-    @Delete()
-    fun deleteAlbum(albumEntity: AlbumEntity)
+    @Query("DELETE FROM album WHERE album_id = :album_id")
+    fun deleteAlbum(album_id: Long)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateAlbum(albumEntity: AlbumEntity)

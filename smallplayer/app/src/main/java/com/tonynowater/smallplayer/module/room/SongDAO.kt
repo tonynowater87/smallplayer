@@ -14,11 +14,17 @@ interface SongDAO {
     @Insert(onConflict = REPLACE)
     fun insertSong(song: SongEntity): Long
 
-    @Query("SELECT * FROM Song")
+    @Query("SELECT * FROM song")
     fun querySongs(): List<SongEntity>
 
-    @Query("UPDATE Song SET album_id = :album_id WHERE id = :id")
+    @Query("SELECT * FROM song WHERE album_id = :album_id")
+    fun querySongsByAlbum(album_id: Long): List<SongEntity>
+
+    @Query("UPDATE song SET album_id = :album_id WHERE id = :id")
     fun updateSongAlbum(id: Long, album_id: Long)
+
+    @Query("DELETE FROM song WHERE album_id = :album_id")
+    fun deleteSongsByAlbum(album_id: Long)
 
     @Delete
     fun deleteSong(song: SongEntity)

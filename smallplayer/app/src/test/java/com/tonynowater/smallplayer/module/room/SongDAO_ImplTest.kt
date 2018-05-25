@@ -143,4 +143,53 @@ class SongDAO_ImplTest {
 
         assertEquals(0, list.size)
     }
+
+    @Test
+    fun querySongByAlbum() {
+        val album_id1 = db.albumDao().insertAlbum(AlbumEntity(album_name = "測試歌單1"))
+        val album_id2 = db.albumDao().insertAlbum(AlbumEntity(album_name = "測試歌單2"))
+
+        songDAO.insertSong(SongEntity(source = "source1"
+                , title = "title1"
+                , singer = "singer1"
+                , duration = 0
+                , image = "image1"
+                , albumId = album_id2
+                , isLocal = false))
+
+        songDAO.insertSong(SongEntity(source = "source2"
+                , title = "title2"
+                , singer = "singer2"
+                , duration = 0
+                , image = "image2"
+                , albumId = album_id2
+                , isLocal = false))
+
+        val list1 = songDAO.querySongsByAlbum(album_id1)
+        val list2 = songDAO.querySongsByAlbum(album_id2)
+        assertEquals(0, list1.size)
+        assertEquals(2, list2.size)
+    }
+
+    @Test
+    fun deleteSongsByAlbum() {
+        val album_id1 = db.albumDao().insertAlbum(AlbumEntity(album_name = "測試歌單1"))
+        songDAO.insertSong(SongEntity(source = "source1"
+                , title = "title1"
+                , singer = "singer1"
+                , duration = 0
+                , image = "image1"
+                , albumId = album_id1
+                , isLocal = false))
+        songDAO.insertSong(SongEntity(source = "source1"
+                , title = "title1"
+                , singer = "singer1"
+                , duration = 0
+                , image = "image1"
+                , albumId = album_id1
+                , isLocal = false))
+        songDAO.deleteSongsByAlbum(album_id1)
+        val list = songDAO.querySongsByAlbum(album_id1)
+        assertEquals(0, list.size)
+    }
 }

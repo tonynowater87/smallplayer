@@ -18,6 +18,7 @@ class AlbumDAO_ImplTest {
 
     private lateinit var db: SRoomDataBase
     private lateinit var albumDao: AlbumDAO
+    private lateinit var songDao: SongDAO
 
     @Before
     fun setUp() {
@@ -25,6 +26,7 @@ class AlbumDAO_ImplTest {
                 .allowMainThreadQueries()
                 .build()
         albumDao = db.albumDao()
+        songDao = db.songDao()
     }
 
     @Test
@@ -87,10 +89,32 @@ class AlbumDAO_ImplTest {
     fun deleteAlbum01() {
         val name = "測試歌單"
         val id = albumDao.insertAlbum(AlbumEntity(album_name = name))
-        albumDao.deleteAlbum(albumDao.queryAlbumById(id))
+        albumDao.deleteAlbum(id)
 
         val list = albumDao.queryAlbums()
         assertEquals(list.size, 0)
+    }
+
+    @Test
+    fun deleteAlbum02() {
+        val name = "測試歌單"
+        val id = albumDao.insertAlbum(AlbumEntity(album_name = name))
+
+        songDao.insertSong(SongEntity(source = "source1"
+                , title = "title1"
+                , singer = "singer1"
+                , duration = 0
+                , image = "image1"
+                , albumId = id
+                , isLocal = false))
+
+        albumDao.deleteAlbum(id)
+
+        val albumList = albumDao.queryAlbums()
+        assertEquals(0, albumList.size)
+
+        val songList = songDao.querySongsByAlbum(id)
+        assertEquals(0, songList.size)
     }
 
     @Test

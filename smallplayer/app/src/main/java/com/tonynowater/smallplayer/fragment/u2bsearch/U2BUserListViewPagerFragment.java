@@ -86,7 +86,7 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     @Override
     public void onResume() {
         super.onResume();
-        if (!SPManager.getInstance(MyApplication.getContext()).getIsGoogleLogin()) {
+        if (!SPManager.Companion.getInstance(MyApplication.getContext()).isGoogleLogin()) {
             mBinding.googleSignInButton.setVisibility(View.VISIBLE);
         } else {
             checkIsNeedRefreshToken();
@@ -94,10 +94,10 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     private void checkIsNeedRefreshToken() {
-        if ((SPManager.getInstance(getContext()).getTokenExpireTime() - System.currentTimeMillis()) < 0) {
+        if ((SPManager.Companion.getInstance(getContext()).getTokenExpireTime() - System.currentTimeMillis()) < 0) {
             //需要更新Token
             mBinding.googleSignInButton.setVisibility(View.VISIBLE);
-            U2BApi.newInstance().refreshYoutubeToken(SPManager.getInstance(getContext()).getRefreshToken(), new U2BApi.OnRequestTokenCallback() {
+            U2BApi.newInstance().refreshYoutubeToken(SPManager.Companion.getInstance(getContext()).getRefreshToken(), new U2BApi.OnRequestTokenCallback() {
                 @Override
                 public void onSuccess() {
                     queryYoutubeUserPlaylist();

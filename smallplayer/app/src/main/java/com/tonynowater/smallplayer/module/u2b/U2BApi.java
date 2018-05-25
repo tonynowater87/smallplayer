@@ -86,7 +86,7 @@ public class U2BApi {
     public void queryU2BVideo(U2BQueryParamsItem queryParamsItem, final OnNewCallback<PlayListSongEntity> callback) {
         if (queryParamsItem.getNextPageToken() != null) {
             if (queryParamsItem.isNeedAuthToken()) {
-                String token = SPManager.getInstance(MyApplication.getContext()).getAccessToken();
+                String token = SPManager.Companion.getInstance(MyApplication.getContext()).getAccessToken();
                 queryParamsItem.addHeader("Authorization", "Bearer " + token);
             }
 
@@ -132,7 +132,7 @@ public class U2BApi {
     public void queryU2BPlayList(U2BQueryParamsItem queryParamsItem, final OnNewCallback<U2BUserPlayListEntity> callback) {
         if (queryParamsItem.getNextPageToken() != null) {
             if (queryParamsItem.isNeedAuthToken()) {
-                String token = SPManager.getInstance(MyApplication.getContext()).getAccessToken();
+                String token = SPManager.Companion.getInstance(MyApplication.getContext()).getAccessToken();
                 queryParamsItem.addHeader("Authorization", "Bearer " + token);
             }
 
@@ -172,7 +172,7 @@ public class U2BApi {
     public void queryU2BPlayListVideo(U2BQueryParamsItem queryParamsItem, final OnNewCallback<PlayListSongEntity> callback) {
         if (queryParamsItem.getNextPageToken() != null) {
             if (queryParamsItem.isNeedAuthToken()) {
-                String token = SPManager.getInstance(MyApplication.getContext()).getAccessToken();
+                String token = SPManager.Companion.getInstance(MyApplication.getContext()).getAccessToken();
                 queryParamsItem.addHeader("Authorization", "Bearer " + token);
             }
 
@@ -314,7 +314,7 @@ public class U2BApi {
      */
     public void queryUserPlaylist (U2BQueryParamsItem queryParamsItem, final OnNewCallback<U2BUserPlayListEntity> callback) {
 
-        String token = SPManager.getInstance(MyApplication.getContext()).getAccessToken();
+        String token = SPManager.Companion.getInstance(MyApplication.getContext()).getAccessToken();
         queryParamsItem.addHeader("Authorization", "Bearer " + token);
 
         sendHttpRequest(queryParamsItem, new Callback() {
@@ -427,13 +427,13 @@ public class U2BApi {
                     String body = response.body().string();
                     Logger.getInstance().d(TAG, "onResponse: " + body);
                     U2BAccessTokenDTO dto = new Gson().fromJson(body, U2BAccessTokenDTO.class);
-                    SPManager.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
-                    SPManager.getInstance(MyApplication.getContext()).setRefreshToken(dto.refresh_token);
-                    SPManager.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));
-                    SPManager.getInstance(MyApplication.getContext()).setIsGoogleLogin(true);
+                    SPManager.Companion.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
+                    SPManager.Companion.getInstance(MyApplication.getContext()).setRefreshToken(dto.refresh_token);
+                    SPManager.Companion.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));
+                    SPManager.Companion.getInstance(MyApplication.getContext()).setGoogleLogin(true);
                     callback.onSuccess();
                 } else {
-                    SPManager.getInstance(MyApplication.getContext()).setIsGoogleLogin(false);
+                    SPManager.Companion.getInstance(MyApplication.getContext()).setGoogleLogin(false);
                     callback.onFailure();
                 }
             }
@@ -472,8 +472,8 @@ public class U2BApi {
                     String body = response.body().string();
                     Logger.getInstance().d(TAG, "onResponse: " + body);
                     U2BAccessTokenDTO dto = new Gson().fromJson(body, U2BAccessTokenDTO.class);
-                    SPManager.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
-                    SPManager.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));
+                    SPManager.Companion.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
+                    SPManager.Companion.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));
                     callback.onSuccess();
                 } else {
                     callback.onFailure();
