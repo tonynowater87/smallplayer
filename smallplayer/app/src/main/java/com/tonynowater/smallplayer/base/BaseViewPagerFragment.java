@@ -47,6 +47,8 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends B
         mCallback = callback;
     }
 
+    public abstract boolean canRefresh();
+
     public interface OnRefreshDoneCallback {
         void onRefreshDong();
     }

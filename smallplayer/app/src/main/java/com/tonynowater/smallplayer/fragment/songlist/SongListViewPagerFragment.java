@@ -83,6 +83,11 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
         callback.onRefreshDong();
     }
 
+    @Override
+    public boolean canRefresh() {
+        return true;
+    }
+
 //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        menu.add(0, MENU_ID_REFRESH, MENU_ORDER_NUMBER, R.string.refresh)

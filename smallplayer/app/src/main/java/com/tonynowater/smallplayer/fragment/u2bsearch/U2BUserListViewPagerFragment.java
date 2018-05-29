@@ -69,6 +69,11 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     @Override
+    public boolean canRefresh() {
+        return mBinding.googleSignInButton.getVisibility() == View.GONE;
+    }
+
+    @Override
     protected int getLayoutResourceId() {
         return R.layout.layout_u2b_user_playlist_fragment;
     }

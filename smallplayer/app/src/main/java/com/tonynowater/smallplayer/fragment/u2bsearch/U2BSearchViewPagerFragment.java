@@ -297,6 +297,15 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     @Override
     public void refresh(OnRefreshDoneCallback callback) {
         super.refresh(callback);
-        queryBySearchView(mQuery);
+        if (TextUtils.isEmpty(mQuery)) {
+            callback.onRefreshDong();
+        } else {
+            queryBySearchView(mQuery);
+        }
+    }
+
+    @Override
+    public boolean canRefresh() {
+        return !TextUtils.isEmpty(mQuery);
     }
 }
