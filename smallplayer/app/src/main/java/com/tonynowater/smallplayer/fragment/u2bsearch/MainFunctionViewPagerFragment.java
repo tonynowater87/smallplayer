@@ -105,6 +105,7 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
             public void onPageScrollStateChanged(int i) {}
         });
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getFragmentManager(), mBaseViewPagerFragments));
+        mBinding.viewpager.setOffscreenPageLimit(3);
         mOnMainFunctionViewPagerFragmentInterface.getTabLayout().setupWithViewPager(mBinding.viewpager);
     }
 
