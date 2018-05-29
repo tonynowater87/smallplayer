@@ -1,6 +1,7 @@
 package com.tonynowater.smallplayer.base;
 
 import android.databinding.ViewDataBinding;
+import android.support.annotation.CallSuper;
 
 import com.tonynowater.smallplayer.module.u2b.Playable;
 
@@ -17,6 +18,7 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends B
     public static final String BUNDLE_KEY_PLAYLISTID = "BUNDLE_KEY_PLAYLISTID";
     public static final String BUNDLE_KEY_PLAYLIST_TITLE = "BUNDLE_KEY_PLAYLIST_TITLE";
     public static final String BUNDLE_KEY_IS_NEED_AUTH_TOKEN = "BUNDLE_KEY_IS_NEED_AUTH_TOKEN";
+    protected OnRefreshDoneCallback mCallback;
 
     /** @return ViewPager的Tab標題文字 */
     public abstract CharSequence getPageTitle();
@@ -36,4 +38,16 @@ public abstract class BaseViewPagerFragment<T extends ViewDataBinding> extends B
      * @return 要自動新增的播放清單名稱
      */
     public abstract String getPlayableListName();
+
+    /**
+     * 下拉更新
+     */
+    @CallSuper
+    public void refresh(OnRefreshDoneCallback callback) {
+        mCallback = callback;
+    }
+
+    public interface OnRefreshDoneCallback {
+        void onRefreshDong();
+    }
 }

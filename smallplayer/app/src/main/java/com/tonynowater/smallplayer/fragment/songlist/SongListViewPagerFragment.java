@@ -75,6 +75,14 @@ public class SongListViewPagerFragment extends BaseViewPagerFragment<LayoutSongl
         return MyApplication.getContext().getString(R.string.viewpager_title_local_music) + DateUtil.getFullLocaleDate();
     }
 
+    @Override
+    public void refresh(OnRefreshDoneCallback callback) {
+        super.refresh(callback);
+        mSongListAdapter.setDataSource(MediaUtils.getSongList(MyApplication.getContext(), true));
+        mSongListAdapter.notifyDataSetChanged();
+        callback.onRefreshDong();
+    }
+
 //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        menu.add(0, MENU_ID_REFRESH, MENU_ORDER_NUMBER, R.string.refresh)

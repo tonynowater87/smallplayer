@@ -63,6 +63,12 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     }
 
     @Override
+    public void refresh(OnRefreshDoneCallback callback) {
+        super.refresh(callback);
+        queryYoutubeUserPlaylist();
+    }
+
+    @Override
     protected int getLayoutResourceId() {
         return R.layout.layout_u2b_user_playlist_fragment;
     }
@@ -183,6 +189,9 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
                 isLoad = false;
                 mBinding.lottieAnimationView.setVisibility(View.GONE);
             });
+            if (mCallback != null) {
+                mCallback.onRefreshDong();
+            }
         }
     }
 
@@ -190,6 +199,9 @@ public class U2BUserListViewPagerFragment extends BaseViewPagerFragment<LayoutU2
     public void onQueryFail(String errMsg) {
         if (!isDetached()) {
             showFailToast();
+            if (mCallback != null) {
+                mCallback.onRefreshDong();
+            }
         }
     }
 

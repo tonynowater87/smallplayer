@@ -265,6 +265,10 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
                 isLoad = false;
                 mBinding.lottieAnimationView.setVisibility(View.GONE);
             });
+
+            if (mCallback != null) {
+                mCallback.onRefreshDong();
+            }
         }
     }
 
@@ -272,6 +276,9 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     public void onQueryFail(String errMsg) {
         if (!isDetached()) {
             showFailToast();
+            if (mCallback != null) {
+                mCallback.onRefreshDong();
+            }
         }
     }
 
@@ -285,5 +292,11 @@ public class U2BSearchViewPagerFragment extends BaseViewPagerFragment<LayoutU2bs
     @Override
     public void onClick(View v) {
         ((MainActivity) getActivity()).expandSearchView();
+    }
+
+    @Override
+    public void refresh(OnRefreshDoneCallback callback) {
+        super.refresh(callback);
+        queryBySearchView(mQuery);
     }
 }
