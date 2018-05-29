@@ -102,7 +102,9 @@ public class MainFunctionViewPagerFragment extends BaseFragment<LayoutMainFuncti
             }
 
             @Override
-            public void onPageScrollStateChanged(int i) {}
+            public void onPageScrollStateChanged(int state) {
+                mBinding.swipe.setEnabled(state == ViewPager.SCROLL_STATE_IDLE);
+            }
         });
         mBinding.viewpager.setAdapter(new MyViewPagerAdapter(getFragmentManager(), mBaseViewPagerFragments));
         mBinding.viewpager.setOffscreenPageLimit(3);
