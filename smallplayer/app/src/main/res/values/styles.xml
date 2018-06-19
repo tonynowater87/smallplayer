@@ -10,6 +10,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
     <!-- ToolBar Style -->
     <style name="AppTheme.Toolbar" parent="AppTheme">
         <!--指定SearchView的Style-->
