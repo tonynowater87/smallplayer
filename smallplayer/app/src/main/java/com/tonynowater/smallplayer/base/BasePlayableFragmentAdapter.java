@@ -3,6 +3,7 @@ package com.tonynowater.smallplayer.base;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,6 @@ import java.util.List;
  * RecyclerViewAdapter的基底類別
  * Created by tonynowater on 2017/5/20.
  */
-// TODO: 2017/10/23 DataBinding還可以用得更簡化
 public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> extends RecyclerView.Adapter<BasePlayableFragmentAdapter.BaseViewHolder>{
 
     protected static final int NORMAL_VIEWTYPE = 1;
@@ -31,6 +31,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     protected RealmUtils realmUtils;
     protected Context mContext;
     protected boolean mFootviewIsVisible = false;
+    protected T mBinding;
 
     public BasePlayableFragmentAdapter(List<K> mDataList, OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();
@@ -52,14 +53,15 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     }
 
     @Override
-    public BasePlayableFragmentAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
         ViewDataBinding viewDataBinding;
         final BaseViewHolder baseViewHolder;
         switch (viewType) {
             case NORMAL_VIEWTYPE:
                 viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getNormalLayoutId(), parent, false);
-                baseViewHolder = new BaseViewHolder(viewDataBinding.getRoot());
+                mBinding = DataBindingUtil.getBinding(viewDataBinding.getRoot());
+                baseViewHolder = new BaseViewHolder(viewDataBinding);
                 viewDataBinding.getRoot().setOnClickListener(v -> {
                     int position = baseViewHolder.getAdapterPosition();
                     if (position != -1) {
@@ -69,15 +71,23 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
                 return baseViewHolder;
             case FOOTER_VIEWTYPE:
                 viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getFooterLayoutId(), parent, false);
+                mBinding = DataBindingUtil.getBinding(viewDataBinding.getRoot());
                 if (!mFootviewIsVisible) {
                     viewDataBinding.getRoot().setVisibility(View.GONE);
                 }
-                baseViewHolder = new BaseViewHolder(viewDataBinding.getRoot());
+                baseViewHolder = new BaseViewHolder(viewDataBinding);
                 return baseViewHolder;
             default:
                 throw new RuntimeException("wrong viewDataBinding type");
         }
     }
+
+    /**
+     * @return xml layout's variable name for data binding
+     * ex:BR.song
+     */
+    @NonNull
+    protected abstract int getBindingVariableName();
 
     /** 設置ListItem的Normal Layout */
     protected abstract int getNormalLayoutId();
@@ -90,6 +100,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     @Override
     public void onBindViewHolder(BasePlayableFragmentAdapter.BaseViewHolder holder, int position) {
         if (getItemViewType(position) == NORMAL_VIEWTYPE) {
+            holder.bind(mDataList.get(position));
             T binding = DataBindingUtil.getBinding(holder.itemView);
             onBindItem(binding, mDataList.get(position), position);
         }
@@ -148,8 +159,17 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     }
 
     public class BaseViewHolder extends RecyclerView.ViewHolder {
-        public BaseViewHolder(View itemView) {
-            super(itemView);
+
+        protected final ViewDataBinding mViewDataBinding;
+
+        public BaseViewHolder(ViewDataBinding viewDataBinding) {
+            super(viewDataBinding.getRoot());
+            this.mViewDataBinding = viewDataBinding;
+        }
+
+        public void bind(Object data) {
+            mViewDataBinding.setVariable(getBindingVariableName(), data);
+            mViewDataBinding.executePendingBindings();
         }
     }
 }

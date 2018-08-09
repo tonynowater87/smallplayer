@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 變數定義 -->
+    <!-- BR.值 和 variable裡的name 相對應 -->
     <data>
         <variable
             name="song"
@@ -11,9 +13,9 @@
         android:id="@+id/rl_root_songlistadapter"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
-        android:background="@android:color/white">
+        android:padding="@dimen/margin_gap_level_1">
 
-    <ImageView
+        <ImageView
             android:id="@+id/iv_songlistadapter"
             android:layout_width="@dimen/list_image_width"
             android:layout_height="@dimen/list_image_height"
@@ -34,17 +36,22 @@
                 android:layout_height="@dimen/list_image_icon_type_height"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/youtube_logo_icon"/>
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/tv_duration_songlistadapter"
                 style="@style/TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/list_image_icon_type_width"
+                android:layout_height="@dimen/list_textview_duration_autosize_height"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
+                android:gravity="center"
                 android:textColor="@android:color/black"
                 android:textStyle="italic"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="6sp"
+                android:autoSizeMaxTextSize="14sp"
+                android:autoSizeStepGranularity="1sp"
                 android:text="@{song.getDurationString()}"
                 tools:text="20:21" />
 
@@ -69,7 +76,7 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="@{song.getArtist()}" />
+                android:text="@{song.getTitle()}"/>
 
             <TextView
                 android:id="@+id/tv_song_title_songlistadapter"
@@ -80,7 +87,7 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="@{song.getTitle()}"/>
+                android:text="@{song.getArtist()}" />
 
         </LinearLayout>
 

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
+    <data>
+        <variable
+            name="song"
+            type="com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity" />
+    </data>
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/rl_root_songlistadapter"
         android:layout_width="match_parent"
@@ -21,7 +27,8 @@
             android:layout_height="@dimen/list_image_icon_type_height"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/youtube_logo_icon"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -41,7 +48,8 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="@{song.getTitle()}"/>
 
             <TextView
                 android:id="@+id/tv_song_title_songlistadapter"
@@ -51,7 +59,8 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="@{song.getChannelTitle()}"/>
 
         </LinearLayout>
 

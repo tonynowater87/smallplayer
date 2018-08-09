@@ -1,5 +1,8 @@
 package com.tonynowater.smallplayer.module.dto.realm.entity;
 
+import com.tonynowater.smallplayer.MyApplication;
+import com.tonynowater.smallplayer.R;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -71,7 +74,7 @@ public class PlayListEntity extends RealmObject implements EntityInterface {
     }
 
     public String getCreateDate() {
-        return createDate;
+        return String.format(MyApplication.getMyString(R.string.playlist_create_date), createDate);
     }
 
     public void setCreateDate(String createDate) {

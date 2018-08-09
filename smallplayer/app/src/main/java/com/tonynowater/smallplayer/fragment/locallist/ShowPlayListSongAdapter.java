@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
@@ -18,14 +19,14 @@ import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.service.PlayMusicService;
 import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.OnClickSomething;
-import com.tonynowater.smallplayer.util.TimeUtil;
 
 import java.util.Collections;
+
 /**
  * Created by tonynowater on 2017/5/30.
  */
-public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutShowPlayListSongAdapterBinding> implements ItemTouchHelperAdapter{
-    private static final String TAG = ShowPlayListSongAdapter.class.getSimpleName();
+public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayListSongEntity, LayoutShowPlayListSongAdapterBinding> implements ItemTouchHelperAdapter {
+
     private int mPlayListId;
     private BaseMediaControlActivity mActivity;
 
@@ -36,6 +37,12 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
         mDataList = new RealmUtils().queryPlayListSongByListIdSortByPosition(mPlayListId);
     }
 
+    @NonNull
+    @Override
+    protected int getBindingVariableName() {
+        return BR.song;
+    }
+
     @Override
     protected int getNormalLayoutId() {
         return R.layout.layout_show_play_list_song_adapter;
@@ -43,9 +50,6 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
 
     @Override
     protected void onBindItem(LayoutShowPlayListSongAdapterBinding binding, PlayListSongEntity item, int position) {
-        binding.tvSongTitleSonglistadapter.setText(item.getTitle());
-        binding.tvSongArtistSonglistadapter.setText(item.getArtist());
-        binding.tvDurationSonglistadapter.setText(TimeUtil.formatSongDuration(item.getDuration()));
         if (!TextUtils.isEmpty(item.getAlbumArtUri())) {
             Glide.with(mContext).load(item.getAlbumArtUri()).into(binding.ivSonglistadapter);
         } else {
@@ -91,6 +95,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
 
     /**
      * 送從歌單刪除歌曲的Action
+     *
      * @param mPlayListId
      * @param playListSongEntityId
      */

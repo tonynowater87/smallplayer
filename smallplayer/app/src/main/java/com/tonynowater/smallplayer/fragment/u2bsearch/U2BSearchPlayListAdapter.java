@@ -1,9 +1,12 @@
 package com.tonynowater.smallplayer.fragment.u2bsearch;
 
+import android.databinding.ViewDataBinding;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.R;
+import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutU2bSearchPlaylistAdapterListitemBinding;
 import com.tonynowater.smallplayer.module.dto.U2BUserPlayListEntity;
@@ -14,10 +17,15 @@ import com.tonynowater.smallplayer.util.OnClickSomething;
  * Created by tonynowater on 2017/5/20.
  */
 public class U2BSearchPlayListAdapter extends BasePlayableFragmentAdapter<U2BUserPlayListEntity, LayoutU2bSearchPlaylistAdapterListitemBinding> {
-    private static final String TAG = U2BSearchPlayListAdapter.class.getSimpleName();
 
     public U2BSearchPlayListAdapter(OnClickSomething<U2BUserPlayListEntity> mOnClickSongListener) {
         super(mOnClickSongListener, true);
+    }
+
+    @NonNull
+    @Override
+    protected int getBindingVariableName() {
+        return BR.song;
     }
 
     @Override
@@ -27,9 +35,6 @@ public class U2BSearchPlayListAdapter extends BasePlayableFragmentAdapter<U2BUse
 
     @Override
     protected void onBindItem(LayoutU2bSearchPlaylistAdapterListitemBinding binding, U2BUserPlayListEntity item, int position) {
-        binding.tvSongArtistSonglistadapter.setText(item.getTitle());
-        binding.tvSongTitleSonglistadapter.setText(item.getChannelTitle());
-        binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
         if (!TextUtils.isEmpty(item.getArtUrl())) {
             Glide.with(mContext).load(item.getArtUrl()).into(binding.ivSonglistadapter);
         } else {

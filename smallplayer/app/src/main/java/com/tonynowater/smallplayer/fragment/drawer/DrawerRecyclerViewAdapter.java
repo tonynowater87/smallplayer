@@ -1,5 +1,7 @@
 package com.tonynowater.smallplayer.fragment.drawer;
 
+import android.support.annotation.NonNull;
+
 import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
@@ -18,6 +20,12 @@ public class DrawerRecyclerViewAdapter extends BasePlayableFragmentAdapter<Drawe
         super(mDataList, mOnClickSongListener);
     }
 
+    @NonNull
+    @Override
+    protected int getBindingVariableName() {
+        return BR.drawer_item;
+    }
+
     @Override
     protected int getNormalLayoutId() {
         return R.layout.layout_drawer_adapter_list_item;
@@ -25,8 +33,7 @@ public class DrawerRecyclerViewAdapter extends BasePlayableFragmentAdapter<Drawe
 
     @Override
     protected void onBindItem(LayoutDrawerAdapterListItemBinding binding, DrawerItem item, int position) {
-        binding.setVariable(BR.drawer_item, mDataList.get(position));
-        binding.executePendingBindings();
+
     }
 
     @Override

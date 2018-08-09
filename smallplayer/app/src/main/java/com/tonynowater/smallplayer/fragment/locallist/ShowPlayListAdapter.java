@@ -1,7 +1,9 @@
 package com.tonynowater.smallplayer.fragment.locallist;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
+import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
@@ -20,7 +22,7 @@ import java.util.Collections;
  * Created by tonynowater on 2017/5/29.
  */
 public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEntity, LayoutShowPlayListAdapterBinding> implements ItemTouchHelperAdapter{
-    private static final String TAG = ShowPlayListAdapter.class.getSimpleName();
+
     private int[] mSongCountArray;
     private BaseMediaControlActivity mActivity;
 
@@ -30,6 +32,12 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
         refreshData();
     }
 
+    @NonNull
+    @Override
+    protected int getBindingVariableName() {
+        return BR.album;
+    }
+
     @Override
     protected int getNormalLayoutId() {
         return R.layout.layout_show_play_list_adapter;
@@ -37,8 +45,6 @@ public class ShowPlayListAdapter extends BasePlayableFragmentAdapter<PlayListEnt
 
     @Override
     protected void onBindItem(LayoutShowPlayListAdapterBinding binding, PlayListEntity item, int position) {
-        binding.tvPlaylistName.setText(item.getPlayListName());
-        binding.tvPlaylistCreateDate.setText(String.format(mContext.getString(R.string.playlist_create_date), item.getCreateDate()));
         binding.tvPlaylistSongCount.setText(String.valueOf(mSongCountArray[position]));
     }
 

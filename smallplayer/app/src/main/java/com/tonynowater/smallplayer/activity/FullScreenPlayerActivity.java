@@ -11,7 +11,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 
@@ -27,6 +26,7 @@ import com.tonynowater.smallplayer.util.DialogUtil;
 import com.tonynowater.smallplayer.util.Logger;
 import com.tonynowater.smallplayer.util.MiscellaneousUtil;
 import com.tonynowater.smallplayer.util.TimeUtil;
+import com.tonynowater.smallplayer.view.CurrentPlayEntity;
 import com.tonynowater.smallplayer.view.CurrentPlayListAdapter;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     private static final int DEFAULT_PROGRESS = 0;
     private Handler mHandler = new Handler();
     private PlaybackStateCompat mLastPlaybackState;
-    private List<MediaBrowserCompat.MediaItem> mCurrentPlayList = new ArrayList<>();
+    private List<CurrentPlayEntity> mListCurrentPlay = new ArrayList<>();
     private CurrentPlayListAdapter mCurrentPlayListAdapter;
     private MediaMetadataCompat mMediaMetaData;
     private EnumPlayMode mEnumPlayMode;
@@ -172,9 +172,9 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
     protected void onChildrenLoaded(List<MediaBrowserCompat.MediaItem> children) {
         Logger.getInstance().d(TAG, "onChildrenLoaded: ");
         setPlaylistNameToToolbarTitle();
-        mCurrentPlayList.clear();
-        mCurrentPlayList = new ArrayList<>(children);
-        mCurrentPlayListAdapter.setDataSource(mCurrentPlayList);
+        mListCurrentPlay.clear();
+        mListCurrentPlay = CurrentPlayEntity.transferListMediaItemListToEntityArray(children);
+        mCurrentPlayListAdapter.setDataSource(mListCurrentPlay);
         mCurrentPlayListAdapter.notifyDataSetChanged();
         if (mMediaMetaData != null) {
             updateUI(mMediaMetaData);
@@ -199,8 +199,8 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     private void updateRecyclerViewPosition() {
         String id1, id2;
-        for (int i = 0, len = mCurrentPlayList.size(); i < len; i++) {
-            id1 = mCurrentPlayList.get(i).getDescription().getExtras().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+        for (int i = 0, len = mListCurrentPlay.size(); i < len; i++) {
+            id1 = mListCurrentPlay.get(i).getId();
             id2 = mMediaMetaData.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
             if (TextUtils.equals(id1, id2)) {
                 mBinding.recyclerviewFullplayer.smoothScrollToPosition(i);
@@ -357,10 +357,10 @@ public class FullScreenPlayerActivity extends BaseMediaControlActivity<ActivityF
 
     @Override
     public void onClick(Object o) {
-        if (o instanceof MediaBrowserCompat.MediaItem) {
-            MediaBrowserCompat.MediaItem mediaItem = (MediaBrowserCompat.MediaItem) o;
+        if (o instanceof CurrentPlayEntity) {
+            CurrentPlayEntity playEntity = (CurrentPlayEntity) o;
             Bundle bundle = new Bundle();
-            bundle.putInt(PlayMusicService.BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION, Integer.parseInt(mediaItem.getMediaId()));
+            bundle.putInt(PlayMusicService.BUNDLE_KEY_EXPLICIT_PLAYLIST_POSITION, Integer.parseInt(playEntity.getMediaId()));
             mTransportControls.sendCustomAction(PlayMusicService.ACTION_PLAY_EXPLICIT_POSITION_IN_PLAYLIST, bundle);
         }
     }

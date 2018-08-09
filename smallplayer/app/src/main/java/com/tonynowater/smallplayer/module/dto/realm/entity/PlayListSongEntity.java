@@ -8,6 +8,7 @@ import com.tonynowater.smallplayer.module.dto.U2BVideoDTO;
 import com.tonynowater.smallplayer.module.dto.U2bPlayListVideoDTO;
 import com.tonynowater.smallplayer.module.u2b.Playable;
 import com.tonynowater.smallplayer.module.u2b.U2bConstDefince;
+import com.tonynowater.smallplayer.util.TimeUtil;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -120,6 +121,10 @@ public class PlayListSongEntity extends RealmObject implements Playable, EntityI
 
     public int getDuration() {
         return duration;
+    }
+
+    public String getDurationString() {
+        return TimeUtil.formatSongDuration(getDuration());
     }
 
     public void setDuration(int duration) {
