@@ -13,7 +13,7 @@ data class CurrentPlayEntity(val mediaId: String
                              , val title: String
                              , val artist: String
                              , val duration: String
-                             , val artUri: String
+                             , val artUri: String?
                              , val local: String
                              , val source: String) {
 
