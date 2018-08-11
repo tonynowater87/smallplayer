@@ -3,7 +3,6 @@ package com.tonynowater.smallplayer.base;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,14 +22,15 @@ import java.util.List;
  */
 public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> extends RecyclerView.Adapter<BasePlayableFragmentAdapter.BaseViewHolder>{
 
-    protected static final int NORMAL_VIEWTYPE = 1;
-    protected static final int FOOTER_VIEWTYPE = 2;
+    private static final int NORMAL_VIEW_TYPE = 1;
+    private static final int FOOTER_VIEW_TYPE = 2;
 
     protected List<K> mDataList;
-    protected OnClickSomething<K> mOnClickSongListener;
     protected RealmUtils realmUtils;
     protected Context mContext;
-    protected boolean mFootviewIsVisible = false;
+
+    private OnClickSomething<K> mOnClickSongListener;
+    private boolean mFootViewIsVisible = false;
 
     public BasePlayableFragmentAdapter(List<K> mDataList, OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();
@@ -44,11 +44,11 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         this.mOnClickSongListener = mOnClickSongListener;
     }
 
-    protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener, boolean mFootviewIsVisible) {
+    protected BasePlayableFragmentAdapter(OnClickSomething<K> mOnClickSongListener, boolean mFootViewIsVisible) {
         realmUtils = new RealmUtils();
         this.mDataList = new ArrayList<>();
         this.mOnClickSongListener = mOnClickSongListener;
-        this.mFootviewIsVisible = mFootviewIsVisible;
+        this.mFootViewIsVisible = mFootViewIsVisible;
     }
 
     @Override
@@ -57,7 +57,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         ViewDataBinding viewDataBinding;
         final BaseViewHolder baseViewHolder;
         switch (viewType) {
-            case NORMAL_VIEWTYPE:
+            case NORMAL_VIEW_TYPE:
                 viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getNormalLayoutId(), parent, false);
                 baseViewHolder = new BaseViewHolder(viewDataBinding);
                 viewDataBinding.getRoot().setOnClickListener(v -> {
@@ -67,9 +67,9 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
                     }
                 });
                 return baseViewHolder;
-            case FOOTER_VIEWTYPE:
+            case FOOTER_VIEW_TYPE:
                 viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getFooterLayoutId(), parent, false);
-                if (!mFootviewIsVisible) {
+                if (!mFootViewIsVisible) {
                     viewDataBinding.getRoot().setVisibility(View.GONE);
                 }
                 baseViewHolder = new BaseViewHolder(viewDataBinding);
@@ -83,7 +83,6 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
      * @return xml layout's variable name for data binding
      * ex:BR.song
      */
-    @NonNull
     protected abstract int getBindingVariableName();
 
     /** 設置ListItem的Normal Layout */
@@ -96,7 +95,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     @Override
     public void onBindViewHolder(BasePlayableFragmentAdapter.BaseViewHolder holder, int position) {
-        if (getItemViewType(position) == NORMAL_VIEWTYPE) {
+        if (getItemViewType(position) == NORMAL_VIEW_TYPE) {
             holder.bind(mDataList.get(position));
             T binding = DataBindingUtil.getBinding(holder.itemView);
             onBindItem(binding, mDataList.get(position), position);
@@ -108,7 +107,7 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     @Override
     public int getItemCount() {
-        if (supportFooter() && hasData() && mFootviewIsVisible) {
+        if (supportFooter() && hasData() && mFootViewIsVisible) {
             return mDataList.size() + 1;
         } else {
             return mDataList.size();
@@ -122,11 +121,11 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
 
     @Override
     public int getItemViewType(int position) {
-        if (supportFooter() && hasData() && mFootviewIsVisible && position + 1 == getItemCount()) {
-            return FOOTER_VIEWTYPE;
+        if (supportFooter() && hasData() && mFootViewIsVisible && position + 1 == getItemCount()) {
+            return FOOTER_VIEW_TYPE;
         }
 
-        return NORMAL_VIEWTYPE;
+        return NORMAL_VIEW_TYPE;
     }
 
     protected abstract boolean supportFooter();
@@ -152,14 +151,14 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
      * @param footviewVisible 設置FootView是否可見，還要NotifydatasetChanged才會改變
      */
     public void setFootviewVisible (boolean footviewVisible) {
-        mFootviewIsVisible = footviewVisible;
+        mFootViewIsVisible = footviewVisible;
     }
 
     public class BaseViewHolder extends RecyclerView.ViewHolder {
 
-        protected final ViewDataBinding mViewDataBinding;
+        private final ViewDataBinding mViewDataBinding;
 
-        public BaseViewHolder(ViewDataBinding viewDataBinding) {
+        private BaseViewHolder(ViewDataBinding viewDataBinding) {
             super(viewDataBinding.getRoot());
             this.mViewDataBinding = viewDataBinding;
         }
