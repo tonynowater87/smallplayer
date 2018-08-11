@@ -31,7 +31,6 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
     protected RealmUtils realmUtils;
     protected Context mContext;
     protected boolean mFootviewIsVisible = false;
-    protected T mBinding;
 
     public BasePlayableFragmentAdapter(List<K> mDataList, OnClickSomething<K> mOnClickSongListener) {
         realmUtils = new RealmUtils();
@@ -60,7 +59,6 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
         switch (viewType) {
             case NORMAL_VIEWTYPE:
                 viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getNormalLayoutId(), parent, false);
-                mBinding = DataBindingUtil.getBinding(viewDataBinding.getRoot());
                 baseViewHolder = new BaseViewHolder(viewDataBinding);
                 viewDataBinding.getRoot().setOnClickListener(v -> {
                     int position = baseViewHolder.getAdapterPosition();
@@ -71,7 +69,6 @@ public abstract class BasePlayableFragmentAdapter<K, T extends ViewDataBinding> 
                 return baseViewHolder;
             case FOOTER_VIEWTYPE:
                 viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), getFooterLayoutId(), parent, false);
-                mBinding = DataBindingUtil.getBinding(viewDataBinding.getRoot());
                 if (!mFootviewIsVisible) {
                     viewDataBinding.getRoot().setVisibility(View.GONE);
                 }
