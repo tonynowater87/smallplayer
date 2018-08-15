@@ -47,12 +47,6 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<CurrentP
 
     @Override
     protected void onBindItem(LayoutCurrentPlayListAdapterBinding binding, CurrentPlayEntity item, int position) {
-        if (MetaDataCustomKeyDefine.isLocal(item.getLocal())) {
-            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
-        } else {
-            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
-        }
-
         if (mPlayPosition == position) {//目前播放的位置
             binding.ivAnimation.setVisibility(View.VISIBLE);
             binding.ivAnimation.setImageDrawable(getDrawableByState(mContext, position));

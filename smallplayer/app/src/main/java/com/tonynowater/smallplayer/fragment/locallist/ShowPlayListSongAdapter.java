@@ -11,7 +11,6 @@ import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
 import com.tonynowater.smallplayer.base.ItemTouchHelperAdapter;
 import com.tonynowater.smallplayer.databinding.LayoutShowPlayListSongAdapterBinding;
-import com.tonynowater.smallplayer.module.dto.MetaDataCustomKeyDefine;
 import com.tonynowater.smallplayer.module.dto.realm.RealmUtils;
 import com.tonynowater.smallplayer.module.dto.realm.entity.PlayListSongEntity;
 import com.tonynowater.smallplayer.service.PlayMusicService;
@@ -47,13 +46,7 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
     }
 
     @Override
-    protected void onBindItem(LayoutShowPlayListSongAdapterBinding binding, PlayListSongEntity item, int position) {
-        if (MetaDataCustomKeyDefine.isLocal(item.getIsLocal())) {
-            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
-        } else {
-            binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.youtube_logo_icon));
-        }
-    }
+    protected void onBindItem(LayoutShowPlayListSongAdapterBinding binding, PlayListSongEntity item, int position) { }
 
     @Override
     protected boolean supportFooter() {

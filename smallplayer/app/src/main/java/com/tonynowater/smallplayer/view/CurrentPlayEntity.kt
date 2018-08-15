@@ -14,7 +14,7 @@ data class CurrentPlayEntity(val mediaId: String
                              , val artist: String
                              , val duration: String
                              , val artUri: String?
-                             , val local: String
+                             , val isLocal: String
                              , val source: String) {
 
     companion object {

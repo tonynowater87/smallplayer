@@ -52,7 +52,8 @@
                 android:layout_height="@dimen/list_image_icon_type_height"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"
+                isLocalMusic="@{song.isLocal}"/>
 
             <TextView
                 android:id="@+id/tv_duration_songlistadapter"
