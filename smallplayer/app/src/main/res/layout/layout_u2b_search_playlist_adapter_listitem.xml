@@ -19,7 +19,8 @@
             android:layout_height="@dimen/list_image_height"
             android:layout_alignParentStart="true"
             android:contentDescription="@string/list_iv_description"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            imageUrlHandler="@{song.getArtUrl}" />
 
         <ImageView
             android:id="@+id/iv_icon_type_songlistadapter"
@@ -28,7 +29,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:scaleType="fitCenter"
-            android:src="@drawable/youtube_logo_icon"/>
+            android:src="@drawable/youtube_logo_icon" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -49,7 +50,7 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="@{song.getTitle()}"/>
+                android:text="@{song.getTitle}"/>
 
             <TextView
                 android:id="@+id/tv_song_title_songlistadapter"
@@ -60,7 +61,7 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="@{song.getChannelTitle()}"/>
+                android:text="@{song.getChannelTitle}"/>
 
         </LinearLayout>
 

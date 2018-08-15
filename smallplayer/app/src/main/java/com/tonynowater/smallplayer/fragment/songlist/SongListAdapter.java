@@ -1,12 +1,9 @@
 package com.tonynowater.smallplayer.fragment.songlist;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.widget.Filter;
 import android.widget.Filterable;
 
-import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.MyApplication;
 import com.tonynowater.smallplayer.R;
@@ -16,7 +13,6 @@ import com.tonynowater.smallplayer.module.dto.Song;
 import com.tonynowater.smallplayer.util.MediaUtils;
 import com.tonynowater.smallplayer.util.OnClickSomething;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 // TODO: 2017/6/18 下載完歌曲，不會自動刷新的問題
@@ -47,13 +43,7 @@ public class SongListAdapter extends BasePlayableFragmentAdapter<Song, LayoutSon
     }
 
     @Override
-    protected void onBindItem(LayoutSonglistadapterListitemBinding binding, Song item, int position) {
-        if (!TextUtils.isEmpty(item.getmAlbumObj().getmAlbumArt())) {
-            Glide.with(MyApplication.getContext()).load(Uri.fromFile(new File(item.getmAlbumObj().getmAlbumArt()))).into(binding.ivSonglistadapter);
-        } else {
-            Glide.with(MyApplication.getContext()).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
-        }
-    }
+    protected void onBindItem(LayoutSonglistadapterListitemBinding binding, Song item, int position) {}
 
     @Override
     protected boolean supportFooter() {

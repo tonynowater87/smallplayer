@@ -26,7 +26,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:contentDescription="@string/list_iv_description"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                imageUrlHandler="@{song.artUri}"/>
 
             <ImageView
                 android:visibility="gone"

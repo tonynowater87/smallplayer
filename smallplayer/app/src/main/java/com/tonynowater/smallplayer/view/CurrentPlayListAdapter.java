@@ -12,7 +12,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
@@ -48,13 +47,6 @@ public class CurrentPlayListAdapter extends BasePlayableFragmentAdapter<CurrentP
 
     @Override
     protected void onBindItem(LayoutCurrentPlayListAdapterBinding binding, CurrentPlayEntity item, int position) {
-        String uri = item.getArtUri();
-        if (!TextUtils.isEmpty(uri)) {
-            Glide.with(mContext).load(uri).into(binding.ivSonglistadapter);
-        } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
-        }
-
         if (MetaDataCustomKeyDefine.isLocal(item.getLocal())) {
             binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
         } else {

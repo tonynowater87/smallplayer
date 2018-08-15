@@ -2,11 +2,9 @@ package com.tonynowater.smallplayer.fragment.locallist;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BaseMediaControlActivity;
@@ -50,11 +48,6 @@ public class ShowPlayListSongAdapter extends BasePlayableFragmentAdapter<PlayLis
 
     @Override
     protected void onBindItem(LayoutShowPlayListSongAdapterBinding binding, PlayListSongEntity item, int position) {
-        if (!TextUtils.isEmpty(item.getAlbumArtUri())) {
-            Glide.with(mContext).load(item.getAlbumArtUri()).into(binding.ivSonglistadapter);
-        } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
-        }
         if (MetaDataCustomKeyDefine.isLocal(item.getIsLocal())) {
             binding.ivIconTypeSonglistadapter.setImageDrawable(mContext.getDrawable(R.drawable.local_music_icon));
         } else {

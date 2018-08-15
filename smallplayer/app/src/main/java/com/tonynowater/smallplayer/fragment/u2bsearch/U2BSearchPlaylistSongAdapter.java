@@ -1,9 +1,7 @@
 package com.tonynowater.smallplayer.fragment.u2bsearch;
 
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
-import com.bumptech.glide.Glide;
 import com.tonynowater.smallplayer.BR;
 import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.base.BasePlayableFragmentAdapter;
@@ -33,13 +31,7 @@ public class U2BSearchPlaylistSongAdapter extends BasePlayableFragmentAdapter<Pl
     }
 
     @Override
-    protected void onBindItem(LayoutU2bSearchPlaylistSongAdapterListitemBinding binding, PlayListSongEntity item, int position) {
-        if (!TextUtils.isEmpty(item.getAlbumArtUri())) {
-            Glide.with(mContext).load(item.getAlbumArtUri()).into(binding.ivSonglistadapter);
-        } else {
-            Glide.with(mContext).load(R.drawable.ic_default_art).into(binding.ivSonglistadapter);
-        }
-    }
+    protected void onBindItem(LayoutU2bSearchPlaylistSongAdapterListitemBinding binding, PlayListSongEntity item, int position) {}
 
     @Override
     protected boolean supportFooter() {
