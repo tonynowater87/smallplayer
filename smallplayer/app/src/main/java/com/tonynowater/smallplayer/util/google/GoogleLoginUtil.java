@@ -19,7 +19,6 @@ import com.tonynowater.smallplayer.R;
 import com.tonynowater.smallplayer.module.u2b.U2BApi;
 import com.tonynowater.smallplayer.util.Logger;
 
-// TODO: 2017/10/6 Release版的Google登入會失敗 (因為SHA1不一樣)
 /**
  * Google登入並取得可存取資料的token
  * Created by tonynowater on 2017/8/26.

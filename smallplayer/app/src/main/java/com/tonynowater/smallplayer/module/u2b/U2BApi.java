@@ -428,7 +428,9 @@ public class U2BApi {
                     Logger.getInstance().d(TAG, "onResponse: " + body);
                     U2BAccessTokenDTO dto = new Gson().fromJson(body, U2BAccessTokenDTO.class);
                     SPManager.Companion.getInstance(MyApplication.getContext()).setAccessToken(dto.access_token);
-                    SPManager.Companion.getInstance(MyApplication.getContext()).setRefreshToken(dto.refresh_token);
+                    if (dto.refresh_token != null) {
+                        SPManager.Companion.getInstance(MyApplication.getContext()).setRefreshToken(dto.refresh_token);
+                    }
                     SPManager.Companion.getInstance(MyApplication.getContext()).setTokenExpireTime(System.currentTimeMillis() + (dto.expires_in * 1000L));
                     SPManager.Companion.getInstance(MyApplication.getContext()).setGoogleLogin(true);
                     callback.onSuccess();
