@@ -11,8 +11,8 @@
 - 提供隨機、重覆播放、跳轉等基本操作
 - 使用MediaPlayer 及 EXOPlayer 播放串流
 
-![Markdown](https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104345.png)
-![Markdown](https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104349.png)
-![Markdown](https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104359.png)
-![Markdown](https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104432.png)
-![Markdown](https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104449.png)
+<img src="/smallplayer/screenShots/Screenshot_20180802-104345.png" width="30%" align="center" />
+<img src="/smallplayer/screenShots/Screenshot_20180802-104349.png" width="30%" align="center" />
+<img src="/smallplayer/screenShots/Screenshot_20180802-104359.png" width="30%" align="center" />
+<img src="/smallplayer/screenShots/Screenshot_20180802-104432.png" width="30%" align="center" />
+<img src="/smallplayer/screenShots/Screenshot_20180802-104449.png" width="30%" align="center" />
