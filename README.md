@@ -1,4 +1,4 @@
-# SmallPlayer 小小播放器，2017 年 5 月 - 至今
+# SmallPlayer 小小播放器，2017 年 5 月 - 2018 年 8 月
 
 ## 可背景播放Youtube音樂的Android App
 
@@ -11,8 +11,8 @@
 - 提供隨機、重覆播放、跳轉等基本操作
 - 使用MediaPlayer 及 EXOPlayer 播放串流
 
-<img src="/smallplayer/screenShots/Screenshot_20180802-104345.png" width="30%" align="center" />
-<img src="/smallplayer/screenShots/Screenshot_20180802-104349.png" width="30%" align="center" />
-<img src="/smallplayer/screenShots/Screenshot_20180802-104359.png" width="30%" align="center" />
-<img src="/smallplayer/screenShots/Screenshot_20180802-104432.png" width="30%" align="center" />
-<img src="/smallplayer/screenShots/Screenshot_20180802-104449.png" width="30%" align="center" />
+<img src="https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104345.png" width="30%" />
+<img src="https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104349.png" width="30%" />
+<img src="https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104359.png" width="30%" />
+<img src="https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104432.png" width="30%" />
+<img src="https://github.com/tonynowater87/smallplayer/blob/exoplayer/smallplayer/screenShots/Screenshot_20180802-104449.png" width="30%" />
